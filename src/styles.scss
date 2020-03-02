@@ -1,0 +1,49 @@
+html {
+	// https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/
+	// mini.css
+	font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Ubuntu, \"Helvetica Neue\", Helvetica, sans-serif;
+	height: 100%;
+}
+
+body {
+	height: 100%;
+}
+
+#reactMount {
+	height: 100%;
+}
+
+label[for="file"],
+button {
+	align-items: flex-start;
+	display: flex;
+	justify-content: center;
+	flex-shrink: 0;
+	font-family: inherit;
+	line-height: 1.15;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-transform: none;
+	white-space: nowrap;
+}
+
+button.add {
+	font-size: inherit;	
+	display: block;
+}
+
+button svg {
+	height: 100%;
+	width: auto;
+}
+
+.ol-zoom {
+// see components/Workspace/Content
+	left: 8px;
+}
+
+.title {
+	white-space: nowrap; 
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

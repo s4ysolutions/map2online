@@ -1,0 +1,42 @@
+form {
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+form h2 {
+	padding-bottom: 0.5em;
+}
+
+.field-row {
+	display: flex;
+	align-items: stretch;
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+	margin-inline-start: 0px;
+	margin-inline-end: 0px;
+}
+
+.field-row label {
+	min-width: 12em;
+	text-align: right;
+	padding-right: 1em;
+}
+
+.field-row input,
+.field-row textarea,
+{
+	//min-width: 60em;
+}
+
+.buttons-row {
+	display: flex;
+	justify-content: flex-end;
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+	margin-inline-start: 0px;
+	margin-inline-end: 0px;
+	padding-top: 0.5em;
+}
+

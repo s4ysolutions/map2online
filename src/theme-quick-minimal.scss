@@ -1,0 +1,283 @@
+@import "_spaces";
+
+$yellow: rgba(236, 181, 62, 0.95);
+$yellowdim: rgba(236, 181, 62, 0.5);
+$grey: #444;
+$lightgrey: #666;
+$black: #111;
+$white: #fff;
+
+$button-font-size: 80%;
+
+$button-height: 2.5em;
+
+body {
+  background-color: $black;
+  color: $white;
+}
+
+.top-navigation {
+  border-bottom: 1px solid #ddd;
+  padding: $space;
+}
+
+form {
+  background-color: $yellow;
+}
+
+.field-row label {
+  box-sizing: border-box;
+}
+
+.field-row label,
+.field-row textarea,
+.field-row input {
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.field-row textarea,
+.field-row input {
+  background: none;
+  color: rgba(255, 255, 255, 1);
+  outline: none;
+  border-radius: 0;
+  cursor: text;
+}
+
+.field-row textarea:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.field-row textarea:focus:required:valid {
+  border: 2px solid rgba(255, 255, 255, 0);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.field-row textarea:required:valid {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+
+input:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+input:required:valid {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+input:required:invalid {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  font-weight: 400;
+}
+
+:-moz-placeholder {
+  /* Firefox 18- */
+
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+::-moz-placeholder {
+  /* Firefox 19+ */
+
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+.icn {
+  fill: rgba(255, 255, 255, 1)
+}
+
+.icn:hover {
+  fill: rgba(0, 0, 0, 1);
+  cursor: pointer;
+}
+
+label[for="file"],
+button {
+  border: none;
+  outline: none;
+  color: white;
+  border-radius: 3px;
+  margin-right: 0.1in;
+  font-size: $button-font-size;
+  font-weight: bold;
+  padding: 0.3em 0.5em;
+}
+
+form label[for="file"],
+form button {
+  background: none;
+  margin: 2vmax;
+  color: inherit;
+}
+
+form label[for="file"]:hover,
+form button:hover {
+  opacity: 1;
+  color: rgba(0, 0, 0, 1);
+}
+
+.catalog {
+  background-color: $grey; //rgba(0, 0, 0, 1);
+}
+
+.catalog-navigation .title {
+  font-size: $button-font-size;
+}
+
+
+.catalog .folders.top {
+  background-color: $grey; //rgba(0, 0, 0, 1);
+}
+
+.catalog .folders.features {
+  background-color: $lightgrey; //rgba(0, 0, 0, 1);
+}
+
+.catalog .draggable.folder-top {
+  background-color: $lightgrey;
+}
+
+.catalog .draggable.folder-top .item.current {
+  background-color: $black;
+}
+
+.catalog .draggable .features {
+  background-color: $lightgrey; //rgba(0, 0, 0, 1);
+}
+
+.catalog .draggable.folder-features {
+  background-color: $grey;
+}
+
+.catalog .draggable.folder-features .item.current {
+  background-color: $black;
+}
+
+.catalog .draggable.features {
+  background-color: $black; //rgba(0, 0, 0, 1);
+}
+
+.catalog .draggable.features {
+  background-color: $lightgrey;
+}
+
+.catalog .draggable .item {
+  margin-bottom: 8px;
+}
+
+.catalog button {
+  height: 2.5em;
+  background: #111;
+}
+
+.catalog button.add {
+  background: $yellow;
+}
+
+.catalog-navigation {
+  border-top: $sepwidth solid #222;
+  padding: $space;
+}
+
+button.menu-item {
+  background-color: $yellow;
+}
+
+button.menu-item.on {
+}
+
+button.menu-item.off {
+  background-color: $yellowdim;
+}
+
+.float-panel .tools {
+  background-color: $grey;
+}
+
+.float-panel .tools .tabs {
+  background-color: $black;
+}
+
+.float-panel .drag-handle,
+.float-panel .tools .tabs svg {
+  fill: $white;
+}
+
+.float-panel .tools .select.off svg,
+.float-panel .tools .tab.off svg {
+  opacity: 0.6
+}
+
+// .drag-handle, - ugly
+.float-panel .tools .select.on {
+  background-color: $lightgrey;
+}
+
+.right-drawer {
+  background-color: $grey; //rgba(0, 0, 0, 1);
+}
+
+.right-drawer .menu-item {
+  margin: 0 0 8px;
+}
+
+.right-drawer .sub-items,
+.right-drawer .title {
+  background-color: $lightgrey; //rgba(0, 0, 0, 1);
+}
+
+.right-drawer .title {
+  padding: 16px;
+}
+
+.right-drawer .sub-menu {
+  padding-right: 16px;
+  padding-left: 32px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.right-drawer .sub-menu:hover,
+.right-drawer .menu-item .title:hover {
+  background-color: $yellow;
+}
+
+.right-drawer .menu-item.closed .sub-menu {
+}
+
+.ol-control button {
+  background-color: $yellow !important;
+}
+
+.feature-item .title,
+.level2item .title,
+.level1item .title {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+input,
+textarea {
+  border: 2px dashed rgba(255, 255, 255, 0);
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.5)
+}
+
+input,
+textarea,
+.upload.has-advanced-upload .upload__input {
+  border: 2px dashed rgba(255, 255, 255, 0.5)
+}

@@ -1,0 +1,13 @@
+*.swp
+*.swo
+dist
+npm_cache
+node_modules
+stats.json
+session.vim
+*.code-workspace
+*.bak
+.firebase
+old
+.idea
+.DS_Store

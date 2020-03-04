@@ -2,14 +2,6 @@ import './styles.scss';
 import * as React from 'react';
 
 const Catalog: React.FunctionComponent = (): React.ReactElement => {
-  return <div className="catalog" >
-    AAA;
-  </div >;
-};
-
-export default Catalog;
-/*
-const Catalog: React.FunctionComponent = (): React.ReactElement => {
   const catalog = React.useContext(contextCatalog);
   const topFolder = catalog.topFolderOpened();
   const featuresFolder = catalog.featuresFolderOpened();
@@ -28,4 +20,4 @@ const Catalog: React.FunctionComponent = (): React.ReactElement => {
   </div>;
 };
 
- */
+export default Catalog;

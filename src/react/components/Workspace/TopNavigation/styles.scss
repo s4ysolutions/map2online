@@ -1,0 +1,40 @@
+.top-navigation {
+  position: relative;
+  display: flex;
+}
+
+.top-navigation h1 {
+  font-size: 1em;
+  line-height: 2;
+  margin: 0;
+  font-weight: 500;
+  flex-grow: 1;
+  text-align: center;
+  padding-right: 0.5em;
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-button {
+  background: inherit;
+}
+
+.app-button svg {
+}
+
+.app-button path {
+}
+
+.app-button line {
+  stroke: white;
+}
+
+.top-navigation-menu {
+}
+
+.top-navigation button,
+.top-navigation .app-button {
+  height: 2.5em;
+}

@@ -5,16 +5,22 @@
     "declaration": true,
     "esModuleInterop": true,
     "jsx": "react",
-    "lib": ["es2016", "dom"],
+    "lib": [
+      "es2016",
+      "dom"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": false,
-    "typeRoots": ["node_modules/@types", "typings"],
+    "typeRoots": [
+      "node_modules/@types",
+      "typings"
+    ],
     "paths": {
     },
-    "outDir": "./dist/",
+    "outDir": "./dist-ts/",
     "removeComments": true,
-    "skipLibCheck" : true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "resolveJsonModule": true,
     "target": "es5"

@@ -1,0 +1,46 @@
+import {Tool, Tools} from './index';
+import {Color} from '../../colors';
+import {map} from 'rxjs/operators';
+import {KV} from '../../../kv-rx';
+
+const toolsFactory = (persistStorage: KV): Tools => {
+  const th: Tools = {
+    colorLine: persistStorage.get('tcl', Color.RED),
+    colorLineObservable: () => persistStorage.observable('tcl'),
+    colorPoint: persistStorage.get('tcp', Color.RED),
+    colorPointObservable: () => persistStorage.observable('tcp'),
+    isLine: persistStorage.get('tt', Tool.Line) === Tool.Line,
+    isLineObservable: () => persistStorage.observable('tt').pipe(map(tool => tool === Tool.Line)),
+    isPoint: persistStorage.get('tt', Tool.Point) === Tool.Point,
+    isPointObservable: () => persistStorage.observable('tt').pipe(map(tool => tool === Tool.Point)),
+    selectColor: function (color: Color) {
+      if (this.isLine) {
+        persistStorage.set('tcl', color);
+        this.colorLine = color;
+      } else {
+        persistStorage.set('tcp', color);
+        this.colorPoint = color;
+      }
+    },
+    selectLine: function () {
+      persistStorage.set('tt', Tool.Line);
+      this.tool = Tool.Line;
+      this.isLine = true;
+      this.isPoint = false;
+    },
+    selectPoint: function () {
+      persistStorage.set('tt', Tool.Point);
+      this.tool = Tool.Point;
+      this.isLine = false;
+      this.isPoint = true;
+    },
+    tool: persistStorage.get('tt', Tool.Point),
+    toolObservable: () => persistStorage.observable('tt'),
+  };
+  th.selectColor = th.selectColor.bind(th);
+  th.selectLine = th.selectLine.bind(th);
+  th.selectPoint = th.selectPoint.bind(th);
+  return th;
+};
+
+export default toolsFactory;

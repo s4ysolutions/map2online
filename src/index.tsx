@@ -6,10 +6,9 @@ import 'styles.scss';
 import 'form.scss';
 import 'theme-quick-minimal.scss';
 
-// import App from 'react/components/App';
+import App from 'react/components/App';
 
 ReactDOM.render(
-  // <App />,
-  <div/>,
+  <App />,
   document.getElementById('reactMount')
 );

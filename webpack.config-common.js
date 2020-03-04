@@ -42,6 +42,7 @@ const ruleTypescript = {
     {
       loader: 'ts-loader',
       options: {
+        experimentalWatchApi: true,
         transpileOnly: true,
       },
     },

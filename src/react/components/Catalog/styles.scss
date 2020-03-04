@@ -1,0 +1,144 @@
+@import "../../../dims";
+
+.catalog {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog button.add {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  border-radius: 50%;
+  height: $buttonHeight;
+  width: $buttonWight;
+}
+
+.catalog-navigation {
+  display: flex;
+  align-items: center;
+}
+
+.catalog-navigation .title {
+  flex-grow: 1;
+}
+
+.catalog-navigation button {
+  max-width: 30%;
+}
+
+/*
+.catalog .folders {
+  position: relative;
+  flex-grow: 1;
+}
+ */
+
+.folders, .features {
+  flex-grow: 1;
+  direction: rtl;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  // width: 100%;
+  // top: 0;
+  // bottom: 0;
+  overflow-y: auto;
+}
+
+.folders.top, .folders.features, .features {
+}
+
+.catalog .folders.top, .catalog .folders.features, .catalog .features > * {
+  direction: ltr;
+}
+
+.catalog .list {
+  flex-grow: 1;
+}
+
+.catalog .draggable .open {
+  cursor: default;
+}
+
+.catalog .draggable .item {
+  display: flex;
+  align-items: center;
+  align-content: stretch;
+  height: 3em;
+}
+
+.catalog .draggable .item .complex-title .index {
+  min-width: 2em;
+  text-align: right;
+}
+
+.catalog .draggable .item .complex-title svg {
+  margin-right: 0;
+}
+
+.catalog .draggable .item .complex-title .title {
+  padding-left: 0.5em;
+}
+
+.catalog .draggable .item .complex-title,
+.catalog .draggable .item .title {
+  flex-grow: 1;
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
+
+.catalog .draggable .item .visibility,
+.catalog .draggable .item .edit,
+.catalog .draggable .item .active,
+.catalog .draggable .item .delete {
+  height: 100%;
+  width: auto;
+  display: flex;
+  align-items: center;
+  cursor: default;
+}
+
+.catalog .draggable .item svg {
+  margin-right: 0.25em;
+  margin-left: 0.25em;
+  height: 70%;
+  width: auto;
+}
+
+.feature-item .active svg,
+.feature-item .type svg,
+.feature-item .delete svg,
+.catalog .draggable .item .active svg,
+.catalog .draggable .item .edit svg,
+.catalog .draggable .item .delete svg {
+  height: 60%;
+}
+
+.feature-item .delete svg,
+.catalog .draggable .item .delete svg {
+  margin-right: 0;
+}
+
+@media (hover: hover) {
+  .catalog .draggable .item .active svg,
+  .catalog .draggable .item .edit svg {
+    display: none;
+  }
+
+  .catalog .draggable .item.current .active svg,
+  .catalog .draggable .item:hover .active svg,
+  .catalog .draggable .item:hover .edit svg {
+    display: block;
+  }
+
+  .catalog .draggable .item .delete svg {
+    visibility: hidden;
+  }
+
+  .catalog .draggable .item:hover .delete svg {
+    visibility: visible;
+  }
+}

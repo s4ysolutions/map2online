@@ -34,6 +34,7 @@ const ruleSassEmbed = {
 const config = merge(baseConfig, {
   mode: 'development',
   devtool: 'inline-source-map',
+  watch: true,
   // devtool: 'cheap-module-eval-source-map',
   module: {
     rules: [

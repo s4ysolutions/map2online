@@ -238,6 +238,7 @@ export const getMapDefinition = (sourceName: string): MapDefinition => {
   for (const mgd of mapGroups) {
     for (const md of mgd.maps) {
       if (md.id === sourceName) {
+        console.log({md});
         memo[sourceName] = md;
         return md;
       }

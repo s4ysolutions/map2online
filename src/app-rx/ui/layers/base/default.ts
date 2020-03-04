@@ -19,7 +19,7 @@ const baseLayerFactory = (persistentStorage: KV): BaseLayer => ({
   setSourceName: function (name: string) {
     persistentStorage.set('blsn', name);
   },
-  sourceName: persistentStorage.get('blsn', 'osm'),
+  sourceName: persistentStorage.get('blsn', 'Openstreet'),
   sourceNameObservable: () => persistentStorage.observable('blsn'),
   x: persistentStorage.get('blx', 0),
   xObservable: () => persistentStorage.observable('blx'),

@@ -6,7 +6,6 @@ import {getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {Tool} from '../../../app-rx/ui/tools';
 
-console.log({yyy: getTools});
 const tools = getTools();
 
 interface Props {

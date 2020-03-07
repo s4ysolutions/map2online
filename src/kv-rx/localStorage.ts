@@ -4,7 +4,7 @@ import {persistedLocal} from '../persist/local';
 import {filter, map} from 'rxjs/operators';
 
 interface LocalStorage {
-  subject: Subject<Record<string, any>>;
+  subject: Subject<{ key: string; value: any }>
 }
 
 const localStorageSingleton: KV & LocalStorage = {
@@ -15,7 +15,7 @@ const localStorageSingleton: KV & LocalStorage = {
     const serialized = window.localStorage.getItem(key);
     return serialized ? JSON.parse(serialized) : defaultValue;
   },
-  subject: new Subject<Record<string, any>>(),
+  subject: new Subject<{ key: string, value: any }>(),
   set: function <T>(key: string, value: T) {
     if (value === undefined) {
       window.localStorage.removeItem(key);
@@ -25,14 +25,20 @@ const localStorageSingleton: KV & LocalStorage = {
         key,
         JSON.stringify(valueToStore)
       );
-      this.subject.next({[key]: value})
     }
+    this.subject.next({key, value})
   },
-  observable: function <T>(key: string) {
-    return this.subject.pipe(
-      filter(r => r[key] !== undefined),
-      map(r => r[key])
-    );
+  delete: function <T>(key: string) {
+    window.localStorage.removeItem(key);
+    this.subject.next({key, value: null})
+  },
+  observable: function <T>(key?: string) {
+    return key
+      ? this.subject.pipe(
+        filter<{ key: string; value: any }>((r): boolean => r.key === key),
+        map<{ key: string; value: any }, any>((r) => r.value)
+      )
+      : this.subject;
   },
 };
 

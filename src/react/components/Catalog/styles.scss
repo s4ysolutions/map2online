@@ -27,7 +27,6 @@
 .catalog-navigation button {
   max-width: 30%;
 }
-
 /*
 .catalog .folders {
   position: relative;
@@ -88,6 +87,8 @@
   display: flex;
   height: 100%;
   align-items: center;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .catalog .draggable .item .visibility,

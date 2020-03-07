@@ -1,6 +1,5 @@
 import {Tool, Tools} from './index';
 import {Color} from '../../colors';
-import {map} from 'rxjs/operators';
 import {KV} from '../../../kv-rx';
 
 const toolsFactory = (persistStorage: KV): Tools => {
@@ -10,9 +9,9 @@ const toolsFactory = (persistStorage: KV): Tools => {
     colorPoint: persistStorage.get('tcp', Color.RED),
     colorPointObservable: () => persistStorage.observable('tcp'),
     isLine: persistStorage.get('tt', Tool.Line) === Tool.Line,
-    isLineObservable: () => persistStorage.observable('tt').pipe(map(tool => tool === Tool.Line)),
+    isLineObservable: () => persistStorage.observable('tt'),
     isPoint: persistStorage.get('tt', Tool.Point) === Tool.Point,
-    isPointObservable: () => persistStorage.observable('tt').pipe(map(tool => tool === Tool.Point)),
+    isPointObservable: () => persistStorage.observable('tt'),
     selectColor: function (color: Color) {
       if (this.isLine) {
         persistStorage.set('tcl', color);

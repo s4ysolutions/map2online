@@ -2,10 +2,6 @@
 import {Subject} from 'rxjs';
 
 const log = {
-  _<T>(o: T): T {
-    this.d(o);
-    return o;
-  },
   d: console.debug,
   debug: console.debug,
   error: console.error,
@@ -45,3 +41,11 @@ const log = {
 };
 
 export default log;
+
+export const _ = <T>(o: T, description?: any): T => {
+  if (description)
+    log.d(description, o);
+  else
+    log.d(o);
+  return o;
+};

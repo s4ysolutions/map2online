@@ -1,4 +1,4 @@
-import {Color} from '../../colors';
+import {Color} from '../../../lib/colors';
 import {Observable} from 'rxjs';
 
 export enum Tool {

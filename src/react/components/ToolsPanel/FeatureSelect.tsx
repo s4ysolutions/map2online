@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Color, rgb} from 'app-rx/colors';
+import {Color, rgb} from '../../../lib/colors';
 import Line from 'react/components/Svg/Line';
 import Pin from 'react/components/Svg/Pin';
 import {getTools} from '../../../di-default';

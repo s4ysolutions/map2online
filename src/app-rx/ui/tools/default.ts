@@ -1,5 +1,5 @@
 import {Tool, Tools} from './index';
-import {Color} from '../../colors';
+import {Color} from '../../../lib/colors';
 import {KV} from '../../../kv-rx';
 
 const toolsFactory = (persistStorage: KV): Tools => {

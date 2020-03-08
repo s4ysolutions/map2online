@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Color} from 'app-rx/colors';
+import {Color} from '../../../lib/colors';
 import FeatureSelect from './FeatureSelect';
 import Line from 'react/components/Svg/Line';
 import Pin from 'react/components/Svg/Pin';

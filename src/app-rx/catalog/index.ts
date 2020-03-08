@@ -41,6 +41,7 @@ export interface Features extends Iterable<Feature> {
   remove: (feauture: Feature) => number;
   observable: () => Observable<Features>;
   byPos: (index: number) => Feature | null;
+  reorder: (from: number, to: number) => void;
 }
 
 export interface RouteProps {
@@ -64,6 +65,7 @@ export interface Routes extends Iterable<Route> {
   remove: (category: Route) => number;
   observable: () => Observable<Routes>;
   byPos: (index: number) => Route | null;
+  reorder: (from: number, to: number) => void;
 }
 
 export interface CategoryProps {
@@ -87,6 +89,7 @@ export interface Categories extends Iterable<Category> {
   remove: (category: Category) => number;
   observable: () => Observable<Categories>;
   byPos: (index: number) => Category | null;
+  reorder: (from: number, to: number) => void;
 }
 
 export interface Catalog {

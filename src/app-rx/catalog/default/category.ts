@@ -4,6 +4,7 @@ import {routesFactory} from './route';
 import {makeId} from '../../../l10n/id';
 import T from '../../../l10n';
 import {map} from 'rxjs/operators';
+import reorder from '../../../lib/reorder';
 
 export const CATEGORY_ID_PREFIX = "c";
 
@@ -20,9 +21,10 @@ interface Updateable {
 }
 
 export const categoryFactory = (storage: KV, catalog: Catalog, props: CategoryProps | null): Category & Updateable | null => {
-  const p = props === null ? newCategoryProps() : {...props};
+  const p: CategoryProps = props === null ? newCategoryProps() : {...props};
+  const key = `${CATEGORY_ID_PREFIX}@${p.id}`;
 
-  return {
+  const th: Category & Updateable = {
     get description() {
       return p.description
     },
@@ -56,27 +58,32 @@ export const categoryFactory = (storage: KV, catalog: Catalog, props: CategoryPr
       for (const route of Array.from(this.routes)) {
         this.routes.remove(route);
       }
-      storage.delete(`${CATEGORY_ID_PREFIX}@${p.id}`);
+      storage.delete(key);
+      storage.delete(`vis@${p.id}`); // visibility
     },
     hasRoute: function (route: Route) {
       return this.routes.hasRoute(route)
     },
-    observable: () => storage.observable<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${p.id}`)
+    observable: () => storage.observable<CategoryProps | null>(key)
       .pipe(
         map(props => props === null ? null : catalog.categoryById(props.id))
       ),
-    routes: routesFactory(storage, catalog, storage.get<ID[]>('rtids@${props.id}', [])),
+    routes: null,
     update: function () {
-      storage.set(`${CATEGORY_ID_PREFIX}@${p.id}`, {...p});
+      storage.set(key, {...p});
     },
   };
+  th.routes = routesFactory(storage, catalog, th);
+  return th;
 };
 
 export const categoriesFactory = (storage: KV, catalog: Catalog): Categories => {
   let ids0 = storage.get<ID[]>('cats', []);
   const updateIds = (ids: ID[]) => {
-    ids0 = ids;
-    storage.set('cats', ids);
+    if (ids !== ids0) {
+      ids0 = ids;
+      storage.set('cats', ids);
+    }
   };
   if (ids0.length === 0) {
     const category = newCategoryProps();
@@ -104,6 +111,9 @@ export const categoriesFactory = (storage: KV, catalog: Catalog): Categories => 
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
       category.delete();
     },
+    reorder: function (from: number, to: number) {
+      updateIds(reorder(ids0, from, to));
+    },
     [Symbol.iterator]: function () {
       const _ids = [...ids0];
       let _current = 0;
@@ -114,6 +124,6 @@ export const categoriesFactory = (storage: KV, catalog: Catalog): Categories => 
             : {done: false, value: this.byPos(_current++)};
         }
       };
-    },
+    }
   }
 };

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useCallback} from 'react';
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
 import log from '../../../log';
 import {getCatalog, getCatalogUI} from '../../../di-default';
@@ -37,10 +38,12 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
   const categories = useObservable(catalog.categories.observable(), catalog.categories);
   const categoryEdit = useObservable(catalogUI.categoryEditObservable(), catalogUI.categoryEdit);
   const categoryDelete = useObservable(catalogUI.categoryDeleteObservable(), catalogUI.categoryDelete);
-  const handleDragEnd = (): void => null;
-  const handleAdd = () => {
+  const handleDragEnd = useCallback(
+    ({source: {index: indexS}, destination: {index: indexD}}): void => categories.reorder(indexS, indexD),
+    []);
+  const handleAdd = useCallback(() => {
     catalog.categories.add(null).then(category => catalogUI.startEditCategory(category))
-  };
+  }, []);
 
   return <div className={'folders top'} >
     <DragDropContext onDragEnd={handleDragEnd} >

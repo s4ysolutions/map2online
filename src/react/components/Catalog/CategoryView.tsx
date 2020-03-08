@@ -34,16 +34,19 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
     () => {
       catalogUI.requestDeleteCategory(categoryView)
     },
-    [categoryView]
+    []
   );
+
   const handleActive = React.useCallback(
     () => {
       if (!isActive && category.routes.length > 0) {
-        catalogUI.activeRoute = category.routes[0];
+        console.log();
+        catalogUI.activeRoute = category.routes.byPos(0);
       }
     },
     [isActive, category.routes.length, catalogUI.activeRoute]
   );
+
   const handleSelect = React.useCallback(() => {
     catalogUI.selectedCategory = category;
     handleActive()

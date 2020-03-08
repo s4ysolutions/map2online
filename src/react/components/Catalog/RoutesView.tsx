@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useCallback} from 'react';
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
 import log from '../../../log';
 import {getCatalogUI} from '../../../di-default';
@@ -6,6 +7,8 @@ import useObservable from '../../hooks/useObservable';
 import RouteView from './RouteView';
 import {Category} from '../../../app-rx/catalog';
 import RouteEdit from './RouteEdit';
+import ConfirmDialog from '../Confirm';
+import T from '../../../l10n';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -33,16 +36,14 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
   log.render('Routes');
 
   const routes = useObservable(category.routes.observable(), category.routes);
-  const handleDragEnd = (): void => null;
-  const handleAdd = (): void => null;
-  /*
-  catalogUi.startEditFolder(
-    level === Level.TOP
-      ? catalog.newTopFolder()
-      : catalog.newFeaturesFolder(),
-    level,
-    parent,
-  );*/
+  const routeEdit = useObservable(catalogUI.routeEditObservable(), catalogUI.routeEdit);
+  const routeDelete = useObservable(catalogUI.routeDeleteObservable(), catalogUI.routeDelete);
+  const handleDragEnd = useCallback(
+    ({source: {index: indexS}, destination: {index: indexD}}): void => routes.reorder(indexS, indexD),
+    []);
+  const handleAdd = useCallback(() => {
+    category.routes.add(null).then(route => catalogUI.startEditRoute(route))
+  }, []);
 
   return <div className={'folders top'} >
     <DragDropContext onDragEnd={handleDragEnd} >
@@ -63,7 +64,7 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
                   provided.draggableProps.style
                 )}
               >
-                <RouteView route={item} />
+                <RouteView canDelete={routes.length > 1} category={category} route={item} />
               </div >
               }
             </Draggable >)}
@@ -74,7 +75,18 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
     <button className="add" onClick={handleAdd} type="button" >
       Add
     </button >
-    {catalogUI.routeEdit && <RouteEdit route={catalogUI.routeEdit} />}
+    {routeEdit && <RouteEdit route={routeEdit} />}
+    {routeDelete && <ConfirmDialog
+      onConfirm={() => {
+        const c = routeDelete;
+        catalogUI.endDeleteRoute();
+        category.routes.remove(c.route);
+      }}
+      onCancel={catalogUI.endDeleteRoute}
+      title={T`Delete route`}
+      message={T`The route and all the features inside it will be deleted, are you sure?`}
+      confirm={T`Yes, delete the route`}
+    />}
   </div >;
 };
 

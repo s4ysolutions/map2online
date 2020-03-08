@@ -75,7 +75,7 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
     <button className="add" onClick={handleAdd} type="button" >
       Add
     </button >
-    {categoryEdit && <CategoryEdit category={catalogUI.categoryEdit} />}
+    {categoryEdit && <CategoryEdit category={categoryEdit} />}
     {categoryDelete && <ConfirmDialog
       onConfirm={() => {
         const c = categoryDelete;

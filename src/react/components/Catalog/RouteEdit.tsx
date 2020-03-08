@@ -1,15 +1,23 @@
 import * as React from 'react';
+import {FormEvent} from 'react';
 import Modal from '../Modal';
 import {getCatalogUI} from '../../../di-default';
-import {RouteProps} from '../../../app-rx/catalog';
+import {Route} from '../../../app-rx/catalog';
+import useObservable from '../../hooks/useObservable';
+import T from '../../../l10n';
 
 const catalogUI = getCatalogUI();
-const handleSubmit = () => catalogUI.commitEditRoute();
+const handleSubmit = (ev: FormEvent) => {
+  ev.preventDefault();
+  catalogUI.commitEditRoute();
+  return null;
+};
+
 const handleClose = () => catalogUI.cancelEditRoute();
 
-const RouteEdit: React.FunctionComponent<{ route: RouteProps }> = ({route}): React.ReactElement => {
+const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}): React.ReactElement => {
 
-
+  const route = useObservable(routeEdit.observable(), routeEdit);
   const titleRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect((): void => {
@@ -17,10 +25,10 @@ const RouteEdit: React.FunctionComponent<{ route: RouteProps }> = ({route}): Rea
     titleRef.current.select();
   }, []);
 
-  return <Modal onClose={handleClose} >
+  return <Modal onClose={handleClose} closeOnEnter={true} >
     <form onSubmit={handleSubmit} >
       <h2 >
-        TODO: Level1
+        {T`Modify Route`}
       </h2 >
       <div className="field-row" >
         <label htmlFor="title" >
@@ -46,8 +54,8 @@ const RouteEdit: React.FunctionComponent<{ route: RouteProps }> = ({route}): Rea
           value={route.description} />
       </div >
       <div className="buttons-row" >
-        <button type="submit" >
-          TODO: Submit
+        <button onClick={handleClose} >
+          TODO: Close
         </button >
       </div >
     </form >

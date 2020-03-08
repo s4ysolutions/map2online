@@ -59,7 +59,7 @@ export interface Route extends RouteProps {
 }
 
 export interface Routes extends Iterable<Route> {
-  add: (props: RouteProps, position: number) => void;
+  add: (props: RouteProps, position?: number) => Promise<Route>;
   hasRoute: (route: Route) => boolean;
   readonly length: number;
   remove: (category: Route) => number;

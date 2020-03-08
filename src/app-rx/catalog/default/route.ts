@@ -59,8 +59,10 @@ export const routeFactory = (storage: KV, catalog: Catalog, props: RouteProps | 
         map(props => props === null ? null : catalog.routeById(props.id))
       ),
     delete: () => {
-      for (const feature of Array.from(this.features)) {
-        this.features.remove(feature);
+      if (this.features) {
+        for (const feature of Array.from(this.features)) {
+          this.features.remove(feature);
+        }
       }
       storage.delete(key);
       storage.delete(`vis@${p.id}`); // visibility
@@ -93,7 +95,7 @@ export const routesFactory = (storage: KV, catalog: Catalog, category: Category)
       const route = routeFactory(storage, catalog, props);
       route.update();
       const pos = position || ids0.length;
-      updateIds(ids0.slice(0, pos).concat(props.id).concat(ids0.slice(pos)));
+      updateIds(ids0.slice(0, pos).concat(route.id).concat(ids0.slice(pos)));
       return Promise.resolve(route);
     },
     byPos: (index: number): Route | null => catalog.routeById(ids0[index]),

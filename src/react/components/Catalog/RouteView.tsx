@@ -5,39 +5,41 @@ import Empty from '../Svg/Empty';
 import Hidden from '../Svg/Hidden';
 import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
-import {Route} from '../../../app-rx/catalog';
+import {Category, Route} from '../../../app-rx/catalog';
 import {getCatalogUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {map} from 'rxjs/operators';
+import log from '../../../log';
 
 const noOp = (): null => null;
 const catalogUI = getCatalogUI();
 
-const RouteView: React.FunctionComponent<{ route: Route }> = ({route}): React.ReactElement => {
-
-  const routeState = useObservable(route.observable(), route);
+const RouteView: React.FunctionComponent<{ route: Route, category: Category, canDelete: boolean }> = ({route: routeView, category, canDelete}): React.ReactElement => {
+  log.render('RouteView canDelete ' + canDelete);
+  const route = useObservable(routeView.observable(), routeView);
 
   const isActive = useObservable(
     catalogUI.activeRouteObservable().pipe(map(active => active.id === route.id)),
     catalogUI.activeRoute && catalogUI.activeRoute.id === route.id
   );
-  const isSelected = useObservable(
-    catalogUI.selectedRouteObservable().pipe(map(selected => selected && selected.id == route.id)),
-    catalogUI.selectedRoute && catalogUI.selectedRoute.id === route.id
-  );
+
   const isVisible = useObservable(catalogUI.visibleObservable(route.id), catalogUI.isVisible(route.id));
+
+  const handleDelete = React.useCallback(() => {
+    catalogUI.requestDeleteRoute(routeView, category);
+  }, []);
 
   const handleActive = React.useCallback(() => {
     catalogUI.activeRoute = route
-  }, [route.id]);
+  }, []);
+
+
   const handleSelect = React.useCallback(() => {
     catalogUI.selectedRoute = route;
-    handleActive();
-  }, [isSelected, route.id]);
-  const canDelete = true;
-  const handleDelete = noOp();
+    handleActive()
+  }, [category.id, catalogUI.selectedCategory]);
   const handleVisible = React.useCallback(() => catalogUI.setVisible(route.id, !isVisible), [isVisible]);
-  const handleEdit = React.useCallback(() => catalogUI.startEditRoute(routeState), [routeState.id]);
+  const handleEdit = React.useCallback(() => catalogUI.startEditRoute(route), [route.id]);
 
   return <div className={isActive ? 'item current' : 'item'} >
     <div
@@ -48,7 +50,7 @@ const RouteView: React.FunctionComponent<{ route: Route }> = ({route}): React.Re
       {canDelete ? <Delete /> : <Empty />}
     </div >
     <div className="title" key="title" onClick={handleSelect} >
-      {routeState.title}
+      {route.title}
     </div >
     <div className="edit" key="edit" onClick={handleEdit} >
       <Prefs />

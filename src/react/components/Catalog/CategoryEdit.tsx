@@ -4,6 +4,7 @@ import Modal from '../Modal';
 import {getCatalogUI} from '../../../di-default';
 import {Category} from '../../../app-rx/catalog';
 import useObservable from '../../hooks/useObservable';
+import T from '../../../l10n';
 
 const catalogUI = getCatalogUI();
 const handleSubmit = (ev: FormEvent) => {
@@ -28,7 +29,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
   return <Modal closeOnEnter={true} onClose={handleClose} >
     <form onSubmit={handleSubmit} >
       <h2 >
-        TODO: Level1
+        {T`Modify Categgory`}
       </h2 >
       <h3 >
         {category.id}

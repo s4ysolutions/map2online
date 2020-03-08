@@ -10,6 +10,8 @@ const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
   let featureEdit: Feature | null;
   const categoryEditSubject = new Subject<Category | null>();
   const categoryDeleteSubject = new Subject<Category | null>();
+  const routeEditSubject = new Subject<Route | null>();
+  const routeDeleteSubject = new Subject<{ route: Route, category: Category } | null>();
   // noinspection UnnecessaryLocalVariableJS
   const th: CatalogUI = {
     get selectedCategory() {
@@ -92,7 +94,7 @@ const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
       const id = this.categoryEdit && this.categoryEdit.id;
       this.categoryEdit = null;
       categoryEditSubject.next(null);
-      return Promise.resolve(id === null ? null : this.categoryById(id));
+      return Promise.resolve(id === null ? null : catalog.categoryById(id));
     },
     cancelEditCategory: function () {
       this.categoryEdit = null;
@@ -109,20 +111,34 @@ const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
       this.categoryDelete = null;
       categoryDeleteSubject.next(null);
     },
+
     routeEdit: null,
-    routeEditObservable: new Subject<Route | null>(),
+    routeEditObservable: () => routeEditSubject,
     startEditRoute: function (route: Route | null) {
-      return undefined;
+      this.routeEdit = route;
+      routeEditSubject.next(route);
+      return route;
     },
     commitEditRoute: function () {
       const id = routeEdit && routeEdit.id;
-      routeEdit = null;
-      (this.routeEditObservable as Subject<Route>).next(null);
-      return Promise.resolve(id === null ? null : this.routeById(id));
+      this.routeEdit = null;
+      routeEditSubject.next(null);
+      return Promise.resolve(id === null ? null : catalog.routeById(id));
     },
     cancelEditRoute: function () {
-      categoryEdit = null;
-      (this.categoryEditObservable as Subject<Route>).next(null)
+      this.routeEdit = null;
+      routeEditSubject.next(null)
+    },
+
+    routeDelete: null,
+    routeDeleteObservable: () => routeDeleteSubject,
+    requestDeleteRoute: function (route: Route, category: Category) {
+      this.routeDelete = {route, category};
+      routeDeleteSubject.next({route, category});
+    },
+    endDeleteRoute: function () {
+      this.routeDelete = null;
+      routeDeleteSubject.next(null);
     },
 
     featureEdit: null,
@@ -137,6 +153,7 @@ const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     }
   };
   th.endDeleteCategory = th.endDeleteCategory.bind(th);
+  th.endDeleteRoute = th.endDeleteRoute.bind(th);
   return th;
 };
 

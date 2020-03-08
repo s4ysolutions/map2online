@@ -98,7 +98,7 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
       const feature = featureFactory(storage, catalog, props);
       feature.update();
       const pos = position || ids0.length;
-      updateIds(ids0.slice(0, pos).concat(props.id).concat(ids0.slice(pos)));
+      updateIds(ids0.slice(0, pos).concat(feature.id).concat(ids0.slice(pos)));
       return Promise.resolve(feature);
     },
     byPos: (index: number): Feature | null => catalog.featureById(ids0[index]),

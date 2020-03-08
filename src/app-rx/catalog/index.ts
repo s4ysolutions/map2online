@@ -36,7 +36,7 @@ export interface Feature extends FeatureProps {
 }
 
 export interface Features extends Iterable<Feature> {
-  add: (props: FeatureProps, position: number) => void;
+  add: (props: FeatureProps, position?: number) => Promise<Feature>;
   readonly length: number;
   remove: (feauture: Feature) => number;
   observable: () => Observable<Features>;

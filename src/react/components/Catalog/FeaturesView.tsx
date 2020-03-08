@@ -1,11 +1,14 @@
 import * as React from 'react';
+import {useCallback} from 'react';
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
+import log from '../../../log';
+import {getCatalogUI} from '../../../di-default';
+import useObservable from '../../hooks/useObservable';
 import FeatureView from './FeatureView';
 import {Route} from '../../../app-rx/catalog';
-import log from '../../../log';
-import {getCatalog, getCatalogUI} from '../../../di-default';
-import RouteEdit from './RouteEdit';
-import useObservable from '../../hooks/useObservable';
+import FeatureEdit from './FeatureEdit';
+import ConfirmDialog from '../Confirm';
+import T from '../../../l10n';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -27,19 +30,24 @@ const getDraggingStyle = (isDragging: boolean, draggableStyle: object): object =
   ...draggableStyle,
 });
 
-const catalog = getCatalog();
 const catalogUI = getCatalogUI();
 
-const FeaturesView: React.FunctionComponent<{ route: Route }> = ({route}): React.ReactElement => {
-  log.render(`Features route=${route.id}`);
-  const handleDragEnd = (): void => null;
-  const handleAdd = (): void => null;
+const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): React.ReactElement => {
+  log.render('Features');
 
   const features = useObservable(route.features.observable(), route.features);
+  const featureEdit = useObservable(catalogUI.featureEditObservable(), catalogUI.featureEdit);
+  const featureDelete = useObservable(catalogUI.featureDeleteObservable(), catalogUI.featureDelete);
+  const handleDragEnd = useCallback(
+    ({source: {index: indexS}, destination: {index: indexD}}): void => features.reorder(indexS, indexD),
+    []);
+  const handleAdd = useCallback(() => {
+    route.features.add(null).then(feature => catalogUI.startEditFeature(feature))
+  }, []);
 
-  return <div className="features" >
+  return <div className={'folders top'} >
     <DragDropContext onDragEnd={handleDragEnd} >
-      <Droppable droppableId="catalog-droppableFeature" >
+      <Droppable droppableId={'catalog-droppableFolder-top'} >
         {(providedDroppable, snapshotDroppable): React.ReactElement => <div
           className={getClassName(snapshotDroppable.isDraggingOver)}
           ref={providedDroppable.innerRef}
@@ -47,7 +55,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route }> = ({route}): React
           {Array.from(features).map((item, index): React.ReactElement =>
             <Draggable draggableId={item.id} index={index} key={item.id} >
               {(provided, snapshot): React.ReactElement => <div
-                className="draggable feature"
+                className={'draggable folder-top'}
                 ref={provided.innerRef}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
@@ -56,7 +64,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route }> = ({route}): React
                   provided.draggableProps.style
                 )}
               >
-                <FeatureView feature={item} index={index} />
+                <FeatureView route={route} feature={item} />
               </div >
               }
             </Draggable >)}
@@ -67,7 +75,18 @@ const FeaturesView: React.FunctionComponent<{ route: Route }> = ({route}): React
     <button className="add" onClick={handleAdd} type="button" >
       Add
     </button >
-    {catalogUI.routeEdit && <RouteEdit route={catalogUI.routeEdit} />}
+    {featureEdit && <FeatureEdit feature={featureEdit} />}
+    {featureDelete && <ConfirmDialog
+      onConfirm={() => {
+        const c = featureDelete;
+        catalogUI.endDeleteFeature();
+        route.features.remove(c.feature);
+      }}
+      onCancel={catalogUI.endDeleteFeature}
+      title={T`Delete feature`}
+      message={T`The feature and all the features inside it will be deleted, are you sure?`}
+      confirm={T`Yes, delete the feature`}
+    />}
   </div >;
 };
 

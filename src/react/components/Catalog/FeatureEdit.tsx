@@ -1,15 +1,23 @@
 import * as React from 'react';
+import {FormEvent} from 'react';
 import Modal from '../Modal';
 import {getCatalogUI} from '../../../di-default';
-import {FeatureProps} from '../../../app-rx/catalog';
+import {Feature} from '../../../app-rx/catalog';
+import useObservable from '../../hooks/useObservable';
+import T from '../../../l10n';
 
 const catalogUI = getCatalogUI();
-const handleSubmit = () => catalogUI.commitEditFeature();
+const handleSubmit = (ev: FormEvent) => {
+  ev.preventDefault();
+  catalogUI.commitEditFeature();
+  return null;
+};
+
 const handleClose = () => catalogUI.cancelEditFeature();
 
-const FeatureEdit: React.FunctionComponent<{ feature: FeatureProps }> = ({feature}): React.ReactElement => {
+const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: featureEdit}): React.ReactElement => {
 
-
+  const feature = useObservable(featureEdit.observable(), featureEdit);
   const titleRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect((): void => {
@@ -17,10 +25,10 @@ const FeatureEdit: React.FunctionComponent<{ feature: FeatureProps }> = ({featur
     titleRef.current.select();
   }, []);
 
-  return <Modal onClose={handleClose} >
+  return <Modal onClose={handleClose} closeOnEnter={true} >
     <form onSubmit={handleSubmit} >
       <h2 >
-        TODO: Level1
+        {T`Modify Feature`}
       </h2 >
       <div className="field-row" >
         <label htmlFor="title" >
@@ -46,8 +54,8 @@ const FeatureEdit: React.FunctionComponent<{ feature: FeatureProps }> = ({featur
           value={feature.description} />
       </div >
       <div className="buttons-row" >
-        <button type="submit" >
-          TODO: Submit
+        <button onClick={handleClose} >
+          TODO: Close
         </button >
       </div >
     </form >

@@ -37,7 +37,7 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
   const handleSelect = React.useCallback(() => {
     catalogUI.selectedRoute = route;
     handleActive()
-  }, [category.id, catalogUI.selectedCategory]);
+  }, [route.id]);
   const handleVisible = React.useCallback(() => catalogUI.setVisible(route.id, !isVisible), [isVisible]);
   const handleEdit = React.useCallback(() => catalogUI.startEditRoute(route), [route.id]);
 

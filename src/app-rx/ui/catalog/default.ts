@@ -5,13 +5,12 @@ import {map} from 'rxjs/operators';
 import {merge, Subject} from 'rxjs';
 
 const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
-  let categoryEdit: Category | null;
-  let routeEdit: Route | null;
-  let featureEdit: Feature | null;
   const categoryEditSubject = new Subject<Category | null>();
   const categoryDeleteSubject = new Subject<Category | null>();
   const routeEditSubject = new Subject<Route | null>();
   const routeDeleteSubject = new Subject<{ route: Route, category: Category } | null>();
+  const featureEditSubject = new Subject<Feature | null>();
+  const featureDeleteSubject = new Subject<{ feature: Feature, route: Route } | null>();
   // noinspection UnnecessaryLocalVariableJS
   const th: CatalogUI = {
     get selectedCategory() {
@@ -64,7 +63,6 @@ const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
         catalog.categories.observable(),
       ).pipe(map(() => this.activeCategory))
     },
-    //storage.observable<ID | null>('ar').pipe(map(id => id === null ? null : catalog.routeById(id))),
     get activeRoute() {
       const id = storage.get<ID | null>('ar', null);
       if (!id) return null;
@@ -74,6 +72,15 @@ const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
       storage.set('ar', value === null ? null : value.id);
     },
     activeRouteObservable: () => storage.observable<ID | null>('ar').pipe(map(id => id === null ? null : catalog.routeById(id))),
+    get activeFeature() {
+      const id = storage.get<ID | null>('ar', null);
+      if (!id) return null;
+      return catalog.featureById(id);
+    },
+    set activeFeature(value) {
+      storage.set('ar', value === null ? null : value.id);
+    },
+    activeFeatureObservable: () => storage.observable<ID | null>('af').pipe(map(id => id === null ? null : catalog.featureById(id))),
 
     isVisible: (id: ID) => storage.get<boolean>(`vis@${id}`, false),
     setVisible: (id: ID, open: boolean) => storage.set(`vis@${id}`, open),
@@ -120,7 +127,7 @@ const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
       return route;
     },
     commitEditRoute: function () {
-      const id = routeEdit && routeEdit.id;
+      const id = this.routeEdit && this.routeEdit.id;
       this.routeEdit = null;
       routeEditSubject.next(null);
       return Promise.resolve(id === null ? null : catalog.routeById(id));
@@ -142,18 +149,37 @@ const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     },
 
     featureEdit: null,
-    featureEditObservable: new Subject<Feature | null>(),
+    featureEditObservable: () => featureEditSubject,
     startEditFeature: function (feature: Feature | null) {
-      return undefined;
+      this.featureEdit = feature;
+      featureEditSubject.next(feature);
+      return feature;
     },
     commitEditFeature: function () {
-      return undefined;
+      const id = this.featureEdit && this.featureEdit.id;
+      this.featureEdit = null;
+      featureEditSubject.next(null);
+      return Promise.resolve(id === null ? null : catalog.featureById(id));
     },
     cancelEditFeature: function () {
-    }
+      this.featureEdit = null;
+      featureEditSubject.next(null)
+    },
+
+    featureDelete: null,
+    featureDeleteObservable: () => featureDeleteSubject,
+    requestDeleteFeature: function (feature: Feature, route: Route) {
+      this.featureDelete = {feature, route};
+      featureDeleteSubject.next({feature, route});
+    },
+    endDeleteFeature: function () {
+      this.featureDelete = null;
+      featureDeleteSubject.next(null);
+    },
   };
   th.endDeleteCategory = th.endDeleteCategory.bind(th);
   th.endDeleteRoute = th.endDeleteRoute.bind(th);
+  th.endDeleteFeature = th.endDeleteFeature.bind(th);
   return th;
 };
 

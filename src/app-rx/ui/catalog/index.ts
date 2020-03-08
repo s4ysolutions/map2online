@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-import {Category, Feature, FeatureProps, ID, Route} from '../../catalog';
+import {Category, Feature, ID, Route} from '../../catalog';
 
 export interface CatalogUI {
   selectedCategory: Category;
@@ -10,6 +10,8 @@ export interface CatalogUI {
   activeCategoryObservable: () => Observable<Category | null>;
   activeRoute: Route | null;
   activeRouteObservable: () => Observable<Route | null>;
+  activeFeature: Feature | null;
+  activeFeatureObservable: () => Observable<Feature | null>;
 
   isOpen: (id: ID) => boolean;
   setOpen: (id: ID, open: boolean) => void;
@@ -40,9 +42,14 @@ export interface CatalogUI {
   requestDeleteRoute: (route: Route, category: Category) => void;
   endDeleteRoute: () => void;
 
-  readonly featureEdit: FeatureProps | null;
-  featureEditObservable: Observable<FeatureProps> | null;
-  startEditFeature: (feature: Feature | null) => FeatureProps;
+  readonly featureEdit: Feature | null;
+  featureEditObservable: () => Observable<Feature> | null;
+  startEditFeature: (feature: Feature | null) => Feature;
   cancelEditFeature: () => void;
   commitEditFeature: () => Promise<Feature>;
+
+  readonly featureDelete: { feature: Feature; route: Route } | null;
+  featureDeleteObservable: () => Observable<{ feature: Feature; route: Route } | null>;
+  requestDeleteFeature: (feature: Feature, route: Route) => void;
+  endDeleteFeature: () => void;
 }

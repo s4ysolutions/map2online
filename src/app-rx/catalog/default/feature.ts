@@ -1,7 +1,6 @@
 import {Catalog, Feature, FeatureProps, Features, ID, Route} from '../index';
 import {KV} from '../../../kv-rx';
 import {makeId} from '../../../l10n/id';
-import T from '../../../l10n';
 import {map} from 'rxjs/operators';
 import reorder from '../../../lib/reorder';
 import {Color} from '../../../lib/colors';
@@ -15,7 +14,7 @@ const newFeatureProps = (): FeatureProps => ({
   description: '',
   geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
   summary: '',
-  title: T`New feature`,
+  title: '',
   visible: true,
 });
 

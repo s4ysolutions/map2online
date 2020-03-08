@@ -66,6 +66,7 @@ export const routeFactory = (storage: KV, catalog: Catalog, props: RouteProps | 
       }
       storage.delete(key);
       storage.delete(`vis@${p.id}`); // visibility
+      storage.delete(`op@${p.id}`); // expand
     },
     features: null,
     update: function () {

@@ -45,7 +45,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
     route.features.add(null).then(feature => catalogUI.startEditFeature(feature))
   }, []);
 
-  return <div className={'folders top'} >
+  return <div className={'feature-item'} >
     <DragDropContext onDragEnd={handleDragEnd} >
       <Droppable droppableId={'catalog-droppableFolder-top'} >
         {(providedDroppable, snapshotDroppable): React.ReactElement => <div
@@ -64,7 +64,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
                   provided.draggableProps.style
                 )}
               >
-                <FeatureView route={route} feature={item} />
+                <FeatureView index={index} route={route} feature={item} />
               </div >
               }
             </Draggable >)}

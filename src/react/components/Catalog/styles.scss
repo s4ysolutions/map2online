@@ -94,6 +94,7 @@
 .catalog .draggable .item .visibility,
 .catalog .draggable .item .edit,
 .catalog .draggable .item .active,
+.catalog .draggable .item .type,
 .catalog .draggable .item .delete {
   height: 100%;
   width: auto;
@@ -105,7 +106,7 @@
 .catalog .draggable .item svg {
   margin-right: 0.25em;
   margin-left: 0.25em;
-  height: 70%;
+  height: 60%;
   width: auto;
 }
 

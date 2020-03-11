@@ -1,7 +1,7 @@
 import {Color} from '../../../lib/colors';
 import {Observable} from 'rxjs';
 
-export enum Tool {
+export enum FeatureType {
   Line,
   Point,
 }
@@ -18,6 +18,6 @@ export interface Tools {
   selectColor: (color: Color) => void;
   selectLine: () => void;
   selectPoint: () => void;
-  readonly tool: Tool;
-  toolObservable: () => Observable<Tool>;
+  readonly featureType: FeatureType;
+  featureTypeObservable: () => Observable<FeatureType>;
 }

@@ -1,10 +1,10 @@
 import {KV} from '../../../kv-rx';
 import {CatalogUI} from './index';
 import {Catalog, Category, Feature, ID, Route} from '../../catalog';
-import {map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {merge, Subject} from 'rxjs';
 
-const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
+const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
   const categoryEditSubject = new Subject<Category | null>();
   const categoryDeleteSubject = new Subject<Category | null>();
   const routeEditSubject = new Subject<Route | null>();
@@ -82,10 +82,15 @@ const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     },
     activeFeatureObservable: () => storage.observable<ID | null>('af').pipe(map(id => id === null ? null : catalog.featureById(id))),
 
-    isVisible: (id: ID) => storage.get<boolean>(`vis@${id}`, false),
+    isVisible: (id: ID) => storage.get<boolean>(`vis@${id}`, true),
     setVisible: (id: ID, open: boolean) => storage.set(`vis@${id}`, open),
-    visibleObservable: (id: ID) => storage.observable<boolean>(`vis@${id}`),
-
+    visibleObservable: (id?: ID) => id
+      ? storage.observable<boolean>(`vis@${id}`)
+      : storage.observable<{ key: string; value: any }>()
+        .pipe(
+          filter(kv => kv.key.indexOf('vis') === 0),
+          map(kv => kv.value)
+        ),
     isOpen: (id: ID) => storage.get<boolean>(`op@${id}`, false),
     setOpen: (id: ID, open: boolean) => storage.set(`op@${id}`, open),
     openObservable: (id: ID) => storage.observable<boolean>(`op@${id}`),
@@ -183,4 +188,4 @@ const catalogUiFactory = (storage: KV, catalog: Catalog): CatalogUI => {
   return th;
 };
 
-export default catalogUiFactory;
+export default catalogUIFactory;

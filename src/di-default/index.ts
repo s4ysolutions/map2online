@@ -10,6 +10,8 @@ import {Catalog} from '../app-rx/catalog';
 import catalogFactory from '../app-rx/catalog/default/catalog';
 import catalogUiFactory from '../app-rx/ui/catalog/default';
 import {CatalogUI} from '../app-rx/ui/catalog';
+import {designerFactory} from '../app-rx/ui/designer/default/designer';
+import {Designer} from '../app-rx/ui/designer';
 
 export const getLocalStorage = (): KV => localStorageSingleton;
 
@@ -25,8 +27,12 @@ export const getWorkspace = (): Workspace => workspaceSingleton;
 const catalogSingleton = catalogFactory(localStorageSingleton);
 export const getCatalog = (): Catalog => catalogSingleton;
 
-const catalogUiSingleton = catalogUiFactory(localStorageSingleton, catalogSingleton);
-export const getCatalogUI = (): CatalogUI => catalogUiSingleton;
+const catalogUISingleton = catalogUiFactory(localStorageSingleton, catalogSingleton);
+export const getCatalogUI = (): CatalogUI => catalogUISingleton;
+
+const designerSingleton = designerFactory(catalogSingleton, catalogUISingleton);
+export const getDesigner = (): Designer => designerSingleton;
 
 window['catalog'] = catalogSingleton;
-window['catalogUi'] = catalogUiSingleton;
+window['catalogUI'] = catalogUISingleton;
+window['designer'] = designerSingleton;

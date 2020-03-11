@@ -1,0 +1,2 @@
+declare module 'ol/layer' {
+}

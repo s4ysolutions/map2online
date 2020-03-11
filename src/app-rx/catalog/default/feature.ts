@@ -83,9 +83,10 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
   };
 };
 
+let ids0: string[] = [];
 export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Features => {
   const key = `${FEATURES_ID_PREFIX}@${route.id}`;
-  let ids0 = storage.get<ID[]>(key, []);
+  ids0 = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
     if (ids !== ids0) {
       ids0 = ids;
@@ -100,12 +101,16 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
       updateIds(ids0.slice(0, pos).concat(feature.id).concat(ids0.slice(pos)));
       return Promise.resolve(feature);
     },
-    byPos: (index: number): Feature | null => catalog.featureById(ids0[index]),
+    byPos: (index: number): Feature | null => {
+      return catalog.featureById(ids0[index])
+    },
     get length() {
       return ids0.length
     },
     observable: function () {
-      return storage.observable(key).pipe(map(() => this))
+      return storage.observable(key).pipe(map((v) => {
+        return this;
+      }))
     },
     remove: function (feature: Feature): number {
       const pos = ids0.indexOf(feature.id);

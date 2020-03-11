@@ -7,23 +7,23 @@ import Tab from './Tab';
 import {getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import log from '../../../log';
-import {Tool} from '../../../app-rx/ui/tools';
+import {FeatureType} from '../../../app-rx/ui/tools';
 
 const tools = getTools();
 
 const ToolsPanel: React.FunctionComponent = (): React.ReactElement => {
-  const toolState = useObservable(tools.toolObservable(), tools.tool);
+  const toolState = useObservable(tools.featureTypeObservable(), tools.featureType);
   log.render('Render ToolsPanel');
   return <div className="tools" >
     <div className="tabs" >
       <Tab
-        on={toolState === Tool.Point}
+        on={toolState === FeatureType.Point}
         onClick={tools.selectPoint}
       >
         <Pin color="white" />
       </Tab >
       <Tab
-        on={toolState === Tool.Line}
+        on={toolState === FeatureType.Line}
         onClick={tools.selectLine}
       >
         <Line color="white" />

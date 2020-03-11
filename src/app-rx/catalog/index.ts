@@ -1,4 +1,5 @@
 import {Observable} from 'rxjs';
+import {Color} from '../../lib/colors';
 
 export type ID = string;
 
@@ -22,7 +23,7 @@ export interface FeatureProps {
   summary: string;
   title: string;
   visible: boolean;
-  color: string;
+  color: Color;
   geometry: Point | LineString;
 }
 
@@ -97,4 +98,5 @@ export interface Catalog {
   routeById: (id: ID) => Route | null;
   categoryById: (id: ID) => Category | null;
   featureById: (id: ID) => Feature | null;
+  featuresObservable: () => Observable<Features>;
 }

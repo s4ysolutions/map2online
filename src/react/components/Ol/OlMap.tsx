@@ -2,26 +2,14 @@ import 'ol/ol.css';
 import './styles.scss';
 import * as React from 'react';
 import Map from 'ol/Map';
-import OlSource from './OlSource';
+import BaseLayer from './BaseLayer';
 import View from 'ol/View';
 import log from '../../../log';
-import {getBaseLayer} from '../../../di-default';
-import useObservable from '../../hooks/useObservable';
-
-const baseLayer = getBaseLayer();
-
-interface OlMapState {
-  map: Map;
-}
-
-const OlMapAttached: React.FunctionComponent<OlMapState> = ({map}): React.ReactElement => {
-  const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
-  log.render(`OlMapAttached baseLayer=${baseLayerName}`);
-  return <OlSource map={map} source={baseLayerName} />;
-};
+import ActiveFeatures from './ActiveFeatures';
+import mapContext from './context/map';
+import DrawInteractions from './DrawInteractions';
 
 const OlMap: React.FunctionComponent = (): React.ReactElement => {
-
   const [map, setMap] = React.useState<Map>(null);
   log.render(`OlMap map is ${map ? 'set' : 'not set'}`);
 
@@ -34,14 +22,18 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
           0,
           0,
         ],
-        zoom: 5,
+        zoom: 3,
       }),
     });
     setMap(m);
   }, []);
 
   return <div className="ol-container" ref={mapAttach} >
-    {map && <OlMapAttached map={map} />}
+    {map && <mapContext.Provider value={map} >
+      <BaseLayer />
+      <ActiveFeatures />
+      <DrawInteractions />
+    </mapContext.Provider >}
   </div >
 };
 

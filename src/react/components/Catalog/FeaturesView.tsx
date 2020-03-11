@@ -9,6 +9,7 @@ import {Route} from '../../../app-rx/catalog';
 import FeatureEdit from './FeatureEdit';
 import ConfirmDialog from '../Confirm';
 import T from '../../../l10n';
+import {map} from 'rxjs/operators';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -33,29 +34,31 @@ const getDraggingStyle = (isDragging: boolean, draggableStyle: object): object =
 const catalogUI = getCatalogUI();
 
 const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): React.ReactElement => {
-  log.render('Features');
+  log.render('FeaturesView for ' + route.id);
 
-  const features = useObservable(route.features.observable(), route.features);
+  const features = useObservable(
+    route.features.observable().pipe(map(features => Array.from(features))),
+    Array.from(route.features), `${route.id}@features`);
   const featureEdit = useObservable(catalogUI.featureEditObservable(), catalogUI.featureEdit);
   const featureDelete = useObservable(catalogUI.featureDeleteObservable(), catalogUI.featureDelete);
   const handleDragEnd = useCallback(
-    ({source: {index: indexS}, destination: {index: indexD}}): void => features.reorder(indexS, indexD),
+    ({source: {index: indexS}, destination: {index: indexD}}): void => route.features.reorder(indexS, indexD),
     []);
   const handleAdd = useCallback(() => {
     route.features.add(null).then(feature => catalogUI.startEditFeature(feature))
   }, []);
 
-  return <div className={'feature-item'} >
+  return <div className={'features'} >
     <DragDropContext onDragEnd={handleDragEnd} >
       <Droppable droppableId={'catalog-droppableFolder-top'} >
         {(providedDroppable, snapshotDroppable): React.ReactElement => <div
           className={getClassName(snapshotDroppable.isDraggingOver)}
           ref={providedDroppable.innerRef}
         >
-          {Array.from(features).map((item, index): React.ReactElement =>
+          {features.map((item, index): React.ReactElement =>
             <Draggable draggableId={item.id} index={index} key={item.id} >
               {(provided, snapshot): React.ReactElement => <div
-                className={'draggable folder-top'}
+                className={'draggable folder-features'}
                 ref={provided.innerRef}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}

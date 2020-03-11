@@ -4,7 +4,10 @@ import useObservable from '../../hooks/useObservable';
 
 const catalogUI = getCatalogUI();
 const deselectRoute = () => catalogUI.selectedRoute = null;
-const deselectCategory = () => catalogUI.selectedCategory = null;
+const deselectCategory = () => {
+  catalogUI.selectedCategory = null;
+  deselectRoute()
+};
 
 const CatalogNavigation: React.FunctionComponent<{}> = (): React.ReactElement => {
   const selectedCategory = useObservable(catalogUI.selectedCategoryObservable(), catalogUI.selectedCategory);

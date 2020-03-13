@@ -53,7 +53,7 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
     drawInteractionRef.current = newDrawInteraction(featureType, pointColor, lineColor);
     drawInteractionRef.current.on('drawend', handleDrawEnd);
     map.addInteraction(drawInteractionRef.current);
-  }, [pointColor, lineColor, featureType]);
+  }, [pointColor, lineColor, featureType, map]);
 
   return null;
 };

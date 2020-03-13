@@ -8,6 +8,8 @@ import log from '../../../log';
 import ActiveFeatures from './ActiveFeatures';
 import mapContext from './context/map';
 import DrawInteractions from './DrawInteractions';
+import SnapInteractions from './SnapInteractions';
+import ModifyInteractions from './ModifyInteractions';
 
 const OlMap: React.FunctionComponent = (): React.ReactElement => {
   const [map, setMap] = React.useState<Map>(null);
@@ -25,6 +27,7 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
         zoom: 3,
       }),
     });
+    console.log('dbg mapAttach', map);
     setMap(m);
   }, []);
 
@@ -33,6 +36,8 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       <BaseLayer />
       <ActiveFeatures />
       <DrawInteractions />
+      <ModifyInteractions />
+      <SnapInteractions />
     </mapContext.Provider >}
   </div >
 };

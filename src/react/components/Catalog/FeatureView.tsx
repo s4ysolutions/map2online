@@ -3,7 +3,7 @@ import Delete from '../Svg/Delete';
 import Hidden from '../Svg/Hidden';
 import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
-import {Feature, isPoint, Route} from '../../../app-rx/catalog';
+import {Feature, isPoint, LineString, Route} from '../../../app-rx/catalog';
 import {getCatalogUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {map} from 'rxjs/operators';
@@ -11,6 +11,7 @@ import log from '../../../log';
 import Pin from '../Svg/Pin';
 import Line from '../Svg/Line';
 import {rgb} from '../../../lib/colors';
+import {formatCoordinates} from '../../../lib/format';
 
 const catalogUI = getCatalogUI();
 
@@ -57,7 +58,12 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
             {`${index + 1}.`}
           </span >,
           <div className="title" key="title" >
-            {feature.title && 'No title' /*
+            {console.log('dbg format', feature.geometry)}
+            {feature.title &&
+            (isPoint(feature.geometry)
+              ? formatCoordinates(feature.geometry.coordinate)
+              : formatCoordinates((feature.geometry as LineString).coordinates[0]))
+              /*
             formatCoordinates(toLonLat(
               mapProjection,
               isPointFeature(feature)

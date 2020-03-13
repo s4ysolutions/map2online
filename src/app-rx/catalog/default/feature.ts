@@ -1,4 +1,16 @@
-import {Catalog, Feature, FeatureProps, Features, ID, Route} from '../index';
+import {
+  Catalog,
+  Feature,
+  FeatureProps,
+  Features,
+  ID,
+  isCoordinate,
+  isLineString,
+  isPoint,
+  LineString,
+  Point,
+  Route
+} from '../index';
 import {KV} from '../../../kv-rx';
 import {makeId} from '../../../l10n/id';
 import {map} from 'rxjs/operators';
@@ -67,6 +79,18 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
     },
     set visible(value) {
       p.visible = value;
+      this.update();
+    },
+    updateCoordinates: function (coord) {
+      if (isPoint(this.geometry) && isCoordinate(coord)) {
+        // noinspection UnnecessaryLocalVariableJS
+        const point: Point = {coordinate: coord};
+        p.geometry = point;
+      } else if (isLineString(this.geometry) && !isCoordinate(coord)) {
+        // noinspection UnnecessaryLocalVariableJS
+        const lineString: LineString = {coordinates: coord};
+        p.geometry = lineString;
+      }
       this.update();
     },
     observable: () => storage.observable<FeatureProps | null>(key)

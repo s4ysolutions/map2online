@@ -29,11 +29,14 @@ export interface FeatureProps {
 
 export const isPoint = (geometry: Point | LineString): geometry is Point => geometry && (geometry as Point).coordinate !== undefined;
 export const isLineString = (geometry: Point | LineString): geometry is LineString => geometry && (geometry as LineString).coordinates !== undefined;
+export const isCoordinate = (coord: Coordinate | Coordinate[]): coord is Coordinate => (coord as Coordinate).alt !== undefined;
 
 export interface Feature extends FeatureProps {
   delete: () => void;
   observable: () => Observable<Feature>;
   update: () => void;
+
+  updateCoordinates(coord: Coordinate | Coordinate[]);
 }
 
 export interface Features extends Iterable<Feature> {

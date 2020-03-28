@@ -3,6 +3,9 @@ import MenuItem from '../Menu/MenuItem';
 import MenuSep from '../Menu/MenuSep';
 import T from 'l10n';
 import log from '../../../log';
+import {getImportUI} from '../../../di-default';
+
+const importUI = getImportUI();
 
 const FileMenu: React.FunctionComponent<{}> = (): React.ReactElement => {
   log.render('FileMenu');
@@ -10,7 +13,6 @@ const FileMenu: React.FunctionComponent<{}> = (): React.ReactElement => {
   const handleExportVisible = () => null;
   const handleExportLevel1 = () => null;
   const handleExportLevel2 = () => null;
-  const handleImport = () => null;
   return <React.Fragment >
     <MenuItem key="all" onClick={handleExportAll} >
       <div className="title" >
@@ -33,7 +35,7 @@ const FileMenu: React.FunctionComponent<{}> = (): React.ReactElement => {
       </div >
     </MenuItem >
     <MenuSep key="sep1" />
-    <MenuItem key="import" onClick={handleImport} >
+    <MenuItem key="import" onClick={importUI.open} >
       <div className="title" >
         {T`Import`}
       </div >

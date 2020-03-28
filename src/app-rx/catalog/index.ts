@@ -9,6 +9,15 @@ export interface Coordinate {
   lon: number;
 }
 
+export const coordinateEq = (c1: Coordinate, c2: Coordinate): boolean => c1.lat === c2.lat && c1.lon === c2.lon;
+export const coordinatesEq = (c1: Coordinate[], c2: Coordinate[]): boolean => {
+  if (c1.length !== c2.length) return false;
+  for (const i in c1) {
+    if (c1[i].lat !== c2[i].lat || c1[i].lon === c2[i].lon) return false;
+  }
+  return true;
+};
+
 export interface Point {
   coordinate: Coordinate;
 }
@@ -66,7 +75,7 @@ export interface Routes extends Iterable<Route> {
   add: (props: RouteProps, position?: number) => Promise<Route>;
   hasRoute: (route: Route) => boolean;
   readonly length: number;
-  remove: (category: Route) => number;
+  remove: (route: Route) => number;
   observable: () => Observable<Routes>;
   byPos: (index: number) => Route | null;
   reorder: (from: number, to: number) => void;

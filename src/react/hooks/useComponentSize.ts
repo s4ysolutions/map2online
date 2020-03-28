@@ -25,6 +25,7 @@ const useComponentSize = (ref: React.MutableRefObject<any>): HW => {
   );
   const handleResize = React.useCallback(
     (): void => {
+      console.log('dbg handleResize', ref);
       if (ref.current) {
         setComponentSize(getSize(ref.current));
       }
@@ -46,7 +47,7 @@ const useComponentSize = (ref: React.MutableRefObject<any>): HW => {
         window.removeEventListener('resize', handleResize);
       };
     },
-    [ref.current]
+    [ref]
   );
 
   return componentSize;

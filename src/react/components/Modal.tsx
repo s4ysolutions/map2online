@@ -9,29 +9,30 @@ const KEY_ENTER = 0x001C;
 
 const stopPropagation = (ev: React.MouseEvent<HTMLDivElement>): void => ev && ev.stopPropagation && ev.stopPropagation();
 
-const Modal: React.FunctionComponent<{ onClose: () => void, closeOnEnter?: boolean }> = ({onClose: handleClose, children, closeOnEnter}): React.ReactElement => {
-  const handleKeyPress: React.KeyboardEventHandler = (ev: React.KeyboardEvent): void => {
-    if (ev.key === 'Escape' || ev.keyCode === KEY_ESC) {
-      handleClose();
-    } else if (closeOnEnter && (ev.key === 'Enter' || ev.keyCode === KEY_ENTER) && (!ev.target || ev.target['tagName'] !== 'TEXTAREA')) {
-      handleClose();
-    }
-  };
+const Modal: React.FunctionComponent<{ onClose: () => void, closeOnEnter?: boolean, className?: string }> =
+  ({onClose: handleClose, children, className, closeOnEnter}): React.ReactElement => {
+    const handleKeyPress: React.KeyboardEventHandler = (ev: React.KeyboardEvent): void => {
+      if (ev.key === 'Escape' || ev.keyCode === KEY_ESC) {
+        handleClose();
+      } else if (closeOnEnter && (ev.key === 'Enter' || ev.keyCode === KEY_ENTER) && (!ev.target || ev.target['tagName'] !== 'TEXTAREA')) {
+        handleClose();
+      }
+    };
 
-  return ReactDOM.createPortal(
-    <div
-      className="modal"
-      onClick={handleClose}
-      onKeyDown={handleKeyPress}
-      tabIndex={0}
-    >
-      <div className="modal-content" onClick={stopPropagation} >
-        {children}
-      </div >
-    </div >,
-    root
-  );
-};
+    return ReactDOM.createPortal(
+      <div
+        className={"modal " + className || ''}
+        onClick={handleClose}
+        onKeyDown={handleKeyPress}
+        tabIndex={0}
+      >
+        <div className="modal-content" onClick={stopPropagation} >
+          {children}
+        </div >
+      </div >,
+      root
+    );
+  };
 /*
 class Modal extends React.PureComponent {
   constructor (props) {

@@ -6,6 +6,7 @@ const log = {
   debug: console.debug,
   error: console.error,
   info: console.info,
+  warn: console.warn,
   render(component: string, params?: object): void {
     if (params) {
       this.debug(`render: ${component}`, params);

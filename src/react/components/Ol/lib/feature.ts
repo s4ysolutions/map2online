@@ -8,6 +8,7 @@ import {FeatureType} from '../../../../app-rx/ui/tools';
 const cache: Record<ID, OlFeature> = {};
 
 export const olFeatureFactory = (feature: Feature): OlFeature => {
+  console.log('dbg olFeatureFactory', feature);
   let cached = cache[feature.id];
   if (cached) return cached;
 

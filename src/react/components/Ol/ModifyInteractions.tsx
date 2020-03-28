@@ -3,32 +3,34 @@ import {Modify as ModifyInteraction} from 'ol/interaction';
 import Collection from 'ol/Collection';
 import mapContext from './context/map';
 import useVisibleFeatures from './hooks/useVisibleFeatures';
-import {Coordinate, Feature, Features, ID, isPoint} from '../../../app-rx/catalog';
+import {Coordinate, coordinateEq, Features, isPoint} from '../../../app-rx/catalog';
 import {ol2coordinate, ol2coordinates} from './lib/coordinates';
+import {getCatalog} from '../../../di-default';
+
+const catalog = getCatalog();
 
 const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
   const map = React.useContext(mapContext);
   const features: Features = useVisibleFeatures();
-  const featuresById = React.useMemo<Record<ID, Feature>>(() => Array.from(features).reduce(
-    (cache, f) => ({...cache, [f.id]: f,}), {}
-  ), [features]);
 
   const modifyInteractionRef = React.useRef(null);
 
   const handleModifyEnd = React.useCallback((ev) => {
-      console.log('dbg handleModifyEnd', ev);
       const {features} = ev;
+
       for (const olf of features.getArray()) {
         const olId = olf.getId();
-        const featureToModify = featuresById[olId];
+        const featureToModify = catalog.featureById(olId);
         if (featureToModify) {
+          const flatCoordinates: number[] = olf.get('geometry').flatCoordinates;
           if (isPoint(featureToModify.geometry)) {
-            const coordinate: Coordinate = ol2coordinate(olf.flatCoordinates);
-            console.log('dbg coordinate', coordinate);
-            featureToModify.updateCoordinates(coordinate);
+            const coordinate: Coordinate = ol2coordinate(flatCoordinates);
+            if (!coordinateEq(coordinate, featureToModify.geometry.coordinate)) {
+              featureToModify.updateCoordinates(coordinate);
+              break;
+            }
           } else {
-            const coordinates: Coordinate[] = ol2coordinates(olf.flatCoordinates);
-            console.log('dbg coordinates', coordinates);
+            const coordinates: Coordinate[] = ol2coordinates(flatCoordinates);
             featureToModify.updateCoordinates(coordinates);
           }
         }
@@ -42,7 +44,6 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
     if (modifyInteractionRef.current) {
       map.removeInteraction(modifyInteractionRef.current);
     }
-    console.log('dbg snap', features);
     modifyInteractionRef.current = new ModifyInteraction({features: new Collection(features)});
     modifyInteractionRef.current.on('modifyend', handleModifyEnd);
     map.addInteraction(modifyInteractionRef.current);

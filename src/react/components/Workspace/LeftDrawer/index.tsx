@@ -44,6 +44,8 @@ const OL_ZOOM_OFFSET_PX = 8;
 
 const onValueChange = {
   width: (): boolean => {
+    return false;
+    /*
     const cc = document.getElementsByClassName('left-drawer');
     if (cc.length < 1) {
       return false;
@@ -55,6 +57,7 @@ const onValueChange = {
     // see src/styles.css
     zc[0].setAttribute('style', `left: ${cc[0].clientWidth + OL_ZOOM_OFFSET_PX}px`);
     return false;
+     */
   },
 };
 

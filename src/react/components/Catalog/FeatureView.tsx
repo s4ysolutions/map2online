@@ -11,7 +11,7 @@ import log from '../../../log';
 import Pin from '../Svg/Pin';
 import Line from '../Svg/Line';
 import {rgb} from '../../../lib/colors';
-import {formatCoordinates} from '../../../lib/format';
+import {formatCoordinate, formatCoordinates} from '../../../lib/format';
 
 const catalogUI = getCatalogUI();
 
@@ -58,18 +58,11 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
             {`${index + 1}.`}
           </span >,
           <div className="title" key="title" >
-            {console.log('dbg format', feature.geometry)}
-            {feature.title &&
+            {feature.title && feature.title.trim() ||
             (isPoint(feature.geometry)
-              ? formatCoordinates(feature.geometry.coordinate)
-              : formatCoordinates((feature.geometry as LineString).coordinates[0]))
-              /*
-            formatCoordinates(toLonLat(
-              mapProjection,
-              isPointFeature(feature)
-                ? feature.geometry.coordinate
-                : (feature as LineStringFeature).geometry.coordinates[0]
-            ))*/}
+              ? formatCoordinate(feature.geometry.coordinate)
+              : formatCoordinates((feature.geometry as LineString).coordinates))
+            }
           </div >,
         ]}
       </div >
@@ -87,7 +80,13 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
       </div >
     </div >
     {isOpen && <div className="body" >
-      aaaa
+      <div >
+        {
+          (isPoint(feature.geometry)
+            ? formatCoordinate(feature.geometry.coordinate)
+            : formatCoordinates((feature.geometry as LineString).coordinates))
+        }
+      </div >
     </div >}
   </div >;
 };

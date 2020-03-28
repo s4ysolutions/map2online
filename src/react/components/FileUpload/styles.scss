@@ -1,0 +1,12 @@
+input.file-upload {
+  border: none;
+  display: none;
+}
+
+.drop-zone {
+  height: 128px;
+  width: 256px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

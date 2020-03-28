@@ -8,10 +8,14 @@ import baseLayerFactory from '../app-rx/ui/layers/base/default';
 import workspaceFactory from '../app-rx/ui/workspace/default';
 import {Catalog} from '../app-rx/catalog';
 import catalogFactory from '../app-rx/catalog/default/catalog';
-import catalogUiFactory from '../app-rx/ui/catalog/default';
+import catalogUIFactory from '../app-rx/ui/catalog/default';
 import {CatalogUI} from '../app-rx/ui/catalog';
 import {designerFactory} from '../app-rx/ui/designer/default/designer';
 import {Designer} from '../app-rx/ui/designer';
+import {importUIFactory} from '../app-rx/ui/import/default';
+import {ImportUI} from '../app-rx/ui/import';
+import {kmlParserFactory} from '../importer/default/kml-parser';
+import {Parser} from '../importer';
 
 export const getLocalStorage = (): KV => localStorageSingleton;
 
@@ -27,11 +31,17 @@ export const getWorkspace = (): Workspace => workspaceSingleton;
 const catalogSingleton = catalogFactory(localStorageSingleton);
 export const getCatalog = (): Catalog => catalogSingleton;
 
-const catalogUISingleton = catalogUiFactory(localStorageSingleton, catalogSingleton);
+const catalogUISingleton = catalogUIFactory(localStorageSingleton, catalogSingleton);
 export const getCatalogUI = (): CatalogUI => catalogUISingleton;
 
 const designerSingleton = designerFactory(catalogSingleton, catalogUISingleton);
 export const getDesigner = (): Designer => designerSingleton;
+
+const importUISingleton = importUIFactory();
+export const getImportUI = (): ImportUI => importUISingleton;
+
+const kmlParserSingleton = kmlParserFactory();
+export const getKMLParser = (): Parser => kmlParserSingleton;
 
 window['catalog'] = catalogSingleton;
 window['catalogUI'] = catalogUISingleton;

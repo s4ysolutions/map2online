@@ -7,6 +7,9 @@ $lightgrey: #888;
 $black: #111;
 $white: #fff;
 
+$form-bg: $yellow;
+$form-focused: $yellowdim;
+
 $button-font-size: 80%;
 
 $button-height: 2.5em;
@@ -22,7 +25,7 @@ body {
 }
 
 form {
-  background-color: $yellow;
+  background-color: $form-bg;
 }
 
 .field-row label {
@@ -274,6 +277,10 @@ textarea {
 
 input,
 textarea,
-.upload.has-advanced-upload .upload__input {
+.drop-zone {
   border: 2px dashed rgba(255, 255, 255, 0.5)
+}
+
+.drop-zone.over {
+  background-color: $form-focused;
 }

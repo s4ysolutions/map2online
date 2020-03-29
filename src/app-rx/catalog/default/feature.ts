@@ -107,10 +107,9 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
   };
 };
 
-let ids0: string[] = [];
 export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Features => {
   const key = `${FEATURES_ID_PREFIX}@${route.id}`;
-  ids0 = storage.get<ID[]>(key, []);
+  let ids0 = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
     if (ids !== ids0) {
       ids0 = ids;

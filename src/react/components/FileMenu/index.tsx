@@ -24,14 +24,19 @@ const FileMenu: React.FunctionComponent<{}> = (): React.ReactElement => {
         {T`Export Visible`}
       </div >
     </MenuItem >
-    <MenuItem key="level1" onClick={handleExportLevel1} >
+    <MenuItem key="export_all" onClick={handleExportLevel1} >
       <div className="title" >
-        {T`Export Current Level1`}
+        {T`Export All`}
       </div >
     </MenuItem >
-    <MenuItem key="level2" onClick={handleExportLevel2} >
+    <MenuItem key="export_category" onClick={handleExportLevel2} >
       <div className="title" >
-        {T`Export Current Level2`}
+        {T`Export category`}
+      </div >
+    </MenuItem >
+    <MenuItem key="export_route" onClick={handleExportLevel2} >
+      <div className="title" >
+        {T`Export route`}
       </div >
     </MenuItem >
     <MenuSep key="sep1" />

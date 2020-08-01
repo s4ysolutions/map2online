@@ -16,6 +16,8 @@ import {importUIFactory} from '../app-rx/ui/import/default';
 import {ImportUI} from '../app-rx/ui/import';
 import {kmlParserFactory} from '../importer/default/kml-parser';
 import {Parser} from '../importer';
+import {exporterFactory} from '../exporter/default';
+import {Exporter} from '../exporter';
 
 export const getLocalStorage = (): KV => localStorageSingleton;
 
@@ -42,6 +44,9 @@ export const getImportUI = (): ImportUI => importUISingleton;
 
 const kmlParserSingleton = kmlParserFactory();
 export const getKMLParser = (): Parser => kmlParserSingleton;
+
+const exporterSingleton = exporterFactory();
+export const getExporter = (): Exporter => exporterSingleton;
 
 window['catalog'] = catalogSingleton;
 window['catalogUI'] = catalogUISingleton;

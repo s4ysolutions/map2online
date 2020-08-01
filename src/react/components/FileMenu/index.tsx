@@ -3,13 +3,20 @@ import MenuItem from '../Menu/MenuItem';
 import MenuSep from '../Menu/MenuSep';
 import T from 'l10n';
 import log from '../../../log';
-import {getImportUI} from '../../../di-default';
+import {getCatalog, getExporter, getImportUI} from '../../../di-default';
 
 const importUI = getImportUI();
+const exporter = getExporter();
+const catalog = getCatalog();
+
+const handleExportAll = () => {
+  const category = catalog.categories.byPos(0)
+  const routes = Array.from(category.routes)
+  exporter.exportRoutesKML(routes, category)
+};
 
 const FileMenu: React.FunctionComponent<{}> = (): React.ReactElement => {
   log.render('FileMenu');
-  const handleExportAll = () => null;
   const handleExportVisible = () => null;
   const handleExportLevel1 = () => null;
   const handleExportLevel2 = () => null;

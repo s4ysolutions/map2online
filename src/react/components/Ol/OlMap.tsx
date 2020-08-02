@@ -18,6 +18,7 @@ import {getBaseLayer, getDesigner} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {map as rxMap} from 'rxjs/operators';
 import {getBottomRight, getSize, getTopLeft} from 'ol/extent';
+import MapBrowserEvent from '../../../../typings/ol/MapBrowserEvent';
 import Timeout = NodeJS.Timeout;
 
 let resizeTimer: Timeout = null;
@@ -74,15 +75,20 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       target: el,
       view: new View({
         center: [
-          0, //state.x,
-          0, //state.y,
+          state.x,
+          state.y,
         ],
-        zoom: 2, //state.zoom,
+        zoom: state.zoom,
       }),
     });
     m.on('moveend', (e: MapEvent) => {
       const state = e.frameState.viewState
       baseLayer.state = {x: state.center[0], y: state.center[1], zoom: state.zoom}
+      log.d('OlMap moveend', baseLayer.state)
+    })
+    m.on('pointerdrag', (e: MapBrowserEvent) => {
+      const pos = e.frameState.viewState.center
+      baseLayer.setDragging({lat: pos[1], lon: pos[0], alt: 0})
     })
     setMap(m);
   }, []);

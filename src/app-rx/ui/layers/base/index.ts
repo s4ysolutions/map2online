@@ -1,4 +1,5 @@
 import {Observable} from 'rxjs';
+import {Coordinate} from '../../../catalog';
 
 export interface BaseLayerState {
   readonly x: number;
@@ -11,4 +12,7 @@ export interface BaseLayer {
   sourceNameObservable: () => Observable<string>;
   state: BaseLayerState;
   stateObservable: () => Observable<BaseLayerState>;
+  draggingObservable: () => Observable<Coordinate>;
+
+  setDragging(coordinate: Coordinate);
 }

@@ -1,32 +1,24 @@
-import {getMapDefinition} from '../../../../map-sources/definitions';
-import {BaseLayer} from './index';
+import {BaseLayer, BaseLayerState} from './index';
 import {KV} from '../../../../kv-rx';
 
 const baseLayerFactory = (persistentStorage: KV): BaseLayer => ({
-  getOlSource: function () {
-    if (!this.sourceName) {
-      return null;
-    }
-    const md = getMapDefinition(this.sourceName);
-    if (!md) {
-      return null;
-    }
-    if (!md.olSourceFactory) {
-      return null;
-    }
-    return md.olSourceFactory();
+  get sourceName() {
+    return persistentStorage.get('blsn', 'Openstreet')
   },
-  setSourceName: function (name: string) {
+  set sourceName(name) {
     persistentStorage.set('blsn', name);
   },
-  sourceName: persistentStorage.get('blsn', 'Openstreet'),
   sourceNameObservable: () => persistentStorage.observable<string>('blsn'),
-  x: persistentStorage.get('blx', 0),
-  xObservable: () => persistentStorage.observable<number>('blx'),
-  y: persistentStorage.get('bly', 0),
-  yObservable: () => persistentStorage.observable<number>('bly'),
-  zoom: persistentStorage.get('blzoom', 5),
-  zoomObservable: () => persistentStorage.observable<number>('blzoom'),
+  get state() {
+    return persistentStorage.get<BaseLayerState>('blst', {x: 0, y: 0, zoom: 5})
+  },
+  set state(state) {
+    const s = this.state
+    if (s.x !== state.x || s.y !== state.y || s.zoom !== state.zoom) {
+      persistentStorage.set<BaseLayerState>('blst', state)
+    }
+  },
+  stateObservable: () => persistentStorage.observable<BaseLayerState>('blst'),
 });
 
 export default baseLayerFactory;

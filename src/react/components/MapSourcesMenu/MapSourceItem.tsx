@@ -15,7 +15,10 @@ const MapSourceItem: React.FunctionComponent<Props> = ({source}): React.ReactEle
   const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
   log.render('MapSourceItem', {baseLayerName});
   return <MenuSubItem onClick={(ev): void => {
-    baseLayer.setSourceName(source.id);
+    log.debug('MapSourceItem clicked', source.id)
+    if (baseLayer.sourceName !== source.id) {
+      baseLayer.sourceName = source.id;
+    }
     ev.stopPropagation();
   }} >
     {source.id}

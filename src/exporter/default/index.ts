@@ -2,7 +2,7 @@ import {Exporter} from '../index';
 import {Category, Route} from '../../app-rx/catalog';
 import {getRoutesKML} from '../lib/kml';
 
-const MIME_KML = 'application/vnd.google-earth.kml+xml'
+const MIME_KML = 'application/vnd.GoogleMap-earth.kml+xml'
 
 const download = (file: string, content: string, mime: string): void => {
   const blob = new Blob([content], {type: mime})

@@ -9,6 +9,10 @@ export interface Coordinate {
   lon: number;
 }
 
+export const isCoordinate = (coordinate: Coordinate | any): coordinate is Coordinate =>
+  coordinate && (coordinate as Coordinate).lon !== undefined && (coordinate as Coordinate).lat !== undefined;
+
+
 export const coordinateEq = (c1: Coordinate, c2: Coordinate): boolean => c1.lat === c2.lat && c1.lon === c2.lon;
 export const coordinatesEq = (c1: Coordinate[], c2: Coordinate[]): boolean => {
   if (c1.length !== c2.length) return false;
@@ -38,7 +42,6 @@ export interface FeatureProps {
 
 export const isPoint = (geometry: Point | LineString): geometry is Point => geometry && (geometry as Point).coordinate !== undefined;
 export const isLineString = (geometry: Point | LineString): geometry is LineString => geometry && (geometry as LineString).coordinates !== undefined;
-export const isCoordinate = (coord: Coordinate | Coordinate[]): coord is Coordinate => (coord as Coordinate).alt !== undefined;
 
 export interface Feature extends FeatureProps {
   delete: () => void;

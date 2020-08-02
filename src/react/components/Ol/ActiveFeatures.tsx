@@ -3,7 +3,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import useVisibleFeatures from './hooks/useVisibleFeatures';
 import log from '../../../log';
-import mapContext from './context/map';
+import olMapContext from './context/map';
 import {Features} from '../../../app-rx/catalog';
 
 const source = new VectorSource({wrapX: false});
@@ -11,7 +11,7 @@ const layer = new VectorLayer({source: source});
 
 const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
   const features: Features = useVisibleFeatures();
-  const map = React.useContext(mapContext);
+  const map = React.useContext(olMapContext);
 
   useEffect(() => {
     map.addLayer(layer);

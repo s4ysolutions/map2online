@@ -1,15 +1,14 @@
-import Source from 'ol/source/Source';
 import {Observable} from 'rxjs';
 
-export interface BaseLayer {
-  readonly sourceName: string;
-  sourceNameObservable: () => Observable<string>;
+export interface BaseLayerState {
   readonly x: number;
-  xObservable: () => Observable<number>;
   readonly y: number;
-  yObservable: () => Observable<number>;
   readonly zoom: number;
-  zoomObservable: () => Observable<number>;
-  getOlSource: () => Source | null;
-  setSourceName: (string) => void;
+}
+
+export interface BaseLayer {
+  sourceName: string;
+  sourceNameObservable: () => Observable<string>;
+  state: BaseLayerState;
+  stateObservable: () => Observable<BaseLayerState>;
 }

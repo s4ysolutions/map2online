@@ -1,6 +1,11 @@
 import {Coordinate} from 'ol/coordinate'
 
-interface ViewOptions {
+export interface ViewOptions {
+  center: Coordinate;
+  zoom: number;
+}
+
+export interface State {
   center: Coordinate;
   zoom: number;
 }

@@ -37,19 +37,26 @@
 	<base href="<%= htmlWebpackPlugin.options.baseHref %>"/>
 	<% } %>
 	<script>
-function _  (o, l) {
+function _(o, l) {
 	if (l) {
-	console.debug({[l]:o});
-	console.trace();
-	}else{
-	console.debug(o);
-	console.trace();
-	return o;
+		console.debug({[l]: o});
+		console.trace();
+	} else {
+		console.debug(o);
+		console.trace();
+		return o;
+	}
 }
-}
-	</script>
-</head>
-<body>
+	</script >
+	<script >
+		function initMap(a, b) {
+			console.log("InitMap")
+		}
+	</script >
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAbHjatrA8ol2wzr5RY248mWTc67TDP97Q&callback=initMap" >
+	</script >
+</head >
+<body >
 
 <% if (htmlWebpackPlugin.options.appMountId) { %>
 <main id="<%= htmlWebpackPlugin.options.appMountId %>" class="wrapper">
@@ -70,7 +77,8 @@ function _  (o, l) {
 <div id="<%= htmlWebpackPlugin.options.appMountIds[index] %>"></div>
 <% } %>
 <% } %>
-	<!--[if lt IE 9]>
+
+<!--[if lt IE 9]>
 <script>
 (function(){
   var ef = function(){};

@@ -6,7 +6,7 @@ import useCurrentFeatureType from './hooks/useCurrentFeatureType';
 import {FeatureType} from '../../../app-rx/ui/tools';
 import {getStyle} from './lib/styles';
 import {Color} from '../../../lib/colors';
-import mapContext from './context/map';
+import olMapContext from './context/map';
 import {getCatalogUI} from '../../../di-default';
 import {FeatureProps} from '../../../app-rx/catalog';
 import {makeId} from '../../../l10n/id';
@@ -20,7 +20,7 @@ const newDrawInteraction = (type: FeatureType, pointColor: Color, lineColor: Col
 const catalogUI = getCatalogUI();
 
 const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
-  const map = React.useContext(mapContext);
+  const map = React.useContext(olMapContext);
   const pointColor = usePointColor();
   const lineColor = useLineColor();
   const featureType = useCurrentFeatureType();

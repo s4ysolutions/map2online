@@ -1,14 +1,11 @@
-import BaseLayer from './layer/Base';
+import PluggableMap from './PluggableMap';
 
 interface MapOptions {
   target: HTMLElement;
   view: View;
 }
 
-export default class Map {
+export default class Map extends PluggableMap {
   constructor(opts: MapOptions);
 
-  addLayer(layer: BaseLayer);
-
-  removeLayer(layer: BaseLayer | undefined);
 }

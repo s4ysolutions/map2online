@@ -4,8 +4,8 @@ import sax from 'sax';
 import {Coordinate, FeatureProps} from '../../app-rx/catalog';
 import log from '../../log';
 import {Color} from '../../lib/colors';
-import {fromEPSG4326toEPSG3857} from '../../lib/projection';
 import {makeId} from '../../l10n/id';
+import {degreesToMeters} from '../../lib/projection';
 
 enum ParseState {
   NONE,
@@ -20,9 +20,8 @@ enum ParseState {
 }
 
 const parseTriplet = (triplet: string): Coordinate => {
-  const [lon0, lat0, alt] = triplet.split(',').map(t => Number.parseFloat(t));
-  const [lon, lat] = fromEPSG4326toEPSG3857([lon0, lat0]);
-  return {lon, lat, alt};
+  const lla = triplet.split(',').map(t => Number.parseFloat(t));
+  return degreesToMeters(lla)
 };
 
 const parseCoordinates = (text: string): Coordinate[] =>

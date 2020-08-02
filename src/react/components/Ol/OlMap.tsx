@@ -2,18 +2,19 @@ import 'ol/ol.css';
 import './styles.scss';
 import * as React from 'react';
 import Map from 'ol/Map';
+import MapEvent from 'ol/MapEvent';
 import BaseLayer from './BaseLayer';
 import View from 'ol/View';
 import log from '../../../log';
 import ActiveFeatures from './ActiveFeatures';
-import mapContext from './context/map';
+import olMapContext from './context/map';
 import DrawInteractions from './DrawInteractions';
 import SnapInteractions from './SnapInteractions';
 import ModifyInteractions from './ModifyInteractions';
 import ResizeObserver from 'resize-observer-polyfill';
 import {Feature, isPoint} from '../../../app-rx/catalog';
 import {defaults as defaultControls, ZoomToExtent} from 'ol/control';
-import {getDesigner} from '../../../di-default';
+import {getBaseLayer, getDesigner} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {map as rxMap} from 'rxjs/operators';
 import {getBottomRight, getSize, getTopLeft} from 'ol/extent';
@@ -22,6 +23,8 @@ import Timeout = NodeJS.Timeout;
 let resizeTimer: Timeout = null;
 
 const designer = getDesigner();
+const baseLayer = getBaseLayer();
+
 const OlMap: React.FunctionComponent = (): React.ReactElement => {
   const [map, setMap] = React.useState<Map>(null);
   log.render(`OlMap map is ${map ? 'set' : 'not set'}`);
@@ -31,7 +34,6 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       .pipe(rxMap(vf => Array.from(vf))),
     Array.from(designer.visibleFeatures)
   );
-  console.log('dbf features', {features});
   const extent: number[] = React.useMemo(() => {
     let ext = [] as number[];
     for (const feature of Array.from(features)) {
@@ -61,9 +63,10 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
   const zoomToExtentRef = React.useRef(null);
 
   const mapAttach = React.useCallback((el: HTMLDivElement): void => {
-    log.render('mapAttach', el);
+    log.render('OL mapAttach', el);
     zoomToExtentRef.current =
       new ZoomToExtent({extent});
+    const state = baseLayer.state
     const m = new Map({
       controls: defaultControls().extend([
         zoomToExtentRef.current
@@ -71,12 +74,16 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       target: el,
       view: new View({
         center: [
-          0,
-          0,
+          0, //state.x,
+          0, //state.y,
         ],
-        zoom: 3,
+        zoom: 2, //state.zoom,
       }),
     });
+    m.on('moveend', (e: MapEvent) => {
+      const state = e.frameState.viewState
+      baseLayer.state = {x: state.center[0], y: state.center[1], zoom: state.zoom}
+    })
     setMap(m);
   }, []);
 
@@ -109,13 +116,13 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
 
 
   return <div className="ol-container" ref={mapAttach} >
-    {map && <mapContext.Provider value={map} >
+    {map && <olMapContext.Provider value={map} >
       <BaseLayer />
       <ActiveFeatures />
       <DrawInteractions />
       <ModifyInteractions />
       <SnapInteractions />
-    </mapContext.Provider >}
+    </olMapContext.Provider >}
   </div >
 };
 

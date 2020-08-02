@@ -17,6 +17,9 @@ export interface MapDefinition {
   toLonLat?: TransformCoordFunction;
 }
 
+export const isOlMapDefinition = (mapDefinition: MapDefinition) => !!(mapDefinition.olSourceFactory);
+export const isGoogleMapDefinition = (mapDefinition: MapDefinition) => mapDefinition.id.indexOf('Google') === 0;
+
 export interface MapGroupDefinition {
   id: string;
   maps: MapDefinition[];

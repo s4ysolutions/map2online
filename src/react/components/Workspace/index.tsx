@@ -10,6 +10,7 @@ import RightDrawer from './RightDrawer';
 import {getImportUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import Import from '../Import';
+import GoogleMap from '../GoogleMap/GoogleMap';
 
 
 const importUI = getImportUI();
@@ -24,6 +25,7 @@ const Workspace = (): React.ReactElement => {
     <div className="workspace" key="workspace" ref={ref as any} >
       <LeftDrawer />
       <div className="map-container" >
+        <GoogleMap />
         <OlMap />
       </div >
       <RightDrawer />

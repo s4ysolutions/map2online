@@ -84,6 +84,7 @@ const mapGroups: MapGroupDefinition[] = [
       {id: 'GoogleTrasport'},
     ],
   },
+  /*
   {
     id: 'Yandex',
     maps: [
@@ -112,6 +113,7 @@ const mapGroups: MapGroupDefinition[] = [
     id: 'Moscow',
     maps: [],
   },
+   */
   {
     id: 'Bing',
     maps: [
@@ -135,7 +137,7 @@ const mapGroups: MapGroupDefinition[] = [
           ...BING_OPTIONS,
           imagerySet: 'AerialWithLabelsOnDemand',
         }),
-      },
+      },/*
       {
         id: 'BingStreetside',
         olSourceFactory: (): Source => new BingMaps({
@@ -168,9 +170,9 @@ const mapGroups: MapGroupDefinition[] = [
           ],
           imagerySet: 'BirdseyeV2WithLabels',
         }),
-      },
+      },*/
     ],
-  },
+  },/*
   {
     id: 'GeoPortal',
     maps: [],
@@ -206,7 +208,7 @@ const mapGroups: MapGroupDefinition[] = [
   {
     id: 'LocalMaps',
     maps: [],
-  },
+  },*/
   {
     id: 'Genshtab',
     maps: [
@@ -219,6 +221,7 @@ const mapGroups: MapGroupDefinition[] = [
       },
     ],
   },
+  /*
   {
     id: 'ESRI',
     maps: [],
@@ -227,6 +230,7 @@ const mapGroups: MapGroupDefinition[] = [
     id: 'GoogleEarth',
     maps: [],
   },
+   */
 ].map((group: MapGroupDefinition): MapGroupDefinition => ({
   ...group,
   maps: group.maps.map((map: MapDefinition): MapDefinition => addProjToMap(map)),

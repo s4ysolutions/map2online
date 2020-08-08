@@ -1,6 +1,7 @@
 .top-navigation {
   position: relative;
   display: flex;
+  flex-shrink: 0;
 }
 
 .top-navigation h1 {
@@ -17,24 +18,8 @@
   white-space: nowrap;
 }
 
-.app-button {
-  background: inherit;
-}
-
-.app-button svg {
-}
-
-.app-button path {
-}
-
-.app-button line {
-  stroke: white;
-}
-
-.top-navigation-menu {
-}
-
-.top-navigation button,
-.top-navigation .app-button {
-  height: 2.5em;
+.menu-item-title {
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
 }

@@ -2,17 +2,17 @@ import {Catalog, Categories, Category, CategoryProps, ID, Route} from '../index'
 import {KV} from '../../../kv-rx';
 import {routesFactory} from './route';
 import {makeId} from '../../../l10n/id';
-import T from '../../../l10n';
 import {map} from 'rxjs/operators';
 import reorder from '../../../lib/reorder';
+import {Wording} from '../../personalization/wording';
 
 export const CATEGORY_ID_PREFIX = "c";
 
-export const newCategoryProps = (): CategoryProps => ({
+export const newCategoryProps = (wording: Wording): CategoryProps => ({
   id: makeId(),
   description: '',
   summary: '',
-  title: T`New category`,
+  title: wording.C('New category'),
   visible: true,
 });
 
@@ -20,8 +20,8 @@ interface Updateable {
   update: () => void;
 }
 
-export const categoryFactory = (storage: KV, catalog: Catalog, props: CategoryProps | null): Category & Updateable | null => {
-  const p: CategoryProps = props === null ? newCategoryProps() : {...props};
+export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording, props: CategoryProps | null): Category & Updateable | null => {
+  const p: CategoryProps = props === null ? newCategoryProps(wording) : {...props};
   const key = `${CATEGORY_ID_PREFIX}@${p.id}`;
 
   const th: Category & Updateable = {
@@ -73,11 +73,11 @@ export const categoryFactory = (storage: KV, catalog: Catalog, props: CategoryPr
       storage.set(key, {...p});
     },
   };
-  th.routes = routesFactory(storage, catalog, th);
+  th.routes = routesFactory(storage, catalog, wording, th);
   return th;
 };
 
-export const categoriesFactory = (storage: KV, catalog: Catalog): Categories => {
+export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wording): Categories => {
   let ids0 = storage.get<ID[]>('cats', []);
   const updateIds = (ids: ID[]) => {
     if (ids !== ids0) {
@@ -86,13 +86,13 @@ export const categoriesFactory = (storage: KV, catalog: Catalog): Categories => 
     }
   };
   if (ids0.length === 0) {
-    const category = newCategoryProps();
+    const category = newCategoryProps(wording);
     storage.set(`${CATEGORY_ID_PREFIX}@${category.id}`, category);
     updateIds([category.id]);
   }
   return {
     add: function (props: CategoryProps | null, position?: number): Promise<Category> {
-      const category = categoryFactory(storage, catalog, props);
+      const category = categoryFactory(storage, catalog, wording, props);
       category.update();
       const pos = position || ids0.length;
       updateIds(ids0.slice(0, pos).concat(category.id).concat(ids0.slice(pos)));

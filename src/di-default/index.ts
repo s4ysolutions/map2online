@@ -18,6 +18,8 @@ import {kmlParserFactory} from '../importer/default/kml-parser';
 import {Parser} from '../importer';
 import {exporterFactory} from '../exporter/default';
 import {Exporter} from '../exporter';
+import {wordingFactory} from '../app-rx/personalization/wording/default';
+import {Wording} from '../app-rx/personalization/wording';
 
 export const getLocalStorage = (): KV => localStorageSingleton;
 
@@ -30,7 +32,10 @@ export const getBaseLayer = (): BaseLayer => baseLayerSingleton;
 const workspaceSingleton = workspaceFactory(localStorageSingleton);
 export const getWorkspace = (): Workspace => workspaceSingleton;
 
-const catalogSingleton = catalogFactory(localStorageSingleton);
+const wordingSingleton = wordingFactory(localStorageSingleton);
+export const getWording = (): Wording => wordingSingleton;
+
+const catalogSingleton = catalogFactory(localStorageSingleton, wordingSingleton);
 export const getCatalog = (): Catalog => catalogSingleton;
 
 const catalogUISingleton = catalogUIFactory(localStorageSingleton, catalogSingleton);
@@ -48,6 +53,7 @@ export const getKMLParser = (): Parser => kmlParserSingleton;
 const exporterSingleton = exporterFactory();
 export const getExporter = (): Exporter => exporterSingleton;
 
+// debug
 window['catalog'] = catalogSingleton;
 window['catalogUI'] = catalogUISingleton;
 window['designer'] = designerSingleton;

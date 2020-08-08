@@ -2,12 +2,11 @@ import * as React from 'react';
 import {useCallback} from 'react';
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
 import log from '../../../log';
-import {getCatalog, getCatalogUI} from '../../../di-default';
+import {getCatalog, getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import CategoryView from './CategoryView';
 import CategoryEdit from './CategoryEdit';
 import ConfirmDialog from '../Confirm';
-import T from '../../../l10n';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -31,6 +30,7 @@ const getDraggingStyle = (isDragging: boolean, draggableStyle: object): object =
 
 const catalog = getCatalog();
 const catalogUI = getCatalogUI();
+const wording = getWording();
 
 const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
   log.render('Categories');
@@ -83,9 +83,9 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
         catalog.categories.remove(c)
       }}
       onCancel={catalogUI.endDeleteCategory}
-      title={T`Delete category`}
-      message={T`The category and all the routes inside it will be deleted, are you sure?`}
-      confirm={T`Yes, delete the category`}
+      title={wording.C('Delete category')}
+      message={wording.CR('Delete category warning')}
+      confirm={wording.C('Yes, delete the category')}
     />}
   </div >;
 };

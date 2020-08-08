@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {FormEvent} from 'react';
 import Modal from '../Modal';
-import {getCatalogUI} from '../../../di-default';
+import {getCatalogUI, getWording} from '../../../di-default';
 import {Category} from '../../../app-rx/catalog';
 import useObservable from '../../hooks/useObservable';
 import T from '../../../l10n';
 
+const wording = getWording()
 const catalogUI = getCatalogUI();
 const handleSubmit = (ev: FormEvent) => {
   ev.preventDefault();
@@ -29,7 +30,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
   return <Modal closeOnEnter={true} onClose={handleClose} >
     <form onSubmit={handleSubmit} >
       <h2 >
-        {T`Modify Categgory`}
+        {wording.C('Modify category')}
       </h2 >
       <h3 >
         {category.id}
@@ -59,15 +60,11 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
       </div >
       <div className="buttons-row" >
         <button onClick={handleClose} >
-          TODO: Close
+          {T`Close`}
         </button >
       </div >
     </form >
   </Modal >;
 };
-
-/*
-
- */
 
 export default CategoryEdit;

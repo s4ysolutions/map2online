@@ -2,18 +2,18 @@ import {Catalog, Category, ID, Route, RouteProps, Routes} from '../index';
 import {KV} from '../../../kv-rx';
 import {featuresFactory} from './feature';
 import {makeId} from '../../../l10n/id';
-import T from '../../../l10n';
 import {map} from 'rxjs/operators';
 import reorder from '../../../lib/reorder';
+import {Wording} from '../../personalization/wording';
 
 export const ROUTE_ID_PREFIX = "r";
 export const ROUTES_ID_PREFIX = "rs";
 
-const newRouteProps = (): RouteProps => ({
+const newRouteProps = (wording: Wording): RouteProps => ({
   id: makeId(),
   description: '',
   summary: '',
-  title: T`New route`,
+  title: wording.R('New route'),
   visible: true,
 });
 
@@ -21,8 +21,8 @@ interface Updateable {
   update: () => void;
 }
 
-export const routeFactory = (storage: KV, catalog: Catalog, props: RouteProps | null): Route & Updateable | null => {
-  const p: RouteProps = props === null ? newRouteProps() : {...props};
+export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, props: RouteProps | null): Route & Updateable | null => {
+  const p: RouteProps = props === null ? newRouteProps(wording) : {...props};
   const key = `${ROUTE_ID_PREFIX}@${p.id}`;
   const th: Route & Updateable = {
     get description() {
@@ -77,7 +77,7 @@ export const routeFactory = (storage: KV, catalog: Catalog, props: RouteProps | 
   return th;
 };
 
-export const routesFactory = (storage: KV, catalog: Catalog, category: Category): Routes => {
+export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, category: Category): Routes => {
   const key = `${ROUTES_ID_PREFIX}@${category.id}`;
   let ids0 = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
@@ -87,13 +87,13 @@ export const routesFactory = (storage: KV, catalog: Catalog, category: Category)
     }
   };
   if (ids0.length === 0) {
-    const route = newRouteProps();
+    const route = newRouteProps(wording);
     storage.set(`${ROUTE_ID_PREFIX}@${route.id}`, route);
     updateIds([route.id]);
   }
   return {
     add: function (props: RouteProps, position: number) {
-      const route = routeFactory(storage, catalog, props);
+      const route = routeFactory(storage, catalog, wording, props);
       route.update();
       const pos = position || ids0.length;
       updateIds(ids0.slice(0, pos).concat(route.id).concat(ids0.slice(pos)));

@@ -4,6 +4,8 @@ import {Subject} from 'rxjs';
 
 const filesObservable = new Subject<boolean>();
 const sourcesObservable = new Subject<boolean>();
+const settingsObservable = new Subject<boolean>();
+const personalizationObservable = new Subject<boolean>();
 
 const workspaceFactory = (persistanceStorage: KV): Workspace => {
   const th: Workspace = {
@@ -15,6 +17,10 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
     fileOpen: false,
     sourcesObservable: () => sourcesObservable,
     sourcesOpen: false,
+    settingsObservable: () => settingsObservable,
+    settingsOpen: false,
+    personalizationObservable: () => personalizationObservable,
+    personalizationOpen: false,
     toggleCatalog: function () {
       const value = !this.catalogOpen;
       persistanceStorage.set('cato', value);
@@ -34,14 +40,25 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
       const value = !this.sourcesOpen;
       sourcesObservable.next(value);
       this.sourcesOpen = value;
-    }
+    },
+    toggleSettings: function () {
+      const value = !this.settingsOpen;
+      settingsObservable.next(value);
+      this.settingsOpen = value;
+    },
+    togglePersonalization: function () {
+      const value = !this.personalizationOpen;
+      personalizationObservable.next(value);
+      this.personalizationOpen = value;
+    },
   };
   th.toggleCatalog = th.toggleCatalog.bind(th);
   th.toggleTools = th.toggleTools.bind(th);
   th.toggleFile = th.toggleFile.bind(th);
   th.toggleSources = th.toggleSources.bind(th);
+  th.toggleSettings = th.toggleSettings.bind(th);
+  th.togglePersonalization = th.togglePersonalization.bind(th);
   return th;
 };
 
 export default workspaceFactory;
-

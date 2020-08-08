@@ -2,13 +2,12 @@ import * as React from 'react';
 import {useCallback} from 'react';
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
 import log from '../../../log';
-import {getCatalogUI} from '../../../di-default';
+import {getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import RouteView from './RouteView';
 import {Category} from '../../../app-rx/catalog';
 import RouteEdit from './RouteEdit';
 import ConfirmDialog from '../Confirm';
-import T from '../../../l10n';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -31,6 +30,7 @@ const getDraggingStyle = (isDragging: boolean, draggableStyle: object): object =
 });
 
 const catalogUI = getCatalogUI();
+const wording = getWording();
 
 const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}): React.ReactElement => {
   log.render('Routes');
@@ -83,9 +83,9 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
         category.routes.remove(c.route);
       }}
       onCancel={catalogUI.endDeleteRoute}
-      title={T`Delete route`}
-      message={T`The route and all the features inside it will be deleted, are you sure?`}
-      confirm={T`Yes, delete the route`}
+      title={wording.R('Delete route')}
+      message={wording.R('Delete route warning')}
+      confirm={wording.R('Yes, delete the route')}
     />}
   </div >;
 };

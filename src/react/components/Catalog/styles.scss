@@ -16,8 +16,9 @@
 }
 
 .catalog-navigation {
-  display: flex;
   align-items: center;
+  display: flex;
+  flex-shrink: 0;
 }
 
 .catalog-navigation .title {

@@ -1,12 +1,13 @@
 import * as React from 'react';
 import {FormEvent} from 'react';
 import Modal from '../Modal';
-import {getCatalogUI} from '../../../di-default';
+import {getCatalogUI, getWording} from '../../../di-default';
 import {Route} from '../../../app-rx/catalog';
 import useObservable from '../../hooks/useObservable';
-import T from '../../../l10n';
 
 const catalogUI = getCatalogUI();
+const wording = getWording();
+
 const handleSubmit = (ev: FormEvent) => {
   ev.preventDefault();
   catalogUI.commitEditRoute();
@@ -28,7 +29,7 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
   return <Modal onClose={handleClose} closeOnEnter={true} >
     <form onSubmit={handleSubmit} >
       <h2 >
-        {T`Modify Route`}
+        {wording.R('Modify route')}
       </h2 >
       <div className="field-row" >
         <label htmlFor="title" >

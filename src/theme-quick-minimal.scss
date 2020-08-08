@@ -13,6 +13,8 @@ $form-focused: $yellowdim;
 $button-font-size: 80%;
 
 $button-height: 2.5em;
+$button-v-padding: 0.3em;
+$button-title-height: 1.9em;
 
 body {
   background-color: $black;
@@ -60,7 +62,6 @@ form {
 .field-row textarea:required:valid {
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
-
 
 input:focus, button:focus {
   background-color: rgba(255, 255, 255, 0.2);
@@ -110,14 +111,25 @@ input:required:invalid {
 
 label[for="file"],
 button {
+  background: $yellow;
   border: none;
-  outline: none;
-  color: white;
   border-radius: 3px;
-  margin-right: 0.1in;
+  color: white;
+  outline: none;
+  height: 2.5em;
   font-size: $button-font-size;
   font-weight: bold;
-  padding: 0.3em 0.5em;
+  margin-right: 0.1in;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-top: $button-v-padding;
+  padding-bottom: $button-v-padding;
+  stroke: white;
+}
+
+button .button-title {
+  height: $button-title-height;
+  line-height: $button-title-height;
 }
 
 form label[for="file"],
@@ -125,6 +137,10 @@ form button {
   background: none;
   margin: 2vmax;
   color: inherit;
+}
+
+button svg {
+  padding-right: 0.3em;
 }
 
 form label[for="file"]:hover,
@@ -179,12 +195,7 @@ form button:hover {
 }
 
 .catalog button {
-  height: 2.5em;
   background: #111;
-}
-
-.catalog button.add {
-  background: $yellow;
 }
 
 .catalog-navigation {

@@ -52,10 +52,10 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
       }
       <div className="buttons-row" >
         <button onClick={importToCategory} >
-          TODO: Import
+          {T`Import`}
         </button >
         <button onClick={importUI.close} >
-          TODO: Close
+          {T`Close`}
         </button >
       </div >
     </form >

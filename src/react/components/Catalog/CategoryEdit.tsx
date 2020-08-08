@@ -37,7 +37,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
       </h3 >
       <div className="field-row" >
         <label htmlFor="title" >
-          TODO: Title
+          {T`Title`}
         </label >
         <input
           name="title"
@@ -49,7 +49,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
       </div >
       <div className="field-row" >
         <label htmlFor="description" >
-          TODO: Description
+          {T`Description`}
         </label >
         <textarea rows={10}
                   name="description"

@@ -4,6 +4,7 @@ import Modal from '../Modal';
 import {getCatalogUI, getWording} from '../../../di-default';
 import {Route} from '../../../app-rx/catalog';
 import useObservable from '../../hooks/useObservable';
+import T from '../../../l10n';
 
 const catalogUI = getCatalogUI();
 const wording = getWording();
@@ -33,7 +34,7 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
       </h2 >
       <div className="field-row" >
         <label htmlFor="title" >
-          TODO: Title
+          {T`Title`}
         </label >
         <input
           name="title"
@@ -45,7 +46,7 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
       </div >
       <div className="field-row" >
         <label htmlFor="description" >
-          TODO: Description
+          {T`Description`}
         </label >
         <input
           name="description"
@@ -56,7 +57,7 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
       </div >
       <div className="buttons-row" >
         <button onClick={handleClose} >
-          TODO: Close
+          {T`Close`}
         </button >
       </div >
     </form >

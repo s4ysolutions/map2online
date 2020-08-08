@@ -52,7 +52,7 @@ const Wording = (): React.ReactElement => {
       {categoryVariant && routeVariant &&
       <div className="buttons-row" >
         <button onClick={workspace.togglePersonalization} >
-          TODO: Close
+          {T`Close`}
         </button >
       </div >
       }

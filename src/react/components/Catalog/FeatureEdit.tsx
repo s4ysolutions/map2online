@@ -32,7 +32,7 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
       </h2 >
       <div className="field-row" >
         <label htmlFor="title" >
-          TODO: Title
+          {T`Title`}
         </label >
         <input
           name="title"
@@ -44,7 +44,7 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
       </div >
       <div className="field-row" >
         <label htmlFor="description" >
-          TODO: Description
+          {T`Description`}
         </label >
         <input
           name="description"
@@ -55,7 +55,7 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
       </div >
       <div className="buttons-row" >
         <button onClick={handleClose} >
-          TODO: Close
+          {T`Close`}
         </button >
       </div >
     </form >

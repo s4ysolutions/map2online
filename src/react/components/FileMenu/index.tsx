@@ -3,13 +3,15 @@ import MenuItem from '../Menu/MenuItem';
 import MenuSep from '../Menu/MenuSep';
 import T from 'l10n';
 import log from '../../../log';
-import {getCatalog, getExporter, getImportUI} from '../../../di-default';
+import {getCatalog, getExporter, getImportUI, getWorkspace} from '../../../di-default';
 
 const importUI = getImportUI();
 const exporter = getExporter();
 const catalog = getCatalog();
+const workspace = getWorkspace();
 
 const handleExportAll = () => {
+  workspace.closeMenus()
   const category = catalog.categories.byPos(0)
   const routes = Array.from(category.routes)
   exporter.exportRoutesKML(routes, category)
@@ -47,7 +49,10 @@ const FileMenu: React.FunctionComponent<{}> = (): React.ReactElement => {
       </div >
     </MenuItem >
     <MenuSep key="sep1" />
-    <MenuItem key="import" onClick={importUI.open} >
+    <MenuItem key="import" onClick={() => {
+      workspace.closeMenus()
+      importUI.open()
+    }} >
       <div className="title" >
         {T`Import`}
       </div >

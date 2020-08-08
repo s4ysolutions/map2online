@@ -9,18 +9,12 @@ const workspace = getWorkspace();
 const SettingsMenu: React.FunctionComponent = (): React.ReactElement => {
   log.render('SettingsMenu');
   return <React.Fragment >
-    <MenuItem onClick={() => {
-      workspace.toggleTools();
-      workspace.toggleSettings();
-    }} >
+    <MenuItem onClick={workspace.toggleTools} >
       <div className="title" >
         {T`Tools`}
       </div >
     </MenuItem >
-    <MenuItem onClick={() => {
-      workspace.togglePersonalization();
-      workspace.toggleSettings()
-    }} >
+    <MenuItem onClick={workspace.togglePersonalization} >
       <div className="title" >
         {T`Personalization`}
       </div >

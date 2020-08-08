@@ -27,29 +27,42 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
       this.catalogOpen = value;
     },
     toggleTools: function () {
+      this.closeMenus()
       const value = !this.toolsOpen;
       persistanceStorage.set('feo', value);
       this.toolsOpen = value;
     },
     toggleFile: function () {
+      this.closeMenus()
       const value = !this.fileOpen;
       filesObservable.next(value);
       this.fileOpen = value;
     },
     toggleSources: function () {
+      this.closeMenus()
       const value = !this.sourcesOpen;
       sourcesObservable.next(value);
       this.sourcesOpen = value;
     },
     toggleSettings: function () {
+      this.closeMenus()
       const value = !this.settingsOpen;
       settingsObservable.next(value);
       this.settingsOpen = value;
     },
     togglePersonalization: function () {
+      this.closeMenus()
       const value = !this.personalizationOpen;
       personalizationObservable.next(value);
       this.personalizationOpen = value;
+    },
+    closeMenus: function () {
+      filesObservable.next(false);
+      this.fileOpen = false;
+      settingsObservable.next(false);
+      this.settingsOpen = false;
+      sourcesObservable.next(false);
+      this.sourcesOpen = false;
     },
   };
   th.toggleCatalog = th.toggleCatalog.bind(th);

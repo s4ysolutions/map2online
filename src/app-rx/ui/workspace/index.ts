@@ -21,5 +21,7 @@ export interface Workspace {
   toggleSources: () => void;
   toggleSettings: () => void;
   togglePersonalization: () => void;
+
+  closeMenus: () => void
 }
 

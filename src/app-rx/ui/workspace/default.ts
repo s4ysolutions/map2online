@@ -8,7 +8,7 @@ const settingsObservable = new Subject<boolean>();
 const personalizationObservable = new Subject<boolean>();
 
 const workspaceFactory = (persistanceStorage: KV): Workspace => {
-  const th: Workspace = {
+  const th: Workspace & { closeFile: () => void; closeSources: () => void; closeSettings: () => void } = {
     catalogObservable: () => persistanceStorage.observable('cato'),
     catalogOpen: persistanceStorage.get('cato', false),
     toolsObservable: () => persistanceStorage.observable('feo'),
@@ -33,19 +33,22 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
       this.toolsOpen = value;
     },
     toggleFile: function () {
-      this.closeMenus()
+      this.closeSources()
+      this.closeSettings()
       const value = !this.fileOpen;
       filesObservable.next(value);
       this.fileOpen = value;
     },
     toggleSources: function () {
-      this.closeMenus()
+      this.closeFile()
+      this.closeSettings()
       const value = !this.sourcesOpen;
       sourcesObservable.next(value);
       this.sourcesOpen = value;
     },
     toggleSettings: function () {
-      this.closeMenus()
+      this.closeFile()
+      this.closeSources()
       const value = !this.settingsOpen;
       settingsObservable.next(value);
       this.settingsOpen = value;
@@ -56,13 +59,22 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
       personalizationObservable.next(value);
       this.personalizationOpen = value;
     },
-    closeMenus: function () {
+    closeFile: function () {
       filesObservable.next(false);
       this.fileOpen = false;
-      settingsObservable.next(false);
-      this.settingsOpen = false;
+    },
+    closeSources: function () {
       sourcesObservable.next(false);
       this.sourcesOpen = false;
+    },
+    closeSettings: function () {
+      settingsObservable.next(false);
+      this.settingsOpen = false;
+    },
+    closeMenus: function () {
+      this.closeFile()
+      this.closeSources()
+      this.closeSettings()
     },
   };
   th.toggleCatalog = th.toggleCatalog.bind(th);

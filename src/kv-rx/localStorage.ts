@@ -2,6 +2,7 @@ import {KV} from './index';
 import {Subject} from 'rxjs';
 import {persistedLocal} from '../persist/local';
 import {filter, map} from 'rxjs/operators';
+import log from '../log';
 
 interface LocalStorage {
   subject: Subject<{ key: string; value: any }>
@@ -17,14 +18,20 @@ const localStorageSingleton: KV & LocalStorage = {
   },
   subject: new Subject<{ key: string, value: any }>(),
   set: function <T>(key: string, value: T) {
+    log.debug(`localStorage set ${key} debug`, value)
     if (value === undefined) {
       window.localStorage.removeItem(key);
     } else {
       const valueToStore = value instanceof Function ? value(persistedLocal(key, value)) : value;
-      window.localStorage.setItem(
-        key,
-        JSON.stringify(valueToStore)
-      );
+      const json = JSON.stringify(valueToStore)
+      try {
+        window.localStorage.setItem(
+          key,
+          json,
+        );
+      } catch (err) {
+        log.error('localStorage "set" failed', err)
+      }
     }
     this.subject.next({key, value})
   },

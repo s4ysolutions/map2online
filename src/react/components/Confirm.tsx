@@ -46,10 +46,12 @@ const ConfirmDialog: React.FunctionComponent<Props> = ({confirm, onCancel: handl
       </button >
     </div >
     <div className="buttons-row" >
-      <input type="checkbox" checked={skip} onChange={ev => {
-        setSkip(!skip)
-      }} />&nbsp;
-      {T`Skip this dialog`}
+      <label htmlFor="set_skip_checkbox" >
+        <input id="set_skip_checkbox" type="checkbox" checked={skip} onChange={ev => {
+          setSkip(!skip)
+        }} />&nbsp;
+        {T`Skip this dialog`}
+      </label >
     </div >
   </Modal >
 };

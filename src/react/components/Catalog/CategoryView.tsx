@@ -6,7 +6,7 @@ import Hidden from '../Svg/Hidden';
 import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
 import {Category} from '../../../app-rx/catalog';
-import {getCatalogUI} from '../../../di-default';
+import {getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {map} from 'rxjs/operators';
 import log from '../../../log';
@@ -18,6 +18,7 @@ interface Props {
 
 const noOp = (): null => null;
 const catalogUI = getCatalogUI();
+const wording = getWording();
 
 const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: categoryView}): React.ReactElement => {
 
@@ -59,19 +60,39 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
       className="delete"
       key="delete"
       onClick={canDelete ? handleDelete : noOp}
+      title={wording.C('Delete category hint')}
     >
       {canDelete ? <Delete /> : <Empty />}
     </div >
-    <div className="title" key="title" onClick={handleSelect} >
+    <div className="title"
+         key="title"
+         onClick={handleSelect}
+         title={wording.R('Open category hint')}
+    >
       {category.title}
     </div >
-    <div className="edit" key="edit" onClick={handleEdit} >
+    <div
+      className="edit"
+      key="edit"
+      onClick={handleEdit}
+      title={wording.C('Modifiy category hint')}
+    >
       <Prefs />
     </div >
-    <div className="active" key="active" onClick={handleActive} >
+    <div
+      className="active"
+      key="active"
+      onClick={handleActive}
+      title={wording.C('Activate category hint')}
+    >
       <Edit />
     </div >
-    <div className="visibility" key="visibility" onClick={handleVisible} >
+    <div
+      className="visibility"
+      key="visibility"
+      onClick={handleVisible}
+      title={wording.C('Visibility category hint')}
+    >
       {isVisible ? <Visible /> : <Hidden />}
     </div >
   </div >;

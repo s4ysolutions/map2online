@@ -6,13 +6,15 @@ import Hidden from '../Svg/Hidden';
 import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
 import {Category, Route} from '../../../app-rx/catalog';
-import {getCatalogUI} from '../../../di-default';
+import {getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {map} from 'rxjs/operators';
 import log from '../../../log';
+import T from '../../../l10n';
 
 const noOp = (): null => null;
 const catalogUI = getCatalogUI();
+const wording = getWording();
 
 const RouteView: React.FunctionComponent<{ route: Route, category: Category, canDelete: boolean }> = ({route: routeView, category, canDelete}): React.ReactElement => {
   log.render('RouteView canDelete ' + canDelete);
@@ -33,7 +35,6 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
     catalogUI.activeRoute = route
   }, []);
 
-
   const handleSelect = React.useCallback(() => {
     catalogUI.selectedRoute = route;
     handleActive()
@@ -46,19 +47,40 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
       className="delete"
       key="delete"
       onClick={canDelete ? handleDelete : noOp}
+      title={wording.C('Delete route hint')}
     >
       {canDelete ? <Delete /> : <Empty />}
     </div >
-    <div className="title" key="title" onClick={handleSelect} >
+    <div
+      className="title"
+      key="title"
+      onClick={handleSelect}
+      title={T`Open features`}
+    >
       {route.title}
     </div >
-    <div className="edit" key="edit" onClick={handleEdit} >
+    <div
+      className="edit"
+      key="edit"
+      onClick={handleEdit}
+      title={T`Open features`}
+    >
       <Prefs />
     </div >
-    <div className="active" key="active" onClick={handleActive} >
+    <div
+      className="active"
+      key="active"
+      onClick={handleActive}
+      title={wording.R('Activate route hint')}
+    >
       <Edit />
     </div >
-    <div className="visibility" key="visibility" onClick={handleVisible} >
+    <div
+      className="visibility"
+      key="visibility"
+      onClick={handleVisible}
+      title={wording.C('Visibility route hint')}
+    >
       {isVisible ? <Visible /> : <Hidden />}
     </div >
   </div >;

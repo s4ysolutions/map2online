@@ -47,6 +47,12 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
     modifyInteractionRef.current = new ModifyInteraction({features: new Collection(features)});
     modifyInteractionRef.current.on('modifyend', handleModifyEnd);
     map.addInteraction(modifyInteractionRef.current);
+    return () => {
+      if (modifyInteractionRef.current) {
+        map.removeInteraction(modifyInteractionRef.current);
+        modifyInteractionRef.current = null;
+      }
+    }
   }, [features, map]);
 
   return null;

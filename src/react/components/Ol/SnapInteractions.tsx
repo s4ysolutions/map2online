@@ -16,6 +16,12 @@ const SnapInteractions: React.FunctionComponent = (): React.ReactElement => {
     }
     snapInteractionRef.current = new SnapInteraction({features: new Collection(features)});
     map.addInteraction(snapInteractionRef.current);
+    return () => {
+      if (snapInteractionRef.current) {
+        map.removeInteraction(snapInteractionRef.current);
+        snapInteractionRef.current = null;
+      }
+    }
   }, [features, map]);
 
   return null;

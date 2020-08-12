@@ -41,7 +41,6 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
   const handleActive = React.useCallback(
     () => {
       if (!isActive && category.routes.length > 0) {
-        console.log();
         catalogUI.activeRoute = category.routes.byPos(0);
       }
     },

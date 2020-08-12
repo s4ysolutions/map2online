@@ -40,8 +40,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
     route.features.observable().pipe(
       map(features => Array.from(features))
     ),
-    Array.from(route.features),
-    `${route.id}@features`
+    Array.from(route.features)
   );
   const featureEdit = useObservable(catalogUI.featureEditObservable(), catalogUI.featureEdit);
   const featureDelete = useObservable(catalogUI.featureDeleteObservable(), catalogUI.featureDelete);

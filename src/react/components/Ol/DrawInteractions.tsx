@@ -11,6 +11,9 @@ import {getCatalogUI} from '../../../di-default';
 import {FeatureProps} from '../../../app-rx/catalog';
 import {makeId} from '../../../l10n/id';
 import {ol2coordinate, ol2coordinates} from './lib/coordinates';
+import useObservable from '../../hooks/useObservable';
+import {subjectCursorOver} from './lib/cursorOver';
+import log from '../../../log';
 
 const newDrawInteraction = (type: FeatureType, pointColor: Color, lineColor: Color) => new DrawInteraction({
   style: getStyle(type, type === FeatureType.Point ? pointColor : lineColor),
@@ -25,6 +28,9 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
   const lineColor = useLineColor();
   const featureType = useCurrentFeatureType();
   const drawInteractionRef = React.useRef(null);
+
+  const cursorOver = useObservable(subjectCursorOver, false)
+  log.render('DrawInteraction', {cursorOver})
 
   const handleDrawEnd = React.useCallback(({feature}) => {
       const geometry = feature.get('geometry');
@@ -49,11 +55,25 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
   useEffect(() => {
     if (drawInteractionRef.current) {
       map.removeInteraction(drawInteractionRef.current);
+      drawInteractionRef.current = null;
     }
     drawInteractionRef.current = newDrawInteraction(featureType, pointColor, lineColor);
     drawInteractionRef.current.on('drawend', handleDrawEnd);
+    drawInteractionRef.current.setActive(cursorOver)
     map.addInteraction(drawInteractionRef.current);
-  }, [pointColor, lineColor, featureType, map]);
+    return () => {
+      if (drawInteractionRef.current) {
+        map.removeInteraction(drawInteractionRef.current);
+        drawInteractionRef.current = null;
+      }
+    }
+  }, [pointColor, lineColor, featureType]);
+
+  useEffect(() => {
+    if (drawInteractionRef.current) {
+      drawInteractionRef.current.setActive(cursorOver)
+    }
+  }, [cursorOver]);
 
   return null;
 };

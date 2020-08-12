@@ -15,11 +15,15 @@ const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
 
   useEffect(() => {
     map.addLayer(layer);
-    return () => map.removeLayer(layer)
+    return () => {
+      map.removeLayer(layer)
+    }
   }, [map]);
 
-  source.clear();
-  source.addFeatures(features);
+  useEffect(() => {
+    source.clear();
+    source.addFeatures(features);
+  })
 
   log.render('ActiveFeatures');
 

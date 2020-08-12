@@ -3,21 +3,29 @@ import log from '../../log';
 import {useEffect, useState} from 'react';
 
 const useObservable = <T>(observale: Observable<T>, initialValue: T, key?: string): T => {
-  log.debug(`use: Observable ${key ? key : 'no-key'}`);
-  const [state, setState] = useState<T>(initialValue);
   if (key) {
-    log.rxAdd(key);
+    log.rxUse(key);
   }
-  const subscription = observale.subscribe((value: T): void => {
-    setState(value);
-  });
+  const [state, setState] = useState<T>(initialValue);
 
-  useEffect(() => (): void => {
+  useEffect(() => {
     if (key) {
-      log.rxDel(key);
+      log.rxAdd(key);
     }
-    subscription.unsubscribe();
-  });
+    const subscription = observale.subscribe((value: T): void => {
+      if (key) {
+        log.rxSetState(key, value);
+      }
+      setState(value);
+    });
+
+    return (): void => {
+      if (key) {
+        log.rxDel(key);
+      }
+      subscription.unsubscribe();
+    }
+  }, []);
   return state;
 };
 

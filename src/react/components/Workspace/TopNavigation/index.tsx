@@ -4,11 +4,12 @@ import CatalogButton from './CatalogButton';
 import MenuButton from './MenuButton';
 import T from 'l10n';
 import {getWorkspace} from '../../../../di-default';
+import log from '../../../../log';
 
 const workspace = getWorkspace();
 
 const TopNavigation = (): React.ReactElement => {
-  console.debug('render TopNavigation');
+  log.render('TopNavigation');
   return <div className="top-navigation" >
     <CatalogButton />
     <h1 >{T`AppTitle`} </h1 >

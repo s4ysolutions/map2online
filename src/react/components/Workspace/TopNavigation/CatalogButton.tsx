@@ -11,7 +11,7 @@ const wording = getWording();
 
 const CatalogButton = (): React.ReactElement => {
   log.render('AppButton');
-  const show = useObservable(workspace.catalogObservable(), workspace.catalogOpen, 'AppButton');
+  const show = useObservable(workspace.catalogObservable(), workspace.catalogOpen);
   return <MenuButton onClick={workspace.toggleCatalog} title={wording.C('Catalog')} >
     {show ? <FolderOpen /> : <FolderClose />}
   </MenuButton >;

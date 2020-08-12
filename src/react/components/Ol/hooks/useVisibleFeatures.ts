@@ -15,7 +15,7 @@ const observable: Observable<OlFeature[]> = getDesigner()
   .pipe(
     map(
       (f) => {
-        return transformVisibleFeatures(f)
+        return transformVisibleFeatures(f);
       }))
 // const visibleFeatures = () => transformVisibleFeatures(getDesigner().visibleFeatures);
 

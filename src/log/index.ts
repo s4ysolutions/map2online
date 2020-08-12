@@ -2,6 +2,8 @@
 import {Subject} from 'rxjs';
 
 const log = {
+  // d: (a?: any, b?: any, c?: any) => undefined, //console.debug,
+  // debug: (a?: any, b?: any, c?: any) => undefined, //console.debug,
   d: console.debug,
   debug: console.debug,
   error: console.error,
@@ -12,6 +14,16 @@ const log = {
       this.debug(`render: ${component}`, params);
     } else {
       this.debug(`render: ${component}`);
+    }
+  },
+  rxUse(id: string): void {
+    this.debug(`rx: use ${id}`);
+  },
+  rxSetState(id: string, value?: any) {
+    if (value === undefined) {
+      this.debug(`rx: ${id} setState`)
+    } else {
+      this.debug(`rx: ${id} setState(${value})`)
     }
   },
   rxAdd(id: string): void {

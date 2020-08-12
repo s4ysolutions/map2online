@@ -6,6 +6,7 @@ import usePosition from './usePosition';
 import useComponentSize from '../../../hooks/useComponentSize';
 import {getWorkspace} from '../../../../di-default';
 import useObservable from '../../../hooks/useObservable';
+import log from '../../../../log';
 
 const workspace = getWorkspace();
 
@@ -18,13 +19,12 @@ const FloatPanel: React.FunctionComponent<Props> =
   ({parentHeight, parentWidth}): React.ReactElement => {
     if (parentHeight <= 0 || parentWidth <= 0) {
       return null;
-      console.debug('render Float Panel parent size is zero');
+      log.warn('render Float Panel parent size is zero');
     }
     const ref = React.useRef<Element | null>(null);
     const {height, width} = useComponentSize(ref);
     const [position, setPosition] = usePosition(width, height, parentWidth, parentHeight);
     const visible = useObservable(workspace.toolsObservable(), workspace.toolsOpen);
-    console.debug(`render Float Panel visible=${visible}`);
 
 
     return <Draggable

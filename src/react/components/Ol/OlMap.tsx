@@ -9,7 +9,6 @@ import log from '../../../log';
 import ActiveFeatures from './ActiveFeatures';
 import olMapContext from './context/map';
 import DrawInteractions from './DrawInteractions';
-import SnapInteractions from './SnapInteractions';
 import ModifyInteractions from './ModifyInteractions';
 import ResizeObserver from 'resize-observer-polyfill';
 import {Feature, isPoint} from '../../../app-rx/catalog';
@@ -19,6 +18,7 @@ import useObservable from '../../hooks/useObservable';
 import {map as rxMap} from 'rxjs/operators';
 import {getBottomRight, getSize, getTopLeft} from 'ol/extent';
 import MapBrowserEvent from '../../../../typings/ol/MapBrowserEvent';
+import {subjectCursorOver} from './lib/cursorOver';
 import Timeout = NodeJS.Timeout;
 
 let resizeTimer: Timeout = null;
@@ -26,15 +26,18 @@ let resizeTimer: Timeout = null;
 const designer = getDesigner();
 const baseLayer = getBaseLayer();
 
+let globalCursorOver: boolean;
+
 const OlMap: React.FunctionComponent = (): React.ReactElement => {
-  const [map, setMap] = React.useState<Map>(null);
-  log.render(`OlMap map is ${map ? 'set' : 'not set'}`);
+  const [map, setMap] = React.useState<Map>(null)
+  log.render(`OlMap map is ${map ? 'set' : 'not set'}`)
 
   const features = useObservable<Feature[]>(
     designer.visibleFeatures.observable()
       .pipe(rxMap(vf => Array.from(vf))),
     Array.from(designer.visibleFeatures)
   );
+
   const extent: number[] = React.useMemo(() => {
     let ext = [] as number[];
     for (const feature of Array.from(features)) {
@@ -64,7 +67,10 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
   const zoomToExtentRef = React.useRef(null);
 
   const mapAttach = React.useCallback((el: HTMLDivElement): void => {
-    log.render('OL mapAttach', el);
+    log.render('OLMap mapAttach', el);
+    if (!el) {
+      return null;
+    }
     zoomToExtentRef.current =
       new ZoomToExtent({extent});
     const state = baseLayer.state
@@ -89,6 +95,12 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
     m.on('pointerdrag', (e: MapBrowserEvent) => {
       const pos = e.frameState.viewState.center
       baseLayer.setDragging({lat: pos[1], lon: pos[0], alt: 0})
+    })
+    el.addEventListener('mouseenter', (ev) => {
+      subjectCursorOver.next(true)
+    })
+    el.addEventListener('mouseleave', (ev) => {
+      subjectCursorOver.next(false)
     })
     setMap(m);
   }, []);
@@ -127,7 +139,6 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       <ActiveFeatures />
       <DrawInteractions />
       <ModifyInteractions />
-      <SnapInteractions />
     </olMapContext.Provider >}
   </div >
 };

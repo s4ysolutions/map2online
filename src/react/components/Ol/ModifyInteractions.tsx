@@ -3,15 +3,17 @@ import {Modify as ModifyInteraction} from 'ol/interaction';
 import Collection from 'ol/Collection';
 import olMapContext from './context/map';
 import useVisibleFeatures from './hooks/useVisibleFeatures';
-import {Coordinate, coordinateEq, Features, isPoint} from '../../../app-rx/catalog';
+import {Coordinate, coordinateEq, Feature, isPoint} from '../../../app-rx/catalog';
 import {ol2coordinate, ol2coordinates} from './lib/coordinates';
 import {getCatalog} from '../../../di-default';
+import OlFeature from 'ol/Feature';
+import log from '../../../log';
 
 const catalog = getCatalog();
 
 const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
   const map = React.useContext(olMapContext);
-  const features: Features = useVisibleFeatures();
+  const features: OlFeature[] = useVisibleFeatures();
 
   const modifyInteractionRef = React.useRef(null);
 
@@ -20,7 +22,7 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
 
       for (const olf of features.getArray()) {
         const olId = olf.getId();
-        const featureToModify = catalog.featureById(olId);
+        const featureToModify: Feature = catalog.featureById(olId);
         if (featureToModify) {
           const flatCoordinates: number[] = olf.get('geometry').flatCoordinates;
           if (isPoint(featureToModify.geometry)) {
@@ -33,11 +35,13 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
             const coordinates: Coordinate[] = ol2coordinates(flatCoordinates);
             featureToModify.updateCoordinates(coordinates);
           }
+        } else {
+          log.warn("No features to modify")
         }
       }
       ev.preventDefault();
     },
-    [features, map]
+    []
   );
 
   useEffect(() => {
@@ -53,7 +57,7 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
         modifyInteractionRef.current = null;
       }
     }
-  }, [features, map]);
+  }, [map, features]);
 
   return null;
 };

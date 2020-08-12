@@ -12,7 +12,7 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
   const featureEditSubject = new Subject<Feature | null>();
   const featureDeleteSubject = new Subject<{ feature: Feature, route: Route } | null>();
   // noinspection UnnecessaryLocalVariableJS
-  const th: CatalogUI = {
+  const th: CatalogUI & { getStoredActiveRoute: () => Route } = {
     get selectedCategory() {
       const id = storage.get<ID | null>('sc', null);
       if (!id) {
@@ -63,10 +63,29 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
         catalog.categories.observable(),
       ).pipe(map(() => this.activeCategory))
     },
-    get activeRoute() {
+    getStoredActiveRoute: () => {
       const id = storage.get<ID | null>('ar', null);
-      if (!id) return null;
-      return catalog.routeById(id);
+      if (id) {
+        const activeRoute = catalog.routeById(id);
+        if (activeRoute)
+          return activeRoute
+      }
+
+      return null
+    },
+    get activeRoute() {
+      const activeRoute = this.getStoredActiveRoute()
+      if (activeRoute) {
+        return activeRoute;
+      }
+
+      // expected to return catalog.categories[0]
+      const activeCategory = this.activeCategory
+      if (!activeCategory || !activeCategory.routes || activeCategory.routes.length < 1) {
+        return null
+      }
+
+      return activeCategory.routes.byPos(0)
     },
     set activeRoute(value) {
       storage.set('ar', value === null ? null : value.id);

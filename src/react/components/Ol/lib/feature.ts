@@ -9,7 +9,6 @@ const cache: Record<ID, OlFeature> = {};
 
 export const olFeatureFactory = (feature: Feature): OlFeature => {
   let cached = cache[feature.id];
-  console.log('debug olFeatureFactory enter', feature.title, feature.id, cached)
   if (cached) return cached;
 
   const geometry = isPoint(feature.geometry)
@@ -24,7 +23,6 @@ export const olFeatureFactory = (feature: Feature): OlFeature => {
   });
   cached.setId(feature.id);
   cached.set('color', feature.color);
-  console.log('debug olFeatureFactory', feature.title)
   cached.setStyle(getStyle(isPoint(feature.geometry) ? FeatureType.Point : FeatureType.Line, feature.color, feature.title || feature.id));
 
   // cached = new OlFeature(geometry);

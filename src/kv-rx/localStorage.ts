@@ -18,7 +18,7 @@ const localStorageSingleton: KV & LocalStorage = {
   },
   subject: new Subject<{ key: string, value: any }>(),
   set: function <T>(key: string, value: T) {
-    log.debug(`localStorage set ${key} debug`, value)
+    log.debug(`localStorage set ${key}`, value)
     if (value === undefined) {
       window.localStorage.removeItem(key);
     } else {
@@ -36,7 +36,7 @@ const localStorageSingleton: KV & LocalStorage = {
     this.subject.next({key, value})
   },
   delete: function <T>(key: string) {
-    log.debug(`localStorage remove ${key} debug`)
+    log.debug(`localStorage remove ${key}`)
     window.localStorage.removeItem(key);
     this.subject.next({key, value: null})
   },

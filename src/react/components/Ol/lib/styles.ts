@@ -50,6 +50,5 @@ const createStyle = (featureType: FeatureType, featureColor: Color, label?: stri
 };
 
 export const getStyle = (featureType: FeatureType, color: Color, label?: string) => {
-  console.log('debug getStyle', label)
   return createStyle(featureType, color, label);
 };

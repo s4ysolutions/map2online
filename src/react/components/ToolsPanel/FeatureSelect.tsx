@@ -5,6 +5,7 @@ import Pin from 'react/components/Svg/Pin';
 import {getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {FeatureType} from '../../../app-rx/ui/tools';
+import log from '../../../log';
 
 const tools = getTools();
 
@@ -17,7 +18,7 @@ const FeatureSelect: React.FunctionComponent<Props> = ({color}): React.ReactElem
   const lineColor = useObservable(tools.colorLineObservable(), tools.colorLine);
   const pointColor = useObservable(tools.colorPointObservable(), tools.colorPoint);
   const on = tool === FeatureType.Line && lineColor === color || tool === FeatureType.Point && pointColor === color;
-  console.debug(`Render FeatureSelect color=${color} selected=${on}`);
+  log.render(`FeatureSelect color=${color} selected=${on}`);
   return <div
     className={`select ${on ? 'on' : 'off'}`}
     onClick={(): void => tools.selectColor(color)}

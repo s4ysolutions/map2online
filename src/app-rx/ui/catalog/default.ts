@@ -37,7 +37,7 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     selectedRouteObservable: () => storage.observable<ID | null>('sr').pipe(map(id => id === null ? null : catalog.routeById(id))),
 
     get activeCategory() {
-      const activeRoute = this.activeRoute;
+      const activeRoute = this.getStoredActiveRoute();
       if (activeRoute) {
         for (const category of Array.from(catalog.categories)) {
           if (category.hasRoute(activeRoute)) {

@@ -37,8 +37,12 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
   log.render('FeaturesView for ' + route.id);
 
   const features = useObservable(
-    route.features.observable().pipe(map(features => Array.from(features))),
-    Array.from(route.features), `${route.id}@features`);
+    route.features.observable().pipe(
+      map(features => Array.from(features))
+    ),
+    Array.from(route.features),
+    `${route.id}@features`
+  );
   const featureEdit = useObservable(catalogUI.featureEditObservable(), catalogUI.featureEdit);
   const featureDelete = useObservable(catalogUI.featureDeleteObservable(), catalogUI.featureDelete);
   const handleDragEnd = useCallback(
@@ -87,7 +91,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
       }}
       onCancel={catalogUI.endDeleteFeature}
       title={T`Delete feature`}
-      message={T`The feature and all the features inside it will be deleted, are you sure?`}
+      message={T`The feature will be deleted, are you sure?`}
       confirm={T`Yes, delete the feature`}
     />}
   </div >;

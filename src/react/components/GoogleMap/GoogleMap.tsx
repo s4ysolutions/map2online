@@ -23,7 +23,6 @@ const moveRecentMap = (x: number, y: number, zoom: number) => {
     const c = recentMap.getCenter()
     const cc = googleLonLat(x, y);
     if (c.lat() != cc.lat || c.lng() != cc.lng) {
-      console.log('dbg move', {x, y, c, cc})
       recentMap.setCenter(cc)
     }
     if (zoom !== recentMap.getZoom()) {

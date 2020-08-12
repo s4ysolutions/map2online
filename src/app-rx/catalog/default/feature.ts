@@ -115,7 +115,6 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
   const updateIds = (ids: ID[]) => {
     if (ids !== iids[key]) {
       iids[key] = ids.slice();
-      console.log('debug set key', {key, ids, ids0: iids[key]})
       storage.set(key, ids);
     }
   };

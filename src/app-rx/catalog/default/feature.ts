@@ -16,6 +16,7 @@ import {makeId} from '../../../l10n/id';
 import {map} from 'rxjs/operators';
 import reorder from '../../../lib/reorder';
 import {Color} from '../../../lib/colors';
+import T from '../../../l10n';
 
 export const FEATURE_ID_PREFIX = "f";
 export const FEATURES_ID_PREFIX = "fs";
@@ -114,18 +115,23 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
   iids[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
     if (ids !== iids[key]) {
+      /* to avoid handling the special case no .features
       if (ids.length === 0) {
         storage.delete(key);
         delete (iids[key])
       } else {
-        iids[key] = ids.slice();
-        storage.set(key, ids);
-      }
+       */
+      iids[key] = ids.slice();
+      storage.set(key, ids);
+      /*      }*/
     }
   };
   return {
     add: function (props: FeatureProps, position: number) {
       const feature = featureFactory(storage, catalog, props);
+      if (!feature.title) {
+        feature.title = (isPoint(props.geometry) ? T`Point` : T`Line`) + ` ${iids[key].length + 1}`
+      }
       feature.update();
       const ids0 = iids[key]
       const pos = position || ids0.length;

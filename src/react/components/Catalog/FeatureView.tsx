@@ -16,8 +16,8 @@ import {formatCoordinate, formatCoordinates} from '../../../lib/format';
 const catalogUI = getCatalogUI();
 
 const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; index: number }> = ({index, feature: featureView, route}): React.ReactElement => {
-  log.render('FeatureView');
   const feature = useObservable(featureView.observable(), featureView);
+  log.render('FeatureView', {featureView, feature});
 
   const isActive = useObservable(
     catalogUI.activeFeatureObservable().pipe(map(active => active.id === feature.id)),

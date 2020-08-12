@@ -20,6 +20,7 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
   const handleModifyEnd = React.useCallback((ev) => {
       const {features} = ev;
 
+      console.log('debug', features)
       for (const olf of features.getArray()) {
         const olId = olf.getId();
         const featureToModify: Feature = catalog.featureById(olId);
@@ -28,15 +29,19 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
           if (isPoint(featureToModify.geometry)) {
             const coordinate: Coordinate = ol2coordinate(flatCoordinates);
             if (!coordinateEq(coordinate, featureToModify.geometry.coordinate)) {
+              console.log('debug modify', olf, featureToModify)
               featureToModify.updateCoordinates(coordinate);
               break;
+            } else {
+
             }
           } else {
             const coordinates: Coordinate[] = ol2coordinates(flatCoordinates);
             featureToModify.updateCoordinates(coordinates);
           }
         } else {
-          log.warn("No features to modify")
+          console.log("debug No features to modify id=" + olId)
+          log.error("No features to modify id=" + olId)
         }
       }
       ev.preventDefault();

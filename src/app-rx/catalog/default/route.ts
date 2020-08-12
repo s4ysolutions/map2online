@@ -86,13 +86,15 @@ export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, c
   iids[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
     if (ids !== iids[key]) {
+      /*
       if (ids.length === 0) {
         storage.delete(key);
         delete (iids[key])
       } else {
+       */
         iids[key] = ids.slice();
         storage.set(key, ids);
-      }
+      /* } */
     }
   };
   if (iids[key].length === 0) {

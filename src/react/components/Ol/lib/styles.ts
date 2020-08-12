@@ -1,4 +1,4 @@
-import {Circle as CircleStyle, Fill, Icon as IconStyle, Stroke, Style} from 'ol/style';
+import {Circle as CircleStyle, Fill, Icon as IconStyle, Stroke, Style, Text} from 'ol/style';
 
 import {Color, rgb} from 'lib/colors';
 import {pinSvg} from '../../Svg/Pin';
@@ -11,7 +11,12 @@ const SCALE = ICON_HEIGHT / SVG_HEIGHT;
 const CENTER = 0.5;
 const HEIGHT = 1;
 
-const createStyle = (featureType: FeatureType, featureColor: Color) => {
+const createText = (text: string) =>
+  new Text({
+    text
+  });
+
+const createStyle = (featureType: FeatureType, featureColor: Color, label?: string) => {
   const color = rgb[featureColor];
   return new Style({
     stroke: new Stroke({
@@ -38,18 +43,13 @@ const createStyle = (featureType: FeatureType, featureColor: Color) => {
           fill: new Fill({
             color: `${color}a0`
           })
-        })
+        }),
+    //text: createText(label),
+    text: label ? createText(label) : undefined
   })
 };
 
-const styles = {};
-
-export const getStyle = (featureType: FeatureType, color: Color) => {
-  const key = `${featureType}@${color}`;
-  const style = styles[key];
-  if (style) {
-    return style;
-  }
-  styles[key] = createStyle(featureType, color);
-  return styles[key];
+export const getStyle = (featureType: FeatureType, color: Color, label?: string) => {
+  console.log('debug getStyle', label)
+  return createStyle(featureType, color, label);
 };

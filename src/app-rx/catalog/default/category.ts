@@ -84,13 +84,15 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
   iids[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
     if (ids !== iids[key]) {
+      /*
       if (ids.length === 0) {
         storage.delete(key);
         delete (iids[key])
       } else {
-        iids[key] = ids.slice();
-        storage.set(key, ids);
-      }
+       */
+      iids[key] = ids.slice();
+      storage.set(key, ids);
+      /*      }*/
     }
   };
   if (iids[key].length === 0) {

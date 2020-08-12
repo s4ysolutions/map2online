@@ -77,15 +77,23 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
   return th;
 };
 
+const iids: Record<ID, ID[]> = {}
+
 export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wording): Categories => {
-  let ids0 = storage.get<ID[]>('cats', []);
+  const key = 'cats'
+  iids[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
-    if (ids !== ids0) {
-      ids0 = ids;
-      storage.set('cats', ids);
+    if (ids !== iids[key]) {
+      if (ids.length === 0) {
+        storage.delete(key);
+        delete (iids[key])
+      } else {
+        iids[key] = ids.slice();
+        storage.set(key, ids);
+      }
     }
   };
-  if (ids0.length === 0) {
+  if (iids[key].length === 0) {
     const category = newCategoryProps(wording);
     storage.set(`${CATEGORY_ID_PREFIX}@${category.id}`, category);
     updateIds([category.id]);
@@ -94,27 +102,31 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
     add: function (props: CategoryProps | null, position?: number): Promise<Category> {
       const category = categoryFactory(storage, catalog, wording, props);
       category.update();
+      const ids0 = iids[key]
       const pos = position || ids0.length;
       updateIds(ids0.slice(0, pos).concat(category.id).concat(ids0.slice(pos)));
       return Promise.resolve(category);
     },
-    byPos: (index: number): Category | null => catalog.categoryById(ids0[index]),
+    byPos: (index: number): Category | null => catalog.categoryById(iids[key][index]),
     get length() {
-      return ids0.length
+      return iids[key].length
     },
     observable: function () {
       return storage.observable('cats').pipe(map(() => this))
     },
     remove: function (category: Category): number {
+      const ids0 = iids[key]
       const pos = ids0.indexOf(category.id);
       if (pos === -1) return -1;
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
       category.delete();
     },
     reorder: function (from: number, to: number) {
+      const ids0 = iids[key]
       updateIds(reorder(ids0, from, to));
     },
     [Symbol.iterator]: function () {
+      const ids0 = iids[key]
       const _ids = [...ids0];
       let _current = 0;
       return {

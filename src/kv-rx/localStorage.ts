@@ -36,6 +36,7 @@ const localStorageSingleton: KV & LocalStorage = {
     this.subject.next({key, value})
   },
   delete: function <T>(key: string) {
+    log.debug(`localStorage remove ${key} debug`)
     window.localStorage.removeItem(key);
     this.subject.next({key, value: null})
   },

@@ -58,9 +58,11 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, pr
       .pipe(
         map(props => props === null ? null : catalog.routeById(props.id))
       ),
-    delete: () => {
+    delete() {
+      console.log('debug delete route', this.features)
       if (this.features) {
         for (const feature of Array.from(this.features)) {
+          console.log('debug route remove feature', feature)
           this.features.remove(feature);
         }
       }
@@ -77,16 +79,23 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, pr
   return th;
 };
 
+const iids: Record<ID, ID[]> = {}
+
 export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, category: Category): Routes => {
   const key = `${ROUTES_ID_PREFIX}@${category.id}`;
-  let ids0 = storage.get<ID[]>(key, []);
+  iids[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
-    if (ids !== ids0) {
-      ids0 = ids;
-      storage.set(key, ids);
+    if (ids !== iids[key]) {
+      if (ids.length === 0) {
+        storage.delete(key);
+        delete (iids[key])
+      } else {
+        iids[key] = ids.slice();
+        storage.set(key, ids);
+      }
     }
   };
-  if (ids0.length === 0) {
+  if (iids[key].length === 0) {
     const route = newRouteProps(wording);
     storage.set(`${ROUTE_ID_PREFIX}@${route.id}`, route);
     updateIds([route.id]);
@@ -95,28 +104,32 @@ export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, c
     add: function (props: RouteProps, position: number) {
       const route = routeFactory(storage, catalog, wording, props);
       route.update();
+      const ids0 = iids[key]
       const pos = position || ids0.length;
       updateIds(ids0.slice(0, pos).concat(route.id).concat(ids0.slice(pos)));
       return Promise.resolve(route);
     },
-    byPos: (index: number): Route | null => catalog.routeById(ids0[index]),
+    byPos: (index: number): Route | null => catalog.routeById(iids[key][index]),
     get length() {
-      return ids0.length
+      return iids[key].length
     },
-    hasRoute: (route: Route) => ids0.indexOf(route.id) >= 0,
+    hasRoute: (route: Route) => iids[key].indexOf(route.id) >= 0,
     observable: function () {
       return storage.observable(key).pipe(map(() => this))
     },
     remove: function (route: Route): number {
+      const ids0 = iids[key]
       const pos = ids0.indexOf(route.id);
       if (pos === -1) return -1;
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
       route.delete();
     },
     reorder: function (from: number, to: number) {
+      const ids0 = iids[key]
       updateIds(reorder(ids0, from, to));
     },
     [Symbol.iterator]: function () {
+      const ids0 = iids[key]
       const _ids = [...ids0];
       let _current = 0;
       return {

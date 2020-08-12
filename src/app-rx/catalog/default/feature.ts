@@ -107,15 +107,20 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
   };
 };
 
-const iids: Record<string, string[]> = {}
+const iids: Record<ID, ID[]> = {}
 
 export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Features => {
   const key = `${FEATURES_ID_PREFIX}@${route.id}`;
   iids[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
     if (ids !== iids[key]) {
-      iids[key] = ids.slice();
-      storage.set(key, ids);
+      if (ids.length === 0) {
+        storage.delete(key);
+        delete (iids[key])
+      } else {
+        iids[key] = ids.slice();
+        storage.set(key, ids);
+      }
     }
   };
   return {

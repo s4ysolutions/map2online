@@ -101,9 +101,9 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
       storage.delete(key);
       storage.delete(`vis@${p.id}`); // visibility
     },
-    update: function () {
-      storage.set(key, p);
-    }
+    update: () => {
+      storage.set(key, p)
+    },
   };
 };
 

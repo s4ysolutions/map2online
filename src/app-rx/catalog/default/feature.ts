@@ -107,12 +107,15 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
   };
 };
 
+const iids: Record<string, string[]> = {}
+
 export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Features => {
   const key = `${FEATURES_ID_PREFIX}@${route.id}`;
-  let ids0 = storage.get<ID[]>(key, []);
+  iids[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
-    if (ids !== ids0) {
-      ids0 = ids;
+    if (ids !== iids[key]) {
+      iids[key] = ids.slice();
+      console.log('debug set key', {key, ids, ids0: iids[key]})
       storage.set(key, ids);
     }
   };
@@ -120,32 +123,37 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
     add: function (props: FeatureProps, position: number) {
       const feature = featureFactory(storage, catalog, props);
       feature.update();
+      const ids0 = iids[key]
       const pos = position || ids0.length;
       updateIds(ids0.slice(0, pos).concat(feature.id).concat(ids0.slice(pos)));
       return Promise.resolve(feature);
     },
     byPos: (index: number): Feature | null => {
-      return catalog.featureById(ids0[index])
+      return catalog.featureById(iids[key][index])
     },
     get length() {
-      return ids0.length
+      return iids[key].length
     },
     observable: function () {
-      return storage.observable(key).pipe(map((v) => {
-        return this;
+      const th = this
+      return storage.observable(key).pipe(map(() => {
+        return th;
       }))
     },
     remove: function (feature: Feature): number {
+      const ids0 = iids[key]
       const pos = ids0.indexOf(feature.id);
       if (pos === -1) return -1;
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
       feature.delete();
     },
     reorder: function (from: number, to: number) {
+      const ids0 = iids[key]
       updateIds(reorder(ids0, from, to));
     },
     [Symbol.iterator]: function () {
-      const _ids = [...ids0];
+      const ids0 = iids[key]
+      const _ids = [...ids0]; // don't reflect modifications after the iterator has been created
       let _current = 0;
       return {
         next: () => {

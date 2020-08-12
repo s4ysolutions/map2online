@@ -8,7 +8,7 @@ const toolsFactory = (persistStorage: KV): Tools => {
     colorLineObservable: () => persistStorage.observable('tcl'),
     colorPoint: persistStorage.get('tcp', Color.RED),
     colorPointObservable: () => persistStorage.observable('tcp'),
-    isLine: persistStorage.get('tt', FeatureType.Line) === FeatureType.Line,
+    isLine: persistStorage.get<FeatureType.Point | FeatureType.Line>('tt', FeatureType.Point) === FeatureType.Line,
     isLineObservable: () => persistStorage.observable('tt'),
     isPoint: persistStorage.get('tt', FeatureType.Point) === FeatureType.Point,
     isPointObservable: () => persistStorage.observable('tt'),

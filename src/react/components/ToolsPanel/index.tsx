@@ -13,7 +13,7 @@ const tools = getTools();
 
 const ToolsPanel: React.FunctionComponent = (): React.ReactElement => {
   const toolState = useObservable(tools.featureTypeObservable(), tools.featureType);
-  log.render('Render ToolsPanel');
+  log.render('ToolsPanel', {toolState});
   return <div className="tools" >
     <div className="tabs" >
       <Tab

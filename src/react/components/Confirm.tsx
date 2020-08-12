@@ -22,8 +22,8 @@ const startSkipConfirmTimer = () => {
 const ConfirmDialog: React.FunctionComponent<Props> = ({confirm, onCancel: handleCancel, onConfirm: handleConfirm, message, title}): React.ReactElement => {
   if (skipConfirmTimer) {
     clearTimeout(skipConfirmTimer)
-    handleConfirm()
     startSkipConfirmTimer()
+    setTimeout(handleConfirm, 0)
     return null;
   }
   const [skip, setSkip] = React.useState(false)

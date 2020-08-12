@@ -60,7 +60,7 @@ const mapGroups: MapGroupDefinition[] = [
             osmAttributions,
           ],
           url:
-            'http://tiles-proxy-a.s4y.solutions/openstreet/{z}/{x}/{y}.png',
+            'https://tiles-proxy-a.s4y.solutions/openstreet/{z}/{x}/{y}.png',
         }),
       },
       {

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Layer from 'ol/layer/Layer';
 import TileLayer from 'ol/layer/Tile';
 import log from '../../../log';
 import {getMapDefinition, isOlMapDefinition} from '../../../map-sources/definitions';
@@ -27,16 +26,26 @@ const BaseLayer: React.FunctionComponent = (): React.ReactElement => {
   const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
   const map = React.useContext(olMapContext);
 
-  log.render(`OlSource sourceName=${baseLayerName}`);
-  const layerRef = React.useRef<Layer>(null);
-  if (layerRef.current) {
-    map.removeLayer(layerRef.current);
-    layerRef.current = null;
-  }
+  // const layerRef = React.useRef<Layer>(null);
   const md = getMapDefinition(baseLayerName);
+  let layer = null
   if (md !== null && isOlMapDefinition(md)) {
-    layerRef.current = new TileLayer({source: md.olSourceFactory()});
-    map.addLayer(layerRef.current);
+    layer = new TileLayer({source: md.olSourceFactory()});
+  }
+
+  let layers = map.getLayers()
+  log.render(`BaseLayer sourceName=${baseLayerName} layersLength=${layers.getLength()} layer is null=${!(layer)}`);
+  if (layer) {
+    if (layers.getLength() == 0) {
+      map.addLayer(layer);
+    } else {
+      layers.setAt(0, layer)
+    }
+//  layerRef.current = layer
+  } else {
+    if (layers.getLength() > 0) {
+      layers.item(0).setVisible(false)
+    }
   }
   return null;
 };

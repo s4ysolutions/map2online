@@ -12,7 +12,7 @@ export const olFeatureFactory = (feature: Feature): OlFeature => {
   if (cached) return cached;
 
   const geometry = isPoint(feature.geometry)
-    ? new Point([feature.geometry.coordinate.lon + 1, feature.geometry.coordinate.lat + 2])
+    ? new Point([feature.geometry.coordinate.lon, feature.geometry.coordinate.lat])
     : new LineString(feature.geometry.coordinates.map(c => [c.lon, c.lat]));
 
   cached = new OlFeature({
@@ -23,7 +23,7 @@ export const olFeatureFactory = (feature: Feature): OlFeature => {
   });
   cached.setId(feature.id);
   cached.set('color', feature.color);
-  cached.setStyle(getStyle(isPoint(feature.geometry) ? FeatureType.Point : FeatureType.Line, feature.color, feature.title || feature.id));
+  cached.setStyle(getStyle(isPoint(feature.geometry) ? FeatureType.Point : FeatureType.Line, feature.color, `${feature.title}\n${feature.id}`));
 
   // cached = new OlFeature(geometry);
   cache[feature.id] = cached;

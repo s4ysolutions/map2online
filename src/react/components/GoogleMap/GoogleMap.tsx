@@ -36,7 +36,6 @@ const GoogleMap: React.FunctionComponent = (): React.ReactElement => {
   const [map, setMap] = React.useState<google.maps.Map>(null);
   recentMap = map;
   log.render(`GoogleMap map is ${map ? 'set' : 'not set'} sourceName=${baseLayerName}`);
-  log.d('dbg render', {map: map})
 
   const mapAttach = React.useCallback((el: HTMLDivElement): void => {
     log.render('GoogleMap mapAttach', el);
@@ -56,7 +55,6 @@ const GoogleMap: React.FunctionComponent = (): React.ReactElement => {
       zoom: state.zoom
     });
 
-    log.d('dbg set map', {state, m})
     setMap(m)
 
   }, [])
@@ -72,7 +70,6 @@ const GoogleMap: React.FunctionComponent = (): React.ReactElement => {
       draggingSubscription = null;
     }
     stateSubscription = baseLayer.stateObservable().subscribe(state => {
-      log.d('dbg change state', {state, map, recentMap})
       moveRecentMap(state.x, state.y, state.zoom)
     })
     draggingSubscription = baseLayer.draggingObservable().subscribe(coord => {

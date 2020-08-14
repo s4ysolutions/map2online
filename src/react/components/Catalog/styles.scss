@@ -30,34 +30,27 @@
 .catalog-navigation button {
   max-width: 30%;
 }
-/*
-.catalog .folders {
-  position: relative;
-  flex-grow: 1;
-}
- */
 
 .folders, .features {
   flex-grow: 1;
-  direction: rtl;
   position: relative;
   display: flex;
   flex-direction: column;
-  // width: 100%;
-  // top: 0;
-  // bottom: 0;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 .folders.top, .folders.level-1, .features {
 }
 
-.catalog .folders.top, .catalog .folders.level-1, .catalog .features > * {
-  direction: ltr;
+.catalog .list {
+  direction: rtl;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-bottom: 72px; // place for "Add button"
 }
 
-.catalog .list {
-  flex-grow: 1;
+.catalog .list .draggable {
+  direction: ltr;
 }
 
 .catalog .draggable .open {
@@ -144,7 +137,11 @@
 }
 
 .right-drawer .title {
-  padding: 16px;
+  padding: 4px;
+}
+
+.right-drawer .menu-item {
+  margin: 0 0 1px;
 }
 
 .right-drawer .sub-menu {

@@ -1,8 +1,4 @@
 @import "_spaces";
-
-$yellow: rgba(236, 181, 62, 0.95);
-$yellowdim: rgba(236, 181, 62, 0.5);
-
 $grey-darkest: #222;
 $grey-darker: #444;
 $grey-dark: #666;
@@ -11,11 +7,14 @@ $grey-light: #aaa;
 $grey-lighter: #ccc;
 $grey-lightest: #eee;
 
-$lightgrey: #888;
 $black: #111;
 $white: #fff;
 
-$lightbackground-disabled: $grey-lighter;
+$yellow: rgba(236, 181, 62, 0.95);
+$yellowdim: rgba(236, 181, 62, 0.5);
+
+$panel-color: $grey-lightest;
+$button-color: $yellow;
 
 $darktext: $grey-darkest;
 
@@ -24,7 +23,6 @@ $form-focused: $yellowdim;
 
 $button-font-size: 80%;
 
-$button-height: 2.5em;
 $button-v-padding: 0.3em;
 $button-title-height: 1.9em;
 
@@ -44,16 +42,13 @@ body {
 }
 
 .catalog button {
-  background: $black;
-}
-
-.catalog button[disabled] {
-  background-color: $lightbackground-disabled;
+  background: $button-color;
 }
 
 .catalog-navigation {
-  background-color: $grey-lightest;
+  background-color: $panel-color;
   border-top: $sepwidth solid $grey-darkest;
+  border-bottom: 1px solid $grey-darkest;
   padding: $space;
 }
 
@@ -63,7 +58,7 @@ body {
 }
 
 .catalog .folders.top {
-  background-color: $grey-lightest; //rgba(0, 0, 0, 1);
+  background-color: $panel-color;
 }
 
 .catalog .draggable.folder-top {
@@ -84,6 +79,33 @@ body {
 
 .catalog .draggable.features {
   background-color: $grey-darkest; //rgba(0, 0, 0, 1);
+}
+
+.float-panel {
+  background-color: $panel-color;
+}
+
+.float-panel .tools .tabs {
+  background-color: $black;
+}
+
+.float-panel .tools .buttons {
+  border-bottom: 1px solid $black;
+}
+
+.float-panel .drag-handle,
+.float-panel .tools .tabs svg {
+  fill: $white;
+}
+
+.float-panel .tools .select.off svg,
+.float-panel .tools .tab.off svg {
+  // opacity: 0.8
+}
+
+// .drag-handle, - ugly
+.float-panel .tools .select.on {
+  background-color: $grey;
 }
 
 form {
@@ -171,7 +193,7 @@ input:required:invalid {
 
 label[for="file"],
 button {
-  background: $yellow;
+  background: $button-color;
   border: none;
   border-radius: 3px;
   color: white;
@@ -206,7 +228,7 @@ form button:hover {
 }
 
 button.menu-item {
-  background-color: $yellow;
+  background-color: $button-color;
 }
 
 button.menu-item.on {
@@ -216,52 +238,30 @@ button.menu-item.off {
   background-color: $yellowdim;
 }
 
-.float-panel .tools {
-  background-color: $grey;
-}
-
-.float-panel .tools .tabs {
-  background-color: $black;
-}
-
-.float-panel .drag-handle,
-.float-panel .tools .tabs svg {
-  fill: $white;
-}
-
-.float-panel .tools .select.off svg,
-.float-panel .tools .tab.off svg {
-  opacity: 0.6
-}
-
-// .drag-handle, - ugly
-.float-panel .tools .select.on {
-  background-color: $lightgrey;
+.left-drawer {
 }
 
 .right-drawer {
-  background-color: $grey; //rgba(0, 0, 0, 1);
-}
-
-.right-drawer .menu-item {
-  margin: 0 0 8px;
+  background-color: $panel-color; //rgba(0, 0, 0, 1);
 }
 
 .right-drawer .sub-items,
 .right-drawer .title {
-  background-color: $lightgrey; //rgba(0, 0, 0, 1);
+  background-color: $black; //rgba(0, 0, 0, 1);
+  color: $grey-lighter;
 }
 
 .right-drawer .sub-menu:hover,
 .right-drawer .menu-item .title:hover {
-  background-color: $yellow;
+  background-color: $button-color;
+  color: $white;
 }
 
 .right-drawer .menu-item.closed .sub-menu {
 }
 
 .ol-control button {
-  background-color: $yellow !important;
+  background-color: $button-color !important;
 }
 
 input,

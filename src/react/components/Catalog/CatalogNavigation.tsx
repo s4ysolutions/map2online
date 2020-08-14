@@ -1,9 +1,11 @@
 import * as React from 'react';
-import {getCatalogUI, getWording} from '../../../di-default';
+import {getCatalogUI, getWording, getWorkspace} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
+import FolderClose from '../Svg/FolderClose';
 
 const catalogUI = getCatalogUI();
 const wording = getWording();
+const workspace = getWorkspace();
 
 const deselectRoute = () => catalogUI.selectedRoute = null;
 const deselectCategory = () => {
@@ -16,7 +18,8 @@ const CatalogNavigation: React.FunctionComponent<{}> = (): React.ReactElement =>
   const selectedRoute = useObservable(catalogUI.selectedRouteObservable(), catalogUI.selectedRoute);
 
   return <div className="catalog-navigation" >
-    <button onClick={deselectCategory} type="button" disabled={!selectedCategory} >
+    {selectedCategory &&
+    <button onClick={deselectCategory} type="button" >
       <svg viewBox="0 0 512 512" >
         <path
           d="m260.29 85.236-61.143-62.391h-182.64v482.15h495.48v-419.76zm93.369 218.37-79.495-83.441v205.67h-19.819v-205.67l-79.49 83.441-14.535-13.109 103.93-109.1 103.94 109.1z"
@@ -30,6 +33,11 @@ const CatalogNavigation: React.FunctionComponent<{}> = (): React.ReactElement =>
         />
       </svg >
     </button >
+    ||
+    <button onClick={workspace.toggleCatalog} type="button" >
+      <FolderClose />
+    </button >
+    }
 
 
     {!selectedCategory && !selectedRoute && <span className="title" >

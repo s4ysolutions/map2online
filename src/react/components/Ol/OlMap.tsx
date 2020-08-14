@@ -19,6 +19,7 @@ import {map as rxMap} from 'rxjs/operators';
 import {getBottomRight, getSize, getTopLeft} from 'ol/extent';
 import MapBrowserEvent from '../../../../typings/ol/MapBrowserEvent';
 import {subjectCursorOver} from './lib/cursorOver';
+import SnapInteractions from './SnapInteractions';
 import Timeout = NodeJS.Timeout;
 
 let resizeTimer: Timeout = null;
@@ -139,6 +140,7 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       <ActiveFeatures />
       <DrawInteractions />
       <ModifyInteractions />
+      <SnapInteractions />
     </olMapContext.Provider >}
   </div >
 };

@@ -8,6 +8,7 @@ import {ol2coordinate, ol2coordinates} from './lib/coordinates';
 import {getCatalog} from '../../../di-default';
 import OlFeature from 'ol/Feature';
 import log from '../../../log';
+import {setModifying} from './hooks/useModifying';
 
 const catalog = getCatalog();
 
@@ -17,9 +18,12 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
 
   const modifyInteractionRef = React.useRef(null);
 
+  const handleModifyStart = React.useCallback(ev => {
+    setModifying(true)
+  }, [])
+
   const handleModifyEnd = React.useCallback((ev) => {
       const {features} = ev;
-
       for (const olf of features.getArray()) {
         const olId = olf.getId();
         const featureToModify: Feature = catalog.featureById(olId);
@@ -40,19 +44,25 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
         }
       }
       ev.preventDefault();
+      setModifying(false)
     },
     []
   );
 
   useEffect(() => {
     if (modifyInteractionRef.current) {
+      modifyInteractionRef.current.un('modifyend', handleModifyEnd);
+      modifyInteractionRef.current.un('modifystart', handleModifyStart);
       map.removeInteraction(modifyInteractionRef.current);
     }
     modifyInteractionRef.current = new ModifyInteraction({features: new Collection(features)});
     modifyInteractionRef.current.on('modifyend', handleModifyEnd);
+    modifyInteractionRef.current.on('modifystart', handleModifyStart);
     map.addInteraction(modifyInteractionRef.current);
     return () => {
       if (modifyInteractionRef.current) {
+        modifyInteractionRef.current.un('modifyend', handleModifyEnd);
+        modifyInteractionRef.current.un('modifystart', handleModifyStart);
         map.removeInteraction(modifyInteractionRef.current);
         modifyInteractionRef.current = null;
       }

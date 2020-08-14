@@ -18,16 +18,14 @@ import useObservable from '../../hooks/useObservable';
 import {map as rxMap} from 'rxjs/operators';
 import {getBottomRight, getSize, getTopLeft} from 'ol/extent';
 import MapBrowserEvent from '../../../../typings/ol/MapBrowserEvent';
-import {subjectCursorOver} from './lib/cursorOver';
 import SnapInteractions from './SnapInteractions';
+import {setCursorOver} from './hooks/useCursorOver';
 import Timeout = NodeJS.Timeout;
 
 let resizeTimer: Timeout = null;
 
 const designer = getDesigner();
 const baseLayer = getBaseLayer();
-
-let globalCursorOver: boolean;
 
 const OlMap: React.FunctionComponent = (): React.ReactElement => {
   const [map, setMap] = React.useState<Map>(null)
@@ -98,10 +96,10 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       baseLayer.setDragging({lat: pos[1], lon: pos[0], alt: 0})
     })
     el.addEventListener('mouseenter', (ev) => {
-      subjectCursorOver.next(true)
+      setCursorOver(true)
     })
     el.addEventListener('mouseleave', (ev) => {
-      subjectCursorOver.next(false)
+      setCursorOver(false)
     })
     setMap(m);
   }, []);

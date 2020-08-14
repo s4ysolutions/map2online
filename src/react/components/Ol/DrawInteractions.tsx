@@ -11,9 +11,9 @@ import {getCatalogUI} from '../../../di-default';
 import {FeatureProps} from '../../../app-rx/catalog';
 import {makeId} from '../../../l10n/id';
 import {ol2coordinate, ol2coordinates} from './lib/coordinates';
-import useObservable from '../../hooks/useObservable';
-import {subjectCursorOver} from './lib/cursorOver';
 import log from '../../../log';
+import {useCursorOver} from './hooks/useCursorOver';
+import {useModifying} from './hooks/useModifying';
 
 const newDrawInteraction = (type: FeatureType, pointColor: Color, lineColor: Color) => new DrawInteraction({
   style: getStyle(type, type === FeatureType.Point ? pointColor : lineColor),
@@ -29,8 +29,9 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
   const featureType = useCurrentFeatureType();
   const drawInteractionRef = React.useRef(null);
 
-  const cursorOver = useObservable(subjectCursorOver, false)
-  log.render('DrawInteraction', {cursorOver})
+  const cursorOver = useCursorOver()
+  const isModifying = useModifying()
+  log.render('DrawInteraction', {cursorOver, isModifying})
 
   const handleDrawEnd = React.useCallback(({feature}) => {
       const geometry = feature.get('geometry');
@@ -59,7 +60,7 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
     }
     drawInteractionRef.current = newDrawInteraction(featureType, pointColor, lineColor);
     drawInteractionRef.current.on('drawend', handleDrawEnd);
-    drawInteractionRef.current.setActive(cursorOver)
+    drawInteractionRef.current.setActive(cursorOver && !isModifying)
     map.addInteraction(drawInteractionRef.current);
     return () => {
       if (drawInteractionRef.current) {
@@ -71,9 +72,9 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
 
   useEffect(() => {
     if (drawInteractionRef.current) {
-      drawInteractionRef.current.setActive(cursorOver)
+      drawInteractionRef.current.setActive(cursorOver && !isModifying)
     }
-  }, [cursorOver]);
+  }, [cursorOver, isModifying]);
 
   return null;
 };

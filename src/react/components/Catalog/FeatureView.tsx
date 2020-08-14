@@ -59,9 +59,9 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
           </span >,
           <div className="title" key="title" >
             {feature.title && feature.title.trim() ||
-            (isPoint(feature.geometry)
+            (feature.id + ' : ' + (isPoint(feature.geometry)
               ? formatCoordinate(feature.geometry.coordinate)
-              : formatCoordinates((feature.geometry as LineString).coordinates))
+              : formatCoordinates((feature.geometry as LineString).coordinates)))
             }
           </div >,
         ]}
@@ -82,9 +82,9 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
     {isOpen && <div className="body" >
       <div >
         {
-          (isPoint(feature.geometry)
+          (feature.id + ' : ' + (isPoint(feature.geometry)
             ? formatCoordinate(feature.geometry.coordinate)
-            : formatCoordinates((feature.geometry as LineString).coordinates))
+            : formatCoordinates((feature.geometry as LineString).coordinates)))
         }
       </div >
     </div >}

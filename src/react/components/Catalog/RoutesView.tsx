@@ -45,9 +45,9 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
     category.routes.add(null).then(route => catalogUI.startEditRoute(route))
   }, []);
 
-  return <div className={'folders top'} >
+  return <div className={'folders level-1'} >
     <DragDropContext onDragEnd={handleDragEnd} >
-      <Droppable droppableId={'catalog-droppableFolder-top'} >
+      <Droppable droppableId={'catalog-droppableFolder-level-1'} >
         {(providedDroppable, snapshotDroppable): React.ReactElement => <div
           className={getClassName(snapshotDroppable.isDraggingOver)}
           ref={providedDroppable.innerRef}
@@ -55,7 +55,7 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
           {Array.from(routes).map((item, index): React.ReactElement =>
             <Draggable draggableId={item.id} index={index} key={item.id} >
               {(provided, snapshot): React.ReactElement => <div
-                className={'draggable folder-top'}
+                className={'draggable folder-level-1'}
                 ref={provided.innerRef}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}

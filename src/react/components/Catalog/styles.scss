@@ -23,6 +23,8 @@
 
 .catalog-navigation .title {
   flex-grow: 1;
+  text-align: right;
+  padding-right: 8px;
 }
 
 .catalog-navigation button {
@@ -47,10 +49,10 @@
   overflow-y: auto;
 }
 
-.folders.top, .folders.features, .features {
+.folders.top, .folders.level-1, .features {
 }
 
-.catalog .folders.top, .catalog .folders.features, .catalog .features > * {
+.catalog .folders.top, .catalog .folders.level-1, .catalog .features > * {
   direction: ltr;
 }
 
@@ -66,12 +68,11 @@
   display: flex;
   align-items: center;
   align-content: stretch;
-  height: 3em;
+  height: 2em;
 }
 
 .catalog .draggable .item .complex-title .index {
   min-width: 2em;
-  text-align: right;
 }
 
 .catalog .draggable .item .complex-title svg {
@@ -79,7 +80,7 @@
 }
 
 .catalog .draggable .item .complex-title .title {
-  padding-left: 0.5em;
+  padding-left: 2px;
 }
 
 .catalog .draggable .item .complex-title,
@@ -88,8 +89,8 @@
   display: flex;
   height: 100%;
   align-items: center;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 .catalog .draggable .item .visibility,
@@ -111,16 +112,12 @@
   width: auto;
 }
 
-.feature-item .active svg,
-.feature-item .type svg,
-.feature-item .delete svg,
 .catalog .draggable .item .active svg,
 .catalog .draggable .item .edit svg,
 .catalog .draggable .item .delete svg {
   height: 60%;
 }
 
-.feature-item .delete svg,
 .catalog .draggable .item .delete svg {
   margin-right: 0;
 }
@@ -144,4 +141,23 @@
   .catalog .draggable .item:hover .delete svg {
     visibility: visible;
   }
+}
+
+.right-drawer .title {
+  padding: 16px;
+}
+
+.right-drawer .sub-menu {
+  padding-right: 16px;
+  padding-left: 32px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.catalog .draggable {
+  margin-bottom: 2px;
+}
+
+button svg {
+  padding-right: 0.3em;
 }

@@ -2,10 +2,22 @@
 
 $yellow: rgba(236, 181, 62, 0.95);
 $yellowdim: rgba(236, 181, 62, 0.5);
-$grey: #444;
+
+$grey-darkest: #222;
+$grey-darker: #444;
+$grey-dark: #666;
+$grey: #888;
+$grey-light: #aaa;
+$grey-lighter: #ccc;
+$grey-lightest: #eee;
+
 $lightgrey: #888;
 $black: #111;
 $white: #fff;
+
+$lightbackground-disabled: $grey-lighter;
+
+$darktext: $grey-darkest;
 
 $form-bg: $yellow;
 $form-focused: $yellowdim;
@@ -22,8 +34,56 @@ body {
 }
 
 .top-navigation {
+  background-color: $black;
   border-bottom: 1px solid #ddd;
   padding: $space;
+}
+
+.catalog {
+  background-color: red;
+}
+
+.catalog button {
+  background: $black;
+}
+
+.catalog button[disabled] {
+  background-color: $lightbackground-disabled;
+}
+
+.catalog-navigation {
+  background-color: $grey-lightest;
+  border-top: $sepwidth solid $grey-darkest;
+  padding: $space;
+}
+
+.catalog-navigation .title {
+  font-size: 105%;
+  color: $darktext;
+}
+
+.catalog .folders.top {
+  background-color: $grey-lightest; //rgba(0, 0, 0, 1);
+}
+
+.catalog .draggable.folder-top {
+  background-color: $grey-dark;
+}
+
+.catalog .folders.level-1 {
+  background-color: $grey-light; //rgba(0, 0, 0, 1);
+}
+
+.catalog .draggable.folder-level-1 {
+  background-color: $grey-darker;
+}
+
+.catalog .features {
+  background-color: $grey-dark; //rgba(0, 0, 0, 1);
+}
+
+.catalog .draggable.features {
+  background-color: $grey-darkest; //rgba(0, 0, 0, 1);
 }
 
 form {
@@ -139,68 +199,10 @@ form button {
   color: inherit;
 }
 
-button svg {
-  padding-right: 0.3em;
-}
-
 form label[for="file"]:hover,
 form button:hover {
   opacity: 1;
   color: rgba(0, 0, 0, 1);
-}
-
-.catalog {
-  background-color: $grey; //rgba(0, 0, 0, 1);
-}
-
-.catalog-navigation .title {
-  font-size: $button-font-size;
-}
-
-
-.catalog .folders.top {
-  background-color: $grey; //rgba(0, 0, 0, 1);
-}
-
-.catalog .folders.features {
-  background-color: $lightgrey; //rgba(0, 0, 0, 1);
-}
-
-.catalog .draggable.folder-top {
-  background-color: $lightgrey;
-}
-
-.catalog .draggable.folder-top .item.current {
-  background-color: $black;
-}
-
-.catalog .draggable .features {
-  background-color: $lightgrey; //rgba(0, 0, 0, 1);
-}
-
-.catalog .draggable.folder-features {
-  background-color: $grey;
-}
-
-.catalog .draggable.folder-features .item.current {
-  background-color: $black;
-}
-
-.catalog .draggable.features {
-  background-color: $black; //rgba(0, 0, 0, 1);
-}
-
-.catalog .draggable .item {
-  margin-bottom: 8px;
-}
-
-.catalog button {
-  background: #111;
-}
-
-.catalog-navigation {
-  border-top: $sepwidth solid #222;
-  padding: $space;
 }
 
 button.menu-item {
@@ -250,17 +252,6 @@ button.menu-item.off {
   background-color: $lightgrey; //rgba(0, 0, 0, 1);
 }
 
-.right-drawer .title {
-  padding: 16px;
-}
-
-.right-drawer .sub-menu {
-  padding-right: 16px;
-  padding-left: 32px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
 .right-drawer .sub-menu:hover,
 .right-drawer .menu-item .title:hover {
   background-color: $yellow;
@@ -271,13 +262,6 @@ button.menu-item.off {
 
 .ol-control button {
   background-color: $yellow !important;
-}
-
-.feature-item .title,
-.level2item .title,
-.level1item .title {
-  padding-left: 16px;
-  padding-right: 16px;
 }
 
 input,

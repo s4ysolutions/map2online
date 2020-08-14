@@ -53,7 +53,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
 
   return <div className={'features'} >
     <DragDropContext onDragEnd={handleDragEnd} >
-      <Droppable droppableId={'catalog-droppableFolder-top'} >
+      <Droppable droppableId={'catalog-droppableFolder-features'} >
         {(providedDroppable, snapshotDroppable): React.ReactElement => <div
           className={getClassName(snapshotDroppable.isDraggingOver)}
           ref={providedDroppable.innerRef}
@@ -61,7 +61,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
           {features.map((item, index): React.ReactElement =>
             <Draggable draggableId={item.id} index={index} key={item.id} >
               {(provided, snapshot): React.ReactElement => <div
-                className={'draggable folder-features'}
+                className={'draggable features'}
                 ref={provided.innerRef}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}

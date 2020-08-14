@@ -59,10 +59,8 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, pr
         map(props => props === null ? null : catalog.routeById(props.id))
       ),
     delete() {
-      console.log('debug delete route', this.features)
       if (this.features) {
         for (const feature of Array.from(this.features)) {
-          console.log('debug route remove feature', feature)
           this.features.remove(feature);
         }
       }

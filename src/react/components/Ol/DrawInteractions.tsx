@@ -53,7 +53,6 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
   );
 
   useEffect(() => {
-    console.log('debug DrawInteraction useEffect on color', {pointColor, lineColor, featureType})
     if (drawInteractionRef.current) {
       map.removeInteraction(drawInteractionRef.current);
       drawInteractionRef.current = null;

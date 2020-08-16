@@ -1,7 +1,8 @@
 import {Wording} from './index';
 import {currentLocale} from '../../../l10n';
 import {KV} from '../../../kv-rx';
-import {Observable} from 'rxjs';
+import {merge, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 const categoryVariands = {
   ru: [
@@ -268,6 +269,16 @@ const wordings = {
 
 export const wordingFactory = (storage: KV): Wording => {
   const r: Wording = {
+    get isPersonalized(): boolean {
+      return this.currentCategoryVariant && this.currentRouteVariant
+    },
+    observableIsPersonalized(): Observable<boolean> {
+      const th = this
+      return merge(this.observableCurrentCategoryVariant(), this.observableCurrentRouteVariant())
+        .pipe(
+          map(() => th.isPersonalized)
+        )
+    },
     get categoryVariants(): string[] {
       return categoryVariands[currentLocale()] || categoryVariands['en'];
     },

@@ -19,33 +19,33 @@ const wording = getWording();
 const workspace = getWorkspace();
 
 const Workspace = (): React.ReactElement => {
-    log.render('Workspace');
-    const ref = React.useRef<Element | null>(null);
-    const {height, width} = useComponentSize(ref);
-    const importUIVisible = useObservable<boolean>(importUI.visibleObservable(), importUI.visible);
-    const categoryVariant = useObservable(wording.observableCurrentCategoryVariant(), wording.currentCategoryVariant)
-    const routeVariant = useObservable(wording.observableCurrentRouteVariant(), wording.currentRouteVariant)
-    const personalizationVisible = useObservable<boolean>(workspace.personalizationObservable(), workspace.personalizationOpen)
+  log.render('Workspace');
+  const ref = React.useRef<Element | null>(null);
+  const {height, width} = useComponentSize(ref);
+  const importUIVisible = useObservable<boolean>(importUI.visibleObservable(), importUI.visible);
+  const isPersonalized = useObservable(wording.observableIsPersonalized(), wording.isPersonalized)
+  const personalizationVisible = useObservable<boolean>(workspace.personalizationObservable(), workspace.personalizationOpen)
 
-    return categoryVariant === null || routeVariant === null
-      ? <Wording />
-      : <React.Fragment ><TopNavigation key="topNavigation" />
-        <div className="workspace" key="workspace" ref={ref as any} >
-          <LeftDrawer />
-          <div className="map-container" >
-            <GoogleMap />
-            <OlMap />
-          </div >
-          <RightDrawer />
-          <FloatPanel parentHeight={height} parentWidth={width} />
+  return isPersonalized
+    ? <React.Fragment ><TopNavigation key="topNavigation" />
+      <div className="workspace" key="workspace" ref={ref as any} >
+        <LeftDrawer />
+        <div className="map-container" >
+          <GoogleMap />
+          <OlMap />
         </div >
-        {
-          importUIVisible && <Import />
-        }
-        {
-          personalizationVisible && <Wording />
-        }
-      </React.Fragment >
+        <RightDrawer />
+        <FloatPanel parentHeight={height} parentWidth={width} />
+      </div >
+      {
+        importUIVisible && <Import />
+      }
+      {
+        personalizationVisible && <Wording />
+      }
+    </React.Fragment >
+    :
+    <Wording />
   }
 ;
 

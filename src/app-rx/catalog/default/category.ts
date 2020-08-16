@@ -77,58 +77,64 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
   return th;
 };
 
-const iids: Record<ID, ID[]> = {}
+let prevIds: ID[] = []
 
 export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wording): Categories => {
   const key = 'cats'
-  iids[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
-    if (ids !== iids[key]) {
+    if (ids !== prevIds) {
       /*
       if (ids.length === 0) {
         storage.delete(key);
         delete (iids[key])
       } else {
        */
-      iids[key] = ids.slice();
+      prevIds = ids.slice();
       storage.set(key, ids);
       /*      }*/
     }
   };
-  if (iids[key].length === 0) {
-    const category = newCategoryProps(wording);
-    storage.set(`${CATEGORY_ID_PREFIX}@${category.id}`, category);
-    updateIds([category.id]);
+  const guardedIds = () => {
+    if (prevIds.length > 0) {
+      return prevIds;
+    }
+    if (wording.isPersonalized) {
+      const category = newCategoryProps(wording);
+      storage.set(`${CATEGORY_ID_PREFIX}@${category.id}`, category);
+      updateIds([category.id]);
+    }
+    return prevIds;
   }
+
   return {
     add: function (props: CategoryProps | null, position?: number): Promise<Category> {
       const category = categoryFactory(storage, catalog, wording, props);
       category.update();
-      const ids0 = iids[key]
-      const pos = position || ids0.length;
+      const pos = position || guardedIds().length;
+      const ids0 = guardedIds()
       updateIds(ids0.slice(0, pos).concat(category.id).concat(ids0.slice(pos)));
       return Promise.resolve(category);
     },
-    byPos: (index: number): Category | null => catalog.categoryById(iids[key][index]),
+    byPos: (index: number): Category | null => catalog.categoryById(guardedIds()[index]),
     get length() {
-      return iids[key].length
+      return guardedIds().length
     },
     observable: function () {
       return storage.observable('cats').pipe(map(() => this))
     },
     remove: function (category: Category): number {
-      const ids0 = iids[key]
+      const ids0 = guardedIds()
       const pos = ids0.indexOf(category.id);
       if (pos === -1) return -1;
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
       category.delete();
     },
     reorder: function (from: number, to: number) {
-      const ids0 = iids[key]
+      const ids0 = guardedIds()
       updateIds(reorder(ids0, from, to));
     },
     [Symbol.iterator]: function () {
-      const ids0 = iids[key]
+      const ids0 = guardedIds()
       const _ids = [...ids0];
       let _current = 0;
       return {

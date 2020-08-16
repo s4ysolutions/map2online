@@ -1,7 +1,7 @@
 import Modal from './Modal';
 import React from 'react';
 import T from '../../l10n';
-import Timer = NodeJS.Timer;
+import {startSkipConfirmTimer} from '../../lib/confirmation';
 
 interface Props {
   onConfirm: () => void;
@@ -11,21 +11,8 @@ interface Props {
   confirm?: string,
 }
 
-let skipConfirmTimer: Timer | null = null;
-
-const startSkipConfirmTimer = () => {
-  skipConfirmTimer = setTimeout(() => {
-    skipConfirmTimer = null;
-  }, 10000)
-}
 
 const ConfirmDialog: React.FunctionComponent<Props> = ({confirm, onCancel: handleCancel, onConfirm: handleConfirm, message, title}): React.ReactElement => {
-  if (skipConfirmTimer) {
-    clearTimeout(skipConfirmTimer)
-    startSkipConfirmTimer()
-    setTimeout(handleConfirm, 0)
-    return null;
-  }
   const [skip, setSkip] = React.useState(false)
   return <Modal onClose={handleCancel} >
     <h2 className="confirm-dialog-title" >{title}</h2 >

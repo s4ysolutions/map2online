@@ -105,14 +105,20 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     setVisible: (id: ID, open: boolean) => storage.set(`vis@${id}`, open),
     visibleObservable: (id?: ID) => id
       ? storage.observable<boolean>(`vis@${id}`)
+        .pipe(
+          map(v => v === null ? true : v)
+        )
       : storage.observable<{ key: string; value: any }>()
         .pipe(
           filter(kv => kv.key.indexOf('vis') === 0),
-          map(kv => kv.value)
+          map(kv => kv.value === null ? true : kv.value)
         ),
     isOpen: (id: ID) => storage.get<boolean>(`op@${id}`, false),
     setOpen: (id: ID, open: boolean) => storage.set(`op@${id}`, open),
-    openObservable: (id: ID) => storage.observable<boolean>(`op@${id}`),
+    openObservable: (id: ID) => storage.observable<boolean>(`op@${id}`)
+      .pipe(
+        map(v => !!v)
+      ),
 
     categoryEdit: null,
     categoryEditObservable: () => categoryEditSubject,

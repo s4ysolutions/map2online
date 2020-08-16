@@ -7,6 +7,9 @@ import useObservable from '../../hooks/useObservable';
 import CategoryView from './CategoryView';
 import CategoryEdit from './CategoryEdit';
 import ConfirmDialog from '../Confirm';
+import T from '../../../l10n';
+import {Categories} from '../../../app-rx/catalog';
+import {map} from 'rxjs/operators';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -33,13 +36,18 @@ const catalogUI = getCatalogUI();
 const wording = getWording();
 
 const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
-  log.render('Categories');
+  log.render('Categories')
 
-  const categories = useObservable(catalog.categories.observable(), catalog.categories);
+  const categories = useObservable(catalog.categories.observable()
+    .pipe(
+      map(cc => Array.from(cc))
+    ),
+    Array.from(catalog.categories));
+
   const categoryEdit = useObservable(catalogUI.categoryEditObservable(), catalogUI.categoryEdit);
   const categoryDelete = useObservable(catalogUI.categoryDeleteObservable(), catalogUI.categoryDelete);
   const handleDragEnd = useCallback(
-    ({source: {index: indexS}, destination: {index: indexD}}): void => categories.reorder(indexS, indexD),
+    ({source: {index: indexS}, destination: {index: indexD}}): void => catalog.categories.reorder(indexS, indexD),
     []);
   const handleAdd = useCallback(() => {
     catalog.categories.add(null).then(category => catalogUI.startEditCategory(category))
@@ -47,12 +55,12 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
 
   return <div className={'folders top'} >
     <DragDropContext onDragEnd={handleDragEnd} >
-      <Droppable droppableId={'catalog-droppableFolder-top'} >
+      <Droppable droppableId="catalog-droppableFolder-top" >
         {(providedDroppable, snapshotDroppable): React.ReactElement => <div
           className={getClassName(snapshotDroppable.isDraggingOver)}
           ref={providedDroppable.innerRef}
         >
-          {Array.from(categories).map((item, index): React.ReactElement =>
+          {categories.map((item, index): React.ReactElement =>
             <Draggable draggableId={item.id} index={index} key={item.id} >
               {(provided, snapshot): React.ReactElement => <div
                 className={'draggable folder-top'}
@@ -73,7 +81,7 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
       </Droppable >
     </DragDropContext >
     <button className="add" onClick={handleAdd} type="button" >
-      Add
+      {T`Add`}
     </button >
     {categoryEdit && <CategoryEdit category={categoryEdit} />}
     {categoryDelete && <ConfirmDialog

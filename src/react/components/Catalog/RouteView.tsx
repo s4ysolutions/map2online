@@ -8,9 +8,10 @@ import Visible from '../Svg/Visible';
 import {Category, Route} from '../../../app-rx/catalog';
 import {getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
-import {map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import log from '../../../log';
 import T from '../../../l10n';
+import {skipConfirmDialog} from '../../../lib/confirmation';
 
 const noOp = (): null => null;
 const catalogUI = getCatalogUI();
@@ -18,7 +19,11 @@ const wording = getWording();
 
 const RouteView: React.FunctionComponent<{ route: Route, category: Category, canDelete: boolean }> = ({route: routeView, category, canDelete}): React.ReactElement => {
   log.render('RouteView canDelete ' + canDelete);
-  const route = useObservable(routeView.observable(), routeView);
+  const route = useObservable(routeView.observable()
+    .pipe(
+      filter(r => !!r)
+    ),
+    routeView)
 
   const isActive = useObservable(
     catalogUI.activeRouteObservable().pipe(map(active => active.id === route.id)),
@@ -28,7 +33,11 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
   const isVisible = useObservable(catalogUI.visibleObservable(route.id), catalogUI.isVisible(route.id));
 
   const handleDelete = React.useCallback(() => {
-    catalogUI.requestDeleteRoute(routeView, category);
+    if (skipConfirmDialog()) {
+      category.routes.remove(route);
+    } else {
+      catalogUI.requestDeleteRoute(routeView, category);
+    }
   }, []);
 
   const handleActive = React.useCallback(() => {

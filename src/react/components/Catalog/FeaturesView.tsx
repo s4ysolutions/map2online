@@ -79,7 +79,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
       </Droppable >
     </DragDropContext >
     <button className="add" onClick={handleAdd} type="button" >
-      Add
+     {T`Add`}
     </button >
     {featureEdit && <FeatureEdit feature={featureEdit} />}
     {featureDelete && <ConfirmDialog

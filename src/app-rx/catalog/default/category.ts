@@ -60,6 +60,7 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
       }
       storage.delete(key);
       storage.delete(`vis@${p.id}`); // visibility
+      storage.delete(`op@${p.id}`); // visibility
     },
     hasRoute: function (route: Route) {
       return this.routes.hasRoute(route)
@@ -83,15 +84,12 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
   const key = 'cats'
   const updateIds = (ids: ID[]) => {
     if (ids !== prevIds) {
-      /*
       if (ids.length === 0) {
         storage.delete(key);
-        delete (iids[key])
       } else {
-       */
-      prevIds = ids.slice();
-      storage.set(key, ids);
-      /*      }*/
+        prevIds = ids.slice();
+        storage.set(key, ids);
+      }
     }
   };
   const guardedIds = () => {

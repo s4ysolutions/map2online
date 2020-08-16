@@ -101,6 +101,7 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
     delete: () => {
       storage.delete(key);
       storage.delete(`vis@${p.id}`); // visibility
+      storage.delete(`op@${p.id}`); // visibility
     },
     update: () => {
       storage.set(key, p)
@@ -115,15 +116,13 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
   iids[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
     if (ids !== iids[key]) {
-      /* to avoid handling the special case no .features
       if (ids.length === 0) {
         storage.delete(key);
         delete (iids[key])
       } else {
-       */
-      iids[key] = ids.slice();
-      storage.set(key, ids);
-      /*      }*/
+        iids[key] = ids.slice();
+        storage.set(key, ids);
+      }
     }
   };
   return {

@@ -1,5 +1,4 @@
-const merge = require('webpack-merge'); // mergey JS objects utility
-const path = require('path');
+const { merge } = require('webpack-merge'); // mergey JS objects utility
 const webpack = require('webpack');
 
 const { config: baseConfig, PATH_DIST, PATH_CSS, PATH_SASS, cssLoader, cssModuleLoader, ruleTypescript } = require('./webpack.config-common');

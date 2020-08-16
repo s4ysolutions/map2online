@@ -166,8 +166,7 @@ const config = {
     new ForkTsCheckerWebpackPlugin({ }),
     new HtmlWebpackPlugin({
       template: `${PATH_SRC}/index.ejs`,
-      // Must have to avoid duplicate AppContainer
-      inject: false,
+      inject: true,
       hash: true,
       showErrors: true,
       appMountId: 'reactMount',
@@ -177,7 +176,7 @@ const config = {
   ],
   output: {
     path: path.resolve(PATH_DIST),
-    filename: 'index.d.ts.js',
+    filename: 'index.js',
     publicPath: '/',
   },
 };

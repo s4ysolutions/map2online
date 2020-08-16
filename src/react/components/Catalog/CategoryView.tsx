@@ -6,10 +6,11 @@ import Hidden from '../Svg/Hidden';
 import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
 import {Category} from '../../../app-rx/catalog';
-import {getCatalogUI, getWording} from '../../../di-default';
+import {getCatalog, getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
-import {map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import log from '../../../log';
+import {skipConfirmDialog} from '../../../lib/confirmation';
 
 interface Props {
   canDelete: boolean;
@@ -17,13 +18,18 @@ interface Props {
 }
 
 const noOp = (): null => null;
+const catalog = getCatalog();
 const catalogUI = getCatalogUI();
 const wording = getWording();
 
 const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: categoryView}): React.ReactElement => {
 
-  const category = useObservable(categoryView.observable(), categoryView);
-  log.render('CategoryView', {category, categoryView});
+  const category = useObservable(
+    categoryView.observable().pipe(
+      filter(v => !!v) // don't rerender on deleteted category
+    ),
+    categoryView
+  )
 
   const isActive: boolean = useObservable(
     catalogUI.activeCategoryObservable().pipe(map(active => active && active.id === category.id)),
@@ -31,11 +37,17 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
   );
   const isVisible = useObservable(catalogUI.visibleObservable(category.id), catalogUI.isVisible(category.id));
 
+  log.render('CategoryView', {title: category.title, canDelete, category, categoryView, isVisible});
+
   const handleDelete = React.useCallback(
     () => {
-      catalogUI.requestDeleteCategory(categoryView)
+      if (skipConfirmDialog()) {
+        catalog.categories.remove(category)
+      } else {
+        catalogUI.requestDeleteCategory(categoryView)
+      }
     },
-    []
+    [category, categoryView]
   );
 
   const handleActive = React.useCallback(

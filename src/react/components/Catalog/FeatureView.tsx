@@ -6,33 +6,33 @@ import Visible from '../Svg/Visible';
 import {Feature, isPoint, LineString, Route} from '../../../app-rx/catalog';
 import {getCatalogUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
-import {map} from 'rxjs/operators';
+import {filter} from 'rxjs/operators';
 import log from '../../../log';
 import Pin from '../Svg/Pin';
 import Line from '../Svg/Line';
 import {rgb} from '../../../lib/colors';
 import {formatCoordinate, formatCoordinates} from '../../../lib/format';
+import {skipConfirmDialog} from '../../../lib/confirmation';
 
 const catalogUI = getCatalogUI();
 
 const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; index: number }> = ({index, feature: featureView, route}): React.ReactElement => {
-  const feature = useObservable(featureView.observable(), featureView);
+  const feature = useObservable(featureView.observable()
+    .pipe(
+      filter(f => !!f)
+    ),
+    featureView);
   log.render('FeatureView', {featureView, feature});
-
-  const isActive = useObservable(
-    catalogUI.activeFeatureObservable().pipe(map(active => active.id === feature.id)),
-    catalogUI.activeFeature && catalogUI.activeFeature.id === feature.id
-  );
 
   const isVisible = useObservable(catalogUI.visibleObservable(feature.id), catalogUI.isVisible(feature.id));
   const isOpen = useObservable(catalogUI.openObservable(feature.id), catalogUI.isOpen(feature.id));
 
   const handleDelete = React.useCallback(() => {
-    catalogUI.requestDeleteFeature(featureView, route);
-  }, []);
-
-  const handleActive = React.useCallback(() => {
-    catalogUI.activeFeature = featureView
+    if (skipConfirmDialog()) {
+      route.features.remove(feature);
+    } else {
+      catalogUI.requestDeleteFeature(featureView, route);
+    }
   }, []);
 
   const handleOpen = React.useCallback(() => {

@@ -98,6 +98,10 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
     if (prevIds.length > 0) {
       return prevIds;
     }
+    prevIds = storage.get('cats', [])
+    if (prevIds.length > 0) {
+      return prevIds;
+    }
     if (wording.isPersonalized) {
       const category = newCategoryProps(wording);
       storage.set(`${CATEGORY_ID_PREFIX}@${category.id}`, category);

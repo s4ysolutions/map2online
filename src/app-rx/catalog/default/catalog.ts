@@ -19,13 +19,22 @@ const catalogFactory = (storage: KV, wording: Wording): Catalog => {
           map(({value}) => value)),
     categories: null,
     categoryById: function (id: ID) {
-      return categories[id] || categoryFactory(storage, this, wording, storage.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null))
+      const category = categories[id]
+      if (category) return category;
+      categories[id] = categoryFactory(storage, this, wording, storage.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null))
+      return categories[id]
     },
     featureById: function (id: ID) {
-      return features[id] || featureFactory(storage, this, storage.get<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${id}`, null))
+      const feature = features[id]
+      if (feature) return feature
+      features[id] = featureFactory(storage, this, storage.get<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${id}`, null))
+      return features[id]
     },
     routeById: function (id: ID) {
-      return routes[id] || routeFactory(storage, this, wording, storage.get<RouteProps | null>(`${ROUTE_ID_PREFIX}@${id}`, null))
+      const route = routes[id]
+      if (route) return route
+      routes[id] = routeFactory(storage, this, wording, storage.get<RouteProps | null>(`${ROUTE_ID_PREFIX}@${id}`, null))
+      return routes[id]
     }
   };
   th.categories = categoriesFactory(storage, th, wording);

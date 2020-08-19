@@ -1,6 +1,5 @@
 import {KV} from './index';
 import {Subject} from 'rxjs';
-import {persistedLocal} from '../persist/local';
 import {filter, map} from 'rxjs/operators';
 import log from '../log';
 
@@ -22,7 +21,7 @@ const localStorageSingleton: KV & LocalStorage = {
     if (value === undefined) {
       window.localStorage.removeItem(key);
     } else {
-      const valueToStore = value instanceof Function ? value(persistedLocal(key, value)) : value;
+      const valueToStore = value instanceof Function ? value(this.get(key)) : value;
       const json = JSON.stringify(valueToStore)
       try {
         window.localStorage.setItem(

@@ -10,7 +10,7 @@ describe('KML Importer', () => {
     simple = fs.readFileSync(path.join(__dirname, '..', '..', 'data', 'simple.kml.js'), "utf-8")
   });
   it('rrb-like proper formatted', async () => {
-    const folders = await parseKMLString(simple);
+    const folders = await parseKMLString(null, simple);
     expect(folders.length).to.be.eq(1);
     const root = folders[0];
     expect(root.parent).to.be.null;

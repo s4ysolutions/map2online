@@ -6,7 +6,7 @@ import Visible from '../Svg/Visible';
 import {Feature, isPoint, LineString, Route} from '../../../app-rx/catalog';
 import {getCatalogUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
-import {filter} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import log from '../../../log';
 import Pin from '../Svg/Pin';
 import Line from '../Svg/Line';
@@ -19,7 +19,8 @@ const catalogUI = getCatalogUI();
 const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; index: number }> = ({index, feature: featureView, route}): React.ReactElement => {
   const feature = useObservable(featureView.observable()
     .pipe(
-      filter(f => !!f)
+      filter(f => !!f),
+      map(f => ({id: f.id, title: f.title, geometry: f.geometry, color: f.color})),
     ),
     featureView);
   log.render('FeatureView', {featureView, feature});
@@ -29,7 +30,7 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
 
   const handleDelete = React.useCallback(() => {
     if (skipConfirmDialog()) {
-      route.features.remove(feature);
+      route.features.remove(featureView);
     } else {
       catalogUI.requestDeleteFeature(featureView, route);
     }
@@ -41,7 +42,7 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
 
 
   const handleVisible = React.useCallback(() => catalogUI.setVisible(feature.id, !isVisible), [isVisible]);
-  const handleEdit = React.useCallback(() => catalogUI.startEditFeature(feature), [feature.id]);
+  const handleEdit = React.useCallback(() => catalogUI.startEditFeature(featureView), [feature.id]);
 
   return <div className="accordion-item" >
     <div className="item" >

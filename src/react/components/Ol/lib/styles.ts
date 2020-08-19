@@ -11,9 +11,13 @@ const SCALE = ICON_HEIGHT / SVG_HEIGHT;
 const CENTER = 0.5;
 const HEIGHT = 1;
 
+const backgroundFill = new Fill({color: '#fff8'})
 const createText = (text: string) =>
   new Text({
-    text
+    backgroundFill,
+    font: '14px -apple-system, BlinkMacSystemFont, \\"Segoe UI\\", Roboto, Ubuntu, \\"Helvetica Neue\\", Helvetica, sans-serif',
+    offsetY: 8,
+    text,
   });
 
 const createStyle = (featureType: FeatureType, featureColor: Color, label?: string) => {

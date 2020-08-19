@@ -21,12 +21,12 @@ const Modal: React.FunctionComponent<{ onClose: () => void, closeOnEnter?: boole
 
     return ReactDOM.createPortal(
       <div
-        className={"modal " + className || ''}
+        className="modal"
         onClick={handleClose}
         onKeyDown={handleKeyPress}
         tabIndex={0}
       >
-        <div className="modal-content" onClick={stopPropagation} >
+        <div className={`modal-content ${className || ''}`} onClick={stopPropagation} >
           {children}
         </div >
       </div >,

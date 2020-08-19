@@ -1,16 +1,4 @@
-import {
-  Catalog,
-  Feature,
-  FeatureProps,
-  Features,
-  ID,
-  isCoordinate,
-  isLineString,
-  isPoint,
-  LineString,
-  Point,
-  Route
-} from '../index';
+import {Catalog, Feature, FeatureProps, Features, ID, isCoordinate, isPoint, LineString, Point, Route} from '../index';
 import {KV} from '../../../kv-rx';
 import {makeId} from '../../../l10n/id';
 import {map} from 'rxjs/operators';
@@ -31,11 +19,11 @@ const newFeatureProps = (): FeatureProps => ({
   visible: true,
 });
 
-interface Updateable {
+interface Updatebale {
   update: () => void;
 }
 
-export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProps | null): Feature & Updateable | null => {
+export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProps | null): Feature & Updatebale | null => {
   const p: FeatureProps = props === null ? newFeatureProps() : {...props};
   const key = `${FEATURE_ID_PREFIX}@${p.id}`;
   return {
@@ -60,7 +48,7 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
       p.description = value;
       this.update();
     },
-    id: p.id,
+    id: p.id || makeId(),
     get summary() {
       return p.summary
     },
@@ -83,16 +71,15 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
       this.update();
     },
     updateCoordinates: function (coord) {
-      if (isPoint(this.geometry) && isCoordinate(coord)) {
+      if (isCoordinate(coord)) {
         // noinspection UnnecessaryLocalVariableJS
         const point: Point = {coordinate: coord};
-        p.geometry = point;
-      } else if (isLineString(this.geometry) && !isCoordinate(coord)) {
+        this.geometry = point;
+      } else {
         // noinspection UnnecessaryLocalVariableJS
         const lineString: LineString = {coordinates: coord};
-        p.geometry = lineString;
+        this.geometry = lineString;
       }
-      this.update();
     },
     observable: () => storage.observable<FeatureProps | null>(key)
       .pipe(
@@ -104,7 +91,7 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
       storage.delete(`op@${p.id}`); // visibility
     },
     update: () => {
-      storage.set(key, p)
+      storage.set(key, p);
     },
   };
 };
@@ -116,21 +103,20 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
   iids[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
     if (ids !== iids[key]) {
-      if (ids.length === 0) {
-        storage.delete(key);
-        delete (iids[key])
-      } else {
-        iids[key] = ids.slice();
-        storage.set(key, ids);
-      }
+      iids[key] = ids.slice();
+      storage.set(key, ids);
     }
   };
   return {
     add: function (props: FeatureProps, position: number) {
-      const feature = featureFactory(storage, catalog, props);
-      if (!feature.title) {
-        feature.title = (isPoint(props.geometry) ? T`Point` : T`Line`) + ` ${iids[key].length + 1}`
+      const p = {...props}
+      if (!p.title) {
+        p.title = (isPoint(props.geometry) ? T`Point` : T`Line`) + ` ${iids[key].length + 1}`
       }
+      if (!p.id) {
+        p.id = makeId()
+      }
+      const feature = featureFactory(storage, catalog, p);
       feature.update();
       const ids0 = iids[key]
       const pos = position || ids0.length;
@@ -155,6 +141,13 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
       if (pos === -1) return -1;
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
       feature.delete();
+    },
+    delete: function () {
+      while (this.length > 0) {
+        this.remove(this.byPos(0))
+      }
+      storage.delete(key);
+      delete (iids[key])
     },
     reorder: function (from: number, to: number) {
       const ids0 = iids[key]

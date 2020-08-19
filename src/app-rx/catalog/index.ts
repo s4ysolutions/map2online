@@ -46,7 +46,6 @@ export const isLineString = (geometry: Point | LineString): geometry is LineStri
 export interface Feature extends FeatureProps {
   delete: () => void;
   observable: () => Observable<Feature>;
-  update: () => void;
 
   updateCoordinates(coord: Coordinate | Coordinate[]);
 }
@@ -58,6 +57,7 @@ export interface Features extends Iterable<Feature> {
   observable: () => Observable<Features>;
   byPos: (index: number) => Feature | null;
   reorder: (from: number, to: number) => void;
+  delete: () => void;
 }
 
 export interface RouteProps {
@@ -69,6 +69,7 @@ export interface RouteProps {
 }
 
 export interface Route extends RouteProps {
+  readonly ts: number,
   delete: () => void;
   features: Features;
   observable: () => Observable<Route>;
@@ -82,6 +83,7 @@ export interface Routes extends Iterable<Route> {
   observable: () => Observable<Routes>;
   byPos: (index: number) => Route | null;
   reorder: (from: number, to: number) => void;
+  delete: () => void;
 }
 
 export interface CategoryProps {

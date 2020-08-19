@@ -1,19 +1,23 @@
-import {Feature, ID, isPoint} from '../../../../app-rx/catalog';
-import LineString from 'ol/geom/LineString';
+import {Feature, ID, isPoint, LineString, Point} from '../../../../app-rx/catalog';
+import OlLineString from 'ol/geom/LineString';
 import OlFeature from 'ol/Feature';
-import Point from 'ol/geom/Point';
+import OlPoint from 'ol/geom/Point';
 import {getStyle} from './styles';
 import {FeatureType} from '../../../../app-rx/ui/tools';
+import {coordinate2ol, coordinates2ol} from './coordinates';
 
 const cache: Record<ID, OlFeature> = {};
+
+export const olGeometryFactory = (geometry: Point | LineString): OlPoint | OlLineString =>
+  isPoint(geometry)
+    ? new OlPoint(coordinate2ol(geometry.coordinate))
+    : new OlLineString(coordinates2ol(geometry.coordinates));
 
 export const olFeatureFactory = (feature: Feature): OlFeature => {
   let cached = cache[feature.id];
   if (cached) return cached;
 
-  const geometry = isPoint(feature.geometry)
-    ? new Point([feature.geometry.coordinate.lon, feature.geometry.coordinate.lat])
-    : new LineString(feature.geometry.coordinates.map(c => [c.lon, c.lat]));
+  const geometry = olGeometryFactory(feature.geometry);
 
   cached = new OlFeature({
     color: feature.color,
@@ -23,9 +27,8 @@ export const olFeatureFactory = (feature: Feature): OlFeature => {
   });
   cached.setId(feature.id);
   cached.set('color', feature.color);
-  cached.setStyle(getStyle(isPoint(feature.geometry) ? FeatureType.Point : FeatureType.Line, feature.color, `${feature.title}\n${feature.id}`));
+  cached.setStyle(getStyle(isPoint(feature.geometry) ? FeatureType.Point : FeatureType.Line, feature.color, feature.title));
 
-  // cached = new OlFeature(geometry);
   cache[feature.id] = cached;
   return cached;
 };

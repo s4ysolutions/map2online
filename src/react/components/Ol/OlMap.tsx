@@ -11,15 +11,16 @@ import olMapContext from './context/map';
 import DrawInteractions from './DrawInteractions';
 import ModifyInteractions from './ModifyInteractions';
 import ResizeObserver from 'resize-observer-polyfill';
-import {Feature, isPoint} from '../../../app-rx/catalog';
-import {defaults as defaultControls, ZoomToExtent} from 'ol/control';
+import {Feature} from '../../../app-rx/catalog';
+import {defaults as defaultControls} from 'ol/control';
 import {getBaseLayer, getDesigner} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {map as rxMap} from 'rxjs/operators';
-import {getBottomRight, getSize, getTopLeft} from 'ol/extent';
 import MapBrowserEvent from '../../../../typings/ol/MapBrowserEvent';
 import SnapInteractions from './SnapInteractions';
 import {setCursorOver} from './hooks/useCursorOver';
+import T from 'l10n';
+import ZoomToFeaturesControl from './zoomToFeaturesControl';
 import Timeout = NodeJS.Timeout;
 
 let resizeTimer: Timeout = null;
@@ -37,46 +38,20 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
     Array.from(designer.visibleFeatures)
   );
 
-  const extent: number[] = React.useMemo(() => {
-    let ext = [] as number[];
-    for (const feature of Array.from(features)) {
-      if (isPoint(feature.geometry)) {
-        ext.push(feature.geometry.coordinate.lon);
-        ext.push(feature.geometry.coordinate.lat);
-      } else {
-        for (const coordinate of feature.geometry.coordinates) {
-          ext.push(coordinate.lon);
-          ext.push(coordinate.lat);
-        }
-      }
-    }
-    if (ext.length === 0) {
-      return [-10000, 10000, 10000, -10000];
-    } else if (ext.length > 2) {
-      const [tlx, tly] = getTopLeft(ext);
-      const [brx, bry] = getBottomRight(ext);
-      const [width, height] = getSize(ext);
-      const dx = width / 16;
-      const dy = height / 16;
-      return [tlx - dx, tly + dy, brx + dx, bry - dy];
-    } else {
-      return [ext[0] - 1000, ext[1] + 1000, ext[0] + 1000, ext[1] - 1000];
-    }
-  }, [features]);
-  const zoomToExtentRef = React.useRef(null);
-
   const mapAttach = React.useCallback((el: HTMLDivElement): void => {
     log.render('OLMap mapAttach', el);
     if (!el) {
       return null;
     }
-    zoomToExtentRef.current =
-      new ZoomToExtent({extent});
+
     const state = baseLayer.state
     const m = new Map({
-      controls: defaultControls().extend([
-        zoomToExtentRef.current
-      ]),
+      controls: defaultControls({
+        delta: 0.25,
+        zoomInTipLabel: T`Zoom in`,
+        zoomOutTipLable: T`Zoom out`
+      })
+        .extend([new ZoomToFeaturesControl({})]),
       target: el,
       view: new View({
         center: [
@@ -124,12 +99,6 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       return () => 0;
     }
   }, [map]);
-
-  React.useEffect(() => {
-    if (map) {
-      zoomToExtentRef.current.extent = extent;
-    }
-  }, [map, extent]);
 
 
   return <div className="ol-container" ref={mapAttach} >

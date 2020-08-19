@@ -10,7 +10,7 @@ const categoryVariands = {
     'поездки',
     'проекты',
     'экспедиции',
-    'папки с маршрутами',
+    'папки',
   ],
   en: [
     'travels',
@@ -170,7 +170,7 @@ const wordings = {
       'Yes, delete the category': 'Да, удалить эту экспедицию.',
     },
     'папки': {
-      'Catalog': 'Каталог',
+      'Catalog': 'Папки',
       'Delete category': 'Удалить папку',
       'Modify category': 'Изменить папку',
       'New category': 'Новая папка',

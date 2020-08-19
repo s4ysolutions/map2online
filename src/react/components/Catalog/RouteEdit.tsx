@@ -5,6 +5,8 @@ import {getCatalogUI, getWording} from '../../../di-default';
 import {Route} from '../../../app-rx/catalog';
 import useObservable from '../../hooks/useObservable';
 import T from '../../../l10n';
+import log from '../../../log';
+import {map} from 'rxjs/operators';
 
 const catalogUI = getCatalogUI();
 const wording = getWording();
@@ -19,7 +21,15 @@ const handleClose = () => catalogUI.cancelEditRoute();
 
 const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}): React.ReactElement => {
 
-  const route = useObservable(routeEdit.observable(), routeEdit);
+  const route = useObservable(routeEdit
+    .observable()
+    .pipe(
+      map(route => ({title: route.title, description: route.description}))
+    )
+    , routeEdit);
+
+  log.render('RouteEdit debug', {route, routeEdit})
+
   const titleRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect((): void => {
@@ -27,7 +37,7 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
     titleRef.current.select();
   }, []);
 
-  return <Modal onClose={handleClose} closeOnEnter={true} >
+  return <Modal onClose={handleClose} closeOnEnter={true} className="edit-dialog" >
     <form onSubmit={handleSubmit} >
       <h2 >
         {wording.R('Modify route')}
@@ -39,7 +49,7 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
         <input
           name="title"
           onChange={(ev): void => {
-            route.title = ev.target.value
+            routeEdit.title = ev.target.value
           }}
           ref={titleRef}
           value={route.title} />
@@ -48,12 +58,12 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
         <label htmlFor="description" >
           {T`Description`}
         </label >
-        <input
-          name="description"
-          onChange={(ev): void => {
-            route.description = ev.target.value
-          }}
-          value={route.description} />
+        <textarea rows={10}
+                  name="description"
+                  onChange={(ev): void => {
+                    routeEdit.description = ev.target.value
+                  }}
+                  value={route.description} />
       </div >
       <div className="buttons-row" >
         <button onClick={handleClose} >

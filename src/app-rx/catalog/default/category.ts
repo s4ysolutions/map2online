@@ -16,15 +16,15 @@ export const newCategoryProps = (wording: Wording): CategoryProps => ({
   visible: true,
 });
 
-interface Updateable {
+interface Updatebale {
   update: () => void;
 }
 
-export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording, props: CategoryProps | null): Category & Updateable | null => {
+export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording, props: CategoryProps | null): Category & Updatebale | null => {
   const p: CategoryProps = props === null ? newCategoryProps(wording) : {...props};
   const key = `${CATEGORY_ID_PREFIX}@${p.id}`;
 
-  const th: Category & Updateable = {
+  const th: Category & Updatebale = {
     get description() {
       return p.description
     },
@@ -32,7 +32,7 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
       p.description = value;
       this.update();
     },
-    id: p.id,
+    id: p.id || makeId(),
     get summary() {
       return p.summary
     },
@@ -55,9 +55,7 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
       this.update();
     },
     delete: function () {
-      for (const route of Array.from(this.routes)) {
-        this.routes.remove(route);
-      }
+      this.routes.delete();
       storage.delete(key);
       storage.delete(`vis@${p.id}`); // visibility
       storage.delete(`op@${p.id}`); // visibility
@@ -69,10 +67,10 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
       .pipe(
         map(props => props === null ? null : catalog.categoryById(props.id))
       ),
-    routes: null,
-    update: function () {
-      storage.set(key, {...p});
+    update: () => {
+      storage.set(key, props);
     },
+    routes: null,
   };
   th.routes = routesFactory(storage, catalog, wording, th);
   return th;
@@ -84,12 +82,8 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
   const key = 'cats'
   const updateIds = (ids: ID[]) => {
     if (ids !== prevIds) {
-      if (ids.length === 0) {
-        storage.delete(key);
-      } else {
-        prevIds = ids.slice();
-        storage.set(key, ids);
-      }
+      prevIds = ids.slice();
+      storage.set(key, ids);
     }
   };
   const guardedIds = () => {

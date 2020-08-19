@@ -119,17 +119,18 @@ form {
 .field-row label,
 .field-row textarea,
 .field-row input {
-  padding: 1rem;
   box-sizing: border-box;
+  padding: 1rem;
 }
 
 .field-row textarea,
 .field-row input {
   background: none;
-  color: rgba(255, 255, 255, 1);
-  outline: none;
   border-radius: 0;
+  color: rgba(255, 255, 255, 1);
   cursor: text;
+  flex-grow: 1;
+  outline: none;
 }
 
 .field-row textarea:focus {

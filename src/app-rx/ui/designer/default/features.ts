@@ -29,7 +29,7 @@ export const visibleFeaturesFactory = (catalog: Catalog, catalogUI: CatalogUI): 
     observable: function () {
       return merge(
         catalog.featuresObservable(),
-        catalogUI.visibleObservable()
+        catalogUI.visibleObservable(),
       ).pipe(
         map(() => {
           features = findFeatures();

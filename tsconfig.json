@@ -17,6 +17,7 @@
       "typings"
     ],
     "paths": {
+
     },
     "outDir": "./dist-ts/",
     "removeComments": true,
@@ -30,6 +31,7 @@
     "./node_modules/ol/**/*.js",
     "./src/**/*.d.ts",
     "./src/**/*.ts",
+    "./tests/**/*.ts",
     "./src/**/*.tsx"
   ],
   "exclude": [

@@ -9,8 +9,7 @@ import {Color} from '../../../lib/colors';
 import olMapContext from './context/map';
 import {getCatalogUI} from '../../../di-default';
 import {FeatureProps} from '../../../app-rx/catalog';
-import {makeId} from '../../../l10n/id';
-import {ol2coordinate, ol2coordinates} from './lib/coordinates';
+import {ol2coordinate2, ol2coordinates2} from './lib/coordinates';
 import log from '../../../log';
 import {useCursorOver} from './hooks/useCursorOver';
 import {useModifying} from './hooks/useModifying';
@@ -40,8 +39,8 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
       const featureProps: FeatureProps = {
         color: isPoint ? pointColor : lineColor,
         description: '',
-        geometry: isPoint ? {coordinate: ol2coordinate(coordinates)} : {coordinates: ol2coordinates(coordinates)},
-        id: makeId(),
+        geometry: isPoint ? {coordinate: ol2coordinate2(coordinates)} : {coordinates: ol2coordinates2(coordinates)},
+        id: null,
         summary: '',
         title: '',
         visible: true,

@@ -5,6 +5,7 @@ import {getCatalogUI, getWording} from '../../../di-default';
 import {Category} from '../../../app-rx/catalog';
 import useObservable from '../../hooks/useObservable';
 import T from '../../../l10n';
+import {map} from 'rxjs/operators';
 
 const wording = getWording()
 const catalogUI = getCatalogUI();
@@ -19,7 +20,12 @@ const handleClose = () => catalogUI.cancelEditCategory();
 
 const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category: categoryEdit}): React.ReactElement => {
 
-  const category = useObservable(categoryEdit.observable(), categoryEdit);
+  const category = useObservable(
+    categoryEdit.observable()
+      .pipe(
+        map(category => ({title: category.title, description: category.description}))
+      ),
+    categoryEdit);
   const titleRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect((): void => {
@@ -27,14 +33,11 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
     titleRef.current.select();
   }, []);
 
-  return <Modal closeOnEnter={true} onClose={handleClose} >
+  return <Modal closeOnEnter={true} onClose={handleClose} className="edit-dialog" >
     <form onSubmit={handleSubmit} >
       <h2 >
         {wording.C('Modify category')}
       </h2 >
-      <h3 >
-        {category.id}
-      </h3 >
       <div className="field-row" >
         <label htmlFor="title" >
           {T`Title`}
@@ -42,7 +45,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
         <input
           name="title"
           onChange={(ev): void => {
-            category.title = ev.target.value
+            categoryEdit.title = ev.target.value
           }}
           ref={titleRef}
           value={category.title} />
@@ -54,7 +57,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
         <textarea rows={10}
                   name="description"
                   onChange={(ev): void => {
-                    category.description = ev.target.value
+                    categoryEdit.description = ev.target.value
                   }}
                   value={category.description} />
       </div >

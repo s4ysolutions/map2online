@@ -14,7 +14,7 @@ const baseLayerFactory = (persistentStorage: KV): BaseLayer => {
     },
     sourceNameObservable: () => persistentStorage.observable<string>('blsn'),
     get state() {
-      return persistentStorage.get<BaseLayerState>('blst', {x: 0, y: 0, zoom: 5})
+      return persistentStorage.get<BaseLayerState>('blst', {x: 0, y: 0, zoom: 2})
     },
     set state(state) {
       const s = this.state

@@ -4,7 +4,7 @@ import {KV} from '../../../kv-rx';
 import {merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-const categoryVariands = {
+const categoryVariants = {
   ru: [
     'путешествия',
     'поездки',
@@ -21,7 +21,7 @@ const categoryVariands = {
   ],
 }
 
-const routeVarians = {
+const routeVariants = {
   ru: [
     'дни',
     'маршруты',
@@ -280,10 +280,10 @@ export const wordingFactory = (storage: KV): Wording => {
         )
     },
     get categoryVariants(): string[] {
-      return categoryVariands[currentLocale()] || categoryVariands['en'];
+      return categoryVariants[currentLocale()] || categoryVariants['en'];
     },
     get routeVariants(): string[] {
-      return routeVarians[currentLocale()] || routeVarians['en'];
+      return routeVariants[currentLocale()] || routeVariants['en'];
     },
     get currentCategoryVariant(): string | null {
       return storage.get('curcat', null) || null

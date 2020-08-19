@@ -66,7 +66,7 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
       onClick={handleSelect}
       title={T`Open features`}
     >
-      {route.title}
+      {route.title + (routeView.features.length > 0 && ` (${routeView.features.length})` || ' (0)')}
     </div >
     <div
       className="edit"

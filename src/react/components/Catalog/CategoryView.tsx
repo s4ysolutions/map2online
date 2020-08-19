@@ -80,7 +80,7 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
          onClick={handleSelect}
          title={wording.R('Open category hint')}
     >
-      {category.title + (categoryView.routes.length > 0 && ` (${categoryView.routes.length})` || '0')}
+      {category.title + (categoryView.routes.length > 0 && ` (${categoryView.routes.length})` || ' (0)')}
     </div >
     <div
       className="edit"

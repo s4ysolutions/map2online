@@ -1,21 +1,4 @@
 @import "../../../dims";
-
-.edit-dialog {
-  width: 1024px;
-}
-
-@media (max-width: 1128px) {
-  .edit-dialog {
-    width: 90%;
-  }
-}
-
-@media (max-width: 512px) {
-  .edit-dialog {
-    width: 100%;
-  }
-}
-
 .catalog {
   height: 100%;
   display: flex;

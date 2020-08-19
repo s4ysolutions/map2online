@@ -12,6 +12,7 @@ import useObservable from '../../hooks/useObservable';
 import Import from '../Import';
 import GoogleMap from '../GoogleMap/GoogleMap';
 import Wording from '../Personalization/Wording';
+import About from '../About';
 
 
 const importUI = getImportUI();
@@ -24,7 +25,8 @@ const Workspace = (): React.ReactElement => {
     const {height, width} = useComponentSize(ref);
     const importUIVisible = useObservable<boolean>(importUI.visibleObservable(), importUI.visible);
     const isPersonalized = useObservable(wording.observableIsPersonalized(), wording.isPersonalized)
-    const personalizationVisible = useObservable<boolean>(workspace.personalizationObservable(), workspace.personalizationOpen)
+  const personalizationVisible = useObservable<boolean>(workspace.personalizationObservable(), workspace.personalizationOpen)
+  const aboutVisible = useObservable<boolean>(workspace.aboutObservable(), workspace.aboutOpen)
 
     return isPersonalized
       ? <React.Fragment ><TopNavigation key="topNavigation" />
@@ -37,12 +39,9 @@ const Workspace = (): React.ReactElement => {
           <RightDrawer />
           <FloatPanel parentHeight={height} parentWidth={width} />
         </div >
-        {
-          importUIVisible && <Import />
-        }
-        {
-          personalizationVisible && <Wording />
-        }
+        {importUIVisible && <Import />}
+        {personalizationVisible && <Wording />}
+        {aboutVisible && <About />}
       </React.Fragment >
       :
       <Wording />

@@ -3,12 +3,20 @@ import * as React from 'react';
 import Modal from '../Modal';
 import T from '../../../l10n';
 import {getWorkspace} from '../../../di-default';
+import {FormEvent} from 'react';
 
 const workspace = getWorkspace()
 
+const handleSubmit: (ev: FormEvent) => void = (ev: FormEvent) => {
+  ev.preventDefault();
+  // noinspection JSIgnoredPromiseFromCall
+  workspace.toggleAbout();
+  return null;
+};
+
 const About = (): React.ReactElement => {
   return <Modal className="about" onClose={() => 0} >
-    <form >
+    <form onSubmit={handleSubmit}>
       <h2 >{T`About`}</h2 >
       <p >{T`About networking`}</p >
       <p >{T`About beta`}</p >
@@ -18,13 +26,13 @@ const About = (): React.ReactElement => {
       </p >
       <p >{T`About Nevinski`} <a target="_nevinsky" href="https://www.facebook.com/kirillnev" >Кирилл Невинский.</a >
       </p >
-      <hr />
-      <h4 >&copy;S4Y.Solutions, 2020</h4 >
       <div className="buttons-row" >
         <button onClick={workspace.toggleAbout} >
           {T`Close`}
         </button >
       </div >
+      <hr />
+      <h4 >&copy;S4Y.Solutions, 2020</h4 >
     </form >
   </Modal >
 }

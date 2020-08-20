@@ -30,7 +30,7 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
       this.closeSettings()
       const value = !this.aboutOpen;
       persistanceStorage.set('a', value);
-      this.catalogOpen = value;
+      this.aboutOpen = value;
     },
     toggleCatalog: function () {
       const value = !this.catalogOpen;

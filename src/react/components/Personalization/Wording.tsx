@@ -3,16 +3,24 @@ import * as React from 'react';
 import Modal from '../Modal';
 import T from '../../../l10n';
 import useObservable from '../../hooks/useObservable';
+import {FormEvent} from 'react';
 
 const wording = getWording()
 const workspace = getWorkspace()
+
+const handleSubmit: (ev: FormEvent) => void = (ev: FormEvent) => {
+  ev.preventDefault();
+  // noinspection JSIgnoredPromiseFromCall
+  workspace.togglePersonalization();
+  return null;
+};
 
 const Wording = (): React.ReactElement => {
   const categoryVariant = useObservable(wording.observableCurrentCategoryVariant(), wording.currentCategoryVariant)
   const routeVariant = useObservable(wording.observableCurrentRouteVariant(), wording.currentRouteVariant)
 
   return <Modal className="form" onClose={() => 0} >
-    <form >
+    <form onSubmit={handleSubmit}>
       <h2 >{T`Personalize wording`}</h2 >
       <h3 >{T`Choose best category`}</h3 >
       <div className="field-row" >

@@ -23,15 +23,9 @@
     "target": "es5"
   },
   "include": [
-    "./node_modules/**/*.js",
-    "./src/**/*.js",
-    "./src/**/*.d.ts",
     "./src/**/*.ts",
     "./src/**/*.tsx"
   ],
   "exclude": [
-    "./unit-tests/**/tests/*.test.ts",
-    "./src/**/tests/*.ts",
-    "./src/**/tests/*.tsx"
   ]
 }

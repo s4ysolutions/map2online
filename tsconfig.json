@@ -20,12 +20,14 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "resolveJsonModule": true,
-    "target": "es5"
+    "target": "es5",
+    "typeRoots": [
+      "./typesx", "./node_modules/@types"]
   },
   "include": [
+    "./tests/**/*.ts",
     "./src/**/*.ts",
     "./src/**/*.tsx"
   ],
-  "exclude": [
-  ]
+  "exclude": [""]
 }

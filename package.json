@@ -7,7 +7,8 @@
     "dev": "webpack-dev-server --color --proggress --config webpack.config-dev.js",
     "build": "webpack --config webpack.config-prod.js",
     "stats": "webpack --config webpack.config-stats.js --profile --json >stats.json",
-    "test": "mocha -r ts-node/register tests/mocha/**/*.spec.ts",
+    "testdel": "mocha -r ts-node/register --require esm --experimental-modules tests/mocha/**/*.spec.ts",
+    "test": "mocha -r ts-node/register --require esm tests/mocha/**/*.spec.ts",
     "testcafe": "testcafe chrome testcafe/** --app \"http-server ./dist -s\"",
     "jest": "jest --runInBand"
   },
@@ -40,6 +41,7 @@
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^4.0.8",
     "eslint-plugin-react-perf": "^3.2.4",
+    "esm": "^3.2.25",
     "file-loader": "^6.0.0",
     "fork-ts-checker-webpack-plugin": "^5.0.14",
     "html-webpack-plugin": "^4.3.0",

@@ -21,6 +21,7 @@ const newDrawInteraction = (type: FeatureType, pointColor: Color, lineColor: Col
 });
 
 const catalogUI = getCatalogUI();
+const OL_FLATCOORDINATE_LENGTH = 2;
 
 const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
   const map = React.useContext(olMapContext);
@@ -29,14 +30,16 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
   const featureType = useCurrentFeatureType();
   const drawInteractionRef = React.useRef(null);
 
-  const cursorOver = useCursorOver()
-  const isModifying = useModifying()
-  log.render('DrawInteraction', {cursorOver, isModifying})
+  const cursorOver = useCursorOver();
+  const isModifying = useModifying();
+  log.render('DrawInteraction', {cursorOver, isModifying});
 
-  const handleDrawEnd = React.useCallback(({feature}) => {
+
+  const handleDrawEnd = React.useCallback(
+    ({feature}) => {
       const geometry = feature.get('geometry');
       const coordinates: number[] = geometry.flatCoordinates;
-      const isPoint = coordinates.length == 2;
+      const isPoint = coordinates.length === OL_FLATCOORDINATE_LENGTH;
       const featureProps: FeatureProps = {
         color: isPoint ? pointColor : lineColor,
         description: '',
@@ -50,7 +53,7 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
         catalogUI.activeRoute.features.add(featureProps);
       }
     },
-    [pointColor, lineColor, featureType]
+    [pointColor, lineColor],
   );
 
   useEffect(() => {
@@ -60,19 +63,19 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
     }
     drawInteractionRef.current = newDrawInteraction(featureType, pointColor, lineColor);
     drawInteractionRef.current.on('drawend', handleDrawEnd);
-    drawInteractionRef.current.setActive(cursorOver && !isModifying)
+    drawInteractionRef.current.setActive(cursorOver && !isModifying);
     map.addInteraction(drawInteractionRef.current);
     return () => {
       if (drawInteractionRef.current) {
         map.removeInteraction(drawInteractionRef.current);
         drawInteractionRef.current = null;
       }
-    }
-  }, [pointColor, lineColor, featureType]);
+    };
+  }, [pointColor, lineColor, featureType, cursorOver, handleDrawEnd, map, isModifying]);
 
   useEffect(() => {
     if (drawInteractionRef.current) {
-      drawInteractionRef.current.setActive(cursorOver && !isModifying)
+      drawInteractionRef.current.setActive(cursorOver && !isModifying);
     }
   }, [cursorOver, isModifying]);
 

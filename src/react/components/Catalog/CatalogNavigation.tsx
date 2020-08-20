@@ -7,13 +7,15 @@ const catalogUI = getCatalogUI();
 const wording = getWording();
 const workspace = getWorkspace();
 
-const deselectRoute: () => void = () => catalogUI.selectedRoute = null;
+const deselectRoute: () => void = () => {
+  catalogUI.selectedRoute = null;
+};
 const deselectCategory: () => void = () => {
   catalogUI.selectedCategory = null;
-  deselectRoute()
+  deselectRoute();
 };
 
-const CatalogNavigation: React.FunctionComponent<{}> = (): React.ReactElement => {
+const CatalogNavigation: React.FunctionComponent = (): React.ReactElement => {
   const selectedCategory = useObservable(catalogUI.selectedCategoryObservable(), catalogUI.selectedCategory);
   const selectedRoute = useObservable(catalogUI.selectedRouteObservable(), catalogUI.selectedRoute);
 
@@ -32,12 +34,10 @@ const CatalogNavigation: React.FunctionComponent<{}> = (): React.ReactElement =>
           strokeWidth="2.0366"
         />
       </svg >
-    </button >
-    ||
+    </button > ||
     <button onClick={workspace.toggleCatalog} type="button" >
       <FolderClose />
-    </button >
-    }
+    </button >}
 
 
     {!selectedCategory && !selectedRoute && <span className="title" >
@@ -56,7 +56,7 @@ const CatalogNavigation: React.FunctionComponent<{}> = (): React.ReactElement =>
         {selectedRoute.title}
       </span >,
     ]}
-  </div >
+  </div >;
 };
 
 export default CatalogNavigation;

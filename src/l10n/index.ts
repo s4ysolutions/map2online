@@ -1,5 +1,5 @@
-let locale: string = 'en';
-export const currentLocale = () => locale;
+let locale = 'en';
+export const currentLocale = (): string => locale;
 
 type Dictionary = { [key: string]: string }
 
@@ -22,7 +22,7 @@ const init = (lc: string, dict: { [key: string]: Dictionary }) => {
       if (dict[mainlocale]) {
         messages = {
           ...messages,
-          ...dict[mainlocale]
+          ...dict[mainlocale],
         };
       }
     }
@@ -30,7 +30,7 @@ const init = (lc: string, dict: { [key: string]: Dictionary }) => {
       // add minor locale translations
       messages = {
         ...messages,
-        ...dict[locale]
+        ...dict[locale],
       };
     }
   }

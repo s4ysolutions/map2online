@@ -9,15 +9,20 @@ export interface Coordinate {
   lon: number;
 }
 
-export const isCoordinate = (coordinate: Coordinate | any): coordinate is Coordinate =>
-  coordinate && (coordinate as Coordinate).lon !== undefined && (coordinate as Coordinate).lat !== undefined;
+export const isCoordinate = (coordinate: Coordinate | number | number[]): coordinate is Coordinate =>
+  // eslint-disable-next-line no-extra-parens
+  coordinate && ((coordinate as Coordinate).lon !== undefined && (coordinate as Coordinate).lat !== undefined);
 
 
 export const coordinateEq = (c1: Coordinate, c2: Coordinate): boolean => c1.lat === c2.lat && c1.lon === c2.lon;
 export const coordinatesEq = (c1: Coordinate[], c2: Coordinate[]): boolean => {
-  if (c1.length !== c2.length) return false;
+  if (c1.length !== c2.length) {
+    return false;
+  }
   for (const i in c1) {
-    if (c1[i].lat !== c2[i].lat || c1[i].lon === c2[i].lon) return false;
+    if (c1[i].lat !== c2[i].lat || c1[i].lon === c2[i].lon) {
+      return false;
+    }
   }
   return true;
 };
@@ -40,7 +45,9 @@ export interface FeatureProps {
   geometry: Point | LineString;
 }
 
+// eslint-disable-next-line no-extra-parens
 export const isPoint = (geometry: Point | LineString): geometry is Point => geometry && (geometry as Point).coordinate !== undefined;
+// eslint-disable-next-line no-extra-parens
 export const isLineString = (geometry: Point | LineString): geometry is LineString => geometry && (geometry as LineString).coordinates !== undefined;
 
 export interface Feature extends FeatureProps {
@@ -69,7 +76,6 @@ export interface RouteProps {
 }
 
 export interface Route extends RouteProps {
-  readonly ts: number,
   delete: () => void;
   features: Features;
   observable: () => Observable<Route>;

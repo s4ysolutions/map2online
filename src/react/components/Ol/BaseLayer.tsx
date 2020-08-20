@@ -9,45 +9,43 @@ import TileSource from 'ol/source/Tile';
 
 const baseLayer = getBaseLayer();
 /*
-getOlSource: function () {
-  if (!this.sourceName) {
-    return null;
-  }
-  const md = getMapDefinition(this.sourceName);
-  if (!md) {
-    return null;
-  }
-  if (!md.olSourceFactory) {
-    return null;
-  }
-  return md.olSourceFactory();
-},
-*/
+ *getOlSource: function () {
+ *  if (!this.sourceName) {
+ *    return null;
+ *  }
+ *  const md = getMapDefinition(this.sourceName);
+ *  if (!md) {
+ *    return null;
+ *  }
+ *  if (!md.olSourceFactory) {
+ *    return null;
+ *  }
+ *  return md.olSourceFactory();
+ *},
+ */
 const BaseLayer: React.FunctionComponent = (): React.ReactElement => {
   const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
   const map = React.useContext(olMapContext);
 
   // const layerRef = React.useRef<Layer>(null);
   const md = getMapDefinition(baseLayerName);
-  let layer = null
+  let layer = null;
   if (md !== null && isOlMapDefinition(md)) {
     // TODO: assuming TileSource
-    layer = new TileLayer({source: (md.olSourceFactory() as TileSource)});
+    layer = new TileLayer({source: md.olSourceFactory() as TileSource});
   }
 
-  let layers = map.getLayers()
-  log.render(`BaseLayer sourceName=${baseLayerName} layersLength=${layers.getLength()} layer is null=${!(layer)}`);
+  const layers = map.getLayers();
+  log.render(`BaseLayer sourceName=${baseLayerName} layersLength=${layers.getLength()} layer is null=${!layer}`);
   if (layer) {
-    if (layers.getLength() == 0) {
+    if (layers.getLength() === 0) {
       map.addLayer(layer);
     } else {
-      layers.setAt(0, layer)
+      layers.setAt(0, layer);
     }
-//  layerRef.current = layer
-  } else {
-    if (layers.getLength() > 0) {
-      layers.item(0).setVisible(false)
-    }
+    //  layerRef.current = layer
+  } else if (layers.getLength() > 0) {
+    layers.item(0).setVisible(false);
   }
   return null;
 };

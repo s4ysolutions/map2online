@@ -7,7 +7,7 @@ import useObservable from '../hooks/useObservable';
 import {getCatalogUI} from '../../di-default';
 import T from 'l10n';
 
-const catalogUI = getCatalogUI()
+const catalogUI = getCatalogUI();
 
 const App: React.FunctionComponent = (): React.ReactElement => {
   const selectedCategory = useObservable(catalogUI.selectedCategoryObservable(), catalogUI.selectedCategory);
@@ -15,17 +15,17 @@ const App: React.FunctionComponent = (): React.ReactElement => {
 
   useEffect(() => {
     if (selectedCategory && selectedRoute) {
-      window.document.title = T`AppTitle` + ` - ${selectedCategory.title} - ${selectedRoute.title}`
+      window.document.title = `${T`AppTitle`} - ${selectedCategory.title} - ${selectedRoute.title}`;
     } else if (selectedCategory) {
-      window.document.title = T`AppTitle` + ` - ${selectedCategory.title}`
+      window.document.title = `${T`AppTitle`} - ${selectedCategory.title}`;
     } else {
-      window.document.title = T`AppTitle`
+      window.document.title = T`AppTitle`;
     }
-  }, [selectedRoute, selectedCategory])
+  }, [selectedRoute, selectedCategory]);
 
   return <div className="application" >
     <Workspace />
   </div >;
-}
+};
 
 export default hot(module)(App);

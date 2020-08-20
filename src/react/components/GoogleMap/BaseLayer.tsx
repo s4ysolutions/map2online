@@ -13,12 +13,12 @@ const BaseLayer: React.FunctionComponent = (): React.ReactElement => {
 
   const map = React.useContext(mapContext);
   if (map) {
-    const mapTypeId = sourceNameToMapId(baseLayerName)
-    if (map.getMapTypeId() != mapTypeId) {
-      log.debug(`GoogleBaseLayer setMapTypeId=${mapTypeId}`);
-      map.setMapTypeId(mapTypeId)
+    const mapTypeId = sourceNameToMapId(baseLayerName);
+    if (map.getMapTypeId() === mapTypeId) {
+      log.debug('GoogleBaseLayer identical');
     } else {
-      log.debug(`GoogleBaseLayer identical`);
+      log.debug(`GoogleBaseLayer setMapTypeId=${mapTypeId}`);
+      map.setMapTypeId(mapTypeId);
     }
   }
   return null;

@@ -3,7 +3,7 @@ import {Modify as ModifyInteraction} from 'ol/interaction';
 import Collection from 'ol/Collection';
 import olMapContext from './context/map';
 import useVisibleFeatures from './hooks/useVisibleFeatures';
-import {Coordinate, coordinateEq, Feature, ID, isPoint} from '../../../app-rx/catalog';
+import {Coordinate, Feature, ID, coordinateEq, isPoint} from '../../../app-rx/catalog';
 import {ol2coordinate, ol2coordinates} from './lib/coordinates';
 import {getCatalog} from '../../../di-default';
 import OlFeature from 'ol/Feature';
@@ -21,16 +21,17 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
   const modifyInteractionRef = React.useRef(null);
 
   const handleModifyStart = React.useCallback(() => {
-    setModifying(true)
-  }, [])
+    setModifying(true);
+  }, []);
 
-  const handleModifyEnd = React.useCallback((ev) => {
+  const handleModifyEnd = React.useCallback(
+    (ev) => {
       const {features} = ev;
       for (const olf of features.getArray()) {
         const olId = olf.getId();
         const featureToModify: Feature = catalog.featureById(olId);
         if (featureToModify) {
-          const flatCoordinates: number[] = olf.get('geometry').flatCoordinates;
+          const {flatCoordinates} = olf.get('geometry');
           if (isPoint(featureToModify.geometry)) {
             const coordinate: Coordinate = ol2coordinate(flatCoordinates);
             if (!coordinateEq(coordinate, featureToModify.geometry.coordinate)) {
@@ -43,13 +44,13 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
             break;
           }
         } else {
-          log.error("No features to modify id=" + olId)
+          log.error(`No features to modify id=${olId}`);
         }
       }
       ev.preventDefault();
-      setModifying(false)
+      setModifying(false);
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -63,15 +64,21 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
     modifyInteractionRef.current.on('modifystart', handleModifyStart);
     map.addInteraction(modifyInteractionRef.current);
 
-    const featuresObservables = olFeatures.map(olFeature => catalog.featureById(olFeature.getId().toString()).observable())
-    const olFeaturesById: Record<ID, OlFeature> = {}
+    const featuresObservables = olFeatures.map(olFeature => catalog.featureById(olFeature.getId().toString()).observable());
+    const olFeaturesById: Record<ID, OlFeature> = {};
 
-    olFeatures.forEach(olFeature => olFeaturesById[olFeature.getId()] = olFeature)
+    olFeatures.forEach(olFeature => {
+      olFeaturesById[olFeature.getId().toString()] = olFeature;
+    });
     const featuresObservable = merge(...featuresObservables).subscribe((feature: Feature) => {
-      if (!feature) return; // feature deletion is handled in the other useEffect
-      const olFeature = olFeaturesById[feature.id]
-      if (olFeature) setOlFeatureCoordinates(olFeature, feature);
-    })
+      if (!feature) {
+        return;
+      } // feature deletion is handled in the other useEffect
+      const olFeature = olFeaturesById[feature.id];
+      if (olFeature) {
+        setOlFeatureCoordinates(olFeature, feature);
+      }
+    });
 
     return () => {
       featuresObservable.unsubscribe();
@@ -81,8 +88,8 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
         map.removeInteraction(modifyInteractionRef.current);
         modifyInteractionRef.current = null;
       }
-    }
-  }, [map, olFeatures]);
+    };
+  }, [map, handleModifyEnd, handleModifyStart, olFeatures]);
 
   return null;
 };

@@ -4,7 +4,7 @@ import sax from 'sax';
 import {Coordinate, FeatureProps} from '../../app-rx/catalog';
 import log from '../../log';
 import {Color} from '../../lib/colors';
-import {makeId} from '../../l10n/id';
+import {makeId} from '../../lib/id';
 import {degreesToMeters} from '../../lib/projection';
 
 enum ParseState {
@@ -21,17 +21,17 @@ enum ParseState {
 
 const parseTriplet = (triplet: string): Coordinate => {
   const lla = triplet.split(',').map(t => Number.parseFloat(t));
-  return degreesToMeters(lla)
+  return degreesToMeters(lla);
 };
 
 const parseCoordinates = (text: string): Coordinate[] =>
   text
     .trim()
-    //.split(/\r?\n/)
-    .split(/[^0-9.,]/)
-    //.split("\n")
+    // .split(/\r?\n/)
+    .split(/[^0-9.,]/u)
+    // .split("\n")
     .map(t => t.trim())
-    .filter(t => !!t)
+    .filter(t => Boolean(t))
     .map(parseTriplet);
 
 export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[]> => {
@@ -48,7 +48,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
       const name = node.name.toUpperCase();
       switch (name) {
         case 'DOCUMENT':
-        case 'FOLDER':
+        case 'FOLDER': {
           parseStateStack.push(ParseState.FOLDER);
           const nextFolder: ImportedFolder = {
             features: [],
@@ -66,7 +66,8 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
           }
           foldersStack.push(nextFolder);
           break;
-        case 'PLACEMARK':
+        }
+        case 'PLACEMARK': {
           parseStateStack.push(ParseState.FEATURE);
           currentFeature = {
             color: Color.RED,
@@ -79,6 +80,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
           };
           lastFolder().features.push(currentFeature);
           break;
+        }
         case 'NAME':
           if (lastState() === ParseState.FOLDER) {
             parseStateStack.push(ParseState.FOLDER_NAME);
@@ -104,17 +106,18 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
       const name = nodeName.toUpperCase();
       switch (name) {
         case 'DOCUMENT':
-        case 'FOLDER':
+        case 'FOLDER': {
           const state = parseStateStack.pop();
-          if (state !== ParseState.FOLDER) {
-            log.warn('Folder or Document close tag does not match')
-          } else {
+          if (state === ParseState.FOLDER) {
             if (foldersStack.length === 0) {
-              log.warn('No folders on the stack')
+              log.warn('No folders on the stack');
             }
             foldersStack.pop();
+          } else {
+            log.warn('Folder or Document close tag does not match');
           }
           break;
+        }
         case 'DESCRIPTION':
         case 'NAME':
           if (lastState() === ParseState.FOLDER_NAME || lastState() === ParseState.FEATURE_NAME) {
@@ -145,19 +148,20 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
           currentFeature.description = text.trim();
           parseStateStack.pop();
           break;
-        case ParseState.COORDINATES:
+        case ParseState.COORDINATES: {
           const coordinates = parseCoordinates(text.trim());
           if (coordinates.length === 1) {
             currentFeature.geometry = {
-              coordinate: coordinates[0]
+              coordinate: coordinates[0],
             };
           } else {
             currentFeature.geometry = {
-              coordinates
+              coordinates,
             };
           }
           parseStateStack.pop();
           break;
+        }
       }
     };
     parser.onend = () => {
@@ -174,8 +178,8 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
 const parseKMLFile = (kml: File): Promise<ImportedFolder[]> => {
   const reader = new FileReader();
   return new Promise<string>((rs) => {
-    reader.onload = (e => rs(e.target.result as string));
-    reader.readAsText(kml)
+    reader.onload = e => rs(e.target.result as string);
+    reader.readAsText(kml);
   }).then(content => parseKMLString(kml, content));
 };
 
@@ -185,7 +189,7 @@ export const kmlParserFactory = (): Parser => {
   const status: ParsingStatus = {
     importedFolders: [],
     parsingFile: null as File,
-    queuedFiles: [] as File[]
+    queuedFiles: [] as File[],
   };
 
   const parseQueuedFiles = async (): Promise<void> => {
@@ -200,17 +204,20 @@ export const kmlParserFactory = (): Parser => {
 
     subject.next({...status});
 
+    const statusImportedFolders = status.importedFolders;
     const importedFolders = await parseKMLFile(status.parsingFile);
-    status.importedFolders = status.importedFolders.concat(importedFolders);
+    // eslint-disable-next-line require-atomic-updates
+    status.importedFolders = statusImportedFolders.concat(importedFolders);
+    // eslint-disable-next-line require-atomic-updates
     status.parsingFile = null;
 
     subject.next({...status});
 
-    return parseQueuedFiles()
+    return parseQueuedFiles();
   };
 
   return {
-    parse: function async(fileList: FileList): Promise<void> {
+    parse(fileList: FileList): Promise<void> {
       status.importedFolders = [];
       status.parsingFile = null;
       status.queuedFiles = [];
@@ -224,5 +231,5 @@ export const kmlParserFactory = (): Parser => {
       return status;
     },
     statusObservable: () => subject,
-  }
+  };
 };

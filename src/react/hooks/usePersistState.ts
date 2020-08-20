@@ -6,7 +6,7 @@ const localStorage = getLocalStorage();
 const usePersistState = <T>(
   key: string,
   defaultVaule: T,
-  forcedValue?: string
+  forcedValue?: string,
 ): T => useObservable(localStorage.observable<T>(key), localStorage.get(key, defaultVaule, forcedValue));
 
 export default usePersistState;

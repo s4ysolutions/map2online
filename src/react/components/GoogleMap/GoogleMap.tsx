@@ -5,7 +5,6 @@ import './styles.scss';
 import {getBaseLayer} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {getMapDefinition, isGoogleMapDefinition} from '../../../map-sources/definitions';
-// noinspection ES6UnusedImports
 import mapContext from './context/map';
 import BaseLayer from './BaseLayer';
 import {sourceNameToMapId} from './lib/mapid';
@@ -19,16 +18,16 @@ let recentMap: google.maps.Map = null;
 
 const moveRecentMap = (x: number, y: number, zoom: number) => {
   if (recentMap) {
-    const c = recentMap.getCenter()
+    const c = recentMap.getCenter();
     const cc = googleLonLat(x, y);
-    if (c.lat() != cc.lat || c.lng() != cc.lng) {
-      recentMap.setCenter(cc)
+    if (c.lat() !== cc.lat || c.lng() !== cc.lng) {
+      recentMap.setCenter(cc);
     }
     if (zoom !== recentMap.getZoom()) {
-      recentMap.setZoom(zoom)
+      recentMap.setZoom(zoom);
     }
   }
-}
+};
 
 const GoogleMap: React.FunctionComponent = (): React.ReactElement => {
   const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
@@ -40,26 +39,26 @@ const GoogleMap: React.FunctionComponent = (): React.ReactElement => {
     log.render('GoogleMap mapAttach', el);
 
     if (!el) {
-      setMap(null)
-      return
+      setMap(null);
+      return;
     }
 
-    const state = baseLayer.state
-    const center: google.maps.LatLngLiteral = googleLonLat(state.x, state.y)
+    const {state} = baseLayer;
+    const center: google.maps.LatLngLiteral = googleLonLat(state.x, state.y);
 
     const m = new google.maps.Map(el, {
       center,
       mapTypeId: sourceNameToMapId(baseLayerName),
       disableDefaultUI: true,
-      zoom: state.zoom
+      zoom: state.zoom,
     });
 
-    setMap(m)
+    setMap(m);
 
-  }, [])
+  }, [baseLayerName]);
 
   useEffect(() => {
-    log.d('dbg', 'subscribe')
+    log.d('dbg', 'subscribe');
     if (stateSubscription) {
       stateSubscription.unsubscribe();
       stateSubscription = null;
@@ -69,11 +68,11 @@ const GoogleMap: React.FunctionComponent = (): React.ReactElement => {
       draggingSubscription = null;
     }
     stateSubscription = baseLayer.stateObservable().subscribe(state => {
-      moveRecentMap(state.x, state.y, state.zoom)
-    })
+      moveRecentMap(state.x, state.y, state.zoom);
+    });
     draggingSubscription = baseLayer.draggingObservable().subscribe(coord => {
       moveRecentMap(coord.lon, coord.lat, baseLayer.state.zoom);
-    })
+    });
     return () => {
       if (stateSubscription) {
         stateSubscription.unsubscribe();
@@ -83,15 +82,15 @@ const GoogleMap: React.FunctionComponent = (): React.ReactElement => {
         draggingSubscription.unsubscribe();
         draggingSubscription = null;
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const md = getMapDefinition(baseLayerName);
   return md && isGoogleMapDefinition(md) && <div className="google-map-container" ref={mapAttach} >
     {map && <mapContext.Provider value={map} >
       <BaseLayer />
     </mapContext.Provider >}
-  </div >
-}
+  </div >;
+};
 
 export default React.memo(GoogleMap);

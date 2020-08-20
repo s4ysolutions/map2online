@@ -18,8 +18,9 @@ const usePosition = (
   width: number,
   height: number,
   parentWidth: number,
-  parentHeight: number
-): [{ x: number; y: number }, (x: number, y: number) => void] => {
+  parentHeight: number,
+): [{ x: number; y: number }, (x: number, y: number
+  ) => void] => {
   const w = parentWidth - width;
   const h = parentHeight - height;
   const xy = {
@@ -38,8 +39,8 @@ const usePosition = (
     return localStorage.set('fp', {
       stickBottom,
       stickRight,
-      x: stickRight ? (x < 0 ? 0 : x) : x >= w ? 0 : w - x,
-      y: stickBottom ? (y < 0 ? 0 : y) : y >= h ? 0 : h - y,
+      x: stickRight ? x < 0 ? 0 : x : x >= w ? 0 : w - x,
+      y: stickBottom ? y < 0 ? 0 : y : y >= h ? 0 : h - y,
     });
   };
   if (

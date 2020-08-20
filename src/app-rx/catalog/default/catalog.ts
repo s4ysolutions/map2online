@@ -1,8 +1,8 @@
-import {categoriesFactory, CATEGORY_ID_PREFIX, categoryFactory} from './category';
+import {CATEGORY_ID_PREFIX, categoriesFactory, categoryFactory} from './category';
 import {KV} from '../../../kv-rx';
-import {Catalog, Category, CategoryProps, Feature, FeatureProps, ID, Route, RouteProps} from '../index';
+import {Catalog, Category, CategoryProps, Feature, FeatureProps, Features, ID, Route, RouteProps} from '../index';
 import {ROUTE_ID_PREFIX, routeFactory} from './route';
-import {FEATURE_ID_PREFIX, featureFactory, FEATURES_ID_PREFIX} from './feature';
+import {FEATURES_ID_PREFIX, FEATURE_ID_PREFIX, featureFactory} from './feature';
 import {filter, map} from 'rxjs/operators';
 import {Wording} from '../../personalization/wording';
 
@@ -13,29 +13,36 @@ const catalogFactory = (storage: KV, wording: Wording): Catalog => {
   const th: Catalog = {
     featuresObservable: () =>
       storage
-        .observable<{ key: String; value: any }>()
+        .observable<{ key: string; value: Features }>()
         .pipe(
           filter(({key}) => key.indexOf(FEATURES_ID_PREFIX) === 0),
-          map(({value}) => value)),
+          map(({value}) => value),
+        ),
     categories: null,
-    categoryById: function (id: ID) {
-      const category = categories[id]
-      if (category) return category;
-      categories[id] = categoryFactory(storage, this, wording, storage.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null))
-      return categories[id]
+    categoryById (id: ID) {
+      const category = categories[id];
+      if (category) {
+        return category;
+      }
+      categories[id] = categoryFactory(storage, this, wording, storage.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null));
+      return categories[id];
     },
-    featureById: function (id: ID) {
-      const feature = features[id]
-      if (feature) return feature
-      features[id] = featureFactory(storage, this, storage.get<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${id}`, null))
-      return features[id]
+    featureById (id: ID) {
+      const feature = features[id];
+      if (feature) {
+        return feature;
+      }
+      features[id] = featureFactory(storage, this, storage.get<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${id}`, null));
+      return features[id];
     },
-    routeById: function (id: ID) {
-      const route = routes[id]
-      if (route) return route
-      routes[id] = routeFactory(storage, this, wording, storage.get<RouteProps | null>(`${ROUTE_ID_PREFIX}@${id}`, null))
-      return routes[id]
-    }
+    routeById (id: ID) {
+      const route = routes[id];
+      if (route) {
+        return route;
+      }
+      routes[id] = routeFactory(storage, this, wording, storage.get<RouteProps | null>(`${ROUTE_ID_PREFIX}@${id}`, null));
+      return routes[id];
+    },
   };
   th.categories = categoriesFactory(storage, th, wording);
   return th;

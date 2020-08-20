@@ -26,28 +26,23 @@ export const visibleFeaturesFactory = (catalog: Catalog, catalogUI: CatalogUI): 
 
   return {
     length: features.length,
-    observable: function () {
+    observable () {
       return merge(
         catalog.featuresObservable(),
         catalogUI.visibleObservable(),
-      ).pipe(
-        map(() => {
-          features = findFeatures();
-          return this;
-        })
-      )
-    }
-    ,
+      ).pipe(map(() => {
+        features = findFeatures();
+        return this;
+      }));
+    },
     [Symbol.iterator](): Iterator<Feature> {
       const _features = [...features];
       let _current = 0;
       return {
-        next: () => {
-          return _current >= _features.length
-            ? {done: true, value: null,}
-            : {done: false, value: _features[_current++]};
-        }
-      }
-    }
-  }
+        next: () => _current >= _features.length
+          ? {done: true, value: null}
+          : {done: false, value: _features[_current++]},
+      };
+    },
+  };
 };

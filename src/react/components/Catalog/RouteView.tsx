@@ -18,38 +18,38 @@ const catalogUI = getCatalogUI();
 const wording = getWording();
 
 const RouteView: React.FunctionComponent<{ route: Route, category: Category, canDelete: boolean }> = ({route: routeView, category, canDelete}): React.ReactElement => {
-  log.render('RouteView canDelete ' + canDelete);
-  const route = useObservable(routeView.observable()
-    .pipe(
-      filter(r => !!r)
-    ),
-    routeView)
+  log.render(`RouteView canDelete ${canDelete}`);
+  const route = useObservable(
+    routeView.observable()
+      .pipe(filter(r => Boolean(r))),
+    routeView,
+  );
 
   const isActive = useObservable(
     catalogUI.activeRouteObservable().pipe(map(active => active.id === route.id)),
-    catalogUI.activeRoute && catalogUI.activeRoute.id === route.id
+    catalogUI.activeRoute && catalogUI.activeRoute.id === route.id,
   );
 
   const isVisible = useObservable(catalogUI.visibleObservable(route.id), catalogUI.isVisible(route.id));
 
   const handleDelete = React.useCallback(() => {
     if (skipConfirmDialog()) {
-      category.routes.remove(route);
+      category.routes.remove(routeView);
     } else {
       catalogUI.requestDeleteRoute(routeView, category);
     }
-  }, []);
+  }, [category, routeView]);
 
   const handleActive = React.useCallback(() => {
-    catalogUI.activeRoute = route
-  }, []);
+    catalogUI.activeRoute = routeView;
+  }, [routeView]);
 
   const handleSelect = React.useCallback(() => {
-    catalogUI.selectedRoute = route;
-    handleActive()
-  }, [route.id]);
-  const handleVisible = React.useCallback(() => catalogUI.setVisible(route.id, !isVisible), [isVisible]);
-  const handleEdit = React.useCallback(() => catalogUI.startEditRoute(route), [route.id]);
+    catalogUI.selectedRoute = routeView;
+    handleActive();
+  }, [routeView, handleActive]);
+  const handleVisible = React.useCallback(() => catalogUI.setVisible(routeView.id, !isVisible), [routeView.id, isVisible]);
+  const handleEdit = React.useCallback(() => catalogUI.startEditRoute(routeView), [routeView]);
 
   return <div className={isActive ? 'item current' : 'item'} >
     <div

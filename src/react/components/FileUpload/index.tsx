@@ -9,43 +9,49 @@ const FileUpload: React.FunctionComponent<{ onUpload: (files: FileList) => void 
 
   const handleInput = useCallback((evt) => {
     onUpload(evt.target.files);
-  }, []);
+  }, [onUpload]);
 
   const doInput = useCallback((evt) => {
     inputRef.current.click();
     evt.preventDefault();
-  }, [inputRef.current]);
+  }, []);
 
-  const handleDragOver = useCallback((evt) => {
+  const handleDragOver = useCallback(() => {
     setOver(true);
   }, []);
 
-  const handleDragLeave = useCallback((evt) => {
+  const handleDragLeave = useCallback(() => {
     setOver(false);
   }, []);
 
   const handleDrop = useCallback((evt) => {
     onUpload(evt.dataTransfer.files);
-  }, []);
+  }, [onUpload]);
 
   useEffect(() => {
-    inputRef.current.addEventListener('change', handleInput, false);
-    dndRef.current.addEventListener('dragover', handleDragOver, false);
-    dndRef.current.addEventListener('dragleave', handleDragLeave, false);
-    dndRef.current.addEventListener('drop', handleDrop, false);
+    const ir = inputRef.current;
+    const dr = dndRef.current;
+    ir.addEventListener('change', handleInput, false);
+    dr.addEventListener('dragover', handleDragOver, false);
+    dr.addEventListener('dragleave', handleDragLeave, false);
+    dr.addEventListener('drop', handleDrop, false);
     return () => {
-      inputRef.current.removeEventListener('change', handleInput);
-      inputRef.current.removeEventListener('dragover', handleDragOver);
-      inputRef.current.removeEventListener('dragleave', handleDragLeave);
-      inputRef.current.removeEventListener('drop', handleDrop);
-    }
-  }, []);
+      ir.removeEventListener('change', handleInput);
+      dr.removeEventListener('dragover', handleDragOver);
+      dr.removeEventListener('dragleave', handleDragLeave);
+      dr.removeEventListener('drop', handleDrop);
+    };
+  }, [handleDragLeave, handleDragOver, handleDrop, handleInput]);
 
   return <div >
-    <input ref={inputRef} className="file-upload" type="file" name="files[]" multiple />
-    <button onClick={doInput} >{T`Upload`}</button >
-    <div ref={dndRef} className={"drop-zone" + (over ? ' over' : '')} >{T`Drop files here`}</div >
-  </div >
+    <input className="file-upload" multiple name="files[]" ref={inputRef} type="file" />
+    <button onClick={doInput} type="button">
+      {T`Upload`}
+    </button >
+    <div className={`drop-zone${over ? ' over' : ''}`} ref={dndRef} >
+      {T`Drop files here`}
+    </div >
+  </div >;
 };
 
 export default FileUpload;

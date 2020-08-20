@@ -3,7 +3,7 @@ import Delete from '../Svg/Delete';
 import Hidden from '../Svg/Hidden';
 import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
-import {Feature, isPoint, LineString, Route} from '../../../app-rx/catalog';
+import {Feature, LineString, Route, isPoint} from '../../../app-rx/catalog';
 import {getCatalogUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {filter, map} from 'rxjs/operators';
@@ -17,12 +17,14 @@ import {skipConfirmDialog} from '../../../lib/confirmation';
 const catalogUI = getCatalogUI();
 
 const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; index: number }> = ({index, feature: featureView, route}): React.ReactElement => {
-  const feature = useObservable(featureView.observable()
-    .pipe(
-      filter(f => !!f),
-      map(f => ({id: f.id, title: f.title, geometry: f.geometry, color: f.color})),
-    ),
-    featureView);
+  const feature = useObservable(
+    featureView.observable()
+      .pipe(
+        filter(f => Boolean(f)),
+        map(f => ({id: f.id, title: f.title, geometry: f.geometry, color: f.color})),
+      ),
+    featureView,
+  );
   log.render('FeatureView', {featureView, feature});
 
   const isVisible = useObservable(catalogUI.visibleObservable(feature.id), catalogUI.isVisible(feature.id));
@@ -34,15 +36,15 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
     } else {
       catalogUI.requestDeleteFeature(featureView, route);
     }
-  }, []);
+  }, [featureView, route]);
 
   const handleOpen = React.useCallback(() => {
-    catalogUI.setOpen(featureView.id, !isOpen)
-  }, [isOpen]);
+    catalogUI.setOpen(featureView.id, !isOpen);
+  }, [isOpen, featureView.id]);
 
 
-  const handleVisible = React.useCallback(() => catalogUI.setVisible(feature.id, !isVisible), [isVisible]);
-  const handleEdit = React.useCallback(() => catalogUI.startEditFeature(featureView), [feature.id]);
+  const handleVisible = React.useCallback(() => catalogUI.setVisible(feature.id, !isVisible), [isVisible, feature.id]);
+  const handleEdit = React.useCallback(() => catalogUI.startEditFeature(featureView), [featureView]);
 
   return <div className="accordion-item" >
     <div className="item" >
@@ -60,10 +62,9 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
           </span >,
           <div className="title" key="title" >
             {feature.title && feature.title.trim() ||
-            (feature.id + ' : ' + (isPoint(feature.geometry)
+            `${feature.id} : ${isPoint(feature.geometry)
               ? formatCoordinate(feature.geometry.coordinate)
-              : formatCoordinates((feature.geometry as LineString).coordinates)))
-            }
+              : formatCoordinates((feature.geometry as LineString).coordinates)}`}
           </div >,
         ]}
       </div >
@@ -74,18 +75,17 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
         {isVisible ? <Visible /> : <Hidden />}
       </div >
       <div className="type" key="type" >
-        {(isPoint(feature.geometry))
+        {isPoint(feature.geometry)
           ? <Pin color={rgb[feature.color]} />
-          : <Line color={rgb[feature.color]} />
-        }
+          : <Line color={rgb[feature.color]} />}
       </div >
     </div >
     {isOpen && <div className="body" >
       <div >
         {
-          (feature.id + ' : ' + (isPoint(feature.geometry)
+          (`${feature.id} : ${isPoint(feature.geometry)
             ? formatCoordinate(feature.geometry.coordinate)
-            : formatCoordinates((feature.geometry as LineString).coordinates)))
+            : formatCoordinates((feature.geometry as LineString).coordinates)}`)
         }
       </div >
     </div >}

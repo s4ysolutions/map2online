@@ -11,8 +11,8 @@ import RoutesView from './RoutesView';
 const catalog = getCatalogUI();
 const workspace = getWorkspace();
 
-const Catalog: React.FunctionComponent<{}> = (): React.ReactElement => {
-  const openCatalog = useObservable(workspace.catalogObservable(), workspace.catalogOpen)
+const Catalog: React.FunctionComponent = (): React.ReactElement => {
+  const openCatalog = useObservable(workspace.catalogObservable(), workspace.catalogOpen);
   const selectedCategory = useObservable(catalog.selectedCategoryObservable(), catalog.selectedCategory);
   const selectedRoute = useObservable(catalog.selectedRouteObservable(), catalog.selectedRoute);
   log.render(`Catalog open=${openCatalog} category=${selectedCategory} route=${selectedRoute}`);
@@ -22,8 +22,7 @@ const Catalog: React.FunctionComponent<{}> = (): React.ReactElement => {
       ? <FeaturesView route={selectedRoute} />
       : selectedCategory
         ? <RoutesView category={selectedCategory} />
-        : <CategoriesView />
-    }
+        : <CategoriesView />}
     <CatalogNavigation />
   </div >;
 };

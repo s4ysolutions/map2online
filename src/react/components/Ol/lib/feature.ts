@@ -1,4 +1,4 @@
-import {Coordinate, Feature, ID, isLineString, isPoint, LineString, Point} from '../../../../app-rx/catalog';
+import {Feature, ID, LineString, Point, isLineString, isPoint} from '../../../../app-rx/catalog';
 import OlLineString from 'ol/geom/LineString';
 import OlFeature from 'ol/Feature';
 import OlPoint from 'ol/geom/Point';
@@ -16,7 +16,9 @@ export const olGeometryFactory = (geometry: Point | LineString): OlPoint | OlLin
 
 export const olFeatureFactory = (feature: Feature): OlFeature => {
   let cached = cache[feature.id];
-  if (cached) return cached;
+  if (cached) {
+    return cached;
+  }
 
   const geometry = olGeometryFactory(feature.geometry);
 
@@ -36,12 +38,12 @@ export const olFeatureFactory = (feature: Feature): OlFeature => {
 
 export const setOlFeatureCoordinates = (olFeature: OlFeature, feature: Feature): void => {
   if (isPoint(feature.geometry)) {
-    const coordinate: Coordinate = feature.geometry.coordinate;
+    const {coordinate} = feature.geometry;
     const olCoordinates: OlCoordinate = coordinate2ol(coordinate);
     (olFeature.getGeometry() as OlPoint).setCoordinates(olCoordinates);
   } else if (isLineString(feature.geometry)) {
-    const coordinates: Coordinate[] = feature.geometry.coordinates;
+    const {coordinates} = feature.geometry;
     const olCoordinates: OlCoordinate[] = coordinates2ol(coordinates);
     (olFeature.getGeometry() as OlLineString).setCoordinates(olCoordinates);
   }
-}
+};

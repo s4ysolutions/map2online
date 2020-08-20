@@ -19,5 +19,5 @@ window.addEventListener('drop', (e) => {
 
 ReactDOM.render(
   <App />,
-  document.getElementById('reactMount')
+  document.getElementById('reactMount'),
 );

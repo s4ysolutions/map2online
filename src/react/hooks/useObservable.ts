@@ -24,8 +24,8 @@ const useObservable = <T>(observale: Observable<T>, initialValue: T, key?: strin
         log.rxDel(key);
       }
       subscription.unsubscribe();
-    }
-  }, []);
+    };
+  }, [key, observale]);
   return state;
 };
 

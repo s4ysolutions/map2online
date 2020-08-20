@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs';
 import {Catalog, Category, CategoryProps, FeatureProps} from '../app-rx/catalog';
-import {makeId} from '../l10n/id';
+import {makeId} from '../lib/id';
 
 export interface ImportedFolder {
   id?: string;
@@ -59,15 +59,15 @@ export const importAllToCategories = async (folders: ImportedFolder[], catalog: 
         id: makeId(),
         summary: '',
         title: folder.name,
-        visible: true
+        visible: true,
       };
       catalog.categories.add(categoryProps);
 
       folder.parent.id = makeId();
       return catalog.categories.add(categoryProps);
-    } else {
-      return null;
     }
+    return null;
+
   }).filter(promise => Boolean(promise)));
 
   return Promise.all(foldersWithFeatures.map(folder => {

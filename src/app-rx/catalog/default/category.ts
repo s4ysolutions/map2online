@@ -1,12 +1,12 @@
 import {Catalog, Categories, Category, CategoryProps, ID, Route} from '../index';
 import {KV} from '../../../kv-rx';
 import {routesFactory} from './route';
-import {makeId} from '../../../l10n/id';
+import {makeId} from '../../../lib/id';
 import {map} from 'rxjs/operators';
 import reorder from '../../../lib/reorder';
 import {Wording} from '../../personalization/wording';
 
-export const CATEGORY_ID_PREFIX = "c";
+export const CATEGORY_ID_PREFIX = 'c';
 
 export const newCategoryProps = (wording: Wording): CategoryProps => ({
   id: makeId(),
@@ -26,7 +26,7 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
 
   const th: Category & Updatebale = {
     get description() {
-      return p.description
+      return p.description;
     },
     set description(value) {
       p.description = value;
@@ -34,39 +34,37 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
     },
     id: p.id || makeId(),
     get summary() {
-      return p.summary
+      return p.summary;
     },
     set summary(value) {
       p.summary = value;
       this.update();
     },
     get title() {
-      return p.title
+      return p.title;
     },
     set title(value) {
       p.title = value;
       this.update();
     },
     get visible() {
-      return p.visible
+      return p.visible;
     },
     set visible(value) {
       p.visible = value;
       this.update();
     },
-    delete: function () {
+    delete() {
       this.routes.delete();
       storage.delete(key);
       storage.delete(`vis@${p.id}`); // visibility
       storage.delete(`op@${p.id}`); // visibility
     },
-    hasRoute: function (route: Route) {
-      return this.routes.hasRoute(route)
+    hasRoute(route: Route) {
+      return this.routes.hasRoute(route);
     },
     observable: () => storage.observable<CategoryProps | null>(key)
-      .pipe(
-        map(props => props === null ? null : catalog.categoryById(props.id))
-      ),
+      .pipe(map(value => value === null ? null : catalog.categoryById(value.id))),
     update: () => {
       storage.set(key, props);
     },
@@ -76,10 +74,10 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
   return th;
 };
 
-let prevIds: ID[] = []
+let prevIds: ID[] = [];
 
 export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wording): Categories => {
-  const key = 'cats'
+  const key = 'cats';
   const updateIds = (ids: ID[]) => {
     if (ids !== prevIds) {
       prevIds = ids.slice();
@@ -90,7 +88,7 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
     if (prevIds.length > 0) {
       return prevIds;
     }
-    prevIds = storage.get('cats', [])
+    prevIds = storage.get('cats', []);
     if (prevIds.length > 0) {
       return prevIds;
     }
@@ -100,46 +98,48 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
       updateIds([category.id]);
     }
     return prevIds;
-  }
+  };
 
   return {
-    add: function (props: CategoryProps | null, position?: number): Promise<Category> {
+    add(props: CategoryProps | null, position?: number): Promise<Category> {
       const category = categoryFactory(storage, catalog, wording, props);
       category.update();
       const pos = position || guardedIds().length;
-      const ids0 = guardedIds()
-      updateIds(ids0.slice(0, pos).concat(category.id).concat(ids0.slice(pos)));
+      const ids0 = guardedIds();
+      updateIds(ids0.slice(0, pos).concat(category.id)
+        .concat(ids0.slice(pos)));
       return Promise.resolve(category);
     },
     byPos: (index: number): Category | null => catalog.categoryById(guardedIds()[index]),
     get length() {
-      return guardedIds().length
+      return guardedIds().length;
     },
-    observable: function () {
-      return storage.observable('cats').pipe(map(() => this))
+    observable() {
+      return storage.observable('cats').pipe(map(() => this));
     },
-    remove: function (category: Category): number {
-      const ids0 = guardedIds()
+    remove(category: Category): number {
+      const ids0 = guardedIds();
       const pos = ids0.indexOf(category.id);
-      if (pos === -1) return -1;
+      if (pos < 0) {
+        return 0;
+      }
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
       category.delete();
+      return 1;
     },
-    reorder: function (from: number, to: number) {
-      const ids0 = guardedIds()
+    reorder(from: number, to: number) {
+      const ids0 = guardedIds();
       updateIds(reorder(ids0, from, to));
     },
-    [Symbol.iterator]: function () {
-      const ids0 = guardedIds()
+    [Symbol.iterator]() {
+      const ids0 = guardedIds();
       const _ids = [...ids0];
       let _current = 0;
       return {
-        next: () => {
-          return _current >= _ids.length
-            ? {done: true, value: null,}
-            : {done: false, value: this.byPos(_current++)};
-        }
+        next: () => _current >= _ids.length
+          ? {done: true, value: null}
+          : {done: false, value: this.byPos(_current++)},
       };
-    }
-  }
+    },
+  };
 };

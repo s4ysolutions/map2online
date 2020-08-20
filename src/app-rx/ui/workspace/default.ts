@@ -24,75 +24,75 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
     settingsOpen: false,
     personalizationObservable: () => personalizationObservable,
     personalizationOpen: false,
-    toggleAbout: function () {
-      this.closeFile()
-      this.closeSources()
-      this.closeSettings()
+    toggleAbout () {
+      this.closeFile();
+      this.closeSources();
+      this.closeSettings();
       const value = !this.aboutOpen;
       persistanceStorage.set('a', value);
       this.aboutOpen = value;
     },
-    toggleCatalog: function () {
+    toggleCatalog () {
       const value = !this.catalogOpen;
       persistanceStorage.set('cato', value);
       this.catalogOpen = value;
     },
-    toggleTools: function () {
-      this.closeMenus()
+    toggleTools () {
+      this.closeMenus();
       const value = !this.toolsOpen;
       persistanceStorage.set('feo', value);
       this.toolsOpen = value;
     },
-    toggleFile: function () {
-      this.closeAbout()
-      this.closeSources()
-      this.closeSettings()
+    toggleFile () {
+      this.closeAbout();
+      this.closeSources();
+      this.closeSettings();
       const value = !this.fileOpen;
       filesObservable.next(value);
       this.fileOpen = value;
     },
-    toggleSources: function () {
-      this.closeAbout()
-      this.closeFile()
-      this.closeSettings()
+    toggleSources () {
+      this.closeAbout();
+      this.closeFile();
+      this.closeSettings();
       const value = !this.sourcesOpen;
       sourcesObservable.next(value);
       this.sourcesOpen = value;
     },
-    toggleSettings: function () {
-      this.closeAbout()
-      this.closeFile()
-      this.closeSources()
+    toggleSettings () {
+      this.closeAbout();
+      this.closeFile();
+      this.closeSources();
       const value = !this.settingsOpen;
       settingsObservable.next(value);
       this.settingsOpen = value;
     },
-    togglePersonalization: function () {
-      this.closeMenus()
+    togglePersonalization () {
+      this.closeMenus();
       const value = !this.personalizationOpen;
       personalizationObservable.next(value);
       this.personalizationOpen = value;
     },
-    closeAbout: function () {
+    closeAbout () {
       aboutObservable.next(false);
       this.aboutOpen = false;
     },
-    closeFile: function () {
+    closeFile () {
       filesObservable.next(false);
       this.fileOpen = false;
     },
-    closeSources: function () {
+    closeSources () {
       sourcesObservable.next(false);
       this.sourcesOpen = false;
     },
-    closeSettings: function () {
+    closeSettings () {
       settingsObservable.next(false);
       this.settingsOpen = false;
     },
-    closeMenus: function () {
-      this.closeFile()
-      this.closeSources()
-      this.closeSettings()
+    closeMenus () {
+      this.closeFile();
+      this.closeSources();
+      this.closeSettings();
     },
   };
   th.toggleAbout = th.toggleAbout.bind(th);

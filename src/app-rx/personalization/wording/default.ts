@@ -1,7 +1,7 @@
 import {Wording} from './index';
 import {currentLocale} from '../../../l10n';
 import {KV} from '../../../kv-rx';
-import {merge, Observable} from 'rxjs';
+import {Observable, merge} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 const categoryVariants: Record<string, string[]> = {
@@ -19,7 +19,7 @@ const categoryVariants: Record<string, string[]> = {
     'expeditions',
     'folders',
   ],
-}
+};
 
 const routeVariants: Record<string, string[]> = {
   ru: [
@@ -33,7 +33,7 @@ const routeVariants: Record<string, string[]> = {
     'days',
     'routes',
   ],
-}
+};
 
 // noinspection NonAsciiCharacters
 const wordings: Record<string, Record<string, Record<string, string>>> = {
@@ -264,77 +264,77 @@ const wordings: Record<string, Record<string, Record<string, string>>> = {
       'New route': 'Новый этап',
       'Yes, delete the route': 'Да, удалить этот этап.',
     },
-  }
-}
+  },
+};
 
 export const wordingFactory = (storage: KV): Wording => {
   const r: Wording = {
     get isPersonalized(): boolean {
-      return this.currentCategoryVariant && this.currentRouteVariant
+      return this.currentCategoryVariant && this.currentRouteVariant;
     },
     observableIsPersonalized(): Observable<boolean> {
-      const th = this
       return merge(this.observableCurrentCategoryVariant(), this.observableCurrentRouteVariant())
-        .pipe(
-          map(() => th.isPersonalized)
-        )
+        .pipe(map(() => this.isPersonalized));
     },
     get categoryVariants(): string[] {
-      return categoryVariants[currentLocale()] || categoryVariants['en'];
+      return categoryVariants[currentLocale()] || categoryVariants.en;
     },
     get routeVariants(): string[] {
-      return routeVariants[currentLocale()] || routeVariants['en'];
+      return routeVariants[currentLocale()] || routeVariants.en;
     },
     get currentCategoryVariant(): string | null {
-      return storage.get('curcat', null) || null
-    },
-    get currentRouteVariant(): string | null {
-      return storage.get('curroute', null) || null
+      return storage.get('curcat', null) || null;
     },
     set currentCategoryVariant(variant: string | null) {
-      storage.set('curcat', variant)
+      storage.set('curcat', variant);
+    },
+    get currentRouteVariant(): string | null {
+      return storage.get('curroute', null) || null;
     },
     set currentRouteVariant(variant: string | null) {
-      storage.set('curroute', variant)
+      storage.set('curroute', variant);
     },
-    observableCurrentCategoryVariant: (): Observable<string> => storage.observable<string | null>("curcat"),
-    observableCurrentRouteVariant: (): Observable<string> => storage.observable<string | null>("curroute"),
+    observableCurrentCategoryVariant: (): Observable<string> => storage.observable<string | null>('curcat'),
+    observableCurrentRouteVariant: (): Observable<string> => storage.observable<string | null>('curroute'),
     C: (key) => {
-      const localized = wordings[currentLocale()] || wordings['en']
+      const localized = wordings[currentLocale()] || wordings.en;
       if (localized) {
-        const variant = localized[r.currentCategoryVariant]
+        const variant = localized[r.currentCategoryVariant];
         if (variant) {
-          const t = variant[key]
-          if (t)
-            return t
+          const t = variant[key];
+          if (t) {
+            return t;
+          }
         }
       }
       return `l10n: ${key}`;
     },
     R: (key) => {
-      const localized = wordings[currentLocale()] || wordings['en']
+      const localized = wordings[currentLocale()] || wordings.en;
       if (localized) {
-        const variant = localized[r.currentRouteVariant]
+        const variant = localized[r.currentRouteVariant];
         if (variant) {
-          const t = variant[key]
-          if (t)
-            return t
+          const t = variant[key];
+          if (t) {
+            return t;
+          }
         }
       }
       return `l10n: ${key}`;
     },
     CR: (key) => {
-      const localized = wordings[currentLocale()] || wordings['en']
+      const localized = wordings[currentLocale()] || wordings.en;
       if (localized) {
-        const variant = localized[`${r.currentCategoryVariant}_${r.currentRouteVariant}`]
+        const variant = localized[`${r.currentCategoryVariant}_${r.currentRouteVariant}`];
         if (variant) {
-          const t = variant[key]
-          if (t)
-            return t
+          const t = variant[key];
+          if (t) {
+            return t;
+          }
         }
       }
       return `l10n: ${key}`;
     },
-  }
+  };
   return r;
-}
+};

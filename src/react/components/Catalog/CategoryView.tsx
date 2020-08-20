@@ -25,15 +25,13 @@ const wording = getWording();
 const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: categoryView}): React.ReactElement => {
 
   const category = useObservable(
-    categoryView.observable().pipe(
-      filter(v => !!v) // don't rerender on deleteted category
-    ),
-    categoryView
-  )
+    categoryView.observable().pipe(filter(v => Boolean(v))), // don't rerender on deleteted category
+    categoryView,
+  );
 
   const isActive: boolean = useObservable(
     catalogUI.activeCategoryObservable().pipe(map(active => active && active.id === category.id)),
-    catalogUI.activeCategory && catalogUI.activeCategory.id === category.id
+    catalogUI.activeCategory && catalogUI.activeCategory.id === category.id,
   );
   const isVisible = useObservable(catalogUI.visibleObservable(category.id), catalogUI.isVisible(category.id));
 
@@ -42,12 +40,12 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
   const handleDelete = React.useCallback(
     () => {
       if (skipConfirmDialog()) {
-        catalog.categories.remove(category)
+        catalog.categories.remove(category);
       } else {
-        catalogUI.requestDeleteCategory(categoryView)
+        catalogUI.requestDeleteCategory(categoryView);
       }
     },
-    [category, categoryView]
+    [category, categoryView],
   );
 
   const handleActive = React.useCallback(
@@ -56,14 +54,14 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
         catalogUI.activeRoute = category.routes.byPos(0);
       }
     },
-    [isActive, category.routes.length, catalogUI.activeRoute]
+    [isActive, category.routes],
   );
 
   const handleSelect = React.useCallback(() => {
     catalogUI.selectedCategory = category;
-    handleActive()
-  }, [category.id, catalogUI.selectedCategory]);
-  const handleVisible = React.useCallback(() => catalogUI.setVisible(category.id, !isVisible), [isVisible]);
+    handleActive();
+  }, [category, handleActive]);
+  const handleVisible = React.useCallback(() => catalogUI.setVisible(category.id, !isVisible), [category.id, isVisible]);
   const handleEdit = React.useCallback(() => catalogUI.startEditCategory(category), [category]);
 
   return <div className={isActive ? 'item current' : 'item'} >
@@ -75,10 +73,11 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
     >
       {canDelete ? <Delete /> : <Empty />}
     </div >
-    <div className="title"
-         key="title"
-         onClick={handleSelect}
-         title={wording.R('Open category hint')}
+    <div
+      className="title"
+      key="title"
+      onClick={handleSelect}
+      title={wording.R('Open category hint')}
     >
       {category.title + (categoryView.routes.length > 0 && ` (${categoryView.routes.length})` || ' (0)')}
     </div >

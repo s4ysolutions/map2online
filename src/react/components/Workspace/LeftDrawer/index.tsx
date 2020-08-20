@@ -94,7 +94,7 @@ const LeftDrawer: React.FunctionComponent = (): React.ReactElement => {
       >
         <Catalog />
       </ContentBig >
-    ;
+  ;
 };
 
 export default LeftDrawer;

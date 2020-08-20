@@ -7,6 +7,7 @@
     "dev": "webpack-dev-server --color --proggress --config webpack.config-dev.js",
     "build": "webpack --config webpack.config-prod.js",
     "stats": "webpack --config webpack.config-stats.js --profile --json >stats.json",
+    "lint": "eslint --fix src",
     "testdel": "mocha -r ts-node/register --require esm --experimental-modules tests/mocha/**/*.spec.ts",
     "test": "mocha -r ts-node/register --require esm tests/mocha/**/*.spec.ts",
     "testcafe": "testcafe chrome testcafe/** --app \"http-server ./dist -s\"",

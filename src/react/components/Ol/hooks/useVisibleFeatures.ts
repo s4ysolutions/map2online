@@ -12,15 +12,11 @@ const transformVisibleFeatures = (features: VisibleFeatures): OlFeature[] => Arr
 const observable: Observable<OlFeature[]> = getDesigner()
   .visibleFeatures
   .observable()
-  .pipe(
-    map(
-      (f) => {
-        return transformVisibleFeatures(f);
-      }))
+  .pipe(map((f) => transformVisibleFeatures(f)));
 // const visibleFeatures = () => transformVisibleFeatures(getDesigner().visibleFeatures);
 
 const useVisibleFeatures = (): OlFeature[] => {
-  const visibleFeatures: OlFeature[] = transformVisibleFeatures(getDesigner().visibleFeatures)
+  const visibleFeatures: OlFeature[] = transformVisibleFeatures(getDesigner().visibleFeatures);
   return useObservable(observable, visibleFeatures);
-}
+};
 export default useVisibleFeatures;

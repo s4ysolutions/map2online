@@ -3,7 +3,7 @@ import {Subject} from 'rxjs';
 
 export const importUIFactory = (): ImportUI => {
   let visible = false;
-  let visibleSubject = new Subject<boolean>();
+  const visibleSubject = new Subject<boolean>();
   const th: ImportUI = {
     close() {
       this.visible = false;
@@ -18,7 +18,7 @@ export const importUIFactory = (): ImportUI => {
       visible = value;
       visibleSubject.next(visible);
     },
-    visibleObservable: () => visibleSubject
+    visibleObservable: () => visibleSubject,
   };
   th.close = th.close.bind(th);
   th.open = th.open.bind(th);

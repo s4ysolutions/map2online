@@ -2,14 +2,16 @@
 import {Subject} from 'rxjs';
 
 const log = {
-  // d: (a?: any, b?: any, c?: any) => undefined, //console.debug,
-  // debug: (a?: any, b?: any, c?: any) => undefined, //console.debug,
+  /*
+   * d: (a?: any, b?: any, c?: any) => undefined, //console.debug,
+   * debug: (a?: any, b?: any, c?: any) => undefined, //console.debug,
+   */
   d: console.debug,
   debug: console.debug,
   error: console.error,
   info: console.info,
   warn: console.warn,
-  render(component: string, params?: object): void {
+  render(component: string, params?: unknown): void {
     if (params) {
       this.debug(`render: ${component}`, params);
     } else {
@@ -19,11 +21,11 @@ const log = {
   rxUse(id: string): void {
     this.debug(`rx: use ${id}`);
   },
-  rxSetState(id: string, value?: any) {
+  rxSetState(id: string, value?: unknown): void {
     if (value === undefined) {
-      this.debug(`rx: ${id} setState`)
+      this.debug(`rx: ${id} setState`);
     } else {
-      this.debug(`rx: ${id} setState(${value})`)
+      this.debug(`rx: ${id} setState(${value})`);
     }
   },
   rxAdd(id: string): void {
@@ -54,11 +56,3 @@ const log = {
 };
 
 export default log;
-
-export const _ = <T>(o: T, description?: any): T => {
-  if (description)
-    log.d(description, o);
-  else
-    log.d(o);
-  return o;
-};

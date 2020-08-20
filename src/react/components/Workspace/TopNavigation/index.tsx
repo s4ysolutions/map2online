@@ -10,10 +10,13 @@ import useObservable from '../../../hooks/useObservable';
 const workspace = getWorkspace();
 const catalogUI = getCatalogUI();
 
-const deselectRoute = (): void => catalogUI.selectedRoute = null;
+const deselectRoute = (): void => {
+  catalogUI.selectedRoute = null;
+};
+
 const deselectCategory = () => {
   catalogUI.selectedCategory = null;
-  deselectRoute()
+  deselectRoute();
 };
 
 const TopNavigation = (): React.ReactElement => {
@@ -23,9 +26,15 @@ const TopNavigation = (): React.ReactElement => {
 
   return <div className="top-navigation" >
     <CatalogButton />
-    <h1 ><span className={selectedCategory ? 'hasPointer' : ''} onClick={deselectCategory} >{T`AppTitle`}</span >
-      {selectedCategory ? <span className={selectedRoute ? 'hasPointer' : ''}
-                                onClick={deselectRoute} >{` - ${selectedCategory.title}`}</span > : ''}
+    <h1 >
+      <span className={selectedCategory ? 'hasPointer' : ''} onClick={deselectCategory} >
+        {T`AppTitle`}
+      </span >
+      {selectedCategory ? <span
+        className={selectedRoute ? 'hasPointer' : ''}
+        onClick={deselectRoute} >
+        {` - ${selectedCategory.title}`}
+      </span > : ''}
       {selectedRoute ? ` - ${selectedRoute.title}` : ''}
     </h1 >
     <MenuButton onClick={workspace.toggleFile} title={T`File`} />

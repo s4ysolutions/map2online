@@ -7,11 +7,12 @@ interface HW {
 }
 
 const getSize = (el?: Element | null): HW => {
-  if (el)
+  if (el) {
     return {
       height: el.clientHeight,
       width: el.clientWidth,
     };
+  }
 
   return {
     height: POS_NA,
@@ -19,17 +20,15 @@ const getSize = (el?: Element | null): HW => {
   };
 };
 
-const useComponentSize = (ref: React.MutableRefObject<any>): HW => {
-  let [componentSize, setComponentSize] = React.useState(
-    getSize(ref ? ref.current : null)
-  );
+const useComponentSize = (ref: React.MutableRefObject<HTMLDivElement>): HW => {
+  const [componentSize, setComponentSize] = React.useState(getSize(ref ? ref.current : null));
   const handleResize = React.useCallback(
     (): void => {
       if (ref.current) {
         setComponentSize(getSize(ref.current));
       }
     },
-    [ref]
+    [ref],
   );
 
   React.useLayoutEffect(
@@ -46,7 +45,7 @@ const useComponentSize = (ref: React.MutableRefObject<any>): HW => {
         window.removeEventListener('resize', handleResize);
       };
     },
-    [ref]
+    [ref, handleResize],
   );
 
   return componentSize;

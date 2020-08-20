@@ -4,14 +4,14 @@ import {Color, rgb} from 'lib/colors';
 import {pinSvg} from '../../Svg/Pin';
 import {FeatureType} from '../../../../app-rx/ui/tools';
 
-//const SVG_HEIGHT = 960;
+// const SVG_HEIGHT = 960;
 const SVG_HEIGHT = 512;
 const ICON_HEIGHT = 30;
 const SCALE = ICON_HEIGHT / SVG_HEIGHT;
 const CENTER = 0.5;
 const HEIGHT = 1;
 
-const backgroundFill = new Fill({color: '#fff8'})
+const backgroundFill = new Fill({color: '#fff8'});
 const createText = (text: string) =>
   new Text({
     backgroundFill,
@@ -20,12 +20,12 @@ const createText = (text: string) =>
     text,
   });
 
-const createStyle = (featureType: FeatureType, featureColor: Color, label?: string) => {
+const createStyle = (featureType: FeatureType, featureColor: Color, label?: string): Style => {
   const color = rgb[featureColor];
   return new Style({
     stroke: new Stroke({
-      color: color,
-      width: 2
+      color,
+      width: 2,
     }),
     image:
       featureType === FeatureType.Point
@@ -34,25 +34,23 @@ const createStyle = (featureType: FeatureType, featureColor: Color, label?: stri
           scale: SCALE,
           anchor: [
             CENTER,
-            HEIGHT
+            HEIGHT,
           ],
-          src: pinSvg(color)
+          src: pinSvg(color),
         })
         : new CircleStyle({
           radius: 7,
           stroke: new Stroke({
             color: '#ffffff',
-            width: 2
+            width: 2,
           }),
           fill: new Fill({
-            color: `${color}a0`
-          })
+            color: `${color}a0`,
+          }),
         }),
-    //text: createText(label),
-    text: label ? createText(label) : undefined
-  })
+    // text: createText(label),
+    text: label ? createText(label) : undefined,
+  });
 };
 
-export const getStyle = (featureType: FeatureType, color: Color, label?: string) => {
-  return createStyle(featureType, color, label);
-};
+export const getStyle = (featureType: FeatureType, color: Color, label?: string): Style => createStyle(featureType, color, label);

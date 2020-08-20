@@ -7,7 +7,7 @@ import useObservable from '../../hooks/useObservable';
 import T from '../../../l10n';
 import {map} from 'rxjs/operators';
 
-const wording = getWording()
+const wording = getWording();
 const catalogUI = getCatalogUI();
 const handleSubmit: (ev: FormEvent) => void = (ev: FormEvent) => {
   ev.preventDefault();
@@ -22,10 +22,9 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
 
   const category = useObservable(
     categoryEdit.observable()
-      .pipe(
-        map(category => ({title: category.title, description: category.description}))
-      ),
-    categoryEdit);
+      .pipe(map(c => ({title: c.title, description: c.description}))),
+    categoryEdit,
+  );
   const titleRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect((): void => {
@@ -33,7 +32,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
     titleRef.current.select();
   }, []);
 
-  return <Modal closeOnEnter={true} onClose={handleClose} className="edit-dialog" >
+  return <Modal className="edit-dialog" closeOnEnter onClose={handleClose} >
     <form onSubmit={handleSubmit} >
       <h2 >
         {wording.C('Modify category')}
@@ -45,7 +44,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
         <input
           name="title"
           onChange={(ev): void => {
-            categoryEdit.title = ev.target.value
+            categoryEdit.title = ev.target.value;
           }}
           ref={titleRef}
           value={category.title} />
@@ -54,15 +53,16 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
         <label htmlFor="description" >
           {T`Description`}
         </label >
-        <textarea rows={10}
-                  name="description"
-                  onChange={(ev): void => {
-                    categoryEdit.description = ev.target.value
-                  }}
-                  value={category.description} />
+        <textarea
+          name="description"
+          onChange={(ev): void => {
+            categoryEdit.description = ev.target.value;
+          }}
+          rows={10}
+          value={category.description} />
       </div >
       <div className="buttons-row" >
-        <button onClick={handleClose} >
+        <button onClick={handleClose} type="button">
           {T`Close`}
         </button >
       </div >

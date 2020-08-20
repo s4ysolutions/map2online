@@ -11,4 +11,4 @@ export const sourceNameToMapId = (name: string): google.maps.MapTypeId => {
     default:
       return MapTypeId.ROADMAP;
   }
-}
+};

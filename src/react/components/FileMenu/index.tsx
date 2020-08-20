@@ -11,13 +11,13 @@ const catalog = getCatalog();
 const workspace = getWorkspace();
 
 const handleExportAll = () => {
-  workspace.closeMenus()
-  const category = catalog.categories.byPos(0)
-  const routes = Array.from(category.routes)
-  exporter.exportRoutesKML(routes, category)
+  workspace.closeMenus();
+  const category = catalog.categories.byPos(0);
+  const routes = Array.from(category.routes);
+  exporter.exportRoutesKML(routes, category);
 };
 
-const FileMenu: React.FunctionComponent<{}> = (): React.ReactElement => {
+const FileMenu: React.FunctionComponent = (): React.ReactElement => {
   log.render('FileMenu');
   const handleExportVisible: () => void = () => null;
   const handleExportLevel1: () => void = () => null;
@@ -49,10 +49,12 @@ const FileMenu: React.FunctionComponent<{}> = (): React.ReactElement => {
       </div >
     </MenuItem >
     <MenuSep key="sep1" />
-    <MenuItem key="import" onClick={() => {
-      workspace.closeMenus()
-      importUI.open()
-    }} >
+    <MenuItem
+      key="import"
+      onClick={() => {
+        workspace.closeMenus();
+        importUI.open();
+      }} >
       <div className="title" >
         {T`Import`}
       </div >

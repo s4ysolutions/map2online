@@ -12,7 +12,7 @@ const toolsFactory = (persistStorage: KV): Tools => {
     isLineObservable: () => persistStorage.observable('tt'),
     isPoint: persistStorage.get('tt', FeatureType.Point) === FeatureType.Point,
     isPointObservable: () => persistStorage.observable('tt'),
-    selectColor: function (color: Color) {
+    selectColor (color: Color) {
       if (this.isLine) {
         persistStorage.set('tcl', color);
         this.colorLine = color;
@@ -21,13 +21,13 @@ const toolsFactory = (persistStorage: KV): Tools => {
         this.colorPoint = color;
       }
     },
-    selectLine: function () {
+    selectLine () {
       persistStorage.set('tt', FeatureType.Line);
       this.tool = FeatureType.Line;
       this.isLine = true;
       this.isPoint = false;
     },
-    selectPoint: function () {
+    selectPoint () {
       persistStorage.set('tt', FeatureType.Point);
       this.featureType = FeatureType.Point;
       this.isLine = false;

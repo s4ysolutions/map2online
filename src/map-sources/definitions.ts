@@ -16,8 +16,8 @@ export interface MapDefinition {
   // toLonLat?: TransformCoordFunction;
 }
 
-export const isOlMapDefinition = (mapDefinition: MapDefinition) => !!(mapDefinition.olSourceFactory);
-export const isGoogleMapDefinition = (mapDefinition: MapDefinition) => mapDefinition.id.indexOf('Google') === 0;
+export const isOlMapDefinition = (mapDefinition: MapDefinition):boolean => Boolean(mapDefinition.olSourceFactory);
+export const isGoogleMapDefinition = (mapDefinition: MapDefinition):boolean => mapDefinition.id.indexOf('Google') === 0;
 
 export interface MapGroupDefinition {
   id: string;
@@ -38,17 +38,17 @@ const siteAttribution =
  * every map will have `toLonLat(coord)` function
  */
 /*
-const toLonLatFunction = (dest: Projection): TransformCoordFunction => (
-  source: Source,
-  coord: Coordinate
-): Coordinate => transform(coord, source, dest);
-*/
+ *const toLonLatFunction = (dest: Projection): TransformCoordFunction => (
+ *  source: Source,
+ *  coord: Coordinate
+ *): Coordinate => transform(coord, source, dest);
+ */
 /*
-const addProjToMap = (map: MapDefinition): MapDefinition => ({
-  ...map,
-  toLonLat: toLonLatFunction(map.proj || {getCode: (): string => 'EPSG:4326'}),
-});
-*/
+ *const addProjToMap = (map: MapDefinition): MapDefinition => ({
+ *  ...map,
+ *  toLonLat: toLonLatFunction(map.proj || {getCode: (): string => 'EPSG:4326'}),
+ *});
+ */
 
 const mapGroups: MapGroupDefinition[] = [
   {
@@ -87,34 +87,34 @@ const mapGroups: MapGroupDefinition[] = [
     ],
   },
   /*
-  {
-    id: 'Yandex',
-    maps: [
-      {id: 'YandexMap'},
-      {id: 'YandexPublic'},
-      {id: 'YandexSatellite'},
-    ],
-  },
-  {
-    id: 'Nokia',
-    maps: [],
-  },
-  {
-    id: 'Cosmos',
-    maps: [],
-  },
-  {
-    id: 'Navteq',
-    maps: [],
-  },
-  {
-    id: 'GeoHub',
-    maps: [],
-  },
-  {
-    id: 'Moscow',
-    maps: [],
-  },
+   *{
+   *  id: 'Yandex',
+   *  maps: [
+   *    {id: 'YandexMap'},
+   *    {id: 'YandexPublic'},
+   *    {id: 'YandexSatellite'},
+   *  ],
+   *},
+   *{
+   *  id: 'Nokia',
+   *  maps: [],
+   *},
+   *{
+   *  id: 'Cosmos',
+   *  maps: [],
+   *},
+   *{
+   *  id: 'Navteq',
+   *  maps: [],
+   *},
+   *{
+   *  id: 'GeoHub',
+   *  maps: [],
+   *},
+   *{
+   *  id: 'Moscow',
+   *  maps: [],
+   *},
    */
   {
     id: 'Bing',
@@ -139,7 +139,7 @@ const mapGroups: MapGroupDefinition[] = [
           ...BING_OPTIONS,
           imagerySet: 'AerialWithLabelsOnDemand',
         }),
-      },/*
+      }, /*
       {
         id: 'BingStreetside',
         olSourceFactory: (): Source => new BingMaps({
@@ -174,7 +174,7 @@ const mapGroups: MapGroupDefinition[] = [
         }),
       },*/
     ],
-  },/*
+  }, /*
   {
     id: 'GeoPortal',
     maps: [],
@@ -224,16 +224,16 @@ const mapGroups: MapGroupDefinition[] = [
     ],
   },
   /*
-  {
-    id: 'ESRI',
-    maps: [],
-  },
-  {
-    id: 'GoogleEarth',
-    maps: [],
-  },
+   *{
+   *  id: 'ESRI',
+   *  maps: [],
+   *},
+   *{
+   *  id: 'GoogleEarth',
+   *  maps: [],
+   *},
    */
-]/*.map((group: MapGroupDefinition): MapGroupDefinition => ({
+]/* .map((group: MapGroupDefinition): MapGroupDefinition => ({
   ...group,
   maps: group.maps.map((map: MapDefinition): MapDefinition => addProjToMap(map)),
 }))*/;

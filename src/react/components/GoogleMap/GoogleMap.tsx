@@ -6,11 +6,11 @@ import {getBaseLayer} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {getMapDefinition, isGoogleMapDefinition} from '../../../map-sources/definitions';
 // noinspection ES6UnusedImports
-import {googleLonLat} from '../../../lib/projection';
 import mapContext from './context/map';
 import BaseLayer from './BaseLayer';
 import {sourceNameToMapId} from './lib/mapid';
 import {Subscription} from 'rxjs';
+import {googleLonLat} from '../../../lib/googlemap';
 
 const baseLayer = getBaseLayer();
 let stateSubscription: Subscription = null;

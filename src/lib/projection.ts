@@ -1,6 +1,5 @@
 import {fromLonLat, toLonLat} from 'ol/proj';
 import {Coordinate, isCoordinate} from '../app-rx/catalog';
-import LatLngLiteral = google.maps.LatLngLiteral;
 
 export const metersToDegrees0 = (olX: number | Coordinate | number[], olY?: number, olAlt?: number): number[] => {
   if (olY !== undefined) {
@@ -30,10 +29,5 @@ export const degreesToMeters0 = (olX: number | Coordinate | number[], olY?: numb
 export const degreesToMeters = (olX: number | Coordinate | number[], olY?: number, olAlt?: number): Coordinate => {
   const [lon, lat, alt] = degreesToMeters0(olX, olY, olAlt)
   return {lon, lat, alt}
-}
-
-export const googleLonLat = (olX: number | Coordinate, olY?: number): LatLngLiteral => {
-  const [lng, lat] = metersToDegrees0(olX, olY)
-  return {lat, lng}
 }
 

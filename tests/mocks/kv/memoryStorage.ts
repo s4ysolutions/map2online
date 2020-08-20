@@ -4,7 +4,7 @@ import {filter, map} from 'rxjs/operators';
 
 const memoryStorageFactory = (): KV => {
   const subject = new Subject<{ key: string, value: any }>();
-  const mem = {}
+  const mem: Record<string, string> = {}
   return {
     get: function <T>(key: string, defaultValue: T, forcedJSON?: string) {
       if (forcedJSON) {

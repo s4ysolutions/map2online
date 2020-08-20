@@ -10,7 +10,7 @@ import useObservable from '../../../hooks/useObservable';
 const workspace = getWorkspace();
 const catalogUI = getCatalogUI();
 
-const deselectRoute = () => catalogUI.selectedRoute = null;
+const deselectRoute = (): void => catalogUI.selectedRoute = null;
 const deselectCategory = () => {
   catalogUI.selectedCategory = null;
   deselectRoute()

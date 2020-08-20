@@ -1,6 +1,6 @@
-import Timer = NodeJS.Timer;
+import Timeout = NodeJS.Timeout;
 
-let skipConfirmTimer: Timer | null = null;
+let skipConfirmTimer: Timeout | null = null;
 
 export const startSkipConfirmTimer = () => {
   if (skipConfirmTimer) {

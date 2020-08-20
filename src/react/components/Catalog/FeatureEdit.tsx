@@ -11,7 +11,7 @@ import {map} from 'rxjs/operators';
 import {degreesToMeters} from '../../../lib/projection';
 
 const catalogUI = getCatalogUI();
-const handleSubmit = (ev: FormEvent) => {
+const handleSubmit: (ev: FormEvent) => void = (ev: FormEvent) => {
   ev.preventDefault();
   catalogUI.commitEditFeature();
   return null;

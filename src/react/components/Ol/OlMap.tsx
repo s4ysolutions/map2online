@@ -11,32 +11,22 @@ import olMapContext from './context/map';
 import DrawInteractions from './DrawInteractions';
 import ModifyInteractions from './ModifyInteractions';
 import ResizeObserver from 'resize-observer-polyfill';
-import {Feature} from '../../../app-rx/catalog';
 import {defaults as defaultControls} from 'ol/control';
-import {getBaseLayer, getDesigner} from '../../../di-default';
-import useObservable from '../../hooks/useObservable';
-import {map as rxMap} from 'rxjs/operators';
-import MapBrowserEvent from '../../../../typings/ol/MapBrowserEvent';
+import {getBaseLayer} from '../../../di-default';
 import SnapInteractions from './SnapInteractions';
 import {setCursorOver} from './hooks/useCursorOver';
 import T from 'l10n';
 import ZoomToFeaturesControl from './zoomToFeaturesControl';
+import MapBrowserEvent from 'ol/MapBrowserEvent';
 import Timeout = NodeJS.Timeout;
 
 let resizeTimer: Timeout = null;
 
-const designer = getDesigner();
 const baseLayer = getBaseLayer();
 
 const OlMap: React.FunctionComponent = (): React.ReactElement => {
   const [map, setMap] = React.useState<Map>(null)
   log.render(`OlMap map is ${map ? 'set' : 'not set'}`)
-
-  const features = useObservable<Feature[]>(
-    designer.visibleFeatures.observable()
-      .pipe(rxMap(vf => Array.from(vf))),
-    Array.from(designer.visibleFeatures)
-  );
 
   const mapAttach = React.useCallback((el: HTMLDivElement): void => {
     log.render('OLMap mapAttach', el);
@@ -45,13 +35,17 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
     }
 
     const state = baseLayer.state
+    // @ts-ignore
+    const zoomControl = new ZoomToFeaturesControl();
     const m = new Map({
       controls: defaultControls({
-        delta: 0.25,
-        zoomInTipLabel: T`Zoom in`,
-        zoomOutTipLable: T`Zoom out`
+        zoomOptions: {
+          delta: 0.25,
+          zoomInTipLabel: T`Zoom in`,
+          zoomOutTipLabel: T`Zoom out`
+        }
       })
-        .extend([new ZoomToFeaturesControl({})]),
+        .extend([zoomControl]),
       target: el,
       view: new View({
         center: [
@@ -70,10 +64,10 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       const pos = e.frameState.viewState.center
       baseLayer.setDragging({lat: pos[1], lon: pos[0], alt: 0})
     })
-    el.addEventListener('mouseenter', (ev) => {
+    el.addEventListener('mouseenter', () => {
       setCursorOver(true)
     })
-    el.addEventListener('mouseleave', (ev) => {
+    el.addEventListener('mouseleave', () => {
       setCursorOver(false)
     })
     setMap(m);

@@ -13,10 +13,11 @@ import {ol2coordinate2, ol2coordinates2} from './lib/coordinates';
 import log from '../../../log';
 import {useCursorOver} from './hooks/useCursorOver';
 import {useModifying} from './hooks/useModifying';
+import GeometryType from 'ol/geom/GeometryType';
 
 const newDrawInteraction = (type: FeatureType, pointColor: Color, lineColor: Color) => new DrawInteraction({
   style: getStyle(type, type === FeatureType.Point ? pointColor : lineColor),
-  type: type === FeatureType.Point ? 'Point' : 'LineString',
+  type: type === FeatureType.Point ? GeometryType.POINT : GeometryType.LINE_STRING,
 });
 
 const catalogUI = getCatalogUI();

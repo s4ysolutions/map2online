@@ -14,5 +14,5 @@ export interface BaseLayer {
   stateObservable: () => Observable<BaseLayerState>;
   draggingObservable: () => Observable<Coordinate>;
 
-  setDragging(coordinate: Coordinate);
+  setDragging: (coordinate: Coordinate) => void;
 }

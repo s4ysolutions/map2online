@@ -19,9 +19,9 @@ const handleExportAll = () => {
 
 const FileMenu: React.FunctionComponent<{}> = (): React.ReactElement => {
   log.render('FileMenu');
-  const handleExportVisible = () => null;
-  const handleExportLevel1 = () => null;
-  const handleExportLevel2 = () => null;
+  const handleExportVisible: () => void = () => null;
+  const handleExportLevel1: () => void = () => null;
+  const handleExportLevel2: () => void = () => null;
   return <React.Fragment >
     <MenuItem key="all" onClick={handleExportAll} >
       <div className="title" >

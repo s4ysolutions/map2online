@@ -7,8 +7,8 @@ const catalogUI = getCatalogUI();
 const wording = getWording();
 const workspace = getWorkspace();
 
-const deselectRoute = () => catalogUI.selectedRoute = null;
-const deselectCategory = () => {
+const deselectRoute: () => void = () => catalogUI.selectedRoute = null;
+const deselectCategory: () => void = () => {
   catalogUI.selectedCategory = null;
   deselectRoute()
 };

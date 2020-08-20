@@ -68,8 +68,7 @@ const zoomToExtentInnerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="2
 
 const ZoomToFeaturesControl = /*@__PURE__*/(function (Control) {
 
-  function ZoomToFeaturesControl(opt_options) {
-    var options = opt_options || {};
+  function ZoomToFeaturesControl() {
 
     var button = document.createElement('button');
     button.innerHTML = zoomToExtentInnerHTML;
@@ -80,7 +79,6 @@ const ZoomToFeaturesControl = /*@__PURE__*/(function (Control) {
 
     Control.call(this, {
       element: element,
-      target: options.target,
     });
 
     button.addEventListener('click', this.handleClick.bind(this), false);

@@ -17,7 +17,7 @@ const Pin = ({ color }) => <svg viewBox="0 0 520 960">
 ;
 */
 
-const Pin = ({color}) => <svg viewBox="0 0 512 512" >
+const Pin: React.FunctionComponent<{color: string}> = ({color}) => <svg viewBox="0 0 512 512" >
   <path
     d="m254.35 340.25v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z"
     opacity=".3" strokeWidth="2.302" />
@@ -26,11 +26,9 @@ const Pin = ({color}) => <svg viewBox="0 0 512 512" >
     fill={color} strokeWidth="2.302" />
 </svg >;
 
-Pin.propTypes = {color: PropTypes.string.isRequired};
-
 export default Pin;
 
-export const pinSvg = color => {
+export const pinSvg = (color: string) => {
   if (color[0] == '#') {
     color = '%23' + color.slice(1);
   }

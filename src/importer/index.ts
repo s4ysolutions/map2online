@@ -25,7 +25,7 @@ export interface Parser {
 }
 
 export const flatImportedFolders = (importedFolders: ImportedFolder[]): ImportedFolder[] => {
-  let ret = [];
+  let ret: ImportedFolder[] = [];
   for (const folder of importedFolders) {
     if (folder.features.length > 0) {
       ret.push(folder);

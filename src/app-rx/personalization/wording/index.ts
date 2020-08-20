@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs';
 
 export interface Wording {
-  readonly isPersonalized;
+  readonly isPersonalized: boolean;
   observableIsPersonalized: () => Observable<boolean>;
   readonly categoryVariants: string[];
   readonly routeVariants: string[];

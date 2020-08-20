@@ -11,7 +11,7 @@ import {map} from 'rxjs/operators';
 const catalogUI = getCatalogUI();
 const wording = getWording();
 
-const handleSubmit = (ev: FormEvent) => {
+const handleSubmit: (ev: FormEvent) => void = (ev: FormEvent) => {
   ev.preventDefault();
   catalogUI.commitEditRoute();
   return null;

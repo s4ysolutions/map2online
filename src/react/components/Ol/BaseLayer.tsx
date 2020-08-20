@@ -5,6 +5,7 @@ import {getMapDefinition, isOlMapDefinition} from '../../../map-sources/definiti
 import useObservable from '../../hooks/useObservable';
 import {getBaseLayer} from '../../../di-default';
 import olMapContext from './context/map';
+import TileSource from 'ol/source/Tile';
 
 const baseLayer = getBaseLayer();
 /*
@@ -30,7 +31,8 @@ const BaseLayer: React.FunctionComponent = (): React.ReactElement => {
   const md = getMapDefinition(baseLayerName);
   let layer = null
   if (md !== null && isOlMapDefinition(md)) {
-    layer = new TileLayer({source: md.olSourceFactory()});
+    // TODO: assuming TileSource
+    layer = new TileLayer({source: (md.olSourceFactory() as TileSource)});
   }
 
   let layers = map.getLayers()

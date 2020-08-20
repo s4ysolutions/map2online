@@ -4,7 +4,7 @@ import {KV} from '../../../kv-rx';
 import {merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-const categoryVariants = {
+const categoryVariants: Record<string, string[]> = {
   ru: [
     'путешествия',
     'поездки',
@@ -21,7 +21,7 @@ const categoryVariants = {
   ],
 }
 
-const routeVariants = {
+const routeVariants: Record<string, string[]> = {
   ru: [
     'дни',
     'маршруты',
@@ -36,7 +36,7 @@ const routeVariants = {
 }
 
 // noinspection NonAsciiCharacters
-const wordings = {
+const wordings: Record<string, Record<string, Record<string, string>>> = {
   en: {
     'travels': {
       'Catalog': 'Travels',

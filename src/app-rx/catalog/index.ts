@@ -47,7 +47,7 @@ export interface Feature extends FeatureProps {
   delete: () => void;
   observable: () => Observable<Feature>;
 
-  updateCoordinates(coord: Coordinate | Coordinate[]);
+  updateCoordinates: (coord: Coordinate | Coordinate[]) => void;
 }
 
 export interface Features extends Iterable<Feature> {

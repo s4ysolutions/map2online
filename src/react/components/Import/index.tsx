@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FormEvent} from 'react';
 import Modal from '../Modal';
 import {getCatalog, getImportUI, getKMLParser} from '../../../di-default';
 import T from '../../../l10n';
@@ -12,7 +12,7 @@ const importUI = getImportUI();
 const kmlParser = getKMLParser();
 const catalog = getCatalog();
 
-const cancelEvent = (ev) => ev.preventDefault();
+const cancelEvent: (ev: FormEvent) => void = (ev: FormEvent) => ev.preventDefault();
 
 const kmlParse = (fileList: FileList) => {
   kmlParser.parse(fileList);

@@ -9,7 +9,7 @@ import {map} from 'rxjs/operators';
 
 const wording = getWording()
 const catalogUI = getCatalogUI();
-const handleSubmit = (ev: FormEvent) => {
+const handleSubmit: (ev: FormEvent) => void = (ev: FormEvent) => {
   ev.preventDefault();
   // noinspection JSIgnoredPromiseFromCall
   catalogUI.commitEditCategory();

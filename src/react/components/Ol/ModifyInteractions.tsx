@@ -4,12 +4,13 @@ import Collection from 'ol/Collection';
 import olMapContext from './context/map';
 import useVisibleFeatures from './hooks/useVisibleFeatures';
 import {Coordinate, coordinateEq, Feature, ID, isPoint} from '../../../app-rx/catalog';
-import {coordinate2ol, coordinates2ol, ol2coordinate, ol2coordinates} from './lib/coordinates';
+import {ol2coordinate, ol2coordinates} from './lib/coordinates';
 import {getCatalog} from '../../../di-default';
 import OlFeature from 'ol/Feature';
 import log from '../../../log';
 import {setModifying} from './hooks/useModifying';
 import {merge} from 'rxjs';
+import {setOlFeatureCoordinates} from './lib/feature';
 
 const catalog = getCatalog();
 
@@ -19,7 +20,7 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
 
   const modifyInteractionRef = React.useRef(null);
 
-  const handleModifyStart = React.useCallback(ev => {
+  const handleModifyStart = React.useCallback(() => {
     setModifying(true)
   }, [])
 
@@ -62,21 +63,18 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
     modifyInteractionRef.current.on('modifystart', handleModifyStart);
     map.addInteraction(modifyInteractionRef.current);
 
-    const featuresObservables = olFeatures.map(olFeature => catalog.featureById(olFeature.getId()).observable())
+    const featuresObservables = olFeatures.map(olFeature => catalog.featureById(olFeature.getId().toString()).observable())
     const olFeaturesById: Record<ID, OlFeature> = {}
 
     olFeatures.forEach(olFeature => olFeaturesById[olFeature.getId()] = olFeature)
     const featuresObservable = merge(...featuresObservables).subscribe((feature: Feature) => {
       if (!feature) return; // feature deletion is handled in the other useEffect
       const olFeature = olFeaturesById[feature.id]
-      const coordinates = isPoint(feature.geometry)
-        ? coordinate2ol(feature.geometry.coordinate)
-        : coordinates2ol(feature.geometry.coordinates)
-      olFeature.getGeometry().setCoordinates(coordinates);
+      if (olFeature) setOlFeatureCoordinates(olFeature, feature);
     })
 
     return () => {
-      () => featuresObservable.unsubscribe();
+      featuresObservable.unsubscribe();
       if (modifyInteractionRef.current) {
         modifyInteractionRef.current.un('modifyend', handleModifyEnd);
         modifyInteractionRef.current.un('modifystart', handleModifyStart);

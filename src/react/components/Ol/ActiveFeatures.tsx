@@ -5,10 +5,14 @@ import useVisibleFeatures from './hooks/useVisibleFeatures';
 import log from '../../../log';
 import olMapContext from './context/map';
 import OlFeature from 'ol/Feature';
+import OlPoint from 'ol/geom/Point';
+import OlLineString from 'ol/geom/LineString';
 import {getCatalog} from '../../../di-default';
 import {merge} from 'rxjs';
-import {Feature, ID, isPoint} from '../../../app-rx/catalog';
+import {Coordinate, Feature, ID, isLineString, isPoint} from '../../../app-rx/catalog';
 import {coordinate2ol, coordinates2ol} from './lib/coordinates';
+import {Coordinate as OlCoordinate} from 'ol/coordinate';
+import {setOlFeatureCoordinates} from './lib/feature';
 
 const catalog = getCatalog();
 
@@ -36,16 +40,13 @@ const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
     source.clear();
     source.addFeatures(olFeatures);
 
-    const featuresObservables = olFeatures.map(olFeature => catalog.featureById(olFeature.getId()).observable())
+    const featuresObservables = olFeatures.map(olFeature => catalog.featureById(olFeature.getId().toString()).observable())
     olFeaturesById = {}
     olFeatures.forEach(olFeature => olFeaturesById[olFeature.getId()] = olFeature)
     const featuresObservable = merge(...featuresObservables).subscribe((feature: Feature) => {
       if (!feature) return; // feature deletion is handled in the other useEffect
       const olFeature = olFeaturesById[feature.id]
-      const coordinates = isPoint(feature.geometry)
-        ? coordinate2ol(feature.geometry.coordinate)
-        : coordinates2ol(feature.geometry.coordinates)
-      olFeature.getGeometry().setCoordinates(coordinates);
+      setOlFeatureCoordinates(olFeature, feature);
     })
     return () => featuresObservable.unsubscribe()
   })

@@ -1,0 +1,1 @@
+xdeclare module 'googlemaps';

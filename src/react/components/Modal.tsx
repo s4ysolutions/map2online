@@ -14,8 +14,12 @@ const Modal: React.FunctionComponent<{ onClose: () => void, closeOnEnter?: boole
     const handleKeyPress: React.KeyboardEventHandler = (ev: React.KeyboardEvent): void => {
       if (ev.key === 'Escape' || ev.keyCode === KEY_ESC) {
         handleClose();
-      } else if (closeOnEnter && (ev.key === 'Enter' || ev.keyCode === KEY_ENTER) && (!ev.target || ev.target['tagName'] !== 'TEXTAREA')) {
-        handleClose();
+      } else {
+        const target: EventTarget = ev.target
+        const textArea = target && (target as any as {tagName: string}).tagName === 'TEXTAREA';
+        if (closeOnEnter && (ev.key === 'Enter' || ev.keyCode === KEY_ENTER) && (!textArea)) {
+          handleClose();
+        }
       }
     };
 

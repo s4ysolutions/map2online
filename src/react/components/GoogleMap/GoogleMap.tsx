@@ -6,7 +6,6 @@ import {getBaseLayer} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {getMapDefinition, isGoogleMapDefinition} from '../../../map-sources/definitions';
 // noinspection ES6UnusedImports
-import {} from 'googlemaps';
 import {googleLonLat} from '../../../lib/projection';
 import mapContext from './context/map';
 import BaseLayer from './BaseLayer';

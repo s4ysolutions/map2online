@@ -4,17 +4,16 @@ import Projection from 'ol/proj/Projection';
 import Source from 'ol/source/Source';
 import XYZ from 'ol/source/XYZ';
 // eslint-disable-next-line no-duplicate-imports
-import {transform} from 'ol/proj/transforms';
 
-export type CoordTriple = [number, number, number]
+// export type CoordTriple = [number, number, number]
 
-type TransformCoordFunction = (source: Source, coordTriple: CoordTriple) => CoordTriple
+// type TransformCoordFunction = (source: Source, coordTriple: Coordinate) => Coordinate
 
 export interface MapDefinition {
   id: string;
   proj?: Projection;
   olSourceFactory?: () => Source;
-  toLonLat?: TransformCoordFunction;
+  // toLonLat?: TransformCoordFunction;
 }
 
 export const isOlMapDefinition = (mapDefinition: MapDefinition) => !!(mapDefinition.olSourceFactory);
@@ -38,15 +37,18 @@ const siteAttribution =
 /**
  * every map will have `toLonLat(coord)` function
  */
+/*
 const toLonLatFunction = (dest: Projection): TransformCoordFunction => (
   source: Source,
-  coord: CoordTriple
-): CoordTriple => transform(coord, source, dest);
-
+  coord: Coordinate
+): Coordinate => transform(coord, source, dest);
+*/
+/*
 const addProjToMap = (map: MapDefinition): MapDefinition => ({
   ...map,
   toLonLat: toLonLatFunction(map.proj || {getCode: (): string => 'EPSG:4326'}),
 });
+*/
 
 const mapGroups: MapGroupDefinition[] = [
   {
@@ -231,10 +233,10 @@ const mapGroups: MapGroupDefinition[] = [
     maps: [],
   },
    */
-].map((group: MapGroupDefinition): MapGroupDefinition => ({
+]/*.map((group: MapGroupDefinition): MapGroupDefinition => ({
   ...group,
   maps: group.maps.map((map: MapDefinition): MapDefinition => addProjToMap(map)),
-}));
+}))*/;
 
 const memo: Record<string, MapDefinition> = {};
 

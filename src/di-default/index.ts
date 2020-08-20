@@ -54,6 +54,9 @@ const exporterSingleton = exporterFactory();
 export const getExporter = (): Exporter => exporterSingleton;
 
 // debug
+// @ts-ignore
 window['catalog'] = catalogSingleton;
+// @ts-ignore
 window['catalogUI'] = catalogUISingleton;
+// @ts-ignore
 window['designer'] = designerSingleton;

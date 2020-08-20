@@ -5,7 +5,7 @@ import {wordingFactory} from '../../../src/app-rx/personalization/wording/defaul
 import {Wording} from '../../../src/app-rx/personalization/wording';
 import {KV} from '../../../src/kv-rx';
 
-describe.only('Catalog categories', () => {
+describe('Catalog categories', () => {
   let storage: KV;
   let wording: Wording;
 

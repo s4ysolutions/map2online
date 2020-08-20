@@ -7,7 +7,7 @@ import {ImportedFolder} from '../../../src/importer';
 describe('KML Importer', () => {
   let simple: string;
   before(() => {
-    simple = fs.readFileSync(path.join(__dirname, '..', '..', 'data', 'simple.kml.js'), "utf-8")
+    simple = fs.readFileSync(path.join(__dirname, '..', '..', 'data', 'simple.kml'), "utf-8")
   });
   it('rrb-like proper formatted', async () => {
     const folders = await parseKMLString(null, simple);

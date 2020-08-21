@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
 import {Subject} from 'rxjs';
 
+if (!process.env.DEBUG) {
+  console.debug = ():void => undefined;
+}
+
 const log = {
   /*
    * d: (a?: any, b?: any, c?: any) => undefined, //console.debug,

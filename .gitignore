@@ -1,6 +1,7 @@
 *.swp
 *.swo
 dist
+dist-ts
 npm_cache
 node_modules
 stats.json

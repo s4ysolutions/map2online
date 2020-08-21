@@ -9,7 +9,7 @@ export interface Coordinate {
   lon: number;
 }
 
-export const isCoordinate = (coordinate: Coordinate | number | number[]): coordinate is Coordinate =>
+export const isCoordinate = (coordinate: Coordinate | Coordinate[] | number | number[]): coordinate is Coordinate =>
   // eslint-disable-next-line no-extra-parens
   coordinate && ((coordinate as Coordinate).lon !== undefined && (coordinate as Coordinate).lat !== undefined);
 

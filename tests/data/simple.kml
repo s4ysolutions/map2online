@@ -47,7 +47,7 @@
             <coordinates >52.05362,44.27111,0</coordinates >
           </Point >
         </Placemark >
-        <Placemark >
+        <Placemark>
           <name >123</name >
           <LineString >
             <coordinates >

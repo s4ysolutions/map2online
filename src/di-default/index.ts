@@ -48,7 +48,7 @@ const importUISingleton = importUIFactory();
 export const getImportUI = (): ImportUI => importUISingleton;
 
 const kmlParserSingleton = kmlParserFactory();
-export const getKMLParser = (): Parser => kmlParserSingleton;
+export const getParser = (): Parser => kmlParserSingleton;
 
 const exporterSingleton = exporterFactory();
 export const getExporter = (): Exporter => exporterSingleton;

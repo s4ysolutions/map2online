@@ -25,18 +25,18 @@
   cursor: pointer;
 }
 
-.edit-dialog, .about {
+.edit-dialog, .import-dialog, .about {
   width: 1024px;
 }
 
 @media (max-width: 1128px) {
-  .edit-dialog, .about {
+  .edit-dialog, .import-dialog, .about {
     width: 90%;
   }
 }
 
 @media (max-width: 512px) {
-  .edit-dialog, .about {
+  .edit-dialog, .import-dialog, .about {
     width: 100%;
   }
 }

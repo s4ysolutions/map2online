@@ -1,4 +1,4 @@
-import {ImportedFolder, Parser, ParsingStatus} from '../index';
+import {ImportedFolder, Parser, ParsingStatus, newImportedFolder} from '../index';
 import {Subject} from 'rxjs';
 import sax from 'sax';
 import {Coordinate, FeatureProps} from '../../app-rx/catalog';
@@ -6,6 +6,7 @@ import log from '../../log';
 import {Color} from '../../lib/colors';
 import {makeId} from '../../lib/id';
 import {degreesToMeters} from '../../lib/projection';
+import {CATEGORY_DEPTH, getImportedFolderStats} from '../post-process';
 
 enum ParseState {
   NONE,
@@ -34,16 +35,19 @@ const parseCoordinates = (text: string): Coordinate[] =>
     .filter(t => Boolean(t))
     .map(parseTriplet);
 
-export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[]> => {
+export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder> => {
+  const rootFolder = newImportedFolder(0, null);
+  rootFolder.name = file.name;
+
+  const foldersStack: ImportedFolder[] = [rootFolder];
+  const lastFolder = () => foldersStack[foldersStack.length - 1];
+
   const parser = sax.parser(true, {normalize: true, trim: true, xmlns: true});
-  const rootFolders: ImportedFolder[] = [];
-  const foldersStack: ImportedFolder[] = [];
   const parseStateStack: ParseState[] = [ParseState.NONE];
   const lastState = () => parseStateStack[parseStateStack.length - 1];
-  const lastFolder = () => foldersStack.length === 0 ? null : foldersStack[foldersStack.length - 1];
   let currentFeature = null as FeatureProps;
 
-  return new Promise<ImportedFolder[]>((rs, rj) => {
+  return new Promise<ImportedFolder>((rs, rj) => {
     parser.onopentag = (node) => {
       const name = node.name.toUpperCase();
       log.debug('opentag', name);
@@ -52,22 +56,8 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
         case 'FOLDER': {
           parseStateStack.push(ParseState.FOLDER);
           log.debug('parseStateStack.push(ParseState.FOLDER)', parseStateStack);
-          const nextFolder: ImportedFolder = {
-            features: [],
-            folders: [],
-            name: '',
-            description: '',
-            level: foldersStack.length,
-            parent: lastFolder(),
-          };
-          if (lastFolder()) {
-            // there's a
-            lastFolder().folders.push(nextFolder);
-          } else {
-            // root folder named by file name
-            nextFolder.name = file.name;
-            rootFolders.push(nextFolder);
-          }
+          const nextFolder = newImportedFolder(foldersStack.length, lastFolder());
+          lastFolder().folders.push(nextFolder);
           foldersStack.push(nextFolder);
           break;
         }
@@ -129,7 +119,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
             foldersStack.pop();
           } else {
             log.warn(`${nodeName} tag does not match`, state);
-            return rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
           }
           break;
         }
@@ -139,7 +129,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
             parseStateStack.pop();
           } else {
             log.warn(`${nodeName} tag does not match`, lastState());
-            return rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
           }
           break;
         case 'DESCRIPTION':
@@ -148,7 +138,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
             parseStateStack.pop();
           } else {
             log.warn(`${nodeName} tag does not match`, lastState());
-            return rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
           }
           break;
         case 'COORDINATES':
@@ -157,7 +147,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
             parseStateStack.pop();
           } else {
             log.warn(`${nodeName} tag does not match`, lastState());
-            return rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
           }
           break;
         case 'PLACEMARK':
@@ -166,7 +156,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
             parseStateStack.pop();
           } else {
             log.warn(`${nodeName} tag does not match`, lastState());
-            return rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
           }
           break;
         default:
@@ -175,7 +165,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
             parseStateStack.pop();
           } else {
             log.warn(`${nodeName} tag does not match`, lastState());
-            return rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
           }
       }
     };
@@ -212,7 +202,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
     parser.onend = () => {
       log.debug('end');
       log.debug('resolve');
-      rs(rootFolders);
+      rs(rootFolder);
     };
     parser.onerror = (e) => {
       log.debug('error');
@@ -225,7 +215,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder[
   });
 };
 
-const parseKMLFile = (kml: File): Promise<ImportedFolder[]> => {
+const parseKMLFile = (kml: File): Promise<ImportedFolder> => {
   const reader = new FileReader();
   return new Promise<string>((rs) => {
     reader.onload = e => rs(e.target.result as string);
@@ -237,7 +227,7 @@ export const kmlParserFactory = (): Parser => {
   const subject = new Subject<ParsingStatus>();
 
   const status: ParsingStatus = {
-    importedFolders: [],
+    rootFolder: newImportedFolder(0, null),
     parsingFile: null as File,
     queuedFiles: [] as File[],
   };
@@ -254,10 +244,14 @@ export const kmlParserFactory = (): Parser => {
 
     subject.next({...status});
 
-    const statusImportedFolders = status.importedFolders;
-    const importedFolders = await parseKMLFile(status.parsingFile);
+    const importedFolder: ImportedFolder = await parseKMLFile(status.parsingFile);
+    const stats = getImportedFolderStats(importedFolder);
+    if (stats.depth > CATEGORY_DEPTH && importedFolder.folders.length === 1) {
+      // skip Document
+      importedFolder.folders = importedFolder.folders[0].folders;
+    }
     // eslint-disable-next-line require-atomic-updates
-    status.importedFolders = statusImportedFolders.concat(importedFolders);
+    status.rootFolder.folders = status.rootFolder.folders.concat(importedFolder.folders);
     // eslint-disable-next-line require-atomic-updates
     status.parsingFile = null;
 
@@ -268,7 +262,7 @@ export const kmlParserFactory = (): Parser => {
 
   return {
     parse(fileList: FileList): Promise<void> {
-      status.importedFolders = [];
+      status.rootFolder = newImportedFolder(0, null);
       status.parsingFile = null;
       status.queuedFiles = [];
       for (let i = 0; i < fileList.length; i++) {

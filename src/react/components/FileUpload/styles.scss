@@ -4,9 +4,20 @@ input.file-upload {
 }
 
 .drop-zone {
-  height: 128px;
-  width: 256px;
-  display: flex;
   align-items: center;
+  display: flex;
+  flex-grow: 1;
   justify-content: center;
+  width: 100%;
+}
+
+.upload-control {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.upload-control button {
+  margin: 8px auto;
 }

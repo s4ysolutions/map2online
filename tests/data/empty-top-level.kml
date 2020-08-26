@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" >
+  <Document >
+    <open >1</open >
+    <Folder id="bivojunpsi3q4au4mc90" >
+      <name >Empty level</name >
+      <description ></description >
+      <Folder id="bivojunpsi3q4au4mc90" >
+        <open >1</open >
+        <name >Category 1</name >
+        <description ></description >
+        <Folder id="bivon37psi3q4au4mj0g" >
+          <open >1</open >
+          <name >Route 11</name >
+          <description >Desc r11</description >
+          <Placemark id="bivon37psi3q4au4mj10" >
+            <name >111</name >
+            <description >
+              Desc 111
+            </description >
+            <Point >
+              <coordinates >52.31749,47.30314,0</coordinates >
+            </Point >
+          </Placemark >
+          <Placemark id="bivon37psi3q4au4mj1g" >
+            <name >112</name >
+            <description >
+              Desc 112
+            </description >
+            <Point >
+              <coordinates >52.97762,47.53079,0</coordinates >
+            </Point >
+          </Placemark >
+        </Folder >
+        <Folder id="bivp6ifpsi3q4au4ml9g" >
+          <open >1</open >
+          <name >Route 12</name >
+          <description >Desc r12</description >
+          <Placemark id="bivp6ifpsi3q4au4mla0" >
+            <name >121</name >
+            <description >Desc 121</description >
+            <Point >
+              <coordinates >52.06981,44.26796,0</coordinates >
+            </Point >
+          </Placemark >
+          <Placemark id="bivp6ifpsi3q4au4mlag" >
+            <name >122</name >
+            <description >Desc 122</description >
+            <Point >
+              <coordinates >52.05362,44.27111,0</coordinates >
+            </Point >
+          </Placemark >
+          <Placemark >
+            <name >123</name >
+            <LineString >
+              <coordinates >
+                52.97762,47.53079,0
+                52.06981,44.26796,0
+                52.05362,44.27111,0
+              </coordinates >
+            </LineString >
+          </Placemark >
+        </Folder >
+      </Folder >
+    </Folder >
+  </Document >
+</kml >
+

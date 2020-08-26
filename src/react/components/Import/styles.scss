@@ -1,0 +1,28 @@
+@media (max-width: 768px) {
+  .import {
+    flex-direction: column;
+  }
+}
+
+.import {
+  display: flex;
+  align-items: stretch;
+}
+
+.upload-area {
+  min-height: 128px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-grow: 1;
+}
+
+.upload-results {
+  flex-grow: 1;
+  padding-left: 1em;
+  overflow-y: auto;
+}
+
+.upload-area, .upload-results {
+  max-height: 512px;
+}

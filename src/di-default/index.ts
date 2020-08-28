@@ -20,6 +20,7 @@ import {exporterFactory} from '../exporter/default';
 import {Exporter} from '../exporter';
 import {wordingFactory} from '../app-rx/personalization/wording/default';
 import {Wording} from '../app-rx/personalization/wording';
+import {parserFactory} from '../importer/default';
 
 export const getLocalStorage = (): KV => localStorageSingleton;
 
@@ -47,8 +48,8 @@ export const getDesigner = (): Designer => designerSingleton;
 const importUISingleton = importUIFactory();
 export const getImportUI = (): ImportUI => importUISingleton;
 
-const kmlParserSingleton = kmlParserFactory();
-export const getParser = (): Parser => kmlParserSingleton;
+const parserSingleton = parserFactory();
+export const getParser = (): Parser => parserSingleton;
 
 const exporterSingleton = exporterFactory();
 export const getExporter = (): Exporter => exporterSingleton;

@@ -10,6 +10,7 @@ const PATH_DIST = path.resolve(__dirname, 'dist');
 const PATH_NPM = [path.resolve(__dirname, 'node_modules')];
 const PATH_NPM_CSS = [
   path.resolve(__dirname, 'node_modules', 'normalize.css'),
+  path.resolve(__dirname, 'node_modules', 'reset-css'),
   path.resolve(__dirname, 'node_modules', 'ol'),
 ];
 const PATH_NPM_SASS = [

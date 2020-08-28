@@ -6,7 +6,6 @@ import log from '../../log';
 import {Color} from '../../lib/colors';
 import {makeId} from '../../lib/id';
 import {degreesToMeters} from '../../lib/projection';
-import {CATEGORY_DEPTH, getImportedFolderStats} from '../post-process';
 
 enum ParseState {
   NONE,
@@ -232,10 +231,11 @@ export const kmlParserFactory = (): Parser => {
     queuedFiles: [] as File[],
   };
 
-  const parseQueuedFiles = async (): Promise<void> => {
+  let parsedFilesCount = 0;
+  const parseQueuedFiles = async (): Promise<ImportedFolder> => {
 
     if (status.queuedFiles.length === 0) {
-      return Promise.resolve();
+      return Promise.resolve(status.rootFolder);
     }
 
     const [current, ...nextFiles] = status.queuedFiles;
@@ -245,13 +245,17 @@ export const kmlParserFactory = (): Parser => {
     subject.next({...status});
 
     const importedFolder: ImportedFolder = await parseKMLFile(status.parsingFile);
-    const stats = getImportedFolderStats(importedFolder);
-    if (stats.depth > CATEGORY_DEPTH && importedFolder.folders.length === 1) {
-      // skip Document
-      importedFolder.folders = importedFolder.folders[0].folders;
+
+    if (parsedFilesCount++ === 0) {
+      // eslint-disable-next-line require-atomic-updates
+      status.rootFolder = importedFolder;
+    } else {
+      if (parsedFilesCount++ === 1) {
+        // eslint-disable-next-line require-atomic-updates
+        status.rootFolder.folders = [status.rootFolder];
+      }
+      status.rootFolder.folders.push(importedFolder);
     }
-    // eslint-disable-next-line require-atomic-updates
-    status.rootFolder.folders = status.rootFolder.folders.concat(importedFolder.folders);
     // eslint-disable-next-line require-atomic-updates
     status.parsingFile = null;
 
@@ -261,10 +265,11 @@ export const kmlParserFactory = (): Parser => {
   };
 
   return {
-    parse(fileList: FileList): Promise<void> {
+    parse(fileList: FileList): Promise<ImportedFolder> {
       status.rootFolder = newImportedFolder(0, null);
       status.parsingFile = null;
       status.queuedFiles = [];
+      parsedFilesCount = 0;
       for (let i = 0; i < fileList.length; i++) {
         status.queuedFiles.push(fileList[i]);
       }

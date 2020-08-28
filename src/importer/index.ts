@@ -18,7 +18,7 @@ export interface ParsingStatus {
 }
 
 export interface Parser {
-  parse: (fileList: FileList) => void;
+  parse: (fileList: FileList) => Promise<ImportedFolder>;
   status: ParsingStatus;
   statusObservable: () => Observable<ParsingStatus>;
 }
@@ -31,7 +31,6 @@ export const newImportedFolder = (level: number, parent: ImportedFolder | null):
   level,
   parent,
 });
-
 
 /*
  *export const importAllToCategory = (folders: ImportedFolder[], category: Category): Promise<void> => {

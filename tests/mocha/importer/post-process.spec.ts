@@ -3,11 +3,11 @@ import {ImportedFolder} from '../../../src/importer';
 import {
   converMixedFeaturesToFolder,
   flatImportedFoldersToCategories,
-  getImportedFolderStats,
   removeEmptyImportedFolders,
 } from '../../../src/importer/post-process';
 import {expect} from 'chai';
 import {FeatureProps} from '../../../src/app-rx/catalog';
+import {getImportedFolderStats} from '../../../src/importer/stats';
 
 describe('Import post-processing', () => {
   const fe1 = (): FeatureProps => ({
@@ -167,7 +167,7 @@ describe('Import post-processing', () => {
     });
   });
 
-  describe.only('Get statistics', () => {
+  describe('Get statistics', () => {
     it('empty', () => {
       const root: ImportedFolder = {
         description: '', features: [], folders: [], level: 0, name: '', parent: undefined,

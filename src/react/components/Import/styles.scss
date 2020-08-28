@@ -11,6 +11,7 @@
 
 .upload-area {
   min-height: 128px;
+  min-width: 64px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -20,9 +21,34 @@
 .upload-results {
   flex-grow: 1;
   padding-left: 1em;
+}
+
+.upload-results {
+}
+
+.upload-results h3 {
+
+}
+
+.upload-results .imported-folders {
+  min-height: 20px;
+  max-height: 320px;
   overflow-y: auto;
 }
 
-.upload-area, .upload-results {
-  max-height: 512px;
+.imported-folders .notroute, .imported-folders .route {
+  padding-left: 1em;
+}
+
+.notroute {
+}
+
+.imported-folders .route svg{
+  height: 12px;
+}
+
+.imported-folders svg {
+  height: 16px;
+  width: auto;
+  margin-right: 0.5em;
 }

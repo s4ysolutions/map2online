@@ -6,7 +6,9 @@ import T from '../../../l10n';
 import FileUpload from '../FileUpload';
 import useObservable from '../../hooks/useObservable';
 import {ParsingStatus} from '../../../importer';
-import {CATEGORY_DEPTH, getImportedFolderStats} from '../../../importer/post-process';
+import {CATEGORY_DEPTH} from '../../../importer/post-process';
+import ImportedFolders from './ImportedFolders';
+import {getImportedFolderStats} from '../../../importer/stats';
 
 const importUI = getImportUI();
 const parser = getParser();
@@ -25,6 +27,9 @@ const categoryName = (): string => {
 const Import: React.FunctionComponent = (): React.ReactElement => {
   const parseState = useObservable<ParsingStatus>(parser.statusObservable(), parser.status);
   const parseStats = getImportedFolderStats(parseState.rootFolder);
+  console.log('debug parseStats', {parseStats, parseState});
+
+  const [inProgress, setInProgress] = React.useState<boolean>(false);
 
   const importToCategory = React.useCallback(() => {
     /*
@@ -38,6 +43,7 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
      */
   }, [parseState]);
 
+
   return <Modal className="import-dialog" onClose={importUI.close} >
     <form onSubmit={cancelEvent} >
       <h2 >
@@ -45,13 +51,23 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
       </h2 >
       <div className="import" >
         <div className="upload-area" >
-          {window.File && window.FileReader && window.FileList && window.Blob && <FileUpload onUpload={parse} /> ||
+          {window.File && window.FileReader && window.FileList && window.Blob && <FileUpload onUpload={(files) => {
+            setInProgress(true); // TODO, handle import completed but no features
+            parse(files);
+          }} /> ||
           <div >
             File Upload is not supported
           </div >}
         </div >
-        {parseState.rootFolder.folders.length > 0 && parseState.rootFolder.features.length > 0 &&
+        {inProgress &&
         <div className="upload-results" >
+          <h3 >
+            {T`Found categories: ` + parseStats.categories}
+          </h3 >
+          <h3 >
+            {T`Found routes: ` + parseStats.routes}
+          </h3 >
+          <ImportedFolders folder={parseState.rootFolder} />
           {parseStats.mixed.length > 0 &&
           <React.Fragment >
             <h3 >
@@ -71,7 +87,7 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
               </li >
             </ul >
           </React.Fragment >}
-          {parseStats.levels > CATEGORY_DEPTH &&
+          {parseStats.depth >= CATEGORY_DEPTH &&
           <React.Fragment >
             <h3 >
               {T`Problem: Some folders have more than 2 levels on nesting`}
@@ -90,14 +106,45 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
               </li >
             </ul >
           </React.Fragment >}
+          <div >
+            <input name="import_to" type="radio" />
+            <label >
+              {T`Import all features into the active route`}
+              &nbsp;
+            </label >
+          </div >
+          {parseStats.routes === 1 && parseStats.categories === 0 &&
+          <div >
+            <input name="import_to" type="radio" />
+            <label >
+              {T`Import the route into the active category`}
+              &nbsp;
+            </label >
+          </div >}
+          {parseStats.routes > 1 &&
+          <div >
+            <input name="import_to" type="radio" />
+            <label >
+              {T`Import all routes into the active category`}
+              &nbsp;
+            </label >
+          </div >}
+          {parseStats.categories > 0 &&
+          <div >
+            <input name="import_to" type="radio" />
+            <label >
+              {T`Import the categories into the catalog`}
+              &nbsp;
+            </label >
+          </div >}
         </div >}
       </div >
       <div className="buttons-row" >
+        <button onClick={importUI.close} type="button" >
+          {T`Cancel`}
+        </button >
         <button onClick={importToCategory} type="button" >
           {T`Import`}
-        </button >
-        <button onClick={importUI.close} type="button" >
-          {T`Close`}
         </button >
       </div >
     </form >

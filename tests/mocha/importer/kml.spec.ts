@@ -5,6 +5,7 @@ import {expect} from 'chai';
 import {parseKMLString} from '../../../src/importer/default/kml-parser';
 import {ImportedFolder} from '../../../src/importer';
 import {Point} from '../../../src/app-rx/catalog';
+import {getImportedFolderStats} from '../../../src/importer/stats';
 
 describe('KML Importer', () => {
   it('rrb-like simple correct file', async () => {
@@ -135,5 +136,16 @@ describe('KML Importer', () => {
     expect(subroute.level).to.be.eq(4);
     expect(subroute.features.length).to.be.eq(2);
     expect(subroute.folders.length).to.be.eq(0);
+  });
+  it('only features', async () => {
+    const fileName = 'only-features.kml';
+    const kml: string = fs.readFileSync(path.join(__dirname, '..', '..', 'data', fileName), 'utf-8');
+    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml);
+
+    expect(root.parent, 'root\'s parent must be null').to.be.null;
+    expect(root.folders.length, 'there must be only one document imported').to.be.eq(0);
+    expect(root.features.length).to.be.eq(5);
+    const stats = getImportedFolderStats(root);
+    expect(stats.routes).to.be.eq(1);
   });
 });

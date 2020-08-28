@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import 'normalize.css';
+import 'reset-css';
 import 'styles.scss';
 import 'form.scss';
 import 'theme-yellow-black.scss';

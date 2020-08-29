@@ -27,7 +27,6 @@ const categoryName = (): string => {
 const Import: React.FunctionComponent = (): React.ReactElement => {
   const parseState = useObservable<ParsingStatus>(parser.statusObservable(), parser.status);
   const parseStats = getImportedFolderStats(parseState.rootFolder);
-  console.log('debug parseStats', {parseStats, parseState});
 
   const [inProgress, setInProgress] = React.useState<boolean>(false);
 

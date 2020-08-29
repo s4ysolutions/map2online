@@ -1,31 +1,11 @@
-import {ImportedFolder, Parser, ParsingStatus } from '../index';
+import {ImportedFolder, Parser, ParsingStatus} from '../index';
 import {kmlParserFactory} from './kml-parser';
 import {Observable, Subject, merge} from 'rxjs';
 import {
-  CATEGORY_DEPTH,
-  removeEmptyImportedFolders,
+  CATEGORY_DEPTH, convertMixedFeaturesToFolder, flatImportedFoldersToCategories,
+  removeEmptyImportedFolders, removeTopFolder,
 } from '../post-process';
 import {getImportedFolderStats} from '../stats';
-
-const decrementLevels = (root: ImportedFolder, prev: ImportedFolder): void => {
-  root.level -= 1;
-  if (!root.name) {
-    root.name = prev.name;
-  }
-  if (!root.description) {
-    root.description = prev.description;
-  }
-  for (const f of root.folders) {
-    decrementLevels(f, root);
-  }
-};
-
-const removeTopFolder = (root: ImportedFolder): ImportedFolder => {
-  const [r] = root.folders;
-  r.parent = null;
-  decrementLevels(r, root);
-  return r;
-};
 
 export const parserFactory = (): Parser => {
   const subject = new Subject<ParsingStatus>();
@@ -36,20 +16,14 @@ export const parserFactory = (): Parser => {
         let folder = removeEmptyImportedFolders(importedFolder);
         for (; ;) {
           const stats = getImportedFolderStats(folder);
-          console.log('debug reduce?', {
-            break: stats.depth < CATEGORY_DEPTH || folder.folders.length !== 1 || folder.features.length !== 0,
-            depth: stats.depth,
-            folder,
-          });
           if (stats.depth < CATEGORY_DEPTH || folder.folders.length !== 1 || folder.features.length !== 0) {
             break;
           }
           // skip Document
-          console.log('debug will reduce');
           folder = removeTopFolder(folder);
-          console.log('debug reduced', folder);
         }
-        subject.next({...kmlParser.status, rootFolder: folder});
+        kmlParser.status.rootFolder = folder;
+        subject.next({...kmlParser.status});
         return folder;
       }),
     get status(): ParsingStatus {
@@ -57,6 +31,16 @@ export const parserFactory = (): Parser => {
     },
     statusObservable(): Observable<ParsingStatus> {
       return merge(kmlParser.statusObservable(), subject);
+    },
+    flatCategories: (): ImportedFolder => {
+      kmlParser.status.rootFolder = flatImportedFoldersToCategories(kmlParser.status.rootFolder);
+      subject.next({...kmlParser.status});
+      return kmlParser.status.rootFolder;
+    },
+    convertMixedToRoutes: (): ImportedFolder => {
+      kmlParser.status.rootFolder = convertMixedFeaturesToFolder(kmlParser.status.rootFolder);
+      subject.next({...kmlParser.status});
+      return kmlParser.status.rootFolder;
     },
   };
 };

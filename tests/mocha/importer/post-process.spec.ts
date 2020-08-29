@@ -1,13 +1,16 @@
 /* eslint-disable no-unused-expressions,camelcase,no-magic-numbers,prefer-destructuring */
 import {ImportedFolder} from '../../../src/importer';
 import {
-  converMixedFeaturesToFolder,
+  convertMixedFeaturesToFolder,
   flatImportedFoldersToCategories,
   removeEmptyImportedFolders,
 } from '../../../src/importer/post-process';
 import {expect} from 'chai';
 import {FeatureProps} from '../../../src/app-rx/catalog';
 import {getImportedFolderStats} from '../../../src/importer/stats';
+import fs from 'fs';
+import path from 'path';
+import {parseKMLString} from '../../../src/importer/default/kml-parser';
 
 describe('Import post-processing', () => {
   const fe1 = (): FeatureProps => ({
@@ -265,7 +268,7 @@ describe('Import post-processing', () => {
       const root: ImportedFolder = {
         description: '', features: [], folders: [], level: 0, name: '', parent: undefined,
       };
-      const rr = converMixedFeaturesToFolder(root);
+      const rr = convertMixedFeaturesToFolder(root);
       expect(rr).to.be.not.null;
       expect(rr.features.length).to.be.eq(0);
       expect(rr.folders.length).to.be.eq(0);
@@ -274,7 +277,7 @@ describe('Import post-processing', () => {
       const root: ImportedFolder = {
         description: '', features: [fe1()], folders: [], level: 0, name: '', parent: undefined,
       };
-      const rr = converMixedFeaturesToFolder(root);
+      const rr = convertMixedFeaturesToFolder(root);
       expect(rr).to.be.not.null;
       expect(rr.features.length).to.be.eq(1);
       expect(rr.folders.length).to.be.eq(0);
@@ -283,7 +286,7 @@ describe('Import post-processing', () => {
       const root: ImportedFolder = {
         description: '', features: [], folders: [fo11_empty()], level: 0, name: '', parent: undefined,
       };
-      const rr = converMixedFeaturesToFolder(root);
+      const rr = convertMixedFeaturesToFolder(root);
       expect(rr).to.be.not.null;
       expect(rr.features.length).to.be.eq(0);
       expect(rr.folders.length).to.be.eq(1);
@@ -292,7 +295,7 @@ describe('Import post-processing', () => {
       const root: ImportedFolder = {
         description: '', features: [fe1()], folders: [fo11_with_features()], level: 0, name: '', parent: undefined,
       };
-      const rr = converMixedFeaturesToFolder(root);
+      const rr = convertMixedFeaturesToFolder(root);
       expect(rr).to.be.not.null;
       expect(rr.features.length).to.be.eq(0);
       expect(rr.folders.length).to.be.eq(2);
@@ -301,7 +304,7 @@ describe('Import post-processing', () => {
     });
   });
 
-  describe('Flat folders', () => {
+  describe.skip('Flat folders (obsolete)', () => {
     it('empty root', () => {
       const root: ImportedFolder = {
         description: '', features: [], folders: [], level: 0, name: '', parent: undefined,
@@ -545,4 +548,19 @@ describe('Import post-processing', () => {
       expect(r.folders[0].folders[0].features.length).to.be.eq(1);
     });
   });
+  describe('Flat folders', () => {
+    it('flat 3 levels file', async () => {
+      const removeTopFolder = (root: ImportedFolder): ImportedFolder => {
+        const [r] = root.folders;
+        r.parent = null;
+        return r;
+      };
+      const fileName = '3-levels-mixed.kml';
+      const kml: string = fs.readFileSync(path.join(__dirname, '..', '..', 'data', fileName), 'utf-8');
+      const root: ImportedFolder = convertMixedFeaturesToFolder(removeTopFolder(await parseKMLString({name: fileName} as File, kml)));
+      const r = flatImportedFoldersToCategories(root);
+      console.log(r);
+      expect(r.folders.length).to.be.eq(2);
+    });
+  })
 });

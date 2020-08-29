@@ -37,6 +37,7 @@ const translation = {
     'Moscow': 'Moscow',
     'Navteq': 'Navteq',
     'Nokia': 'Nokia',
+    'Orphan': '...',
     'OSM': 'OSM',
     'Others': 'Others',
     'Personalization': 'Personalization',

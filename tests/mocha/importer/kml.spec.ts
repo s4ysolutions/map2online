@@ -136,6 +136,9 @@ describe('KML Importer', () => {
     expect(subroute.level).to.be.eq(4);
     expect(subroute.features.length).to.be.eq(2);
     expect(subroute.folders.length).to.be.eq(0);
+
+    const stats = getImportedFolderStats(root);
+    expect(stats.mixed.length).to.be.eq(1);
   });
   it('only features', async () => {
     const fileName = 'only-features.kml';

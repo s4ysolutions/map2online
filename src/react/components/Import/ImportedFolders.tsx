@@ -3,6 +3,8 @@ import React from 'react';
 import {ImportedFolder} from '../../../importer';
 import FolderCategory from '../Svg/FolderCategory';
 import FolderRoute from '../Svg/FolderRoute';
+import T from '../../../l10n';
+import {isFlatRoot} from '../../../importer/post-process';
 
 const Route: React.FunctionComponent<{ folder: ImportedFolder }> = ({folder}): React.ReactElement =>
   <div className="route" >
@@ -17,13 +19,28 @@ const Route: React.FunctionComponent<{ folder: ImportedFolder }> = ({folder}): R
     </strong >
   </div >;
 
+const Orphan: React.FunctionComponent<{ folder: ImportedFolder }> = ({folder}): React.ReactElement =>
+  <div className="route" >
+    <FolderRoute />
+    <span className="title" >
+      {T`Orphan`}
+    </span >
+    <strong >
+      &nbsp;(
+      {folder.features.length}
+      )
+    </strong >
+  </div >;
+
 const NotRoute: React.FunctionComponent<{ folder: ImportedFolder }> = ({folder}): React.ReactElement =>
   <div className="notroute" >
-    {folder.folders.length > 0 && <FolderCategory />}
+    {!isFlatRoot(folder) && folder.folders.length > 0 && <FolderCategory />}
+    {!isFlatRoot(folder) &&
     <span className="title" >
       {folder.name}
-    </span >
+    </span >}
     <div className="folders" >
+      {folder.features.length > 0 && folder.folders.length > 0 && <Orphan folder={folder} />}
       {folder.folders.map((f, i) => <Entry
         folder={f}
         key={`${folder.level}-${i}`} />)}
@@ -32,7 +49,7 @@ const NotRoute: React.FunctionComponent<{ folder: ImportedFolder }> = ({folder})
 
 const Entry: React.FunctionComponent<{ folder: ImportedFolder }> = ({folder}): React.ReactElement =>
   <React.Fragment >
-    {folder.features.length > 0 && <Route folder={folder} />}
+    {folder.features.length > 0 && folder.folders.length === 0 && <Route folder={folder} />}
     {folder.folders.length > 0 && <NotRoute folder={folder} />}
   </React.Fragment >;
 

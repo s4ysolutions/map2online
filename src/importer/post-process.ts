@@ -29,7 +29,7 @@ export const removeEmptyImportedFolders = (rootFolder: ImportedFolder): Imported
   return rootFolder;
 };
 
-export const converMixedFeaturesToFolder = (rootFolder: ImportedFolder, level?: number): ImportedFolder => {
+export const convertMixedFeaturesToFolder = (rootFolder: ImportedFolder, level?: number): ImportedFolder => {
   const l = level === undefined ? 0 : level;
   const foldersWithoutMixes: ImportedFolder[] = [];
   if (rootFolder.features.length > 0 && rootFolder.folders.length > 0) {
@@ -40,31 +40,87 @@ export const converMixedFeaturesToFolder = (rootFolder: ImportedFolder, level?: 
     foldersWithoutMixes.push(folderForFeatures);
   }
   for (const folder of rootFolder.folders) {
-    foldersWithoutMixes.push(converMixedFeaturesToFolder(folder, l + 1));
+    foldersWithoutMixes.push(convertMixedFeaturesToFolder(folder, l + 1));
   }
   rootFolder.folders = foldersWithoutMixes;
   return rootFolder;
 };
 
-export const flatImportedFoldersToCategories = (rootFolder: ImportedFolder, enterl?: number): ImportedFolder => {
-  const {depth} = getImportedFolderStats(rootFolder);
-  // console.log(`enter ${enterl || 0} levels=${levels}`, rootFolder);
-  if (depth <= CATEGORY_DEPTH) {
-    // console.log('exit category');
-    return rootFolder;
-  }
-  const flatFolders: ImportedFolder[] = [];
-  for (const folder of rootFolder.folders) {
-    const flat = flatImportedFoldersToCategories(folder, (enterl || 0) + 1);
-    if (flat.folders.length > 0) {
-      for (const f of flatImportedFoldersToCategories(folder, (enterl || 0) + 1).folders) {
-        flatFolders.push(f);
-      }
-    } else {
-      flatFolders.push(flat);
+const isRoute = (folder: ImportedFolder): boolean => folder.folders.length === 0;
+
+const isCategory = (folder: ImportedFolder): boolean => {
+  for (const sf of folder.folders) {
+    if (!isRoute(sf)) {
+      return false;
     }
   }
-  // console.log('exit enterl=', enterl || 0, flatFolders);
-  rootFolder.folders = flatFolders;
-  return rootFolder;
+  return folder.folders.length > 0;
+};
+
+const decrementLevels = (root: ImportedFolder, prev: ImportedFolder): void => {
+  root.level -= 1;
+  if (!root.name) {
+    root.name = prev.name;
+  }
+  if (!root.description) {
+    root.description = prev.description;
+  }
+  for (const f of root.folders) {
+    decrementLevels(f, root);
+  }
+};
+
+export const removeTopFolder = (root: ImportedFolder): ImportedFolder => {
+  const [r] = root.folders;
+  r.parent = null;
+  decrementLevels(r, root);
+  return r;
+};
+
+const flatImportedFoldersToCategoriesRecursive = (rootFolder: ImportedFolder): ImportedFolder[] => {
+  // TODO: fix level
+  let categoryFolders: ImportedFolder[] = [];
+
+  // console.log('enter', rootFolder);
+  const routesFolder: ImportedFolder[] = [];
+  for (const folder of rootFolder.folders) {
+    if (isRoute(folder)) {
+      routesFolder.push(folder);
+    }
+  }
+
+  if (routesFolder.length > 0) {
+    categoryFolders.push({...rootFolder, folders: routesFolder});
+  }
+  // console.log('routes', categoryFolders);
+
+  for (const folder of rootFolder.folders) {
+    if (isCategory(folder)) {
+      //   console.log('push', folder);
+      categoryFolders.push(folder);
+    }
+  }
+
+  for (const folder of rootFolder.folders) {
+    if (!isRoute(folder) && !isCategory(folder)) {
+      categoryFolders = categoryFolders.concat(flatImportedFoldersToCategoriesRecursive(folder));
+    }
+  }
+
+  // console.log('exit', categoryFolders);
+  return categoryFolders;
+};
+
+export const isFlatRoot = (folder: ImportedFolder): boolean => folder.name === 'fakeflatroot';
+
+export const flatImportedFoldersToCategories = (rootFolder: ImportedFolder): ImportedFolder => {
+  const flats = flatImportedFoldersToCategoriesRecursive(rootFolder);
+  if (flats.length === 1) {
+    return flats[0];
+  }
+  return {
+    ...newImportedFolder(0, null),
+    name: 'fakeflatroot',
+    folders: flatImportedFoldersToCategoriesRecursive(rootFolder),
+  };
 };

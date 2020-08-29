@@ -1,5 +1,5 @@
-import {ImportedFolder, Parser, ParsingStatus, newImportedFolder} from '../index';
-import {Subject} from 'rxjs';
+import {ImportedFolder, ParsingStatus, newImportedFolder} from '../index';
+import {Observable, Subject} from 'rxjs';
 import sax from 'sax';
 import {Coordinate, FeatureProps} from '../../app-rx/catalog';
 import log from '../../log';
@@ -222,7 +222,11 @@ const parseKMLFile = (kml: File): Promise<ImportedFolder> => {
   }).then(content => parseKMLString(kml, content));
 };
 
-export const kmlParserFactory = (): Parser => {
+export const kmlParserFactory = (): {
+  parse: (fileList: FileList) => Promise<ImportedFolder>;
+  status: ParsingStatus;
+  statusObservable: () => Observable<ParsingStatus>;
+} => {
   const subject = new Subject<ParsingStatus>();
 
   const status: ParsingStatus = {

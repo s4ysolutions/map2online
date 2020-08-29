@@ -21,6 +21,8 @@ export interface Parser {
   parse: (fileList: FileList) => Promise<ImportedFolder>;
   status: ParsingStatus;
   statusObservable: () => Observable<ParsingStatus>;
+  flatCategories: () => ImportedFolder;
+  convertMixedToRoutes: () => ImportedFolder;
 }
 
 export const newImportedFolder = (level: number, parent: ImportedFolder | null): ImportedFolder => ({

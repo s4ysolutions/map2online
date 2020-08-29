@@ -6,7 +6,7 @@ import T from '../../../l10n';
 import FileUpload from '../FileUpload';
 import useObservable from '../../hooks/useObservable';
 import {ParsingStatus} from '../../../importer';
-import {CATEGORY_DEPTH} from '../../../importer/post-process';
+import {CATEGORY_DEPTH, isFlatRoot} from '../../../importer/post-process';
 import ImportedFolders from './ImportedFolders';
 import {getImportedFolderStats} from '../../../importer/stats';
 
@@ -83,11 +83,14 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 {T`Cancel import and fix the file manually`}
               </li >
               <li >
-                {T`Ignore and go on with the import. A route will be aute created for the features`}
+                {T`Click on the button below to fix the file automatically`}
+                <button onClick={() => parser.convertMixedToRoutes()} type="button" >
+                  {T`Fix`}
+                </button >
               </li >
             </ul >
           </React.Fragment >}
-          {parseStats.depth >= CATEGORY_DEPTH &&
+          {!isFlatRoot(parseState.rootFolder) && parseStats.depth >= CATEGORY_DEPTH && parseStats.mixed.length === 0 &&
           <React.Fragment >
             <h3 >
               {T`Problem: Some folders have more than 2 levels on nesting`}
@@ -102,7 +105,10 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 {T`Cancel import and fix the file manually`}
               </li >
               <li >
-                {T`Ignore and go on with the import. Only the 2 levels of folder will be used for import`}
+                {T`Click on the button below to fix the file automatically`}
+                <button onClick={() => parser.flatCategories()} type="button" >
+                  {T`Fix`}
+                </button >
               </li >
             </ul >
           </React.Fragment >}

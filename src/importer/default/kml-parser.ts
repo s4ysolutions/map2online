@@ -1,11 +1,11 @@
-import {ImportedFolder, ParsingStatus, newImportedFolder} from '../index';
+import {ImportedFolder, ParsingStatus} from '../index';
 import {Observable, Subject} from 'rxjs';
 import sax from 'sax';
 import {Coordinate, FeatureProps} from '../../app-rx/catalog';
 import log from '../../log';
 import {Color} from '../../lib/colors';
-import {makeId} from '../../lib/id';
 import {degreesToMeters} from '../../lib/projection';
+import {newImportedFolder} from '../new-folder';
 
 enum ParseState {
   NONE,
@@ -67,7 +67,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
             color: Color.RED,
             description: '',
             geometry: null,
-            id: makeId(),
+            id: null,
             summary: '',
             title: '',
             visible: true,

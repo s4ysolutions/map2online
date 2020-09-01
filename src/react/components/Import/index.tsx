@@ -1,7 +1,7 @@
 import './styles.scss';
 import React, {FormEvent} from 'react';
 import Modal from '../Modal';
-import {getImportUI, getParser} from '../../../di-default';
+import {getCatalog, getCatalogUI, getImportUI, getParser} from '../../../di-default';
 import T from '../../../l10n';
 import FileUpload from '../FileUpload';
 import useObservable from '../../hooks/useObservable';
@@ -9,7 +9,10 @@ import {ParsingStatus} from '../../../importer';
 import {CATEGORY_DEPTH, isFlatRoot} from '../../../importer/post-process';
 import ImportedFolders from './ImportedFolders';
 import {getImportedFolderStats} from '../../../importer/stats';
+import {ImportTo, importFlatFolders} from '../../../importer/import-to';
 
+const catalog = getCatalog();
+const catalogUI = getCatalogUI();
 const importUI = getImportUI();
 const parser = getParser();
 
@@ -29,19 +32,17 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
   const parseStats = getImportedFolderStats(parseState.rootFolder);
 
   const [inProgress, setInProgress] = React.useState<boolean>(false);
+  const importTo = useObservable(importUI.importToObservable(), importUI.importTo);
 
-  const importToCategory = React.useCallback(() => {
-    /*
-     *const categoryProps: CategoryProps = {
-     *  description: '', id: makeId(), summary: '', title: categoryName(), visible: true,
-     *};
-     *catalog.categories.add(categoryProps).then(category => {
-     *  const defaultRoute = category.routes.byPos(0);
-     *  return importAllToCategory(parseState.importedFolders, category).then(() => category.routes.remove(defaultRoute));
-     *});
-     */
-  }, [parseState]);
+  const handleImport = React.useCallback(() => {
+    importFlatFolders(parseState.rootFolder, importTo, catalog, catalogUI.activeCategory, catalogUI.activeRoute)
+      .then(() => {
+        importUI.visible = false;
+      });
+  }, [parseState, importTo]);
 
+  const mixProblem = parseStats.mixed.length > 0;
+  const flatProblem = !isFlatRoot(parseState.rootFolder) && parseStats.depth >= CATEGORY_DEPTH;
 
   return <Modal className="import-dialog" onClose={importUI.close} >
     <form onSubmit={cancelEvent} >
@@ -67,7 +68,7 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
             {T`Found routes: ` + parseStats.routes}
           </h3 >
           <ImportedFolders folder={parseState.rootFolder} />
-          {parseStats.mixed.length > 0 &&
+          {mixProblem &&
           <React.Fragment >
             <h3 >
               {T`Problem: Some folders have both features and subfolders`}
@@ -89,7 +90,7 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
               </li >
             </ul >
           </React.Fragment >}
-          {!isFlatRoot(parseState.rootFolder) && parseStats.depth >= CATEGORY_DEPTH && parseStats.mixed.length === 0 &&
+          {flatProblem && !mixProblem &&
           <React.Fragment >
             <h3 >
               {T`Problem: Some folders have more than 2 levels on nesting`}
@@ -112,32 +113,60 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
             </ul >
           </React.Fragment >}
           <div >
-            <input name="import_to" type="radio" />
             <label >
+              <input
+                checked={importTo === ImportTo.ALL_FEATURES_TO_ACTIVE_ROUTE}
+                name="import_to"
+                onChange={() => {
+                  importUI.importTo = ImportTo.ALL_FEATURES_TO_ACTIVE_ROUTE;
+                }}
+                type="radio"
+                value={ImportTo.ALL_FEATURES_TO_ACTIVE_ROUTE} />
               {T`Import all features into the active route`}
               &nbsp;
             </label >
           </div >
           {parseStats.routes === 1 && parseStats.categories === 0 &&
           <div >
-            <input name="import_to" type="radio" />
             <label >
+              <input
+                checked={importTo === ImportTo.ALL_ROUTES_TO_CATEGORY}
+                name="import_to"
+                onChange={() => {
+                  importUI.importTo = ImportTo.ALL_ROUTES_TO_CATEGORY;
+                }}
+                type="radio"
+                value={ImportTo.ALL_ROUTES_TO_CATEGORY} />
               {T`Import the route into the active category`}
               &nbsp;
             </label >
           </div >}
           {parseStats.routes > 1 &&
           <div >
-            <input name="import_to" type="radio" />
             <label >
+              <input
+                checked={importTo === ImportTo.ALL_ROUTES_TO_CATEGORY}
+                name="import_to"
+                onChange={() => {
+                  importUI.importTo = ImportTo.ALL_ROUTES_TO_CATEGORY;
+                }}
+                type="radio"
+                value={ImportTo.ALL_ROUTES_TO_CATEGORY} />
               {T`Import all routes into the active category`}
               &nbsp;
             </label >
           </div >}
           {parseStats.categories > 0 &&
           <div >
-            <input name="import_to" type="radio" />
             <label >
+              <input
+                checked={importTo === ImportTo.ALL_CATEGORIES_TO_CATALOG}
+                name="import_to"
+                onChange={() => {
+                  importUI.importTo = ImportTo.ALL_CATEGORIES_TO_CATALOG;
+                }}
+                type="radio"
+                value={ImportTo.ALL_CATEGORIES_TO_CATALOG} />
               {T`Import the categories into the catalog`}
               &nbsp;
             </label >
@@ -148,9 +177,10 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
         <button onClick={importUI.close} type="button" >
           {T`Cancel`}
         </button >
-        <button onClick={importToCategory} type="button" >
+        {!mixProblem && !flatProblem &&
+        <button onClick={handleImport} type="button" >
           {T`Import`}
-        </button >
+        </button >}
       </div >
     </form >
 

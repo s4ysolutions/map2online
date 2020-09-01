@@ -1,6 +1,6 @@
-import {ImportedFolder, newImportedFolder} from './index';
+import {ImportedFolder} from './index';
 import T from '../l10n';
-import {getImportedFolderStats} from './stats';
+import {newImportedFolder} from './new-folder';
 
 export const CATEGORY_DEPTH = 2;
 

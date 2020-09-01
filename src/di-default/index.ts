@@ -45,7 +45,7 @@ export const getCatalogUI = (): CatalogUI => catalogUISingleton;
 const designerSingleton = designerFactory(catalogSingleton, catalogUISingleton);
 export const getDesigner = (): Designer => designerSingleton;
 
-const importUISingleton = importUIFactory();
+const importUISingleton = importUIFactory(localStorageSingleton);
 export const getImportUI = (): ImportUI => importUISingleton;
 
 const parserSingleton = parserFactory();

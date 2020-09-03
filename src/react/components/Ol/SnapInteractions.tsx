@@ -18,18 +18,18 @@ import React, {useEffect} from 'react';
 import {Snap as SnapInteraction} from 'ol/interaction';
 import Collection from 'ol/Collection';
 import olMapContext from './context/map';
-import useVisibleFeatures from './hooks/useVisibleFeatures';
 import OlFeature from 'ol/Feature';
 import {Feature} from '../../../app-rx/catalog';
 import {merge} from 'rxjs';
 import {getCatalog} from '../../../di-default';
 import {setOlFeatureCoordinates} from './lib/feature';
+import {useVisibleFeaturesDebounced} from './hooks/useVisibleFeatures';
 
 const catalog = getCatalog();
 
 const SnapInteractions: React.FunctionComponent = (): React.ReactElement => {
   const map = React.useContext(olMapContext);
-  const olFeatures: OlFeature[] = useVisibleFeatures();
+  const olFeatures: OlFeature[] = useVisibleFeaturesDebounced();
   const snapInteractionRef = React.useRef(null);
 
   useEffect(() => {

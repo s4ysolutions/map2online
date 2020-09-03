@@ -41,6 +41,9 @@ interface Updatebale {
 
 export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProps | null): Feature & Updatebale | null => {
   const p: FeatureProps = props === null ? newFeatureProps() : {...props};
+  if (!p.id) {
+    p.id = makeId();
+  }
   const key = `${FEATURE_ID_PREFIX}@${p.id}`;
   return {
     get color() {

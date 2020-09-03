@@ -323,7 +323,7 @@ export const wordingFactory = (storage: KV): Wording => {
           }
         }
       }
-      return `l10n: ${key}`;
+      return `${key}`;
     },
     R: (key) => {
       const localized = wordings[currentLocale()] || wordings.en;
@@ -336,7 +336,7 @@ export const wordingFactory = (storage: KV): Wording => {
           }
         }
       }
-      return `l10n: ${key}`;
+      return `${key}`;
     },
     CR: (key) => {
       const localized = wordings[currentLocale()] || wordings.en;
@@ -349,7 +349,7 @@ export const wordingFactory = (storage: KV): Wording => {
           }
         }
       }
-      return `l10n: ${key}`;
+      return `${key}`;
     },
   };
   return r;

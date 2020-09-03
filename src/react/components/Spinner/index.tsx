@@ -15,28 +15,9 @@
  */
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import './styles.scss';
 
-import 'normalize.css';
-import 'reset-css';
-import 'styles.scss';
-import 'modal.scss';
-import 'form.scss';
-import 'typo.scss';
-import 'theme-yellow-black.scss';
+const Spinner: React.FunctionComponent = () => <div className="spinner-container"><div className="spinner" /></div>;
 
-import App from 'react/components/App';
+export default Spinner;
 
-window.addEventListener('dragover', (e) => {
-  // e = e || event;
-  e.preventDefault();
-}, false);
-window.addEventListener('drop', (e) => {
-  // e = e || event;
-  e.preventDefault();
-}, false);
-
-ReactDOM.render(
-  <App />,
-  document.getElementById('reactMount'),
-);

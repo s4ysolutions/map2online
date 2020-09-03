@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright 2019 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+h2 {
+  font-size: 130%;
+  font-weight: 400;
+}
 
-import 'normalize.css';
-import 'reset-css';
-import 'styles.scss';
-import 'modal.scss';
-import 'form.scss';
-import 'typo.scss';
-import 'theme-yellow-black.scss';
+h3 {
+  font-size: 115%;
+  font-weight: 400;
+}
 
-import App from 'react/components/App';
+h4 {
+  font-size: 105%;
+  font-weight: 400;
+}
 
-window.addEventListener('dragover', (e) => {
-  // e = e || event;
-  e.preventDefault();
-}, false);
-window.addEventListener('drop', (e) => {
-  // e = e || event;
-  e.preventDefault();
-}, false);
-
-ReactDOM.render(
-  <App />,
-  document.getElementById('reactMount'),
-);
+p {
+  padding-bottom: 0.5em;
+}

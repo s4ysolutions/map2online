@@ -17,7 +17,7 @@
 import React, {useEffect} from 'react';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import useVisibleFeatures from './hooks/useVisibleFeatures';
+import {useVisibleFeaturesDebounced} from './hooks/useVisibleFeatures';
 import log from '../../../log';
 import olMapContext from './context/map';
 import OlFeature from 'ol/Feature';
@@ -37,7 +37,7 @@ let olFeaturesById: Record<string, OlFeature> = {};
 export const visibleOlFeatures = (): OlFeature[] => Object.values(olFeaturesById);
 
 const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
-  const olFeatures: OlFeature[] = useVisibleFeatures();
+  const olFeatures: OlFeature[] = useVisibleFeaturesDebounced();
   const map = React.useContext(olMapContext);
 
 
@@ -57,15 +57,16 @@ const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
     olFeatures.forEach(olFeature => {
       olFeaturesById[olFeature.getId().toString()] = olFeature;
     });
+    // subsribe to feature modifications
     const featuresObservable = merge(...featuresObservables).subscribe((feature: Feature) => {
       if (!feature) {
         return;
-      } // feature deletion is handled in the other useEffect
+      } // feature deletion is handled in the outer useEffect
       const olFeature = olFeaturesById[feature.id];
       setOlFeatureCoordinates(olFeature, feature);
     });
     return () => featuresObservable.unsubscribe();
-  });
+  }, [map, olFeatures]);
 
   log.render('ActiveFeatures');
 

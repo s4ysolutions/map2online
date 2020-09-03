@@ -26,6 +26,8 @@ import {CATEGORY_DEPTH, isFlatRoot} from '../../../importer/post-process';
 import ImportedFolders from './ImportedFolders';
 import {getImportedFolderStats} from '../../../importer/stats';
 import {ImportTo, importFlatFolders} from '../../../importer/import-to';
+import Spinner from '../Spinner';
+import log from '../../../log';
 
 const catalog = getCatalog();
 const catalogUI = getCatalogUI();
@@ -34,28 +36,43 @@ const parser = getParser();
 
 const cancelEvent: (ev: FormEvent) => void = (ev: FormEvent) => ev.preventDefault();
 
-const parse = (fileList: FileList) => {
-  parser.parse(fileList);
-};
+/*
+ *const categoryName = (): string => {
+ *  const dt = new Date();
+ *  return `${dt.getFullYear()}-${dt.getMonth()}-${dt.getDay()}-${dt.getHours()}-${dt.getMinutes()}-${dt.getSeconds()}`;
+ *};
+ */
 
-const categoryName = (): string => {
-  const dt = new Date();
-  return `${dt.getFullYear()}-${dt.getMonth()}-${dt.getDay()}-${dt.getHours()}-${dt.getMinutes()}-${dt.getSeconds()}`;
-};
-
+const RENDER_DELAY = 50;
 const Import: React.FunctionComponent = (): React.ReactElement => {
   const parseState = useObservable<ParsingStatus>(parser.statusObservable(), parser.status);
   const parseStats = getImportedFolderStats(parseState.rootFolder);
 
   const [inProgress, setInProgress] = React.useState<boolean>(false);
+  const [spinner, setSpinner] = React.useState<boolean>(false);
   const importTo = useObservable(importUI.importToObservable(), importUI.importTo);
 
+  const handleUpload = React.useCallback((files: FileList) => {
+    setInProgress(true); // TODO, handle import completed but no features
+    setSpinner(true); // TODO, handle import completed but no features
+    setTimeout(
+      () => parser.parse(files).then(() => setSpinner(false))
+        .catch(() => setSpinner(false)),
+      RENDER_DELAY,
+    );
+  }, [setInProgress]);
+
   const handleImport = React.useCallback(() => {
-    importFlatFolders(parseState.rootFolder, importTo, catalog, catalogUI.activeCategory, catalogUI.activeRoute)
-      .then(() => {
-        importUI.visible = false;
-      });
-  }, [parseState, importTo]);
+    setSpinner(true);
+    setTimeout(() => {
+      importFlatFolders(parseState.rootFolder, importTo, catalog, catalogUI.activeCategory, catalogUI.activeRoute)
+        .then(() => {
+          setSpinner(false);
+          importUI.visible = false;
+        })
+        .catch(() => setSpinner(false));
+    }, RENDER_DELAY);
+  }, [parseState, importTo, setSpinner]);
 
   const mixProblem = parseStats.mixed.length > 0;
   const flatProblem = !isFlatRoot(parseState.rootFolder) && parseStats.depth >= CATEGORY_DEPTH;
@@ -67,10 +84,8 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
       </h2 >
       <div className="import" >
         <div className="upload-area" >
-          {window.File && window.FileReader && window.FileList && window.Blob && <FileUpload onUpload={(files) => {
-            setInProgress(true); // TODO, handle import completed but no features
-            parse(files);
-          }} /> ||
+          {window.File && window.FileReader && window.FileList && window.Blob &&
+          <FileUpload onUpload={handleUpload} /> ||
           <div >
             File Upload is not supported
           </div >}
@@ -193,13 +208,13 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
         <button onClick={importUI.close} type="button" >
           {T`Cancel`}
         </button >
-        {!mixProblem && !flatProblem &&
+        {!mixProblem && !flatProblem && parseState.rootFolder.folders.length > 0 &&
         <button onClick={handleImport} type="button" >
           {T`Import`}
         </button >}
       </div >
     </form >
-
+    {spinner && <Spinner />}
   </Modal >;
 };
 

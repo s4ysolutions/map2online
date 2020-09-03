@@ -44,7 +44,7 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, pr
   }
   const key = `${ROUTE_ID_PREFIX}@${p.id}`;
   const th: Route & Updatebale = {
-    id: p.id || makeId(),
+    id: p.id,
     get description() {
       return p.description;
     },
@@ -85,7 +85,7 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, pr
     },
     features: null,
     update: () => {
-      storage.set(key, props);
+      storage.set(key, p);
     },
   };
   th.features = featuresFactory(storage, catalog, th);

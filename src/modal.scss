@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright 2019 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,29 +14,20 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+.modal {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background: #000000bb;
+}
 
-import 'normalize.css';
-import 'reset-css';
-import 'styles.scss';
-import 'modal.scss';
-import 'form.scss';
-import 'typo.scss';
-import 'theme-yellow-black.scss';
-
-import App from 'react/components/App';
-
-window.addEventListener('dragover', (e) => {
-  // e = e || event;
-  e.preventDefault();
-}, false);
-window.addEventListener('drop', (e) => {
-  // e = e || event;
-  e.preventDefault();
-}, false);
-
-ReactDOM.render(
-  <App />,
-  document.getElementById('reactMount'),
-);
+.modal-content {
+  margin: 0 auto;
+  padding: 1em;
+  position: relative;
+}

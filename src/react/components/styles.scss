@@ -21,22 +21,6 @@
   align-content: stretch;
 }
 
-.modal {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  background: #000000bb;
-}
-
-.modal-content {
-  margin: 0 auto;
-}
-
 .hasPointer {
   cursor: pointer;
 }

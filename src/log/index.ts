@@ -18,8 +18,12 @@
 import {Subject} from 'rxjs';
 
 if (!process.env.DEBUG) {
-  console.debug = ():void => undefined;
+  console.debug = (): void => undefined;
 }
+
+let prevTS = 0;
+const MS = 1000;
+const SIXTY = 60;
 
 const log = {
   /*
@@ -31,6 +35,32 @@ const log = {
   error: console.error,
   info: console.info,
   warn: console.warn,
+  ts(message: string, params?: unknown): void {
+    const ts = Date.now();
+    if (prevTS > 0) {
+      const d = ts - prevTS;
+      if (d < MS) {
+        if (params === undefined) {
+          console.log(`ts: 0:0.${d} ${message}`);
+        } else {
+          console.log(`ts: 0:0.${d} ${message}`, params);
+        }
+      } else {
+        const sec = Math.trunc((d / MS) % SIXTY);
+        const min = Math.trunc((d / MS) / SIXTY);
+        if (params === undefined) {
+          console.log(`ts: ${min}:${sec}.${d % MS} ${message}`);
+        } else {
+          console.log(`ts: ${min}:${sec}.${d % MS} ${message}`, params);
+        }
+      }
+    } else if (params === undefined) {
+      console.log(`ts: 0 ${message}`);
+    } else {
+      console.log(`ts: 0 ${message}`, params);
+    }
+    prevTS = ts;
+  },
   render(component: string, params?: unknown): void {
     if (params) {
       this.debug(`render: ${component}`, params);

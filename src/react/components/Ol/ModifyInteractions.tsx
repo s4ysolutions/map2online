@@ -18,7 +18,6 @@ import React, {useEffect} from 'react';
 import {Modify as ModifyInteraction} from 'ol/interaction';
 import Collection from 'ol/Collection';
 import olMapContext from './context/map';
-import useVisibleFeatures from './hooks/useVisibleFeatures';
 import {Coordinate, Feature, ID, coordinateEq, isPoint} from '../../../app-rx/catalog';
 import {ol2coordinate, ol2coordinates} from './lib/coordinates';
 import {getCatalog} from '../../../di-default';
@@ -27,12 +26,13 @@ import log from '../../../log';
 import {setModifying} from './hooks/useModifying';
 import {merge} from 'rxjs';
 import {setOlFeatureCoordinates} from './lib/feature';
+import {useVisibleFeaturesDebounced} from './hooks/useVisibleFeatures';
 
 const catalog = getCatalog();
 
 const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
   const map = React.useContext(olMapContext);
-  const olFeatures: OlFeature[] = useVisibleFeatures();
+  const olFeatures: OlFeature[] = useVisibleFeaturesDebounced();
 
   const modifyInteractionRef = React.useRef(null);
 

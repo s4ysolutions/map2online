@@ -62,7 +62,7 @@ const FileUpload: React.FunctionComponent<{ onUpload: (files: FileList) => void 
   return <div className="upload-control">
     <input className="file-upload" multiple name="files[]" ref={inputRef} type="file" />
     <button onClick={doInput} type="button">
-      {T`Click tp Upload`}
+      {T`Click to upload`}
     </button >
     <div className={`drop-zone${over ? ' over' : ''}`} ref={dndRef} >
       {T`or drop files here`}

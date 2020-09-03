@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright 2019 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+.spinner-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+}
+.spinner {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+}
 
-import 'normalize.css';
-import 'reset-css';
-import 'styles.scss';
-import 'modal.scss';
-import 'form.scss';
-import 'typo.scss';
-import 'theme-yellow-black.scss';
-
-import App from 'react/components/App';
-
-window.addEventListener('dragover', (e) => {
-  // e = e || event;
-  e.preventDefault();
-}, false);
-window.addEventListener('drop', (e) => {
-  // e = e || event;
-  e.preventDefault();
-}, false);
-
-ReactDOM.render(
-  <App />,
-  document.getElementById('reactMount'),
-);
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

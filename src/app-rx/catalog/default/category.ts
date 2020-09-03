@@ -38,6 +38,9 @@ interface Updatebale {
 
 export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording, props: CategoryProps | null): Category & Updatebale | null => {
   const p: CategoryProps = props === null ? newCategoryProps(wording) : {...props};
+  if (!p.id) {
+    p.id = makeId();
+  }
   const key = `${CATEGORY_ID_PREFIX}@${p.id}`;
 
   const th: Category & Updatebale = {
@@ -48,7 +51,7 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
       p.description = value;
       this.update();
     },
-    id: p.id || makeId(),
+    id: p.id,
     get summary() {
       return p.summary;
     },
@@ -82,7 +85,7 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
     observable: () => storage.observable<CategoryProps | null>(key)
       .pipe(map(value => value === null ? null : catalog.categoryById(value.id))),
     update: () => {
-      storage.set(key, props);
+      storage.set(key, p);
     },
     routes: null,
   };

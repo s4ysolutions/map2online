@@ -26,6 +26,7 @@ const categories: Record<ID, Category> = {};
 const routes: Record<ID, Route> = {};
 const features: Record<ID, Feature> = {};
 const catalogFactory = (storage: KV, wording: Wording): Catalog => {
+  let batchUpdates = false;
   const th: Catalog = {
     featuresObservable: () =>
       storage
@@ -35,7 +36,7 @@ const catalogFactory = (storage: KV, wording: Wording): Catalog => {
           map(({value}) => value),
         ),
     categories: null,
-    categoryById (id: ID) {
+    categoryById(id: ID) {
       const category = categories[id];
       if (category) {
         return category;
@@ -43,7 +44,7 @@ const catalogFactory = (storage: KV, wording: Wording): Catalog => {
       categories[id] = categoryFactory(storage, this, wording, storage.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null));
       return categories[id];
     },
-    featureById (id: ID) {
+    featureById(id: ID) {
       const feature = features[id];
       if (feature) {
         return feature;
@@ -51,7 +52,7 @@ const catalogFactory = (storage: KV, wording: Wording): Catalog => {
       features[id] = featureFactory(storage, this, storage.get<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${id}`, null));
       return features[id];
     },
-    routeById (id: ID) {
+    routeById(id: ID) {
       const route = routes[id];
       if (route) {
         return route;

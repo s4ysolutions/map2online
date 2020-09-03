@@ -19,7 +19,7 @@ import {olFeatureFactory} from '../lib/feature';
 import {VisibleFeatures} from '../../../../app-rx/ui/designer';
 import OlFeature from 'ol/Feature';
 import useObservable from '../../../hooks/useObservable';
-import {map} from 'rxjs/operators';
+import {debounceTime, map} from 'rxjs/operators';
 import {Feature} from '../../../../app-rx/catalog';
 import {Observable} from 'rxjs';
 
@@ -29,10 +29,24 @@ const observable: Observable<OlFeature[]> = getDesigner()
   .visibleFeatures
   .observable()
   .pipe(map((f) => transformVisibleFeatures(f)));
-// const visibleFeatures = () => transformVisibleFeatures(getDesigner().visibleFeatures);
 
-const useVisibleFeatures = (): OlFeature[] => {
+const DEBOUNCE_DELAY = 250;
+const observableDebonced: Observable<OlFeature[]> = getDesigner()
+  .visibleFeatures
+  .observable()
+  .pipe(
+    debounceTime(DEBOUNCE_DELAY),
+    map((f) => transformVisibleFeatures(f)),
+  );
+
+
+export const useVisibleFeatures = (): OlFeature[] => {
   const visibleFeatures: OlFeature[] = transformVisibleFeatures(getDesigner().visibleFeatures);
   return useObservable(observable, visibleFeatures);
 };
-export default useVisibleFeatures;
+
+export const useVisibleFeaturesDebounced = (): OlFeature[] => {
+  const visibleFeatures: OlFeature[] = transformVisibleFeatures(getDesigner().visibleFeatures);
+  return useObservable(observableDebonced, visibleFeatures);
+};
+

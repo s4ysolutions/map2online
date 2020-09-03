@@ -25,7 +25,6 @@ const getStatsRecursive = (folder: ImportedFolder, level: number, depth: number,
   let m = [];
   let r = 0;
   let c = 0;
-  // console.log(`enter depth=${depth} level=${level} categroies=${categories} routes=${routes}`, folder);
   if (folder.features.length > 0) {
     r++;
     if (folder.folders.length > 0) {
@@ -38,7 +37,6 @@ const getStatsRecursive = (folder: ImportedFolder, level: number, depth: number,
   for (const f of folder.folders) {
     if (f.features.length > 0) {
       c = 1;
-      // console.log('++++ category features > 0', c, folder.description);
       break;
     }
   }
@@ -48,15 +46,11 @@ const getStatsRecursive = (folder: ImportedFolder, level: number, depth: number,
     c += stat.categories;
     r += stat.routes;
     m = m.concat(stat.mixed);
-    // console.log('++++ category child > 0', c, f.description);
-
-    // console.log('++++ route child > 0', r, f.description);
     if (stat.depth > d) {
       d = stat.depth;
     }
   }
 
-  // console.log(`exit depth=${d} level=${level} categories=${c} routes=${r}`);
   return {mixed: mixed.concat(m), depth: d, categories: categories + c, routes: routes + r};
 };
 

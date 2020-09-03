@@ -63,6 +63,7 @@ const localStorageSingleton: KV & LocalStorage = {
       )
       : this.subject;
   },
+  hasKey: (key: string): boolean => window.localStorage.getItem(key) !== null,
 };
 
 export default localStorageSingleton;

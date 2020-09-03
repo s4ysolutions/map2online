@@ -97,7 +97,6 @@ const flatImportedFoldersToCategoriesRecursive = (rootFolder: ImportedFolder): I
   // TODO: fix level
   let categoryFolders: ImportedFolder[] = [];
 
-  // console.log('enter', rootFolder);
   const routesFolder: ImportedFolder[] = [];
   for (const folder of rootFolder.folders) {
     if (isRoute(folder)) {
@@ -108,11 +107,9 @@ const flatImportedFoldersToCategoriesRecursive = (rootFolder: ImportedFolder): I
   if (routesFolder.length > 0) {
     categoryFolders.push({...rootFolder, folders: routesFolder});
   }
-  // console.log('routes', categoryFolders);
 
   for (const folder of rootFolder.folders) {
     if (isCategory(folder)) {
-      //   console.log('push', folder);
       categoryFolders.push(folder);
     }
   }
@@ -123,7 +120,6 @@ const flatImportedFoldersToCategoriesRecursive = (rootFolder: ImportedFolder): I
     }
   }
 
-  // console.log('exit', categoryFolders);
   return categoryFolders;
 };
 

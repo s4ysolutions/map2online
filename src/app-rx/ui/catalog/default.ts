@@ -19,6 +19,7 @@ import {CatalogUI} from './index';
 import {Catalog, Category, Feature, ID, Route} from '../../catalog';
 import {filter, map} from 'rxjs/operators';
 import {Subject, merge} from 'rxjs';
+import {ROUTE_ID_PREFIX} from '../../catalog/default/route';
 
 const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
   const categoryEditSubject = new Subject<Category | null>();
@@ -81,7 +82,7 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     },
     getStoredActiveRoute() {
       const id = storage.get<ID | null>('ar', null);
-      if (id) {
+      if (id && storage.hasKey(`${ROUTE_ID_PREFIX}@${id}`)) {
         const activeRoute = catalog.routeById(id);
         if (activeRoute) {
           return activeRoute;

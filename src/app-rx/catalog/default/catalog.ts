@@ -26,7 +26,6 @@ const categories: Record<ID, Category> = {};
 const routes: Record<ID, Route> = {};
 const features: Record<ID, Feature> = {};
 const catalogFactory = (storage: KV, wording: Wording): Catalog => {
-  let batchUpdates = false;
   const th: Catalog = {
     featuresObservable: () =>
       storage

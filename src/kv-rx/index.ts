@@ -20,6 +20,7 @@ export interface KV {
   delete: <T>(key: string) => void;
   get: <T>(key: string, def: T, forcedJSON?: string) => T;
   set: <T>(key: string, value: T) => void;
+  hasKey: (key: string) => boolean;
   observable: <T>(key?: string) => Observable<T>;
 }
 

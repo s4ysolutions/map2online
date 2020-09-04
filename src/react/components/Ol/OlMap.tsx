@@ -40,7 +40,7 @@ let resizeTimer: Timeout = null;
 
 const baseLayer = getBaseLayer();
 
-const SKIP_RESIZE_TIME_MS = 500;
+const SKIP_RESIZE_TIME_MS = 100;
 
 const OlMap: React.FunctionComponent = (): React.ReactElement => {
   const [map, setMap] = React.useState<Map>(null);

@@ -27,6 +27,7 @@ $menu-item-dim: 40px;
 }
 
 .map-container {
+	position: relative;
 	flex-grow: 1;
 	z-index: 10;
 }

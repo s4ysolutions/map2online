@@ -64,13 +64,15 @@ const onValueChange = {
     if (cc.length < 1) {
       return false;
     }
-    for (const zc of [document.getElementsByClassName('ol-zoom'), document.getElementsByClassName('ol-zoom-extent')]) {
-      if (zc.length < 1) {
-        return false;
-      }
-      // see src/styles.scss
-      zc[0].setAttribute('style', `left: ${cc[0].clientWidth + OL_ZOOM_OFFSET_PX}px`);
-    }
+    /*
+     *for (const zc of [document.getElementsByClassName('ol-zoom'), document.getElementsByClassName('ol-zoom-extent')]) {
+     *  if (zc.length < 1) {
+     *    return false;
+     *  }
+     *  // see src/styles.scss
+     *  zc[0].setAttribute('style', `left: ${cc[0].clientWidth + OL_ZOOM_OFFSET_PX}px`);
+     *}
+     */
     return false;
   },
 };

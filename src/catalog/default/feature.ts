@@ -15,12 +15,12 @@
  */
 
 import {Catalog, Feature, FeatureProps, Features, ID, LineString, Point, Route, isCoordinate, isPoint} from '../index';
-import {KV} from '../../../kv-rx';
-import {makeId} from '../../../lib/id';
+import {KV} from '../../kv-rx';
+import {makeId} from '../../lib/id';
 import {map} from 'rxjs/operators';
-import reorder from '../../../lib/reorder';
-import {Color} from '../../../lib/colors';
-import T from '../../../l10n';
+import reorder from '../../lib/reorder';
+import {Color} from '../../lib/colors';
+import T from '../../l10n';
 
 export const FEATURE_ID_PREFIX = 'f';
 export const FEATURES_ID_PREFIX = 'fs';

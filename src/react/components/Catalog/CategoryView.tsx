@@ -21,7 +21,7 @@ import Empty from '../Svg/Empty';
 import Hidden from '../Svg/Hidden';
 import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
-import {Category} from '../../../app-rx/catalog';
+import {Category} from '../../../catalog';
 import {getCatalog, getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {filter, map} from 'rxjs/operators';

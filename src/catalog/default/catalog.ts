@@ -15,7 +15,7 @@
  */
 
 import {CATEGORY_ID_PREFIX, categoriesFactory, categoryFactory} from './category';
-import {KV} from '../../../kv-rx';
+import {KV} from '../../kv-rx';
 import {Catalog, Category, CategoryProps, Feature, FeatureProps, Features, ID, Route, RouteProps} from '../index';
 import {ROUTE_ID_PREFIX, routeFactory} from './route';
 import {FEATURES_ID_PREFIX, FEATURE_ID_PREFIX, featureFactory} from './feature';

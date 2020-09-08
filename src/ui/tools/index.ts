@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
+import {Color} from '../../lib/colors';
 import {Observable} from 'rxjs';
-import {ImportTo} from '../../../importer/import-to';
 
-export interface ImportUI {
-  visible: boolean;
-  visibleObservable: () => Observable<boolean>;
-  open: () => void;
-  close: () => void;
-  importTo: ImportTo;
-  importToObservable: () => Observable<ImportTo>;
+export enum FeatureType {
+  Line,
+  Point,
+}
+
+export interface Tools {
+  readonly colorLine: Color;
+  colorLineObservable: () => Observable<Color>;
+  readonly colorPoint: Color;
+  colorPointObservable: () => Observable<Color>;
+  readonly isLine: boolean;
+  isLineObservable: () => Observable<boolean>;
+  readonly isPoint: boolean;
+  isPointObservable: () => Observable<boolean>;
+  selectColor: (color: Color) => void;
+  selectLine: () => void;
+  selectPoint: () => void;
+  readonly featureType: FeatureType;
+  featureTypeObservable: () => Observable<FeatureType>;
 }

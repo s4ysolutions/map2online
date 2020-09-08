@@ -23,7 +23,7 @@ import olMapContext from './context/map';
 import OlFeature from 'ol/Feature';
 import {getCatalog} from '../../../di-default';
 import {merge} from 'rxjs';
-import {Feature} from '../../../app-rx/catalog';
+import {Feature} from '../../../catalog';
 import {setOlFeatureCoordinates} from './lib/feature';
 
 const catalog = getCatalog();

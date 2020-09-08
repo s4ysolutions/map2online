@@ -16,11 +16,11 @@
 
 import {getDesigner} from '../../../../di-default';
 import {olFeatureFactory} from '../lib/feature';
-import {VisibleFeatures} from '../../../../app-rx/ui/designer';
+import {VisibleFeatures} from '../../../../ui/designer';
 import OlFeature from 'ol/Feature';
 import useObservable from '../../../hooks/useObservable';
 import {debounceTime, map} from 'rxjs/operators';
-import {Feature} from '../../../../app-rx/catalog';
+import {Feature} from '../../../../catalog';
 import {Observable} from 'rxjs';
 
 const transformVisibleFeatures = (features: VisibleFeatures): OlFeature[] => Array.from<Feature>(features).map(feature => olFeatureFactory(feature));

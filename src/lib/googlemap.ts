@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Coordinate} from '../app-rx/catalog';
+import {Coordinate} from '../catalog';
 import {metersToDegrees0} from './projection';
 import LatLngLiteral = google.maps.LatLngLiteral;
 

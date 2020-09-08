@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {Feature, ID, LineString, Point, isLineString, isPoint} from '../../../../app-rx/catalog';
+import {Feature, ID, LineString, Point, isLineString, isPoint} from '../../../../catalog';
 import OlLineString from 'ol/geom/LineString';
 import OlFeature from 'ol/Feature';
 import OlPoint from 'ol/geom/Point';
 import {getStyle} from './styles';
-import {FeatureType} from '../../../../app-rx/ui/tools';
+import {FeatureType} from '../../../../ui/tools';
 import {coordinate2ol, coordinates2ol} from './coordinates';
 import {Coordinate as OlCoordinate} from 'ol/coordinate';
 

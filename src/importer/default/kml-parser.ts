@@ -17,7 +17,7 @@
 import {ImportedFolder, ParsingStatus} from '../index';
 import {Observable, Subject} from 'rxjs';
 import sax from 'sax';
-import {Coordinate, FeatureProps} from '../../app-rx/catalog';
+import {Coordinate, FeatureProps} from '../../catalog';
 import log from '../../log';
 import {Color} from '../../lib/colors';
 import {degreesToMeters} from '../../lib/projection';

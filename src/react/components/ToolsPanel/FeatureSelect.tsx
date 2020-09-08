@@ -20,7 +20,7 @@ import Line from 'react/components/Svg/Line';
 import Pin from 'react/components/Svg/Pin';
 import {getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
-import {FeatureType} from '../../../app-rx/ui/tools';
+import {FeatureType} from '../../../ui/tools';
 import log from '../../../log';
 
 const tools = getTools();

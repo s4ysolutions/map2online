@@ -18,7 +18,7 @@ import React, {useEffect} from 'react';
 import {Modify as ModifyInteraction} from 'ol/interaction';
 import Collection from 'ol/Collection';
 import olMapContext from './context/map';
-import {Coordinate, Feature, ID, coordinateEq, isPoint} from '../../../app-rx/catalog';
+import {Coordinate, Feature, ID, coordinateEq, isPoint} from '../../../catalog';
 import {ol2coordinate, ol2coordinates} from './lib/coordinates';
 import {getCatalog} from '../../../di-default';
 import OlFeature from 'ol/Feature';

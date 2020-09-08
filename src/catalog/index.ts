@@ -15,7 +15,7 @@
  */
 
 import {Observable} from 'rxjs';
-import {Color} from '../../lib/colors';
+import {Color} from '../lib/colors';
 
 export type ID = string;
 

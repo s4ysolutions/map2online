@@ -15,7 +15,7 @@
  */
 
 import {Exporter} from '../index';
-import {Category, Route} from '../../app-rx/catalog';
+import {Category, Route} from '../../catalog';
 import {getCategoriesKML, getRoutesKML} from '../lib/kml';
 import {KV} from '../../kv-rx';
 

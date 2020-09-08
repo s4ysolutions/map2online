@@ -21,7 +21,7 @@ import log from '../../../log';
 import {getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import RouteView from './RouteView';
-import {Category} from '../../../app-rx/catalog';
+import {Category} from '../../../catalog';
 import RouteEdit from './RouteEdit';
 import ConfirmDialog from '../Confirm';
 import T from '../../../l10n';

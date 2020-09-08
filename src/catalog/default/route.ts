@@ -15,11 +15,11 @@
  */
 
 import {Catalog, Category, ID, Route, RouteProps, Routes} from '../index';
-import {KV} from '../../../kv-rx';
+import {KV} from '../../kv-rx';
 import {featuresFactory} from './feature';
-import {makeId} from '../../../lib/id';
+import {makeId} from '../../lib/id';
 import {map} from 'rxjs/operators';
-import reorder from '../../../lib/reorder';
+import reorder from '../../lib/reorder';
 import {Wording} from '../../personalization/wording';
 
 export const ROUTE_ID_PREFIX = 'r';

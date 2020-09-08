@@ -18,7 +18,7 @@ import * as React from 'react';
 import {FormEvent, useState} from 'react';
 import Modal from '../Modal';
 import {getCatalogUI} from '../../../di-default';
-import {Coordinate, Feature, LineString, Point, isPoint} from '../../../app-rx/catalog';
+import {Coordinate, Feature, LineString, Point, isPoint} from '../../../catalog';
 import useObservable from '../../hooks/useObservable';
 import T from '../../../l10n';
 import {formatCoordinate, formatCoordinates} from '../../../lib/format';

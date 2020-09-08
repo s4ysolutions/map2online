@@ -16,8 +16,8 @@
 
 import {ImportUI} from '../index';
 import {Subject} from 'rxjs';
-import {ImportTo} from '../../../../importer/import-to';
-import {KV} from '../../../../kv-rx';
+import {ImportTo} from '../../../importer/import-to';
+import {KV} from '../../../kv-rx';
 
 export const importUIFactory = (storage: KV): ImportUI => {
   let visible = false;

@@ -15,10 +15,10 @@
  */
 
 import memoryStorageFactory from '../../mocks/kv/memoryStorage';
-import catalogFactory from '../../../src/app-rx/catalog/default/catalog';
+import catalogFactory from '../../../src/catalog/default/catalog';
 import {expect} from 'chai';
-import {wordingFactory} from '../../../src/app-rx/personalization/wording/default';
-import {Wording} from '../../../src/app-rx/personalization/wording';
+import {wordingFactory} from '../../../src/personalization/wording/default';
+import {Wording} from '../../../src/personalization/wording';
 import {KV} from '../../../src/kv-rx';
 
 describe('Catalog categories', () => {

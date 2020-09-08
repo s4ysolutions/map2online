@@ -18,7 +18,7 @@ import * as React from 'react';
 import {FormEvent} from 'react';
 import Modal from '../Modal';
 import {getCatalogUI, getWording} from '../../../di-default';
-import {Category} from '../../../app-rx/catalog';
+import {Category} from '../../../catalog';
 import useObservable from '../../hooks/useObservable';
 import T from '../../../l10n';
 import {map} from 'rxjs/operators';

@@ -15,7 +15,7 @@
  */
 
 import {Observable} from 'rxjs';
-import {FeatureProps} from '../app-rx/catalog';
+import {FeatureProps} from '../catalog';
 
 export interface ImportedFolder {
   id?: string;

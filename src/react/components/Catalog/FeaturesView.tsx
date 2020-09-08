@@ -21,7 +21,7 @@ import log from '../../../log';
 import {getCatalogUI, getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import FeatureView from './FeatureView';
-import {FeatureProps, Route, isPoint} from '../../../app-rx/catalog';
+import {FeatureProps, Route, isPoint} from '../../../catalog';
 import FeatureEdit from './FeatureEdit';
 import ConfirmDialog from '../Confirm';
 import T from '../../../l10n';

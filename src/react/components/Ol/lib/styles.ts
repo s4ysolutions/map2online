@@ -18,7 +18,7 @@ import {Circle as CircleStyle, Fill, Icon as IconStyle, Stroke, Style, Text} fro
 
 import {Color, rgb} from 'lib/colors';
 import {pinSvg} from '../../Svg/Pin';
-import {FeatureType} from '../../../../app-rx/ui/tools';
+import {FeatureType} from '../../../../ui/tools';
 
 // const SVG_HEIGHT = 960;
 const SVG_HEIGHT = 512;

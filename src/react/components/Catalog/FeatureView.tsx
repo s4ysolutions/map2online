@@ -19,7 +19,7 @@ import Delete from '../Svg/Delete';
 import Hidden from '../Svg/Hidden';
 import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
-import {Feature, LineString, Route, isPoint} from '../../../app-rx/catalog';
+import {Feature, LineString, Route, isPoint} from '../../../catalog';
 import {getCatalogUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {filter, map} from 'rxjs/operators';

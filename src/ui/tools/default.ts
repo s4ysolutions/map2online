@@ -15,8 +15,8 @@
  */
 
 import {FeatureType, Tools} from './index';
-import {Color} from '../../../lib/colors';
-import {KV} from '../../../kv-rx';
+import {Color} from '../../lib/colors';
+import {KV} from '../../kv-rx';
 
 const toolsFactory = (persistStorage: KV): Tools => {
   const th: Tools = {

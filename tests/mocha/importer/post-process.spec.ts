@@ -22,7 +22,7 @@ import {
   removeEmptyImportedFolders,
 } from '../../../src/importer/post-process';
 import {expect} from 'chai';
-import {FeatureProps} from '../../../src/app-rx/catalog';
+import {FeatureProps} from '../../../src/catalog';
 import {getImportedFolderStats} from '../../../src/importer/stats';
 import fs from 'fs';
 import path from 'path';

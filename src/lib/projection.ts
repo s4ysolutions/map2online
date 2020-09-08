@@ -15,7 +15,7 @@
  */
 
 import {fromLonLat, toLonLat} from 'ol/proj';
-import {Coordinate, isCoordinate} from '../app-rx/catalog';
+import {Coordinate, isCoordinate} from '../catalog';
 
 export const metersToDegrees0 = (olX: number | Coordinate | number[], olY?: number, olAlt?: number): number[] => {
   if (olY !== undefined) {

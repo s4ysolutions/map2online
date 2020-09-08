@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import {Workspace} from '../app-rx/ui/workspace';
+import {Workspace} from '../ui/workspace';
 import localStorageSingleton from '../kv-rx/localStorage';
 import {KV} from '../kv-rx';
-import toolsFactory from '../app-rx/ui/tools/default';
-import {Tools} from '../app-rx/ui/tools';
-import {BaseLayer} from '../app-rx/ui/layers/base';
-import baseLayerFactory from '../app-rx/ui/layers/base/default';
-import workspaceFactory from '../app-rx/ui/workspace/default';
-import {Catalog} from '../app-rx/catalog';
-import catalogFactory from '../app-rx/catalog/default/catalog';
-import catalogUIFactory from '../app-rx/ui/catalog/default';
-import {CatalogUI} from '../app-rx/ui/catalog';
-import {designerFactory} from '../app-rx/ui/designer/default/designer';
-import {Designer} from '../app-rx/ui/designer';
-import {importUIFactory} from '../app-rx/ui/import/default';
-import {ImportUI} from '../app-rx/ui/import';
+import toolsFactory from '../ui/tools/default';
+import {Tools} from '../ui/tools';
+import {BaseLayer} from '../ui/layers/base';
+import baseLayerFactory from '../ui/layers/base/default';
+import workspaceFactory from '../ui/workspace/default';
+import {Catalog} from '../catalog';
+import catalogFactory from '../catalog/default/catalog';
+import catalogUIFactory from '../ui/catalog/default';
+import {CatalogUI} from '../ui/catalog';
+import {designerFactory} from '../ui/designer/default/designer';
+import {Designer} from '../ui/designer';
+import {importUIFactory} from '../ui/import/default';
+import {ImportUI} from '../ui/import';
 import {kmlParserFactory} from '../importer/default/kml-parser';
 import {Parser} from '../importer';
 import {exporterFactory} from '../exporter/default';
 import {Exporter} from '../exporter';
-import {wordingFactory} from '../app-rx/personalization/wording/default';
-import {Wording} from '../app-rx/personalization/wording';
+import {wordingFactory} from '../personalization/wording/default';
+import {Wording} from '../personalization/wording';
 import {parserFactory} from '../importer/default';
 
 export const getLocalStorage = (): KV => localStorageSingleton;

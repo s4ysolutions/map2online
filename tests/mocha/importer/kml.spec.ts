@@ -20,7 +20,7 @@ import path from 'path';
 import {expect} from 'chai';
 import {parseKMLString} from '../../../src/importer/default/kml-parser';
 import {ImportedFolder} from '../../../src/importer';
-import {Point} from '../../../src/app-rx/catalog';
+import {Point} from '../../../src/catalog';
 import {getImportedFolderStats} from '../../../src/importer/stats';
 
 describe('KML Importer', () => {

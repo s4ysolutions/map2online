@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Catalog, Category, CategoryProps, Feature, FeatureProps, Route, RouteProps} from '../app-rx/catalog';
+import {Catalog, Category, CategoryProps, Feature, FeatureProps, Route, RouteProps} from '../catalog';
 import {isFlatRoot} from './post-process';
 import {ImportedFolder} from './index';
 

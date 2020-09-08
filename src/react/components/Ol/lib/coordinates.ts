@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Coordinate} from '../../../../app-rx/catalog';
+import {Coordinate} from '../../../../catalog';
 import {Coordinate as OlCoordinate} from 'ol/coordinate';
 
 const COORD_LENGTH = 3;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Category, Coordinate, Feature, LineString, Point, Route, isPoint} from '../../app-rx/catalog';
+import {Category, Coordinate, Feature, LineString, Point, Route, isPoint} from '../../catalog';
 import {metersToDegrees} from '../../lib/projection';
 import {henc} from '../../lib/entities';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Category, Route} from '../app-rx/catalog';
+import {Category, Route} from '../catalog';
 import {Observable} from 'rxjs';
 
 export interface Exporter {

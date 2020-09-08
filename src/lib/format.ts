@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Coordinate} from '../app-rx/catalog';
+import {Coordinate} from '../catalog';
 import {metersToDegrees} from './projection';
 
 const PREC = 6;

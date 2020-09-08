@@ -19,7 +19,7 @@ import {Snap as SnapInteraction} from 'ol/interaction';
 import Collection from 'ol/Collection';
 import olMapContext from './context/map';
 import OlFeature from 'ol/Feature';
-import {Feature} from '../../../app-rx/catalog';
+import {Feature} from '../../../catalog';
 import {merge} from 'rxjs';
 import {getCatalog} from '../../../di-default';
 import {setOlFeatureCoordinates} from './lib/feature';

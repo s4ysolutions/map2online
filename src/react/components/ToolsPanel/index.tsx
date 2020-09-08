@@ -23,7 +23,7 @@ import Tab from './Tab';
 import {getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import log from '../../../log';
-import {FeatureType} from '../../../app-rx/ui/tools';
+import {FeatureType} from '../../../ui/tools';
 
 const tools = getTools();
 

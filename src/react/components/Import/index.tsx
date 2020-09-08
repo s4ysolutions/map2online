@@ -17,7 +17,7 @@
 import './styles.scss';
 import React, {FormEvent} from 'react';
 import Modal from '../Modal';
-import {getCatalog, getCatalogUI, getImportUI, getParser} from '../../../di-default';
+import {getCatalog, getCatalogUI, getImportUI, getParser, getWording} from '../../../di-default';
 import T from '../../../l10n';
 import FileUpload from '../FileUpload';
 import useObservable from '../../hooks/useObservable';
@@ -27,12 +27,12 @@ import ImportedFolders from './ImportedFolders';
 import {getImportedFolderStats} from '../../../importer/stats';
 import {ImportTo, importFlatFolders} from '../../../importer/import-to';
 import Spinner from '../Spinner';
-import log from '../../../log';
 
 const catalog = getCatalog();
 const catalogUI = getCatalogUI();
 const importUI = getImportUI();
 const parser = getParser();
+const wording = getWording();
 
 const cancelEvent: (ev: FormEvent) => void = (ev: FormEvent) => ev.preventDefault();
 
@@ -92,18 +92,18 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
         </div >
         {inProgress &&
         <div className="upload-results" >
-          <h3 >
-            {T`Found categories: ` + parseStats.categories}
-          </h3 >
-          <h3 >
-            {T`Found routes: ` + parseStats.routes}
-          </h3 >
+          <em >
+            {wording.C('Found categories: ') + parseStats.categories}
+          </em >
+          <em className="last">
+            {wording.R('Found routes: ') + parseStats.routes}
+          </em >
           <ImportedFolders folder={parseState.rootFolder} />
           {mixProblem &&
-          <React.Fragment >
-            <h3 >
+          <div className="import-problem">
+            <em >
               {T`Problem: Some folders have both features and subfolders`}
-            </h3 >
+            </em >
             <p >
               <strong >
                 {T`Possible actions:`}
@@ -114,18 +114,17 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 {T`Cancel import and fix the file manually`}
               </li >
               <li >
-                {T`Click on the button below to fix the file automatically`}
-                <button onClick={() => parser.convertMixedToRoutes()} type="button" >
-                  {T`Fix`}
+                <button className="fix-import" onClick={() => parser.convertMixedToRoutes()} type="button" >
+                  {T`Click fix the file automatically`}
                 </button >
               </li >
             </ul >
-          </React.Fragment >}
+          </div >}
           {flatProblem && !mixProblem &&
-          <React.Fragment >
-            <h3 >
+          <div className="import-problem">
+            <em >
               {T`Problem: Some folders have more than 2 levels on nesting`}
-            </h3 >
+            </em >
             <p >
               <strong >
                 {T`Possible actions:`}
@@ -136,14 +135,13 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 {T`Cancel import and fix the file manually`}
               </li >
               <li >
-                {T`Click on the button below to fix the file automatically`}
-                <button onClick={() => parser.flatCategories()} type="button" >
-                  {T`Fix`}
+                <button className="fix-import" onClick={() => parser.flatCategories()} type="button" >
+                  {T`Click fix the file automatically`}
                 </button >
               </li >
             </ul >
-          </React.Fragment >}
-          <div >
+          </div >}
+          <div className="import-kind">
             <label >
               <input
                 checked={importTo === ImportTo.ALL_FEATURES_TO_ACTIVE_ROUTE}
@@ -153,12 +151,12 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 }}
                 type="radio"
                 value={ImportTo.ALL_FEATURES_TO_ACTIVE_ROUTE} />
-              {T`Import all features into the active route`}
+              {wording.R('Import all features into the active route')}
               &nbsp;
             </label >
           </div >
           {parseStats.routes === 1 && parseStats.categories === 0 &&
-          <div >
+          <div className="import-kind">
             <label >
               <input
                 checked={importTo === ImportTo.ALL_ROUTES_TO_CATEGORY}
@@ -168,12 +166,12 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 }}
                 type="radio"
                 value={ImportTo.ALL_ROUTES_TO_CATEGORY} />
-              {T`Import the route into the active category`}
+              {wording.CR('Import the route into the active category')}
               &nbsp;
             </label >
           </div >}
           {parseStats.routes > 1 &&
-          <div >
+          <div className="import-kind">
             <label >
               <input
                 checked={importTo === ImportTo.ALL_ROUTES_TO_CATEGORY}
@@ -183,12 +181,12 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 }}
                 type="radio"
                 value={ImportTo.ALL_ROUTES_TO_CATEGORY} />
-              {T`Import all routes into the active category`}
+              {wording.CR('Import all routes into the active category')}
               &nbsp;
             </label >
           </div >}
           {parseStats.categories > 0 &&
-          <div >
+          <div className="import-kind">
             <label >
               <input
                 checked={importTo === ImportTo.ALL_CATEGORIES_TO_CATALOG}
@@ -198,7 +196,7 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 }}
                 type="radio"
                 value={ImportTo.ALL_CATEGORIES_TO_CATALOG} />
-              {T`Import the categories into the catalog`}
+              {wording.C('Import the categories into the catalog')}
               &nbsp;
             </label >
           </div >}

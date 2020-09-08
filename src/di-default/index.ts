@@ -67,6 +67,6 @@ export const getImportUI = (): ImportUI => importUISingleton;
 const parserSingleton = parserFactory();
 export const getParser = (): Parser => parserSingleton;
 
-const exporterSingleton = exporterFactory();
+const exporterSingleton = exporterFactory(localStorageSingleton);
 export const getExporter = (): Exporter => exporterSingleton;
 

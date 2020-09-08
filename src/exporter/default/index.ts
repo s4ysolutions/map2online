@@ -16,7 +16,8 @@
 
 import {Exporter} from '../index';
 import {Category, Route} from '../../app-rx/catalog';
-import {getRoutesKML} from '../lib/kml';
+import {getCategoriesKML, getRoutesKML} from '../lib/kml';
+import {KV} from '../../kv-rx';
 
 const MIME_KML = 'application/vnd.GoogleMap-earth.kml+xml';
 
@@ -28,8 +29,18 @@ const download = (file: string, content: string, mime: string): void => {
   a.click();
 };
 
-export const exporterFactory = (): Exporter => ({
+export const exporterFactory = (storage: KV): Exporter => ({
+  get onlyVisible() {
+    return storage.get<boolean>('expov', true);
+  },
+  set onlyVisible(value) {
+    storage.set('expov', value);
+  },
+  onlyVisibleObservable: () => storage.observable<boolean>('expov'),
   exportRoutesKML: (routes: Route[], category?: Category): void => {
-    download(category ? `${category.title}.kml` : 'map2.kml', getRoutesKML(routes, category), MIME_KML);
+    download((category ? `${category.title}-` : '') + (routes.length === 1 ? `${routes[0].title}.kml` : category ? `${category.title}.kml` : `map2online-${Date.now()}.kml`), getRoutesKML(routes, category), MIME_KML);
+  },
+  exportCategoriesKML: (categories: Category[]): void => {
+    download(categories.length === 1 ? `${categories[0].title}.kml` : `map2online-${Date.now()}.kml`, getCategoriesKML(categories), MIME_KML);
   },
 });

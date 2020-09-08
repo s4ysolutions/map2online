@@ -42,14 +42,24 @@
 .upload-results {
 }
 
-.upload-results h3 {
+.upload-results em {
+  display: block;
+  font-size: 105%;
+  font-weight: 500;
+}
 
+.upload-results em.last {
+  padding-bottom: 1ex;
 }
 
 .upload-results .imported-folders {
   min-height: 20px;
   max-height: 320px;
   overflow-y: auto;
+}
+
+.imported-folders {
+  padding-bottom: 1ex;
 }
 
 .imported-folders .notroute, .imported-folders .route {
@@ -67,4 +77,17 @@
   height: 16px;
   width: auto;
   margin-right: 0.5em;
+}
+
+.import-problem {
+  padding-bottom: 1ex;
+}
+
+button.fix-import {
+  font-size: 100%;
+  height: auto;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0.5ex;
+  margin: 0;
 }

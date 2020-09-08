@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import {Category, Route} from '../app-rx/catalog';
-import {Observable} from 'rxjs';
+import {XmlEntities} from 'html-entities';
 
-export interface Exporter {
-  exportCategoriesKML: (categories: Category[]) => void
-  exportRoutesKML: (routes: Route[], category?: Category) => void
-  onlyVisible: boolean;
-  onlyVisibleObservable: () => Observable<boolean>;
-}
+const entities = new XmlEntities();
+
+export const henc = (text: string): string => entities.encode(text);
+export const hdec = (text: string): string => entities.decode(text);

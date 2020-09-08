@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import {Category, Route} from '../app-rx/catalog';
-import {Observable} from 'rxjs';
+import React from 'react';
 
-export interface Exporter {
-  exportCategoriesKML: (categories: Category[]) => void
-  exportRoutesKML: (routes: Route[], category?: Category) => void
-  onlyVisible: boolean;
-  onlyVisibleObservable: () => Observable<boolean>;
-}
+const Check: React.FunctionComponent = () =>
+  <svg viewBox="0 0 24 24" >
+    <polyline
+      fill="none"
+      points="  20,6 9,17 4,12 "
+      strokeMiterlimit="10"
+      strokeWidth="2" />
+  </svg >;
+
+export default Check;

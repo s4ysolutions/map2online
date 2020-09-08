@@ -22,6 +22,7 @@ import log from '../../log';
 import {Color} from '../../lib/colors';
 import {degreesToMeters} from '../../lib/projection';
 import {newImportedFolder} from '../new-folder';
+import {hdec} from '../../lib/entities';
 
 enum ParseState {
   NONE,
@@ -49,6 +50,11 @@ const parseCoordinates = (text: string): Coordinate[] =>
     .map(t => t.trim())
     .filter(t => Boolean(t))
     .map(parseTriplet);
+
+
+const brre = /<br>/giu;
+const nl = `
+`;
 
 export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder> => {
   const rootFolder = newImportedFolder(0, null);
@@ -184,7 +190,8 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
           }
       }
     };
-    parser.ontext = (text) => {
+    parser.ontext = (textWithEntities) => {
+      const text = hdec(textWithEntities);
       log.debug('text', text);
       switch (lastState()) {
         case ParseState.FOLDER_NAME:
@@ -224,7 +231,7 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
       log.debug('reject');
       rj(e);
     };
-    parser.write(kml);
+    parser.write(kml.replace(brre, nl));
     log.debug('close');
     parser.close();
   });

@@ -19,49 +19,66 @@ import MenuItem from '../Menu/MenuItem';
 import MenuSep from '../Menu/MenuSep';
 import T from 'l10n';
 import log from '../../../log';
-import {getCatalog, getExporter, getImportUI, getWorkspace} from '../../../di-default';
+import {getCatalog, getCatalogUI, getExporter, getImportUI, getWording, getWorkspace} from '../../../di-default';
+import Check from '../Svg/Check';
+import './style.scss';
+import useObservable from '../../hooks/useObservable';
 
 const importUI = getImportUI();
 const exporter = getExporter();
 const catalog = getCatalog();
 const workspace = getWorkspace();
+const catalogUI = getCatalogUI();
+const wording = getWording();
 
-const handleExportAll = () => {
+const toggleVisible = (): void => {
+  exporter.onlyVisible = !exporter.onlyVisible;
+};
+
+const handleExportAll: () => void = () => {
   workspace.closeMenus();
-  const category = catalog.categories.byPos(0);
-  const routes = Array.from(category.routes);
-  exporter.exportRoutesKML(routes, category);
+  exporter.exportCategoriesKML(Array.from(catalog.categories));
+};
+
+const handleExportCategory: () => void = () => {
+  workspace.closeMenus();
+  const {activeCategory} = catalogUI;
+  if (activeCategory) {
+    exporter.exportRoutesKML(Array.from(activeCategory.routes), activeCategory);
+  }
+};
+
+const handleExportRoute: () => void = () => {
+  workspace.closeMenus();
+  const {activeRoute} = catalogUI;
+  if (activeRoute) {
+    exporter.exportRoutesKML([activeRoute], catalogUI.activeCategory);
+  }
 };
 
 const FileMenu: React.FunctionComponent = (): React.ReactElement => {
   log.render('FileMenu');
-  const handleExportVisible: () => void = () => null;
-  const handleExportLevel1: () => void = () => null;
-  const handleExportLevel2: () => void = () => null;
+  const allVisible = useObservable(exporter.onlyVisibleObservable(), exporter.onlyVisible);
   return <React.Fragment >
+    <MenuItem key="visible" onClick={toggleVisible} >
+      <div className={`title all-visible-menu ${allVisible ? 'on' : 'off'}`} >
+        <Check />
+        {T`Only visible`}
+      </div >
+    </MenuItem >
     <MenuItem key="all" onClick={handleExportAll} >
       <div className="title" >
-        {T`Export All`}
+        {T`Export all`}
       </div >
     </MenuItem >
-    <MenuItem key="visible" onClick={handleExportVisible} >
+    <MenuItem key="export_category" onClick={handleExportCategory} >
       <div className="title" >
-        {T`Export Visible`}
+        {wording.C('Export category')}
       </div >
     </MenuItem >
-    <MenuItem key="export_all" onClick={handleExportLevel1} >
+    <MenuItem key="export_route" onClick={handleExportRoute} >
       <div className="title" >
-        {T`Export All`}
-      </div >
-    </MenuItem >
-    <MenuItem key="export_category" onClick={handleExportLevel2} >
-      <div className="title" >
-        {T`Export category`}
-      </div >
-    </MenuItem >
-    <MenuItem key="export_route" onClick={handleExportLevel2} >
-      <div className="title" >
-        {T`Export route`}
+        {wording.R('Export route')}
       </div >
     </MenuItem >
     <MenuSep key="sep1" />

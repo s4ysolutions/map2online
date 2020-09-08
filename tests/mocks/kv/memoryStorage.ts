@@ -39,6 +39,9 @@ const memoryStorageFactory = (): KV => {
       }
       subject.next({key, value});
     },
+    hasKey (key: string): boolean {
+      return mem[key] !== undefined;
+    },
     delete <T>(key: string) {
       delete (mem[key]);
       subject.next({key, value: null});

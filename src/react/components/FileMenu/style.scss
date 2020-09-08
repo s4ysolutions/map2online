@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright 2019 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import {Category, Route} from '../app-rx/catalog';
-import {Observable} from 'rxjs';
+.all-visible-menu svg {
+  height: 16px;
+}
 
-export interface Exporter {
-  exportCategoriesKML: (categories: Category[]) => void
-  exportRoutesKML: (routes: Route[], category?: Category) => void
-  onlyVisible: boolean;
-  onlyVisibleObservable: () => Observable<boolean>;
+.all-visible-menu.on svg {
+  stroke: white;
+}
+
+//noinspection CssInvalidPropertyValue
+.all-visible-menu.off svg {
+  stroke: inherit;
 }

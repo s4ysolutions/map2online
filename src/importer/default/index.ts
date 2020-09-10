@@ -27,21 +27,24 @@ export const parserFactory = (): Parser => {
   const subject = new Subject<ParsingStatus>();
   const kmlParser = kmlParserFactory();
   return {
-    parse: (fileList: FileList): Promise<ImportedFolder> =>
-      kmlParser.parse(fileList).then(importedFolder => {
-        let folder = removeEmptyImportedFolders(importedFolder);
+    parse (fileList: FileList): Promise<ImportedFolder> {
+      return kmlParser.parse(fileList).then(importedFolder => {
+        kmlParser.status.rootFolder = removeEmptyImportedFolders(importedFolder);
+        subject.next({...kmlParser.status});
         for (; ;) {
+          const folder = kmlParser.status.rootFolder;
           const stats = getImportedFolderStats(folder);
           if (stats.depth < CATEGORY_DEPTH || folder.folders.length !== 1 || folder.features.length !== 0) {
             break;
           }
-          // skip Document
-          folder = removeTopFolder(folder);
+          /*
+           * skip Document
+           */
+          this.flatCategories();
         }
-        kmlParser.status.rootFolder = folder;
-        subject.next({...kmlParser.status});
-        return folder;
-      }),
+        return kmlParser.status.rootFolder;
+      });
+    },
     get status(): ParsingStatus {
       return kmlParser.status;
     },

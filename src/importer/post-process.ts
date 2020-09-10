@@ -88,6 +88,7 @@ const decrementLevels = (root: ImportedFolder, prev: ImportedFolder): void => {
 
 export const removeTopFolder = (root: ImportedFolder): ImportedFolder => {
   const [r] = root.folders;
+  r.name = '';
   r.parent = null;
   decrementLevels(r, root);
   return r;

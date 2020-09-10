@@ -246,9 +246,9 @@ const parseKMLFile = (kml: File): Promise<ImportedFolder> => {
 };
 
 export const kmlParserFactory = (): {
-  parse: (fileList: FileList) => Promise<ImportedFolder>;
-  status: ParsingStatus;
-  statusObservable: () => Observable<ParsingStatus>;
+  parse: (fileList: FileList) => Promise<ImportedFolder>,
+  status: ParsingStatus,
+  statusObservable: () => Observable<ParsingStatus>,
 } => {
   const subject = new Subject<ParsingStatus>();
 
@@ -259,10 +259,10 @@ export const kmlParserFactory = (): {
   };
 
   let parsedFilesCount = 0;
-  const parseQueuedFiles = async (): Promise<ImportedFolder> => {
+  const parseQueuedFiles = (promises: Promise<ImportedFolder>[]): Promise<ImportedFolder>[] => {
 
     if (status.queuedFiles.length === 0) {
-      return Promise.resolve(status.rootFolder);
+      return promises; // .concat([Promise.resolve(status.rootFolder)]);
     }
 
     const [current, ...nextFiles] = status.queuedFiles;
@@ -271,24 +271,24 @@ export const kmlParserFactory = (): {
 
     subject.next({...status});
 
-    const importedFolder: ImportedFolder = await parseKMLFile(status.parsingFile);
-
-    if (parsedFilesCount++ === 0) {
-      // eslint-disable-next-line require-atomic-updates
-      status.rootFolder = importedFolder;
-    } else {
-      if (parsedFilesCount++ === 1) {
+    const promiseParsed: Promise<ImportedFolder> = parseKMLFile(status.parsingFile).then((importedFolder: ImportedFolder) => {
+      if (parsedFilesCount++ === 0) {
         // eslint-disable-next-line require-atomic-updates
-        status.rootFolder.folders = [status.rootFolder];
+        status.rootFolder = importedFolder;
+      } else {
+        if (parsedFilesCount++ === 1) {
+          // eslint-disable-next-line require-atomic-updates
+          status.rootFolder.folders = [status.rootFolder];
+        }
+        status.rootFolder.folders.push(importedFolder);
       }
-      status.rootFolder.folders.push(importedFolder);
-    }
-    // eslint-disable-next-line require-atomic-updates
-    status.parsingFile = null;
+      // eslint-disable-next-line require-atomic-updates
+      status.parsingFile = null;
 
-    subject.next({...status});
-
-    return parseQueuedFiles();
+      subject.next({...status});
+      return importedFolder;
+    });
+    return parseQueuedFiles(promises.concat(promiseParsed));
   };
 
   return {
@@ -301,11 +301,12 @@ export const kmlParserFactory = (): {
         status.queuedFiles.push(fileList[i]);
       }
       subject.next({...status});
-      return parseQueuedFiles();
+      return Promise.all(parseQueuedFiles([])).then(() => status.rootFolder);
     },
     get status() {
       return status;
     },
     statusObservable: () => subject,
   };
-};
+}
+;

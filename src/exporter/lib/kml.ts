@@ -21,7 +21,7 @@ import {henc} from '../../lib/entities';
 const PREC = 6;
 export const formatCoordinate = (lonLat: Coordinate): string => {
   const degrees = metersToDegrees(lonLat);
-  return `${degrees.lat.toFixed(PREC)},${degrees.lon.toFixed(PREC)},0`;
+  return `${degrees.lon.toFixed(PREC)},${degrees.lat.toFixed(PREC)},0`;
 };
 
 const begin = (): string =>

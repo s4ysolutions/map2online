@@ -65,6 +65,12 @@ const About: React.FunctionComponent = () => <Modal className="about" onClose={(
         Кирилл Невинский.
       </a >
     </p >
+    <br />
+    <p >
+      <a href="mailto:sergey@s4y.solutions?subject=map2online%20-%20feedback" >
+        {T`Feedback`}
+      </a >
+    </p >
     <div className="buttons-row" >
       <button onClick={workspace.toggleAbout} type="button" >
         {T`Close`}

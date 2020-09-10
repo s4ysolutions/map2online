@@ -114,6 +114,7 @@ const translation = {
     'ESRI': 'ESRI',
     'Expedition': 'Экспедиция',
     'Export all': 'Экспорт всего каталога',
+    'Feedback': 'Обратная связь',
     'Fix': 'Исправить',
     'File': 'Файлы',
     'Genshtab': 'Генштаб',

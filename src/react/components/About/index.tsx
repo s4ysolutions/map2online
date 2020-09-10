@@ -36,7 +36,7 @@ const About: React.FunctionComponent = () => <Modal className="about" onClose={(
       {T`About`}
     </h2 >
     <p >
-      {T`About networking`}
+      {T`About service`}
     </p >
     <p >
       {T`About beta`}

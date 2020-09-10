@@ -89,7 +89,7 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
       p.visible = value;
       this.update();
     },
-    updateCoordinates (coord) {
+    updateCoordinates(coord) {
       if (isCoordinate(coord)) {
         // noinspection UnnecessaryLocalVariableJS
         const point: Point = {coordinate: coord};
@@ -102,11 +102,14 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
     },
     observable: () => storage.observable<FeatureProps | null>(key)
       .pipe(map(value => value === null ? null : catalog.featureById(value.id))),
-    delete: () => {
-      storage.delete(key);
-      storage.delete(`vis@${p.id}`); // visibility
-      storage.delete(`op@${p.id}`); // visibility
-    },
+    delete: () => new Promise<void>((rs) => {
+      setTimeout(() => {
+        storage.delete(key);
+        storage.delete(`vis@${p.id}`); // visibility
+        storage.delete(`op@${p.id}`); // visibility
+        rs();
+      }, 0);
+    }),
     update: () => {
       storage.set(key, p);
     },
@@ -125,7 +128,7 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
     }
   };
   return {
-    add (props: FeatureProps, position: number) {
+    add(props: FeatureProps, position: number) {
       const p = {...props};
       if (!p.title) {
         p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${iids[key].length + 1}`;
@@ -143,33 +146,32 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
     },
     byPos: (index: number): Feature | null => catalog.featureById(iids[key][index]),
     get length() {
-      return iids[key].length;
+      return iids[key] ? iids[key].length : 0;
     },
-    observable () {
+    observable() {
       return storage.observable(key).pipe(map(() => this));
     },
-    remove (feature: Feature): number {
+    remove(feature: Feature): Promise<number> {
       const ids0 = iids[key];
       const pos = ids0.indexOf(feature.id);
       if (pos < 0) {
-        return 0;
+        return Promise.resolve(0);
       }
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
-      feature.delete();
-      return 1;
+      return feature.delete().then(() => 1);
     },
-    delete () {
-      while (this.length > 0) {
-        this.remove(this.byPos(0));
-      }
-      storage.delete(key);
-      delete iids[key];
+    delete() {
+      return Promise.all(Array.from(this).map(feature => this.remove(feature)))
+        .then(() => {
+          storage.delete(key);
+          delete iids[key];
+        });
     },
-    reorder (from: number, to: number) {
+    reorder(from: number, to: number) {
       const ids0 = iids[key];
       updateIds(reorder(ids0, from, to));
     },
-    [Symbol.iterator] () {
+    [Symbol.iterator]() {
       const ids0 = iids[key];
       const _ids = [...ids0]; // don't reflect modifications after the iterator has been created
       let _current = 0;

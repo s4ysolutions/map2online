@@ -16,8 +16,14 @@
 
 import * as React from 'react';
 import './styles.scss';
+import log from '../../../log';
 
-const Spinner: React.FunctionComponent = () => <div className="spinner-container"><div className="spinner" /></div>;
+const Spinner: React.FunctionComponent = () => {
+  log.render('Spinner');
+  return <div className="spinner-container" >
+    <div className="spinner" />
+  </div >;
+};
 
 export default Spinner;
 

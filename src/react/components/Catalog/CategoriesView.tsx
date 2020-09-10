@@ -25,6 +25,7 @@ import CategoryEdit from './CategoryEdit';
 import ConfirmDialog from '../Confirm';
 import T from '../../../l10n';
 import {map} from 'rxjs/operators';
+import {setSpinnerActive} from '../Spinner/hooks/useSpinner';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -107,7 +108,13 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
       onConfirm={() => {
         const c = categoryDelete;
         catalogUI.endDeleteCategory();
-        catalog.categories.remove(c);
+        setSpinnerActive(true);
+        setTimeout(() => {
+          catalog.categories.remove(c).then(() => {
+            setSpinnerActive(false);
+          })
+            .catch(() => setSpinnerActive(false));
+        }, 1);
       }}
       title={wording.C('Delete category')}
     />}

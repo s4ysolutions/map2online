@@ -18,8 +18,10 @@ import {Catalog, Feature} from '../../../catalog';
 import {CatalogUI} from '../../catalog';
 import {VisibleFeatures} from '../index';
 import {merge} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {debounceTime, map} from 'rxjs/operators';
+import log from '../../../log';
 
+const DEBOUNCE_DELAY = 250;
 export const visibleFeaturesFactory = (catalog: Catalog, catalogUI: CatalogUI): VisibleFeatures => {
   const findFeatures = () => {
     const features = [] as Feature[];
@@ -41,8 +43,23 @@ export const visibleFeaturesFactory = (catalog: Catalog, catalogUI: CatalogUI): 
   let features = findFeatures();
 
   return {
+    get lastFeatures() {
+      return features;
+    },
     length: features.length,
-    observable () {
+    observableDebounced() {
+      return merge(
+        catalog.featuresObservable(),
+        catalogUI.visibleObservable(),
+      ).pipe(
+        debounceTime(DEBOUNCE_DELAY),
+        map(() => {
+          features = findFeatures();
+          return this;
+        }),
+      );
+    },
+    observable() {
       return merge(
         catalog.featuresObservable(),
         catalogUI.visibleObservable(),

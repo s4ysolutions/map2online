@@ -22,22 +22,28 @@ import useObservable from '../../../hooks/useObservable';
 import {debounceTime, map} from 'rxjs/operators';
 import {Feature} from '../../../../catalog';
 import {Observable} from 'rxjs';
+import log from '../../../../log';
 
-const transformVisibleFeatures = (features: VisibleFeatures): OlFeature[] => Array.from<Feature>(features).map(feature => olFeatureFactory(feature));
+let prevFeatures: Feature[] = null;
+let prevOlFeatures: OlFeature[];
+
+const transformVisibleFeatures = (features: VisibleFeatures): OlFeature[] => {
+  if (features.lastFeatures !== prevFeatures) {
+    prevFeatures = features.lastFeatures;
+    prevOlFeatures = Array.from<Feature>(features).map(feature => olFeatureFactory(feature));
+  }
+  return prevOlFeatures;
+};
 
 const observable: Observable<OlFeature[]> = getDesigner()
   .visibleFeatures
   .observable()
   .pipe(map((f) => transformVisibleFeatures(f)));
 
-const DEBOUNCE_DELAY = 250;
 const observableDebonced: Observable<OlFeature[]> = getDesigner()
   .visibleFeatures
-  .observable()
-  .pipe(
-    debounceTime(DEBOUNCE_DELAY),
-    map((f) => transformVisibleFeatures(f)),
-  );
+  .observableDebounced()
+  .pipe(map((f) => transformVisibleFeatures(f)));
 
 
 export const useVisibleFeatures = (): OlFeature[] => {

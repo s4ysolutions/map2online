@@ -76,12 +76,11 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, pr
     observable: () => storage.observable<RouteProps | null>(key)
       .pipe(map(value => value === null ? null : catalog.routeById(value.id))),
     delete() {
-      if (this.features) {
-        this.features.delete();
-      }
-      storage.delete(key);
-      storage.delete(`vis@${p.id}`); // visibility
-      storage.delete(`op@${p.id}`); // expand
+      return this.features.delete().then(() => {
+        storage.delete(key);
+        storage.delete(`vis@${p.id}`); // visibility
+        storage.delete(`op@${p.id}`); // expand
+      });
     },
     features: null,
     update: () => {
@@ -109,7 +108,7 @@ export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, c
     updateIds([route.id]);
   }
   return {
-    add (props: RouteProps, position: number) {
+    add(props: RouteProps, position: number) {
       const route = routeFactory(storage, catalog, wording, props);
       route.update();
       const ids0 = iids[key];
@@ -120,34 +119,33 @@ export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, c
     },
     byPos: (index: number): Route | null => catalog.routeById(iids[key][index]),
     get length() {
-      return iids[key].length;
+      return iids[key] ? iids[key].length : 0;
     },
     hasRoute: (route: Route) => iids[key].indexOf(route.id) >= 0,
-    observable () {
+    observable() {
       return storage.observable(key).pipe(map(() => this));
     },
-    remove (route: Route): number {
+    remove(route: Route): Promise<number> {
       const ids0 = iids[key];
       const pos = ids0.indexOf(route.id);
       if (pos < 0) {
-        return 0;
+        return Promise.resolve(0);
       }
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
-      route.delete();
-      return 1;
+      return route.delete().then(() => 1);
     },
-    delete () {
-      while (this.length > 0) {
-        this.remove(this.byPos(0));
-      }
-      storage.delete(key);
-      delete iids[key];
+    delete() {
+      return Promise.all(Array.from(this).map(route => this.remove(route)))
+        .then(() => {
+          storage.delete(key);
+          delete iids[key];
+        });
     },
-    reorder (from: number, to: number) {
+    reorder(from: number, to: number) {
       const ids0 = iids[key];
       updateIds(reorder(ids0, from, to));
     },
-    [Symbol.iterator] () {
+    [Symbol.iterator]() {
       const ids0 = iids[key];
       const _ids = [...ids0];
       let _current = 0;

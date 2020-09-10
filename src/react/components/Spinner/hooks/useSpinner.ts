@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-import {Feature} from '../../catalog';
-import {Observable} from 'rxjs';
 
-export interface VisibleFeatures extends Iterable<Feature> {
-  readonly length: number;
-  readonly lastFeatures: Feature[];
-  observableDebounced: () => Observable<VisibleFeatures>;
-  observable: () => Observable<VisibleFeatures>;
-}
+import {Subject} from 'rxjs';
+import useObservable from '../../../hooks/useObservable';
+import log from '../../../../log';
 
-export interface Designer {
-  readonly visibleFeatures: VisibleFeatures;
-}
+const spinnerSubject = new Subject<boolean>();
+let spinnerCount = 0;
+
+export const setSpinnerActive = (active: boolean): void => {
+  if (active) {
+    spinnerCount += 1;
+  } else {
+    spinnerCount -= 1;
+  }
+  if (spinnerCount < 0) {
+    log.error('Spinner count is negative, seems to be unbalanced');
+  }
+  spinnerSubject.next(spinnerCount > 0);
+};
+
+const useSpinner = () => useObservable<boolean>(spinnerSubject, spinnerCount > 0);
+export default useSpinner;

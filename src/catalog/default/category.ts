@@ -74,10 +74,11 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
       this.update();
     },
     delete() {
-      this.routes.delete();
-      storage.delete(key);
-      storage.delete(`vis@${p.id}`); // visibility
-      storage.delete(`op@${p.id}`); // visibility
+      return this.routes.delete().then(() => {
+        storage.delete(key);
+        storage.delete(`vis@${p.id}`); // visibility
+        storage.delete(`op@${p.id}`); // visibility
+      });
     },
     hasRoute(route: Route) {
       return this.routes.hasRoute(route);
@@ -136,15 +137,14 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
     observable() {
       return storage.observable('cats').pipe(map(() => this));
     },
-    remove(category: Category): number {
+    remove(category: Category): Promise<number> {
       const ids0 = guardedIds();
       const pos = ids0.indexOf(category.id);
       if (pos < 0) {
-        return 0;
+        return Promise.resolve(0);
       }
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
-      category.delete();
-      return 1;
+      return category.delete().then(() => 1);
     },
     reorder(from: number, to: number) {
       const ids0 = guardedIds();

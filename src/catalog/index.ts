@@ -67,20 +67,19 @@ export const isPoint = (geometry: Point | LineString): geometry is Point => geom
 export const isLineString = (geometry: Point | LineString): geometry is LineString => geometry && (geometry as LineString).coordinates !== undefined;
 
 export interface Feature extends FeatureProps {
-  delete: () => void;
+  delete: () => Promise<void>;
   observable: () => Observable<Feature>;
-
   updateCoordinates: (coord: Coordinate | Coordinate[]) => void;
 }
 
 export interface Features extends Iterable<Feature> {
   add: (props: FeatureProps, position?: number) => Promise<Feature>;
   readonly length: number;
-  remove: (feauture: Feature) => number;
+  remove: (feauture: Feature) => Promise<number>;
   observable: () => Observable<Features>;
   byPos: (index: number) => Feature | null;
   reorder: (from: number, to: number) => void;
-  delete: () => void;
+  delete: () => Promise<void>;
 }
 
 export interface RouteProps {
@@ -92,7 +91,7 @@ export interface RouteProps {
 }
 
 export interface Route extends RouteProps {
-  delete: () => void;
+  delete: () => Promise<void>;
   features: Features;
   observable: () => Observable<Route>;
 }
@@ -101,11 +100,11 @@ export interface Routes extends Iterable<Route> {
   add: (props: RouteProps, position?: number) => Promise<Route>;
   hasRoute: (route: Route) => boolean;
   readonly length: number;
-  remove: (route: Route) => number;
+  remove: (route: Route) => Promise<number>;
   observable: () => Observable<Routes>;
   byPos: (index: number) => Route | null;
   reorder: (from: number, to: number) => void;
-  delete: () => void;
+  delete: () => Promise<void>;
 }
 
 export interface CategoryProps {
@@ -119,14 +118,14 @@ export interface CategoryProps {
 export interface Category extends CategoryProps {
   routes: Routes;
   observable: () => Observable<Category>;
-  delete: () => void;
+  delete: () => Promise<void>;
   hasRoute: (route: Route) => boolean;
 }
 
 export interface Categories extends Iterable<Category> {
   add: (props: CategoryProps | null, position?: number) => Promise<Category>;
   readonly length: number;
-  remove: (category: Category) => number;
+  remove: (category: Category) => Promise<number>;
   observable: () => Observable<Categories>;
   byPos: (index: number) => Category | null;
   reorder: (from: number, to: number) => void;

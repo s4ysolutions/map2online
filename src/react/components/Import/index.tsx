@@ -26,7 +26,7 @@ import {CATEGORY_DEPTH, isFlatRoot} from '../../../importer/post-process';
 import ImportedFolders from './ImportedFolders';
 import {getImportedFolderStats} from '../../../importer/stats';
 import {ImportTo, importFlatFolders} from '../../../importer/import-to';
-import Spinner from '../Spinner';
+import {setSpinnerActive} from '../Spinner/hooks/useSpinner';
 
 const catalog = getCatalog();
 const catalogUI = getCatalogUI();
@@ -49,30 +49,29 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
   const parseStats = getImportedFolderStats(parseState.rootFolder);
 
   const [inProgress, setInProgress] = React.useState<boolean>(false);
-  const [spinner, setSpinner] = React.useState<boolean>(false);
   const importTo = useObservable(importUI.importToObservable(), importUI.importTo);
 
   const handleUpload = React.useCallback((files: FileList) => {
     setInProgress(true); // TODO, handle import completed but no features
-    setSpinner(true); // TODO, handle import completed but no features
+    setSpinnerActive(true); // TODO, handle import completed but no features
     setTimeout(
-      () => parser.parse(files).then(() => setSpinner(false))
-        .catch(() => setSpinner(false)),
+      () => parser.parse(files).then(() => setSpinnerActive(false))
+        .catch(() => setSpinnerActive(false)),
       RENDER_DELAY,
     );
   }, [setInProgress]);
 
   const handleImport = React.useCallback(() => {
-    setSpinner(true);
+    setSpinnerActive(true);
     setTimeout(() => {
       importFlatFolders(parseState.rootFolder, importTo, catalog, catalogUI.activeCategory, catalogUI.activeRoute)
         .then(() => {
-          setSpinner(false);
+          setSpinnerActive(false);
           importUI.visible = false;
         })
-        .catch(() => setSpinner(false));
+        .catch(() => setSpinnerActive(false));
     }, RENDER_DELAY);
-  }, [parseState, importTo, setSpinner]);
+  }, [parseState, importTo]);
 
   const mixProblem = parseStats.mixed.length > 0;
   const flatProblem = !isFlatRoot(parseState.rootFolder) && parseStats.depth >= CATEGORY_DEPTH;
@@ -212,7 +211,6 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
         </button >}
       </div >
     </form >
-    {spinner && <Spinner />}
   </Modal >;
 };
 

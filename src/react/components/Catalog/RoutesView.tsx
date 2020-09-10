@@ -26,6 +26,7 @@ import RouteEdit from './RouteEdit';
 import ConfirmDialog from '../Confirm';
 import T from '../../../l10n';
 import {map} from 'rxjs/operators';
+import {setSpinnerActive} from '../Spinner/hooks/useSpinner';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -105,7 +106,14 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
       onConfirm={() => {
         const c = routeDelete;
         catalogUI.endDeleteRoute();
-        category.routes.remove(c.route);
+        catalogUI.endDeleteCategory();
+        setSpinnerActive(true);
+        setTimeout(() => {
+          category.routes.remove(c.route).then(() => {
+            setSpinnerActive(false);
+          })
+            .catch(() => setSpinnerActive(false));
+        }, 1);
       }}
       title={wording.R('Delete route')}
     />}

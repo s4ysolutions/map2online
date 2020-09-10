@@ -29,6 +29,9 @@ import Import from '../Import';
 import GoogleMap from '../GoogleMap/GoogleMap';
 import Wording from '../Personalization/Wording';
 import About from '../About';
+import Modal from '../Modal';
+import Spinner from '../Spinner';
+import useSpinner from '../Spinner/hooks/useSpinner';
 
 
 const importUI = getImportUI();
@@ -36,13 +39,14 @@ const wording = getWording();
 const workspace = getWorkspace();
 
 const Workspace = (): React.ReactElement => {
-  log.render('Workspace');
   const ref = React.useRef<HTMLDivElement | null>(null);
   const {height, width} = useComponentSize(ref);
   const importUIVisible = useObservable<boolean>(importUI.visibleObservable(), importUI.visible);
   const isPersonalized = useObservable(wording.observableIsPersonalized(), wording.isPersonalized);
   const personalizationVisible = useObservable<boolean>(workspace.personalizationObservable(), workspace.personalizationOpen);
   const aboutVisible = useObservable<boolean>(workspace.aboutObservable(), workspace.aboutOpen);
+  const spinner = useSpinner();
+  log.render(`Workspace spiner=${spinner}`);
 
   return isPersonalized
     ? <React.Fragment >
@@ -59,6 +63,7 @@ const Workspace = (): React.ReactElement => {
       {importUIVisible && <Import />}
       {personalizationVisible && <Wording />}
       {aboutVisible && <About />}
+      {spinner && <Spinner />}
     </React.Fragment >
     : <Wording />;
 };

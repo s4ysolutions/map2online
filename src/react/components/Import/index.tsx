@@ -155,7 +155,7 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
               &nbsp;
             </label >
           </div >
-          {parseStats.routes === 1 && parseStats.categories === 0 &&
+          {parseStats.routes === 1 &&
           <div className="import-kind">
             <label >
               <input

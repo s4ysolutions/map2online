@@ -128,7 +128,7 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
       const ids0 = guardedIds();
       updateIds(ids0.slice(0, pos).concat(category.id)
         .concat(ids0.slice(pos)));
-      return Promise.resolve(category);
+      return Promise.resolve(catalog.categoryById(category.id));
     },
     byPos: (index: number): Category | null => catalog.categoryById(guardedIds()[index]),
     get length() {

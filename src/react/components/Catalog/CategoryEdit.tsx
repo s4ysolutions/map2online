@@ -78,7 +78,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
           value={category.description} />
       </div >
       <div className="buttons-row" >
-        <button onClick={handleClose} type="button">
+        <button onClick={handleClose} type="button" >
           {T`Close`}
         </button >
       </div >

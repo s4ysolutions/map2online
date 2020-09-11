@@ -115,7 +115,7 @@ export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, c
       const pos = position || ids0.length;
       updateIds(ids0.slice(0, pos).concat(route.id)
         .concat(ids0.slice(pos)));
-      return Promise.resolve(route);
+      return Promise.resolve(catalog.routeById(route.id));
     },
     byPos: (index: number): Route | null => catalog.routeById(iids[key][index]),
     get length() {

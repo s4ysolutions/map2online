@@ -234,7 +234,7 @@ const mapGroups: MapGroupDefinition[] = [
         id: 'Map2Online',
         olSourceFactory: (): Source => new XYZ({
           url:
-            'http://tiles-proxy-a.s4y.solutions/gsh/?al=1&i=1&x={x}&y={y}&z={z}',
+            'https://tiles-proxy-a.s4y.solutions/gsh/?al=1&i=1&x={x}&y={y}&z={z}',
         }),
       },
     ],

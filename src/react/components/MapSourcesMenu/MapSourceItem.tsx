@@ -20,6 +20,7 @@ import {MapDefinition} from '../../../map-sources/definitions';
 import log from '../../../log';
 import {getBaseLayer, getWorkspace} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
+import T from '../../../l10n';
 
 const baseLayer = getBaseLayer();
 const workspace = getWorkspace();
@@ -32,14 +33,13 @@ const MapSourceItem: React.FunctionComponent<Props> = ({source}): React.ReactEle
   const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
   log.render('MapSourceItem', {baseLayerName});
   return <MenuSubItem onClick={(ev): void => {
-    log.debug('MapSourceItem clicked', source.id);
     workspace.closeMenus();
     if (baseLayer.sourceName !== source.id) {
       baseLayer.sourceName = source.id;
     }
     ev.stopPropagation();
   }} >
-    {source.id}
+    {T`${source.id}`}
   </MenuSubItem >;
 };
 

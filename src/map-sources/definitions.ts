@@ -96,10 +96,10 @@ const mapGroups: MapGroupDefinition[] = [
   {
     id: 'Google',
     maps: [
-      {id: 'GoogleLandscape'},
       {id: 'GoogleMap'},
-      {id: 'GoogleSattelite'},
-      {id: 'GoogleTrasport'},
+      {id: 'GoogleLandscape'},
+      {id: 'GoogleSatellite'},
+      {id: 'GoogleHybrid'},
     ],
   },
   /*
@@ -143,14 +143,14 @@ const mapGroups: MapGroupDefinition[] = [
         }),
       },
       {
-        id: 'BingSattelite',
+        id: 'BingSatellite',
         olSourceFactory: (): Source => new BingMaps({
           ...BING_OPTIONS,
           imagerySet: 'Aerial',
         }),
       },
       {
-        id: 'BingSatteliteLabels',
+        id: 'BingHybrid',
         olSourceFactory: (): Source => new BingMaps({
           ...BING_OPTIONS,
           imagerySet: 'AerialWithLabelsOnDemand',

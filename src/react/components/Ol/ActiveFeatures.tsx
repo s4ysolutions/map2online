@@ -24,7 +24,7 @@ import OlFeature from 'ol/Feature';
 import {getCatalog} from '../../../di-default';
 import {merge} from 'rxjs';
 import {Feature} from '../../../catalog';
-import {setOlFeatureCoordinates} from './lib/feature';
+import {setOlFeatureCoordinates, setOlFeatureTitle} from './lib/feature';
 
 const catalog = getCatalog();
 
@@ -39,7 +39,6 @@ export const visibleOlFeatures = (): OlFeature[] => Object.values(olFeaturesById
 const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
   const olFeatures: OlFeature[] = useVisibleFeaturesDebounced();
   const map = React.useContext(olMapContext);
-
 
   useEffect(() => {
     map.addLayer(layer);
@@ -60,10 +59,12 @@ const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
     // subsribe to feature modifications
     const featuresObservable = merge(...featuresObservables).subscribe((feature: Feature) => {
       if (!feature) {
+        // feature deletion is handled in the outer useEffect
         return;
-      } // feature deletion is handled in the outer useEffect
+      }
       const olFeature = olFeaturesById[feature.id];
       setOlFeatureCoordinates(olFeature, feature);
+      setOlFeatureTitle(olFeature, feature.title);
     });
     return () => featuresObservable.unsubscribe();
   }, [map, olFeatures]);

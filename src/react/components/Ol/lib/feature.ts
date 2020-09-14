@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright 2019 s4y.solutions
  *
@@ -22,6 +23,8 @@ import {getStyle} from './styles';
 import {FeatureType} from '../../../../ui/tools';
 import {coordinate2ol, coordinates2ol} from './coordinates';
 import {Coordinate as OlCoordinate} from 'ol/coordinate';
+import {StyleFunction, StyleLike} from 'ol/style/Style';
+import {Style} from 'ol/style';
 
 const cache: Record<ID, OlFeature> = {};
 
@@ -61,5 +64,42 @@ export const setOlFeatureCoordinates = (olFeature: OlFeature, feature: Feature):
     const {coordinates} = feature.geometry;
     const olCoordinates: OlCoordinate[] = coordinates2ol(coordinates);
     (olFeature.getGeometry() as OlLineString).setCoordinates(olCoordinates);
+  }
+};
+
+const getOlFeatureStyle = (olFeature: OlFeature/*, styleLike?: Style | Style[]*/): Style | void => {
+  const slike = /* styleLike || */olFeature.getStyle();
+  // if (Object.prototype.hasOwnProperty.call(slike, 'getText')) {
+  if ('getText' in slike) {
+    return slike as Style;
+  }
+  if (Array.isArray(slike)) {
+    const sa = slike as Style[];
+    if (sa.length > 0) {
+      return sa[0];
+    }
+  }
+  /*
+  left out intentionally to let the function to control the feature
+  const sf = slike as StyleFunction;
+  const sfs = sf(olFeature, 0);
+  if (sfs) {
+    return getOlFeatureStyle(olFeature, sfs);
+  }*/
+};
+
+export const getOlFeatureTitle = (olFeature: OlFeature): string => {
+  const style = getOlFeatureStyle(olFeature);
+  return style ? style.getText().getText() : '';
+};
+export const setOlFeatureTitle = (olFeature: OlFeature, title: string): void => {
+  const style = getOlFeatureStyle(olFeature);
+  if (style) {
+    const st = style.getText();
+    if (st.getText() !== title) {
+      st.setText(title);
+      style.setText(st);
+      olFeature.setStyle(style);
+    }
   }
 };

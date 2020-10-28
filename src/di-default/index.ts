@@ -15,7 +15,6 @@
  */
 
 import {Workspace} from '../ui/workspace';
-import localStorageSingleton from '../kv-rx/localStorage';
 import {KV} from '../kv-rx';
 import toolsFactory from '../ui/tools/default';
 import {Tools} from '../ui/tools';
@@ -26,21 +25,25 @@ import {Catalog} from '../catalog';
 import catalogFactory from '../catalog/default/catalog';
 import catalogUIFactory from '../ui/catalog/default';
 import {CatalogUI} from '../ui/catalog';
-import {designerFactory} from '../ui/designer/default/designer';
-import {Designer} from '../ui/designer';
 import {importUIFactory} from '../ui/import/default';
 import {ImportUI} from '../ui/import';
-import {kmlParserFactory} from '../importer/default/kml-parser';
 import {Parser} from '../importer';
 import {exporterFactory} from '../exporter/default';
 import {Exporter} from '../exporter';
 import {wordingFactory} from '../personalization/wording/default';
 import {Wording} from '../personalization/wording';
 import {parserFactory} from '../importer/default';
+import {map2StylesFactory} from '../style/default/styles';
+import {Map2Styles} from '../style';
+import localStorageFactory from '../kv-rx/localStorage';
 
+const localStorageSingleton = localStorageFactory();
 export const getLocalStorage = (): KV => localStorageSingleton;
 
-const toolsSingleton = toolsFactory(localStorageSingleton);
+const map2StylesSingleton = map2StylesFactory();
+export const getMap2Styles = (): Map2Styles => map2StylesSingleton;
+
+const toolsSingleton = toolsFactory(localStorageSingleton, map2StylesSingleton);
 export const getTools = (): Tools => toolsSingleton;
 
 const baseLayerSingleton = baseLayerFactory(localStorageSingleton);
@@ -52,21 +55,17 @@ export const getWorkspace = (): Workspace => workspaceSingleton;
 const wordingSingleton = wordingFactory(localStorageSingleton);
 export const getWording = (): Wording => wordingSingleton;
 
-const catalogSingleton = catalogFactory(localStorageSingleton, wordingSingleton);
+const catalogSingleton = catalogFactory(localStorageSingleton, wordingSingleton, map2StylesSingleton);
 export const getCatalog = (): Catalog => catalogSingleton;
 
 const catalogUISingleton = catalogUIFactory(localStorageSingleton, catalogSingleton);
 export const getCatalogUI = (): CatalogUI => catalogUISingleton;
 
-const designerSingleton = designerFactory(catalogSingleton, catalogUISingleton);
-export const getDesigner = (): Designer => designerSingleton;
-
 const importUISingleton = importUIFactory(localStorageSingleton);
 export const getImportUI = (): ImportUI => importUISingleton;
 
-const parserSingleton = parserFactory();
+const parserSingleton = parserFactory(map2StylesSingleton);
 export const getParser = (): Parser => parserSingleton;
 
 const exporterSingleton = exporterFactory(localStorageSingleton);
 export const getExporter = (): Exporter => exporterSingleton;
-

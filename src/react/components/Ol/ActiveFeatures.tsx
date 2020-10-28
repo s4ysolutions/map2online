@@ -17,7 +17,6 @@
 import React, {useEffect} from 'react';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import {useVisibleFeaturesDebounced} from './hooks/useVisibleFeatures';
 import log from '../../../log';
 import olMapContext from './context/map';
 import OlFeature from 'ol/Feature';
@@ -25,6 +24,7 @@ import {getCatalog} from '../../../di-default';
 import {merge} from 'rxjs';
 import {Feature} from '../../../catalog';
 import {setOlFeatureCoordinates, setOlFeatureTitle} from './lib/feature';
+import {useVisibleFeatures} from './hooks/useVisibleFeatures';
 
 const catalog = getCatalog();
 
@@ -37,7 +37,7 @@ let olFeaturesById: Record<string, OlFeature> = {};
 export const visibleOlFeatures = (): OlFeature[] => Object.values(olFeaturesById);
 
 const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
-  const olFeatures: OlFeature[] = useVisibleFeaturesDebounced();
+  const olFeatures: OlFeature[] = useVisibleFeatures();
   const map = React.useContext(olMapContext);
 
   useEffect(() => {

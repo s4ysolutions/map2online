@@ -70,7 +70,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
   );
   const handleAdd = useCallback(() => {
     const newFeature: FeatureProps = {
-      color: tools.isPoint ? tools.colorPoint : tools.colorLine,
+      style: tools.isPoint ? tools.pointStyle : tools.lineStyle,
       description: '',
       geometry: tools.isPoint
         ? {coordinate: {lat: 0, lon: 0, alt: 0}}

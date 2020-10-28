@@ -21,6 +21,7 @@ import {makeId} from '../../lib/id';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
 import {Wording} from '../../personalization/wording';
+import {Map2Styles} from '../../style';
 
 export const CATEGORY_ID_PREFIX = 'c';
 
@@ -30,14 +31,16 @@ export const newCategoryProps = (wording: Wording): CategoryProps => ({
   summary: '',
   title: wording.C('New category'),
   visible: true,
+  open: false,
 });
 
 interface Updatebale {
   update: () => void;
 }
 
-export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording, props: CategoryProps | null): Category & Updatebale | null => {
-  const p: CategoryProps = props === null ? newCategoryProps(wording) : {...props};
+export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>, props: CategoryProps | null): Category & Updatebale | null => {
+  const def = newCategoryProps(wording);
+  const p: CategoryProps = props === null ? def : {...def, ...props};
   if (!p.id) {
     p.id = makeId();
   }
@@ -73,6 +76,13 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
       p.visible = value;
       this.update();
     },
+    get open() {
+      return p.open;
+    },
+    set open(value) {
+      p.open = value;
+      this.update();
+    },
     delete() {
       return this.routes.delete().then(() => {
         storage.delete(key);
@@ -90,13 +100,13 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
     },
     routes: null,
   };
-  th.routes = routesFactory(storage, catalog, wording, th);
+  th.routes = routesFactory(storage, catalog, wording, styles, th, routesIds, featuresIds);
   return th;
 };
 
-let prevIds: ID[] = [];
 
-export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wording): Categories => {
+export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>): Categories => {
+  let prevIds: ID[] = [];
   const key = 'cats';
   const updateIds = (ids: ID[]) => {
     if (ids !== prevIds) {
@@ -122,7 +132,7 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
 
   return {
     add(props: CategoryProps | null, position?: number): Promise<Category> {
-      const category = categoryFactory(storage, catalog, wording, props);
+      const category = categoryFactory(storage, catalog, wording, styles, routesIds, featuresIds, props);
       category.update();
       const pos = position || guardedIds().length;
       const ids0 = guardedIds();

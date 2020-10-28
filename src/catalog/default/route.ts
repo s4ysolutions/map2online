@@ -21,6 +21,7 @@ import {makeId} from '../../lib/id';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
 import {Wording} from '../../personalization/wording';
+import {Map2Styles} from '../../style';
 
 export const ROUTE_ID_PREFIX = 'r';
 export const ROUTES_ID_PREFIX = 'rs';
@@ -31,20 +32,23 @@ const newRouteProps = (wording: Wording): RouteProps => ({
   summary: '',
   title: wording.R('New route'),
   visible: true,
+  open: true,
 });
 
 interface Updatebale {
   update: () => void;
 }
 
-export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, props: RouteProps | null): Route & Updatebale | null => {
-  const p: RouteProps = props === null ? newRouteProps(wording) : {...props};
+export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, featuresIds: Record<ID, ID[]>, props: RouteProps | null): Route & Updatebale | null => {
+  const def = newRouteProps(wording);
+  const p: RouteProps = props === null ? def : {...def, ...props};
   if (!p.id) {
     p.id = makeId();
   }
   const key = `${ROUTE_ID_PREFIX}@${p.id}`;
   const th: Route & Updatebale = {
     id: p.id,
+    ts: makeId(),
     get description() {
       return p.description;
     },
@@ -73,6 +77,13 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, pr
       p.visible = value;
       this.update();
     },
+    get open() {
+      return p.open;
+    },
+    set open(value) {
+      p.open = value;
+      this.update();
+    },
     observable: () => storage.observable<RouteProps | null>(key)
       .pipe(map(value => value === null ? null : catalog.routeById(value.id))),
     delete() {
@@ -87,46 +98,46 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, pr
       storage.set(key, p);
     },
   };
-  th.features = featuresFactory(storage, catalog, th);
+  th.features = featuresFactory(storage, catalog, th, styles, featuresIds);
   return th;
 };
 
-const iids: Record<ID, ID[]> = {};
+// const iids: Record<ID, ID[]> = {};
 
-export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, category: Category): Routes => {
+export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, category: Category, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>): Routes => {
   const key = `${ROUTES_ID_PREFIX}@${category.id}`;
-  iids[key] = storage.get<ID[]>(key, []);
+  routesIds[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
-    if (ids !== iids[key]) {
-      iids[key] = ids.slice();
+    if (ids !== routesIds[key]) {
+      routesIds[key] = ids.slice();
       storage.set(key, ids);
     }
   };
-  if (iids[key].length === 0) {
+  if (routesIds[key].length === 0) {
     const route = newRouteProps(wording);
     storage.set(`${ROUTE_ID_PREFIX}@${route.id}`, route);
     updateIds([route.id]);
   }
   return {
     add(props: RouteProps, position: number) {
-      const route = routeFactory(storage, catalog, wording, props);
+      const route = routeFactory(storage, catalog, wording, styles, featuresIds, props);
       route.update();
-      const ids0 = iids[key];
+      const ids0 = routesIds[key];
       const pos = position || ids0.length;
       updateIds(ids0.slice(0, pos).concat(route.id)
         .concat(ids0.slice(pos)));
       return Promise.resolve(catalog.routeById(route.id));
     },
-    byPos: (index: number): Route | null => catalog.routeById(iids[key][index]),
+    byPos: (index: number): Route | null => catalog.routeById(routesIds[key][index]),
     get length() {
-      return iids[key] ? iids[key].length : 0;
+      return routesIds[key] ? routesIds[key].length : 0;
     },
-    hasRoute: (route: Route) => iids[key].indexOf(route.id) >= 0,
+    hasRoute: (route: Route) => routesIds[key].indexOf(route.id) >= 0,
     observable() {
       return storage.observable(key).pipe(map(() => this));
     },
     remove(route: Route): Promise<number> {
-      const ids0 = iids[key];
+      const ids0 = routesIds[key];
       const pos = ids0.indexOf(route.id);
       if (pos < 0) {
         return Promise.resolve(0);
@@ -138,15 +149,15 @@ export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, c
       return Promise.all(Array.from(this).map(route => this.remove(route)))
         .then(() => {
           storage.delete(key);
-          delete iids[key];
+          delete routesIds[key];
         });
     },
     reorder(from: number, to: number) {
-      const ids0 = iids[key];
+      const ids0 = routesIds[key];
       updateIds(reorder(ids0, from, to));
     },
     [Symbol.iterator]() {
-      const ids0 = iids[key];
+      const ids0 = routesIds[key];
       const _ids = [...ids0];
       let _current = 0;
       return {

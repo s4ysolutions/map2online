@@ -44,7 +44,8 @@ const folderToRoute = (folder: ImportedFolder): RouteProps => ({
   id: null,
   summary: '',
   title: folder.name,
-  visible: true,
+  visible: folder.visible,
+  open: folder.open,
 });
 
 const foldersOfRoutesRecursive = (folders: ImportedFolder[], routes: ImportedFolder[]): ImportedFolder[] => {
@@ -62,9 +63,7 @@ const foldersOfRoutes = (folders: ImportedFolder[]): ImportedFolder[] => folders
 const importFoldersToCategory = (folders: ImportedFolder[], category: Category): Promise<Feature[]> =>
   Promise.all([].concat(folders.map(folder =>
     category.routes.add(folderToRoute(folder))
-      .then(route => {
-        importFeaturesToRoute(folder.features, route);
-      }))));
+      .then(route => importFeaturesToRoute(folder.features, route)))));
 
 const foldersOfCategoriesRecursive = (folders: ImportedFolder[], categories: ImportedFolder[]): ImportedFolder[] => {
   for (const folder of folders) {
@@ -83,7 +82,8 @@ const folderToCategory = (folder: ImportedFolder): CategoryProps => ({
   id: null,
   summary: '',
   title: folder.name,
-  visible: true,
+  visible: folder.visible,
+  open: folder.open,
 });
 
 const importFoldersToCatalog = (folders: ImportedFolder[], catalog: Catalog): Promise<Feature[]> =>
@@ -91,10 +91,11 @@ const importFoldersToCatalog = (folders: ImportedFolder[], catalog: Catalog): Pr
     catalog.categories.add(folderToCategory(folder))
       .then(category => {
         // remove auto added (usually one) route
+        const removes: Promise<number>[] = [];
         while (category.routes.length > 0) {
-          category.routes.remove(category.routes.byPos(0));
+          removes.push(category.routes.remove(category.routes.byPos(0)));
         }
-        importFoldersToCategory(folder.folders, category);
+        return Promise.all(removes).then(() => importFoldersToCategory(folder.folders, category));
       }))));
 
 export const importFlatFolders = (rootFolder: ImportedFolder, importTo: ImportTo, catalog: Catalog, activeCategory: Category, activeRoute: Route): Promise<Feature[]> => {

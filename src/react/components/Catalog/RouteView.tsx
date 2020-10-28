@@ -46,10 +46,11 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
     catalogUI.activeRoute && catalogUI.activeRoute.id === route.id,
   );
 
-  const isVisible = useObservable(catalogUI.visibleObservable(route.id), catalogUI.isVisible(route.id));
+  const isVisible = useObservable(routeView.observable().pipe(map(r => r.visible)), routeView.visible);
 
   const handleDelete = React.useCallback(() => {
     if (skipConfirmDialog()) {
+      // noinspection JSIgnoredPromiseFromCall
       category.routes.remove(routeView);
     } else {
       catalogUI.requestDeleteRoute(routeView, category);
@@ -64,7 +65,9 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
     catalogUI.selectedRoute = routeView;
     handleActive();
   }, [routeView, handleActive]);
-  const handleVisible = React.useCallback(() => catalogUI.setVisible(routeView.id, !isVisible), [routeView.id, isVisible]);
+  const handleVisible = React.useCallback(() => {
+    routeView.visible = !routeView.visible;
+  }, [routeView]);
   const handleEdit = React.useCallback(() => catalogUI.startEditRoute(routeView), [routeView]);
 
   return <div className={isActive ? 'item current' : 'item'} >

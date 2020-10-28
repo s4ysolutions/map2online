@@ -32,9 +32,6 @@ export interface CatalogUI {
   isOpen: (id: ID) => boolean;
   setOpen: (id: ID, open: boolean) => void;
   openObservable: (id: ID) => Observable<boolean>;
-  isVisible: (id: ID) => boolean;
-  setVisible: (id: ID, open: boolean) => void;
-  visibleObservable: (id?: ID) => Observable<boolean>;
 
   readonly categoryEdit: Category | null;
   categoryEditObservable: () => Observable<Category | null>;

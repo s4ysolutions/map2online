@@ -14,43 +14,96 @@
  * limitations under the License.
  */
 
-import {Catalog, Feature, FeatureProps, Features, ID, LineString, Point, Route, isCoordinate, isPoint} from '../index';
+import {
+  Catalog,
+  Feature,
+  FeatureProps,
+  Features,
+  ID,
+  LineString,
+  Point,
+  Route,
+  isCoordinate,
+  isLineString,
+  isPoint,
+} from '../index';
 import {KV} from '../../kv-rx';
 import {makeId} from '../../lib/id';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
-import {Color} from '../../lib/colors';
 import T from '../../l10n';
+import {Map2Styles} from '../../style';
 
 export const FEATURE_ID_PREFIX = 'f';
 export const FEATURES_ID_PREFIX = 'fs';
 
-const newFeatureProps = (): FeatureProps => ({
-  id: makeId(),
-  color: Color.RED,
-  description: '',
-  geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
-  summary: '',
-  title: '',
-  visible: true,
-});
 
 interface Updatebale {
   update: () => void;
 }
 
-export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProps | null): Feature & Updatebale | null => {
-  const p: FeatureProps = props === null ? newFeatureProps() : {...props};
-  if (!p.id) {
-    p.id = makeId();
-  }
+export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProps | null, map2styles: Map2Styles): Feature & Updatebale | null => {
+  const def: FeatureProps = {
+    id: makeId(),
+    style: null,
+    description: '',
+    geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
+    summary: '',
+    title: '',
+    visible: true,
+  };
+  const {styleId, style, ...pprops} = props;
+  const p: FeatureProps = props === null
+    ? def
+    : {...def, ...pprops, style: style || (styleId ? map2styles.byId(styleId) : map2styles.defaultStyle)};
   const key = `${FEATURE_ID_PREFIX}@${p.id}`;
   return {
-    get color() {
-      return p.color;
+    eq: (anotherFeature: Feature): boolean => {
+      if (anotherFeature.id === p.id) {
+        return true;
+      }
+      if (anotherFeature.style.id !== p.style.id) {
+        return false;
+      }
+      if (anotherFeature.description !== p.description) {
+        return false;
+      }
+      if (anotherFeature.title !== p.title) {
+        return false;
+      }
+      if (anotherFeature.summary !== p.summary) {
+        return false;
+      }
+      if (anotherFeature.visible !== p.visible) {
+        return false;
+      }
+      if (isPoint(p.geometry) && isPoint(anotherFeature.geometry)) {
+        const c0 = p.geometry.coordinate;
+        const c1 = anotherFeature.geometry.coordinate;
+        return c0.lat === c1.lat && c0.lat === c1.lat && c0.alt === c1.alt;
+      } else if (isLineString(p.geometry) && isLineString(anotherFeature.geometry)) {
+        const cc0 = p.geometry.coordinates;
+        const cc1 = anotherFeature.geometry.coordinates;
+        if (cc0.length !== cc1.length) {
+          return false;
+        }
+        for (let i = 0; i < cc0.length; i++) {
+          const c0 = cc0[i];
+          const c1 = cc1[i];
+          if (c0.lat !== c1.lat || c0.lat !== c1.lat || c0.alt !== c1.alt) {
+            return false;
+          }
+        }
+        return true;
+      }
+      return false;
+
     },
-    set color(value) {
-      p.color = value;
+    get style() {
+      return p.style;
+    },
+    set style(value) {
+      p.style = value;
       this.update();
     },
     get geometry() {
@@ -67,7 +120,7 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
       p.description = value;
       this.update();
     },
-    id: p.id || makeId(),
+    id: p.id,
     get summary() {
       return p.summary;
     },
@@ -110,49 +163,57 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
         rs();
       }, 0);
     }),
-    update: () => {
-      storage.set(key, p);
+    update () {
+      const map2style = map2styles.findEq(p.style);
+      if (map2style) {
+        // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
+        const {style, ...pp} = p;
+        storage.set(key, {...pp, styleId: map2style.id});
+      } else {
+        storage.set(key, p);
+      }
     },
   };
 };
 
-const iids: Record<ID, ID[]> = {};
 
-export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Features => {
+export const featuresFactory = (storage: KV, catalog: Catalog, route: Route, styles: Map2Styles, featuresIds: Record<ID, ID[]>): Features => {
   const key = `${FEATURES_ID_PREFIX}@${route.id}`;
-  iids[key] = storage.get<ID[]>(key, []);
+  featuresIds[key] = storage.get<ID[]>(key, []);
   const updateIds = (ids: ID[]) => {
-    if (ids !== iids[key]) {
-      iids[key] = ids.slice();
+    if (ids !== featuresIds[key]) {
+      featuresIds[key] = ids.slice();
       storage.set(key, ids);
     }
   };
   return {
+    ts: makeId(),
     add(props: FeatureProps, position: number) {
       const p = {...props};
       if (!p.title) {
-        p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${iids[key].length + 1}`;
+        p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${featuresIds[key].length + 1}`;
       }
       if (!p.id) {
         p.id = makeId();
       }
-      const feature = featureFactory(storage, catalog, p);
+      const feature = featureFactory(storage, catalog, p, styles);
       feature.update();
-      const ids0 = iids[key];
+      const ids0 = featuresIds[key];
       const pos = position || ids0.length;
       updateIds(ids0.slice(0, pos).concat(feature.id)
         .concat(ids0.slice(pos)));
+      // featureById updates features global cache from storage
       return Promise.resolve(catalog.featureById(feature.id));
     },
-    byPos: (index: number): Feature | null => catalog.featureById(iids[key][index]),
+    byPos: (index: number): Feature | null => catalog.featureById(featuresIds[key][index]),
     get length() {
-      return iids[key] ? iids[key].length : 0;
+      return featuresIds[key] ? featuresIds[key].length : 0;
     },
     observable() {
       return storage.observable(key).pipe(map(() => this));
     },
     remove(feature: Feature): Promise<number> {
-      const ids0 = iids[key];
+      const ids0 = featuresIds[key];
       const pos = ids0.indexOf(feature.id);
       if (pos < 0) {
         return Promise.resolve(0);
@@ -164,15 +225,15 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route): Fe
       return Promise.all(Array.from(this).map(feature => this.remove(feature)))
         .then(() => {
           storage.delete(key);
-          delete iids[key];
+          delete featuresIds[key];
         });
     },
     reorder(from: number, to: number) {
-      const ids0 = iids[key];
+      const ids0 = featuresIds[key];
       updateIds(reorder(ids0, from, to));
     },
     [Symbol.iterator]() {
-      const ids0 = iids[key];
+      const ids0 = featuresIds[key];
       const _ids = [...ids0]; // don't reflect modifications after the iterator has been created
       let _current = 0;
       return {

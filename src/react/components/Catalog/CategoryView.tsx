@@ -49,13 +49,14 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
     catalogUI.activeCategoryObservable().pipe(map(active => active && active.id === category.id)),
     catalogUI.activeCategory && catalogUI.activeCategory.id === category.id,
   );
-  const isVisible = useObservable(catalogUI.visibleObservable(category.id), catalogUI.isVisible(category.id));
+  const isVisible = useObservable(categoryView.observable().pipe(map((c: Category) => c.visible)), categoryView.visible);
 
   log.render('CategoryView', {title: category.title, canDelete, category, categoryView, isVisible});
 
   const handleDelete = React.useCallback(
     () => {
       if (skipConfirmDialog()) {
+        // noinspection JSIgnoredPromiseFromCall
         catalog.categories.remove(category);
       } else {
         catalogUI.requestDeleteCategory(categoryView);
@@ -77,7 +78,9 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
     catalogUI.selectedCategory = category;
     handleActive();
   }, [category, handleActive]);
-  const handleVisible = React.useCallback(() => catalogUI.setVisible(category.id, !isVisible), [category.id, isVisible]);
+  const handleVisible = React.useCallback(() => {
+    categoryView.visible = !categoryView.visible;
+  }, [categoryView]);
   const handleEdit = React.useCallback(() => catalogUI.startEditCategory(category), [category]);
 
   return <div className={isActive ? 'item current' : 'item'} >

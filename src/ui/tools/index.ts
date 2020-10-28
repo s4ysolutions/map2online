@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Color} from '../../lib/colors';
 import {Observable} from 'rxjs';
+import {Style} from '../../style';
 
 export enum FeatureType {
   Line,
@@ -23,15 +23,15 @@ export enum FeatureType {
 }
 
 export interface Tools {
-  readonly colorLine: Color;
-  colorLineObservable: () => Observable<Color>;
-  readonly colorPoint: Color;
-  colorPointObservable: () => Observable<Color>;
+  readonly lineStyle: Style;
+  lineStyleObservable: () => Observable<Style>;
+  readonly pointStyle: Style;
+  pointStyleObservable: () => Observable<Style>;
   readonly isLine: boolean;
   isLineObservable: () => Observable<boolean>;
   readonly isPoint: boolean;
   isPointObservable: () => Observable<boolean>;
-  selectColor: (color: Color) => void;
+  selectStyle: (style: Style) => void;
   selectLine: () => void;
   selectPoint: () => void;
   readonly featureType: FeatureType;

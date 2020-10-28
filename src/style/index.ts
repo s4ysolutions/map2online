@@ -14,68 +14,93 @@
  * limitations under the License.
  */
 
-import {Color} from '../lib/colors';
+import {PIN_HOTSPOT_X, PIN_HOTSPOT_Y, PIN_SCALE, makePinURL} from './default/pin';
 
-export interface FeatureStyle {
-  color: Color | string
+type Color = string
+
+export enum StyleDisplayMode {
+  DEFAULT = 'default',
+  HIDE = 'hide',
 }
 
-export interface LineStyle extends FeatureStyle {
-  width: number
+export enum StyleColorMode {
+  NORMAL = 'normal',
+  RANDOM = 'random',
 }
 
-export interface PointStyle extends FeatureStyle {
+export enum StyleListItemType {
+  CHECK,
+  CHECKOFFONLY,
+  CHECKHIDECHILDREN,
+  RADIOFOLDER
+}
+
+interface ColorStyle {
+  color: Color
+  colorMode: StyleColorMode
+}
+
+export interface BaloonStyle {
+  bgColor: Color
+  textColor: string
+  text: string
+  displayMode: StyleDisplayMode
+}
+
+export interface IconStyle extends ColorStyle {
+  scale: number
+  heading: number
   icon: URL
+  hotspot: { x: number, y: number }
 }
 
-const lineStyles: Record<string, LineStyle> = {};
+// eslint-disable-next-line
+export const isIconStyle = (style: any): style is IconStyle => style && style.icon !== undefined && style.hotspot !== undefined;
 
-export const makeLineStyle = (color: Color | string, width: number | null): LineStyle => {
-  const cached = lineStyles[color.toString() + width];
-  if (cached) {
-    return cached;
-  }
-  const style = {
-    color,
-    width: width || 1,
-  };
-  lineStyles[color.toString() + width] = style;
-  return style;
-};
+export interface LabelStyle extends ColorStyle {
+  scale: number
+}
 
-const pins: Record<Color | string, URL> = {};
-const makePinURL = (colorPin: Color | string): URL => {
-  const cached = pins[colorPin.toString()];
-  if (cached) {
-    return cached;
-  }
-  const color = (colorPin[0] === '#') ? `%23${colorPin.slice(1)}` : colorPin;
-  /*
-   *return `data:image/svg+xml;utf8,<svg width="520" heigth="960" viewBox="0 0 520 960" xmlns="http://www.w3.org/2000/svg">
-   *<path fill="${color}" d="M 198.55642,641.95277 260.196,958.08659 321.83557,641.95277 c -19.38276,1.97585 -39.81916,3.14949 -59.98397,3.14949 -21.70002,0 -42.64785,-0.86542 -63.29518,-3.14949 z M 443.18849,346.25702 C 427.59753,330.8208 404.36326,302.41815 383.47515,262.5922 v -63.22675 c 7.2831,-12.25612 11.7982,-38.96152 22.51289,-51.34113 14.68755,-13.2134 23.11484,-28.24853 23.11484,-44.33282 0,-52.452528 -58.80993,-94.0063421 -168.90688,-94.0063421 -110.03628,0 -175.739254,41.5538141 -175.739254,93.9450921 0,15.80669 8.15665,30.68671 22.512894,43.77663 12.94239,14.66465 21.88108,37.54088 29.94721,51.95857 v 63.22675 c -31.18097,61.89901 -78.975716,95.02587 -78.975716,95.02587 h 0.631805 C 27.811902,379.04405 9.7543946,404.97689 9.7543946,432.85397 9.815071,506.23752 107.09003,578.78726 260.196,578.72602 c 153.13582,0.0612 250.04961,-72.4885 250.04961,-145.87205 0,-33.06463 -25.28186,-63.35024 -67.05712,-86.59695 z" stroke-width="15" stroke="white" />
-   *</svg>`};
-   */
-  const pin = `data:image/svg+xml;utf8,<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
- <path d="m254.35 340.25v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" opacity=".3" stroke-width="2.302"/>
- <path d="m235.93 321.83v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" fill="${color}" stroke-width="2.302"/>
-</svg>`;
+export interface LineStyle extends ColorStyle {
+  width: number
+  outerColor: Color
+  outerWidth: number
+  metersWidth: number
+  labelVisibility: boolean
+}
 
-  const url = new URL(pin);
-  pins[colorPin] = url;
-  return url;
-};
+// eslint-disable-next-line
+export const isLineStyle = (style: any): style is LineStyle => style && style.labelVisibility !== undefined;
 
-const pointStyles: Record<string, PointStyle> = {};
+export interface ListStyle {
+  listItemType: StyleListItemType
+  bgColor: Color
+  itemIcon: URL
+  itemOpen: boolean
+}
 
-export const makePointStyle = (color: Color | string, icon: URL | null): PointStyle => {
-  const cached = pointStyles[color.toString() + (icon && icon.href)];
-  if (cached) {
-    return cached;
-  }
-  const style = {
-    color,
-    icon: icon || makePinURL(color),
-  };
-  pointStyles[color.toString() + (icon && icon.href)] = style;
-  return style;
-};
+export interface PolyStyle {
+  color: Color
+  scale: number
+}
+
+export type StyleItem = BaloonStyle | IconStyle | LabelStyle | LineStyle | ListStyle | PolyStyle;
+
+export interface Style {
+  id: string
+  balloonStyle?: BaloonStyle
+  iconStyle?: IconStyle
+  labelStyle?: LabelStyle
+  lineStyle?: LineStyle
+  listStyle?: ListStyle
+  polyStyle?: PolyStyle
+}
+
+export interface Map2Styles {
+  defaultStyle: Style,
+  byId: (id: string) => Style | null;
+  byColor: (color: Color) => Style | null;
+  styles: Style[];
+  findEq: (style: Style) => Style | null;
+}
+

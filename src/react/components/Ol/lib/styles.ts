@@ -15,17 +15,7 @@
  */
 
 import {Circle as CircleStyle, Fill, Icon as IconStyle, Stroke, Style, Text} from 'ol/style';
-
-import {Color, rgb} from 'lib/colors';
-import {pinSvg} from '../../Svg/Pin';
-import {FeatureType} from '../../../../ui/tools';
-
-// const SVG_HEIGHT = 960;
-const SVG_HEIGHT = 512;
-const ICON_HEIGHT = 30;
-const SCALE = ICON_HEIGHT / SVG_HEIGHT;
-const CENTER = 0.5;
-const HEIGHT = 1;
+import {StyleItem, isIconStyle, isLineStyle} from '../../../../style';
 
 const backgroundFill = new Fill({color: '#fff8'});
 const createText = (text: string) =>
@@ -36,37 +26,40 @@ const createText = (text: string) =>
     text,
   });
 
-const createStyle = (featureType: FeatureType, featureColor: Color, label?: string): Style => {
-  const color = rgb[featureColor];
-  return new Style({
-    stroke: new Stroke({
-      color,
-      width: 2,
-    }),
-    image:
-      featureType === FeatureType.Point
-        ? new IconStyle({
-          // opacity: 0.8,
-          scale: SCALE,
-          anchor: [
-            CENTER,
-            HEIGHT,
-          ],
-          src: pinSvg(color),
-        })
-        : new CircleStyle({
-          radius: 7,
-          stroke: new Stroke({
-            color: '#ffffff',
-            width: 2,
-          }),
-          fill: new Fill({
-            color: `${color}a0`,
-          }),
+export const createOlStyle = (featureStyle: StyleItem, label?: string): Style => {
+  if (isIconStyle(featureStyle)) {
+    return new Style({
+      image: new IconStyle({
+        // opacity: 0.8,
+        scale: featureStyle.scale,
+        anchor: [
+          featureStyle.hotspot.x,
+          featureStyle.hotspot.y,
+        ],
+        src: featureStyle.icon.href,
+      }),
+      text: label ? createText(label) : undefined,
+    });
+  } else if (isLineStyle(featureStyle)) {
+    return new Style({
+      stroke: new Stroke({
+        color: featureStyle.color.toString(),
+        width: 2,
+      }),
+      image: new CircleStyle({
+        radius: 7,
+        stroke: new Stroke({
+          color: '#ffffff',
+          width: 2,
         }),
-    // text: createText(label),
-    text: label ? createText(label) : undefined,
-  });
+        fill: new Fill({
+          color: `${featureStyle.color.toString()}a0`,
+        }),
+      }),
+      text: label ? createText(label) : undefined,
+    });
+  }
+  throw Error(`Unsupported style type: ${JSON.stringify(featureStyle)}`);
 };
 
-export const getStyle = (featureType: FeatureType, color: Color, label?: string): Style => createStyle(featureType, color, label);
+export const getOlStyle = (style: StyleItem, label?: string): Style => createOlStyle(style, label);

@@ -17,6 +17,7 @@
 import {Category, Coordinate, Feature, LineString, Point, Route, isPoint} from '../../catalog';
 import {metersToDegrees} from '../../lib/projection';
 import {henc} from '../../lib/entities';
+import {IconStyle, LineStyle, Style} from '../../style';
 
 const PREC = 6;
 export const formatCoordinate = (lonLat: Coordinate): string => {
@@ -24,9 +25,10 @@ export const formatCoordinate = (lonLat: Coordinate): string => {
   return `${degrees.lon.toFixed(PREC)},${degrees.lat.toFixed(PREC)},0`;
 };
 
-const begin = (): string =>
+const begin = (styles: string): string =>
   `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
+${styles}
   <Document name="map2online export - ${new Date()}">
 `;
 const end = (): string =>
@@ -54,7 +56,8 @@ const categoryEnd = (ident: string, category?: Category): string =>
 const placemarkBegin = (ident: string, feature: Feature, route: Route, category?: Category): string =>
   `${ident}<Placemark id="${feature.id}">
 ${ident}  <name>${henc(feature.title)}</name>
-${ident}  <description>${henc(feature.description)}</description>`;
+${ident}  <description>${henc(feature.description)}</description>
+${ident}  <styleUrl>#${feature.style.id}</styleUrl>`;
 
 // noinspection JSUnusedLocalSymbols
 // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
@@ -99,18 +102,95 @@ const routesKML = (ident: string, routes: Route[], category?: Category): string 
   .concat(routes.reduce((acc, route) => acc.concat(routeTag(`${ident}  `, route, category)), ''))
   .concat(categoryEnd(ident, category));
 
-const categoryKML = (ident: string, category: Category): string => routesKML(ident, Array.from(category.routes), category);
+const categoryKML = (ident: string, category: Category): string => routesKML(`${ident}  `, Array.from(category.routes), category);
+
+const transp = 'fffffffffffffff';
+const COLOR_LEN = 8;
+
+const nc = (color: string): string => {
+  const c0 = color.indexOf('#') === 0 ? color.slice(1) : color;
+  const l = COLOR_LEN - c0.length;
+  if (l > 0) {
+    return c0 + transp.slice(0, l);
+  } else if (l < 0) {
+    return c0.slice(0, COLOR_LEN);
+  }
+  return `#${c0}`;
+
+};
+
+const getIconStyleKML = (style: IconStyle): string =>
+  `    <IconStyle>
+      <color>${nc(style.color)}</color>
+      <colorMode>${style.colorMode}</colorMode>
+      <scale>${style.scale}</scale>
+      <Icon><href><![CDATA[${style.icon.toString()}]]></href>
+      </Icon>
+      <hotSpot x="${style.hotspot.x}" y="${style.hotspot.y}" xunits="fraction" yunits="fraction" />
+    </IconStyle>
+`;
+
+const getLineStyleKML = (style: LineStyle): string => {
+  let s = `    <LineStyle>
+      <color>${nc(style.color)}</color>
+      <colorMode>${style.colorMode}</colorMode>
+      <width>${style.width}</width>
+      <labelVisibility>${style.labelVisibility}</labelVisibility>
+`;
+  if (style.outerColor !== null) {
+    s += `     <outerColor>${style.outerColor}</outerColor>
+`;
+  }
+  if (style.outerWidth !== null) {
+    s += `     <outerWidth>${style.outerWidth}</outerWidth>
+`;
+  }
+  if (style.metersWidth !== null) {
+    s += `     <physicalWidth>${style.outerWidth}</physicalWidth>
+`;
+  }
+  return `${s}    </LineStyle>
+`;
+};
+
+const getStyleKML = (style: Style): string =>
+  `  <Style id="${style.id}">
+${style.iconStyle && getIconStyleKML(style.iconStyle) || ''}${style.lineStyle && getLineStyleKML(style.lineStyle) || ''}  </Style>`;
+
+const getStylesKML = (styles: Style[]): string =>
+  styles.map(style => getStyleKML(style)).join('');
+
+const updateStylesFromRoutes = (routes: Route[], styles: Record<string, Style>): void => {
+  for (const route of routes) {
+    for (const feature of Array.from(route.features)) {
+      const {style} = feature;
+      if (!styles[style.id]) {
+        styles[style.id] = style;
+      }
+    }
+  }
+};
+
+const updateStylesFromCategories = (categories: Category[], styles: Record<string, Style>): void => {
+  for (const category of categories) {
+    updateStylesFromRoutes(Array.from(category.routes), styles);
+  }
+};
 
 export const getRoutesKML = (routes: Route[], category?: Category): string => {
+  const styles: Record<string, Style> = {};
+  updateStylesFromRoutes(routes, styles);
   const ident = category ? '    ' : '  ';
-  return begin()
+  return begin(getStylesKML(Object.values(styles)))
     .concat(ident, routesKML(ident, routes, category))
     .concat(end());
 };
 
 export const getCategoriesKML = (categories: Category[]): string => {
+  const styles: Record<string, Style> = {};
+  updateStylesFromCategories(categories, styles);
   const ident = '  ';
-  return begin()
-    .concat(categories.reduce((acc, category) => acc.concat(categoryKML(ident, category)), ''))
+  return begin(getStylesKML(Object.values(styles)))
+    .concat(categories.reduce((acc, category) => acc.concat(categoryKML(`${ident}`, category)), ''))
     .concat(end());
 };

@@ -26,7 +26,6 @@ import {filter, map} from 'rxjs/operators';
 import log from '../../../log';
 import Pin from '../Svg/Pin';
 import Line from '../Svg/Line';
-import {rgb} from '../../../lib/colors';
 import {formatCoordinate, formatCoordinates} from '../../../lib/format';
 import {skipConfirmDialog} from '../../../lib/confirmation';
 
@@ -37,13 +36,13 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
     featureView.observable()
       .pipe(
         filter(f => Boolean(f)),
-        map(f => ({id: f.id, title: f.title, geometry: f.geometry, color: f.color})),
+        map(f => ({id: f.id, title: f.title, geometry: f.geometry, style: f.style})),
       ),
     featureView,
   );
   log.render('FeatureView', {featureView, feature});
 
-  const isVisible = useObservable(catalogUI.visibleObservable(feature.id), catalogUI.isVisible(feature.id));
+  const isVisible = useObservable(featureView.observable().pipe(map(f => f.visible)), featureView.visible);
   const isOpen = useObservable(catalogUI.openObservable(feature.id), catalogUI.isOpen(feature.id));
 
   const handleDelete = React.useCallback(() => {
@@ -59,7 +58,9 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
   }, [isOpen, featureView.id]);
 
 
-  const handleVisible = React.useCallback(() => catalogUI.setVisible(feature.id, !isVisible), [isVisible, feature.id]);
+  const handleVisible = React.useCallback(() => {
+    featureView.visible = !featureView.visible;
+  }, [featureView]);
   const handleEdit = React.useCallback(() => catalogUI.startEditFeature(featureView), [featureView]);
 
   return <div className="accordion-item" >
@@ -92,8 +93,8 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
       </div >
       <div className="type" key="type" >
         {isPoint(feature.geometry)
-          ? <Pin color={rgb[feature.color]} />
-          : <Line color={rgb[feature.color]} />}
+          ? <Pin color={feature.style.iconStyle.color} />
+          : <Line color={feature.style.lineStyle.color} />}
       </div >
     </div >
     {isOpen && <div className="body" >

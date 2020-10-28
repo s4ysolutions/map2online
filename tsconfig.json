@@ -21,6 +21,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "target": "es5",
+    "downlevelIteration": true,
     "typeRoots": [
       "./typesx", "./node_modules/@types"]
   },
@@ -29,5 +30,5 @@
     "./src/**/*.ts",
     "./src/**/*.tsx"
   ],
-  "exclude": [""]
+  "exclude": ["./dist-ts", "./dist"]
 }

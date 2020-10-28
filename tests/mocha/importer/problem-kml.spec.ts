@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright 2019 s4y.solutions
  *
@@ -19,12 +20,15 @@ import path from 'path';
 import {ImportedFolder} from '../../../src/importer';
 import {parseKMLString} from '../../../src/importer/default/kml-parser';
 import {expect} from 'chai';
+import {map2StylesFactory} from '../../../src/style/default/styles';
+
+const map2styles = map2StylesFactory();
 
 describe('KML Import problems', () => {
   it('problem with BR tag inside description', async () => {
     const fileName = 'problem-br-tag.kml';
     const kml: string = fs.readFileSync(path.join(__dirname, '..', '..', 'data', fileName), 'utf-8');
-    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml);
+    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml, map2styles);
 
     expect(root.parent, 'root\'s parent must be null').to.be.null;
     expect(root.level).to.be.eq(0, 'root\'s level number must be 0');

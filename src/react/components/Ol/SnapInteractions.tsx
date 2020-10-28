@@ -23,13 +23,13 @@ import {Feature} from '../../../catalog';
 import {merge} from 'rxjs';
 import {getCatalog} from '../../../di-default';
 import {setOlFeatureCoordinates} from './lib/feature';
-import {useVisibleFeaturesDebounced} from './hooks/useVisibleFeatures';
+import {useVisibleFeatures} from './hooks/useVisibleFeatures';
 
 const catalog = getCatalog();
 
 const SnapInteractions: React.FunctionComponent = (): React.ReactElement => {
   const map = React.useContext(olMapContext);
-  const olFeatures: OlFeature[] = useVisibleFeaturesDebounced();
+  const olFeatures: OlFeature[] = useVisibleFeatures();
   const snapInteractionRef = React.useRef(null);
 
   useEffect(() => {

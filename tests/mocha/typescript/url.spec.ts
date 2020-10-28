@@ -28,11 +28,12 @@ describe('URL type', () => {
  <path d="m235.93 321.83v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" fill="red" stroke-width="2.302"/>
 </svg>`;
     const url = new URL(data);
-    console.log(url);
     expect(url.protocol).to.be.eq('data:');
     const formatted = url.toString();
     const url2 = new URL(data);
     expect(url2.protocol).to.be.eq('data:');
     expect(url2.toString()).to.be.eq(formatted);
+    const url3 = new URL(url2.toString());
+    expect(url3.href).to.be.eq(url2.href);
   });
 });

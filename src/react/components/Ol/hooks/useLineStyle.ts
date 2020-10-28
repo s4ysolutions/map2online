@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import {Feature} from '../../catalog';
-import {Observable} from 'rxjs';
+import {getTools} from '../../../../di-default';
+import useObservable from '../../../hooks/useObservable';
+import {Style} from '../../../../style';
 
-export interface VisibleFeatures extends Iterable<Feature> {
-  readonly length: number;
-  readonly lastFeatures: Feature[];
-  observableDebounced: () => Observable<VisibleFeatures>;
-  observable: () => Observable<VisibleFeatures>;
-}
+const tools = getTools();
 
-export interface Designer {
-  readonly visibleFeatures: VisibleFeatures;
-}
+const useLineStyle = (): Style => useObservable(tools.lineStyleObservable(), tools.lineStyle);
+export default useLineStyle;

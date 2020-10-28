@@ -14,45 +14,23 @@
  * limitations under the License.
  */
 
-import {getDesigner} from '../../../../di-default';
+import {getCatalog} from '../../../../di-default';
 import {olFeatureFactory} from '../lib/feature';
-import {VisibleFeatures} from '../../../../ui/designer';
 import OlFeature from 'ol/Feature';
 import useObservable from '../../../hooks/useObservable';
-import {debounceTime, map} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {Feature} from '../../../../catalog';
 import {Observable} from 'rxjs';
-import log from '../../../../log';
 
-let prevFeatures: Feature[] = null;
-let prevOlFeatures: OlFeature[];
+const transformVisibleFeatures = (features: Feature[]): OlFeature[] =>
+  features.map(feature => olFeatureFactory(feature));
 
-const transformVisibleFeatures = (features: VisibleFeatures): OlFeature[] => {
-  if (features.lastFeatures !== prevFeatures) {
-    prevFeatures = features.lastFeatures;
-    prevOlFeatures = Array.from<Feature>(features).map(feature => olFeatureFactory(feature));
-  }
-  return prevOlFeatures;
-};
-
-const observable: Observable<OlFeature[]> = getDesigner()
-  .visibleFeatures
-  .observable()
+const observable: Observable<OlFeature[]> = getCatalog()
+  .visibleFeaturesObservable()
   .pipe(map((f) => transformVisibleFeatures(f)));
-
-const observableDebonced: Observable<OlFeature[]> = getDesigner()
-  .visibleFeatures
-  .observableDebounced()
-  .pipe(map((f) => transformVisibleFeatures(f)));
-
 
 export const useVisibleFeatures = (): OlFeature[] => {
-  const visibleFeatures: OlFeature[] = transformVisibleFeatures(getDesigner().visibleFeatures);
+  const visibleFeatures: OlFeature[] = transformVisibleFeatures(getCatalog().visibleFeatures);
   return useObservable(observable, visibleFeatures);
-};
-
-export const useVisibleFeaturesDebounced = (): OlFeature[] => {
-  const visibleFeatures: OlFeature[] = transformVisibleFeatures(getDesigner().visibleFeatures);
-  return useObservable(observableDebonced, visibleFeatures);
 };
 

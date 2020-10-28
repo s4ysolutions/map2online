@@ -20,18 +20,22 @@ import {expect} from 'chai';
 import {wordingFactory} from '../../../src/personalization/wording/default';
 import {Wording} from '../../../src/personalization/wording';
 import {KV} from '../../../src/kv-rx';
+import {Map2Styles} from '../../../src/style';
+import {map2StylesFactory} from '../../../src/style/default/styles';
 
 describe('Catalog categories', () => {
   let storage: KV;
   let wording: Wording;
+  let styles: Map2Styles;
 
   beforeEach(() => {
     storage = memoryStorageFactory();
+    styles = map2StylesFactory();
     wording = wordingFactory(storage);
   });
 
   it('New Catalog must not have categories till wording initialized', () => {
-    const catalog = catalogFactory(storage, wording);
+    const catalog = catalogFactory(storage, wording, styles);
     expect(catalog).has.property('categories');
     expect(catalog.categories).has.property('length', 0);
   });
@@ -39,7 +43,7 @@ describe('Catalog categories', () => {
   it('New Catalog must have 1 category if wording initialized', () => {
     wording.currentRouteVariant = 'ru';
     wording.currentCategoryVariant = 'en';
-    const catalog = catalogFactory(storage, wording);
+    const catalog = catalogFactory(storage, wording, styles);
     expect(catalog).has.property('categories');
     expect(catalog.categories).has.property('length', 1);
   });

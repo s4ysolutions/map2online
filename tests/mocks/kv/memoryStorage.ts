@@ -18,9 +18,9 @@ import {KV} from '../../../src/kv-rx';
 import {Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
-const memoryStorageFactory = (): KV => {
+const memoryStorageFactory = (init: Record<string, string> = {}): KV => {
   const subject = new Subject<{ key: string, value: any }>();
-  const mem: Record<string, string> = {};
+  const mem: Record<string, string> = init;
   return {
     get <T>(key: string, defaultValue: T, forcedJSON?: string) {
       if (forcedJSON) {

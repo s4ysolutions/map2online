@@ -17,10 +17,10 @@
 import {expect} from 'chai';
 
 enum StringEnum {
-  A = 'a',
-  B = 'b'
+  A = 'c',
+  B = 'd'
 }
 
-describe.only('enum type', () => {
-  it('toString', () => expect(StringEnum.A.toString()).to.be.eq('a'));
+describe('enum type', () => {
+  it('toString', () => expect(StringEnum.A.toString()).to.be.eq('c'));
 });

@@ -22,12 +22,15 @@ import {parseKMLString} from '../../../src/importer/default/kml-parser';
 import {ImportedFolder} from '../../../src/importer';
 import {Point} from '../../../src/catalog';
 import {getImportedFolderStats} from '../../../src/importer/stats';
+import {map2StylesFactory} from '../../../src/style/default/styles';
+
+const map2styles = map2StylesFactory();
 
 describe('KML Importer', () => {
   it('rrb-like simple correct file', async () => {
     const fileName = 'simple.kml';
     const kml: string = fs.readFileSync(path.join(__dirname, '..', '..', 'data', fileName), 'utf-8');
-    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml);
+    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml, map2styles);
 
     expect(root.parent, 'root\'s parent must be null').to.be.null;
     expect(root.level).to.be.eq(0, 'root\'s level number must be 0');
@@ -73,14 +76,14 @@ describe('KML Importer', () => {
     expect(route12.features[1].id).to.be.not.null;
     expect(route12.features[1].title).to.be.eq('122');
     expect(route12.features[1].description).to.be.eq('Desc 122');
-    expect(route12.features[2].id, 'Absent id must be filled in anyway').to.be.not.null;
+    expect(route12.features[2].id, 'Absent id must be left in anyway').to.be.not.null;
     expect(route12.features[2].title).to.be.eq('123');
     expect(route12.features[2].description, 'Absent feature description must be empty string').to.be.eq('');
   });
   it('real rrb file', async () => {
     const fileName = 'rrb.kml';
     const kml: string = fs.readFileSync(path.join(__dirname, '..', '..', 'data', fileName), 'utf-8');
-    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml);
+    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml, map2styles);
 
     expect(root.parent, 'root\'s parent must be null').to.be.null;
     expect(root.level).to.be.eq(0, 'root\'s level number must be 0');
@@ -112,7 +115,7 @@ describe('KML Importer', () => {
   it('onlyfeatures file', async () => {
     const fileName = 'only-features.kml';
     const kml: string = fs.readFileSync(path.join(__dirname, '..', '..', 'data', fileName), 'utf-8');
-    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml);
+    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml, map2styles);
 
     expect(root.parent, 'root\'s parent must be null').to.be.null;
     expect(root.folders.length, 'there must not be any category imported').to.be.eq(0);
@@ -121,7 +124,7 @@ describe('KML Importer', () => {
   it('3 levels file with mixed features and folders', async () => {
     const fileName = '3-levels-mixed.kml';
     const kml: string = fs.readFileSync(path.join(__dirname, '..', '..', 'data', fileName), 'utf-8');
-    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml);
+    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml, map2styles);
 
     expect(root.parent, 'root\'s parent must be null').to.be.null;
 
@@ -159,7 +162,7 @@ describe('KML Importer', () => {
   it('only features', async () => {
     const fileName = 'only-features.kml';
     const kml: string = fs.readFileSync(path.join(__dirname, '..', '..', 'data', fileName), 'utf-8');
-    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml);
+    const root: ImportedFolder = await parseKMLString({name: fileName} as File, kml, map2styles);
 
     expect(root.parent, 'root\'s parent must be null').to.be.null;
     expect(root.folders.length, 'there must be only one document imported').to.be.eq(0);

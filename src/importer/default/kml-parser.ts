@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright 2019 s4y.solutions
  *
@@ -16,25 +17,49 @@
 
 import {ImportedFolder, ParsingStatus} from '../index';
 import {Observable, Subject} from 'rxjs';
-import sax from 'sax';
-import {Coordinate, FeatureProps} from '../../catalog';
+import sax, {QualifiedTag, Tag} from 'sax';
+import {Coordinate, FeatureProps } from '../../catalog';
 import log from '../../log';
-import {Color} from '../../lib/colors';
 import {degreesToMeters} from '../../lib/projection';
 import {newImportedFolder} from '../new-folder';
 import {hdec} from '../../lib/entities';
+import {makeId} from '../../lib/id';
+import {
+  BaloonStyle,
+  IconStyle,
+  isIconStyle,
+  isLineStyle,
+  LabelStyle,
+  LineStyle,
+  ListStyle, Map2Styles,
+  PolyStyle,
+  Style,
+} from '../../style';
 
 enum ParseState {
   NONE,
   FOLDER,
   FOLDER_NAME,
   FOLDER_DESCRIPTION,
-  FEATURE,
-  FEATURE_NAME,
-  FEATURE_DESCRIPTION,
+  FOLDER_VISIBILITY,
+  FOLDER_OPEN,
+  PLACEMARK,
+  PLACEMARK_VISIBILITY,
+  PLACEMARK_NAME,
+  PLACEMARK_DESCRIPTION,
   COORDINATES,
+  STYLE,
+  STYLE_ICON,
+  STYLE_LINE,
+  COLOR,
+  WIDTH,
+  ICON,
+  HREF,
+  STYLE_URL,
   UNKNOWN,
 }
+
+let cdata = "";
 
 const parseTriplet = (triplet: string): Coordinate => {
   const lla = triplet.split(',').map(t => Number.parseFloat(t));
@@ -51,12 +76,38 @@ const parseCoordinates = (text: string): Coordinate[] =>
     .filter(t => Boolean(t))
     .map(parseTriplet);
 
+const parseId = (node: Tag | QualifiedTag): string | null => {
+  const attrs = node.attributes
+  const id = attrs && (attrs.id || attrs.ID || attrs.iD || attrs.Id);
+  if (id) {
+    if (typeof (id) === 'string') {
+      return id;
+    }
+    return id.value;
+  }
+  return makeId();
+};
 
 const brre = /<br>/giu;
 const nl = `
 `;
 
-export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder> => {
+const updateStyles = (rootFolder: ImportedFolder, styles: Record<string, Style>, defaultStyle: Style) => {
+  for (const featurep of rootFolder.features) {
+    const feature = featurep as FeatureProps
+    if (feature.styleId == null) {
+      feature.style = defaultStyle;
+    } else {
+      feature.style = styles[feature.styleId] || defaultStyle
+    }
+    delete feature.styleId
+  }
+  for (const folder of rootFolder.folders) {
+    updateStyles(folder, styles, defaultStyle)
+  }
+}
+
+export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles): Promise<ImportedFolder> => {
   const rootFolder = newImportedFolder(0, null);
   rootFolder.name = file.name;
 
@@ -66,7 +117,12 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
   const parser = sax.parser(true, {normalize: true, trim: true, xmlns: true});
   const parseStateStack: ParseState[] = [ParseState.NONE];
   const lastState = () => parseStateStack[parseStateStack.length - 1];
-  let currentFeature = null as FeatureProps;
+  let currentFeature = null as FeatureProps
+
+  let currentStyle: Style & {id: string}= null
+  const styles: Record<string, Style> = {}; // global styles
+
+  let currentStyleItem: BaloonStyle | IconStyle | LabelStyle | LineStyle | ListStyle | PolyStyle = null
 
   return new Promise<ImportedFolder>((rs, rj) => {
     parser.onopentag = (node) => {
@@ -83,13 +139,14 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
           break;
         }
         case 'PLACEMARK': {
-          parseStateStack.push(ParseState.FEATURE);
+          parseStateStack.push(ParseState.PLACEMARK);
           log.debug('parseStateStack.push(ParseState.FEATURE)', parseStateStack);
           currentFeature = {
-            color: Color.RED,
+            styleId: makeId(),
+            style: null,
             description: '',
             geometry: null,
-            id: null,
+            id: parseId(node),
             summary: '',
             title: '',
             visible: true,
@@ -101,8 +158,8 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
           if (lastState() === ParseState.FOLDER) {
             parseStateStack.push(ParseState.FOLDER_NAME);
             log.debug('parseStateStack.push(ParseState.FOLDER_NAME)', parseStateStack);
-          } else if (lastState() === ParseState.FEATURE) {
-            parseStateStack.push(ParseState.FEATURE_NAME);
+          } else if (lastState() === ParseState.PLACEMARK) {
+            parseStateStack.push(ParseState.PLACEMARK_NAME);
             log.debug('parseStateStack.push(ParseState.FEATURE_NAME)', parseStateStack);
           }
           break;
@@ -110,14 +167,77 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
           if (lastState() === ParseState.FOLDER) {
             parseStateStack.push(ParseState.FOLDER_DESCRIPTION);
             log.debug('parseStateStack.push(ParseState.FOLDER_DESCRIPTION)', parseStateStack);
-          } else if (lastState() === ParseState.FEATURE) {
-            parseStateStack.push(ParseState.FEATURE_DESCRIPTION);
+          } else if (lastState() === ParseState.PLACEMARK) {
+            parseStateStack.push(ParseState.PLACEMARK_DESCRIPTION);
             log.debug('parseStateStack.push(ParseState.FEATURE_DESCRIPTION)', parseStateStack);
           }
           break;
         case 'COORDINATES':
           parseStateStack.push(ParseState.COORDINATES);
           log.debug('parseStateStack.push(ParseState.COORDINATES)', parseStateStack);
+          break;
+        case 'STYLE':
+          if (lastState() === ParseState.PLACEMARK) {
+            currentStyle = {id: currentFeature.styleId}
+            parseStateStack.push(ParseState.STYLE);
+            log.debug('parseStateStack.push(ParseState.PLACEMARK_STYLE)', parseStateStack);
+          } else {
+            currentStyle = {id: parseId(node)};
+            styles[currentStyle.id] = currentStyle;
+            parseStateStack.push(ParseState.STYLE);
+            log.debug('parseStateStack.push(ParseState.STYLE)', parseStateStack);
+          }
+          break;
+        case 'ICONSTYLE':
+          if (currentStyle !== null) {
+            currentStyle.iconStyle = {...map2styles.defaultStyle.iconStyle}
+          }
+          currentStyleItem = currentStyle.iconStyle;
+          parseStateStack.push(ParseState.STYLE_ICON);
+          log.debug('parseStateStack.push(ParseState.STYLE_ICON)', parseStateStack);
+          break;
+        case 'LINESTYLE':
+          if (currentStyle !== null) {
+            currentStyle.lineStyle = {...map2styles.defaultStyle.lineStyle};
+            currentStyleItem = currentStyle.lineStyle;
+          }
+          parseStateStack.push(ParseState.STYLE_LINE);
+          log.debug('parseStateStack.push(ParseState.STYLE_LINE)', parseStateStack);
+          break;
+        case 'COLOR':
+          parseStateStack.push(ParseState.COLOR);
+          log.debug('parseStateStack.push(ParseState.COLOR)', parseStateStack);
+          break;
+        case 'WIDTH':
+          parseStateStack.push(ParseState.WIDTH);
+          log.debug('parseStateStack.push(ParseState.WIDTH)', parseStateStack);
+          break;
+        case 'ICON':
+          parseStateStack.push(ParseState.ICON);
+          log.debug('parseStateStack.push(ParseState.ICON)', parseStateStack);
+          break;
+        case 'HREF':
+          parseStateStack.push(ParseState.HREF);
+          log.debug('parseStateStack.push(ParseState.HREF)', parseStateStack);
+          break;
+        case 'STYLEURL':
+          parseStateStack.push(ParseState.STYLE_URL);
+          log.debug('parseStateStack.push(ParseState.STYLE_URL)', parseStateStack);
+          break;
+        case 'VISIBILITY':
+          if (lastState() === ParseState.PLACEMARK) {
+            parseStateStack.push(ParseState.PLACEMARK_VISIBILITY);
+            log.debug('parseStateStack.push(ParseState.PLACEMARK_VISIBILITY)', parseStateStack);
+          }else if (lastState() === ParseState.FOLDER) {
+            parseStateStack.push(ParseState.FOLDER_VISIBILITY);
+            log.debug('parseStateStack.push(ParseState.FOLDER_VISIBILITY)', parseStateStack);
+          }
+          break;
+        case 'OPEN':
+          if (lastState() === ParseState.FOLDER) {
+            parseStateStack.push(ParseState.FOLDER_OPEN);
+            log.debug('parseStateStack.push(ParseState.FOLDER_VISIBILITY)', parseStateStack);
+          }
           break;
         default:
           parseStateStack.push(ParseState.UNKNOWN);
@@ -145,21 +265,25 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
           break;
         }
         case 'NAME':
-          if (lastState() === ParseState.FOLDER_NAME || lastState() === ParseState.FEATURE_NAME) {
+          if (lastState() === ParseState.FOLDER_NAME || lastState() === ParseState.PLACEMARK_NAME) {
             log.debug('parseStateStack.pop(ParseState.FOLDER_NAME || FEATUTE_NAME)', parseStateStack);
             parseStateStack.pop();
           } else {
-            log.warn(`${nodeName} tag does not match`, lastState());
-            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            if (lastState() !== ParseState.UNKNOWN) {
+              log.warn(`${nodeName} tag does not match`, lastState());
+              rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            }
           }
           break;
         case 'DESCRIPTION':
-          if (lastState() === ParseState.FOLDER_DESCRIPTION || lastState() === ParseState.FEATURE_DESCRIPTION) {
+          if (lastState() === ParseState.FOLDER_DESCRIPTION || lastState() === ParseState.PLACEMARK_DESCRIPTION) {
             log.debug('parseStateStack.pop(ParseState.FOLDER_DESCRIPTION || FEATUTE_DESCRIPTION)', parseStateStack);
             parseStateStack.pop();
           } else {
-            log.warn(`${nodeName} tag does not match`, lastState());
-            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            if (lastState() !== ParseState.UNKNOWN) {
+              log.warn(`${nodeName} tag does not match`, lastState());
+              rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            }
           }
           break;
         case 'COORDINATES':
@@ -172,12 +296,107 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
           }
           break;
         case 'PLACEMARK':
-          if (lastState() === ParseState.FEATURE) {
+          if (lastState() === ParseState.PLACEMARK) {
             log.debug('parseStateStack.pop(ParseState.FEATURE)', parseStateStack);
             parseStateStack.pop();
           } else {
             log.warn(`${nodeName} tag does not match`, lastState());
             rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'STYLE':
+          if (lastState() === ParseState.STYLE) {
+            currentStyle = null;
+            log.debug('parseStateStack.pop(ParseState.STYLE)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'ICONSTYLE':
+          currentStyleItem = null;
+          if (lastState() === ParseState.STYLE_ICON) {
+            log.debug('parseStateStack.pop(ParseState.STYLE_ICON)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'LINESTYLE':
+          currentStyleItem = null;
+          if (lastState() === ParseState.STYLE_LINE) {
+            log.debug('parseStateStack.pop(ParseState.STYLE_LINE)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'COLOR':
+          if (lastState() === ParseState.COLOR) {
+            log.debug('parseStateStack.pop(ParseState.COLOR)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'WIDTH':
+          if (lastState() === ParseState.WIDTH) {
+            log.debug('parseStateStack.pop(ParseState.WIDTH)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'ICON':
+          if (lastState() === ParseState.ICON) {
+            log.debug('parseStateStack.pop(ParseState.ICON)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'HREF':
+          if (lastState() === ParseState.HREF) {
+            log.debug('parseStateStack.pop(ParseState.HREF)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'STYLEURL':
+          if (lastState() === ParseState.STYLE_URL) {
+            log.debug('parseStateStack.pop(ParseState.STYLE_URL)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'VISIBILITY':
+          if (lastState() === ParseState.PLACEMARK_VISIBILITY || lastState() === ParseState.FOLDER_VISIBILITY) {
+            log.debug('parseStateStack.pop(ParseState.*_VISIBILITY)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'OPEN':
+          if (lastState() === ParseState.FOLDER_OPEN) {
+            log.debug('parseStateStack.pop(ParseState.*_OPEN)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            if (lastState() === ParseState.UNKNOWN) {
+              log.warn(`${nodeName} tag does not match`, lastState());
+              rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+            }
           }
           break;
         default:
@@ -197,14 +416,23 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
         case ParseState.FOLDER_NAME:
           lastFolder().name = text.trim();
           break;
-        case ParseState.FEATURE_NAME:
-          currentFeature.title = text.trim();
-          break;
         case ParseState.FOLDER_DESCRIPTION:
           lastFolder().description = text.trim();
           break;
-        case ParseState.FEATURE_DESCRIPTION:
+        case ParseState.FOLDER_OPEN:
+          lastFolder().open = text.trim().toUpperCase() != 'FALSE';
+          break;
+        case ParseState.FOLDER_VISIBILITY:
+          lastFolder().visible = text.trim().toUpperCase() != 'FALSE';
+          break;
+        case ParseState.PLACEMARK_NAME:
+          currentFeature.title = text.trim();
+          break;
+        case ParseState.PLACEMARK_DESCRIPTION:
           currentFeature.description = text.trim();
+          break;
+        case ParseState.PLACEMARK_VISIBILITY:
+          currentFeature.visible = text.trim().toUpperCase() != 'FALSE';
           break;
         case ParseState.COORDINATES: {
           const coordinates = parseCoordinates(text.trim());
@@ -219,11 +447,62 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
           }
           break;
         }
+        case ParseState.COLOR: {
+          if (isLineStyle(currentStyleItem) || isIconStyle(currentStyleItem)) {
+            currentStyleItem.color = text.trim()
+          }
+          break;
+        }
+        case ParseState.HREF: {
+          console.log('href', text)
+          if (isIconStyle(currentStyleItem)) {
+            currentStyleItem.icon = new URL(text.trim())
+          }
+          break;
+        }
+        case ParseState.STYLE_URL: {
+          if (currentFeature) {
+            const urlhash = text.trim()
+            currentFeature.styleId = urlhash.length > 0 && urlhash[0] === '#' ? urlhash.slice(1) : urlhash;
+          }
+          break;
+        }
+        case ParseState.WIDTH: {
+          if (isLineStyle(currentStyleItem)) {
+            const w = Number(text.trim())
+            if (!isNaN(w)) {
+              currentStyleItem.width = w;
+            }
+          }
+          break;
+        }
       }
     };
+
+    parser.onopencdata = () => {
+      cdata = "";
+    }
+
+    parser.oncdata = (text) => {
+      cdata += text;
+    }
+
+    parser.onclosecdata = () => {
+      if (lastState() === ParseState.HREF && isIconStyle(currentStyleItem)) {
+        currentStyleItem.icon = new URL(cdata)
+      }
+    }
+
     parser.onend = () => {
       log.debug('end');
       log.debug('resolve');
+
+      const normilizedStyles: Record<string, Style> = Object.entries(styles).reduce((acc, [styleId, style]) => {
+        const map2style = map2styles.findEq(style)
+        return {...acc, [styleId]: map2style || style}
+      }, {});
+
+      updateStyles(rootFolder, normilizedStyles, map2styles.defaultStyle);
       rs(rootFolder);
     };
     parser.onerror = (e) => {
@@ -237,76 +516,76 @@ export const parseKMLString = (file: File, kml: string): Promise<ImportedFolder>
   });
 };
 
-const parseKMLFile = (kml: File): Promise<ImportedFolder> => {
+const parseKMLFile = (kml: File, map2styles: Map2Styles): Promise<ImportedFolder> => {
   const reader = new FileReader();
   return new Promise<string>((rs) => {
     reader.onload = e => rs(e.target.result as string);
     reader.readAsText(kml);
-  }).then(content => parseKMLString(kml, content));
+  }).then(content => parseKMLString(kml, content, map2styles));
 };
 
-export const kmlParserFactory = (): {
-  parse: (fileList: FileList) => Promise<ImportedFolder>,
-  status: ParsingStatus,
-  statusObservable: () => Observable<ParsingStatus>,
-} => {
-  const subject = new Subject<ParsingStatus>();
+export const kmlParserFactory = (map2styles: Map2Styles): {
+    parse: (fileList: FileList) => Promise<ImportedFolder>,
+    status: ParsingStatus,
+    statusObservable: () => Observable<ParsingStatus>,
+  } => {
+    const subject = new Subject<ParsingStatus>();
 
-  const status: ParsingStatus = {
-    rootFolder: newImportedFolder(0, null),
-    parsingFile: null as File,
-    queuedFiles: [] as File[],
-  };
+    const status: ParsingStatus = {
+      rootFolder: newImportedFolder(0, null),
+      parsingFile: null as File,
+      queuedFiles: [] as File[],
+    };
 
-  let parsedFilesCount = 0;
-  const parseQueuedFiles = (promises: Promise<ImportedFolder>[]): Promise<ImportedFolder>[] => {
+    let parsedFilesCount = 0;
+    const parseQueuedFiles = (promises: Promise<ImportedFolder>[]): Promise<ImportedFolder>[] => {
 
-    if (status.queuedFiles.length === 0) {
-      return promises; // .concat([Promise.resolve(status.rootFolder)]);
-    }
+      if (status.queuedFiles.length === 0) {
+        return promises; // .concat([Promise.resolve(status.rootFolder)]);
+      }
 
-    const [current, ...nextFiles] = status.queuedFiles;
-    status.parsingFile = current;
-    status.queuedFiles = nextFiles;
+      const [current, ...nextFiles] = status.queuedFiles;
+      status.parsingFile = current;
+      status.queuedFiles = nextFiles;
 
-    subject.next({...status});
+      subject.next({...status});
 
-    const promiseParsed: Promise<ImportedFolder> = parseKMLFile(status.parsingFile).then((importedFolder: ImportedFolder) => {
-      if (parsedFilesCount++ === 0) {
-        // eslint-disable-next-line require-atomic-updates
-        status.rootFolder = importedFolder;
-      } else {
-        if (parsedFilesCount++ === 1) {
+      const promiseParsed: Promise<ImportedFolder> = parseKMLFile(status.parsingFile, map2styles).then((importedFolder: ImportedFolder) => {
+        if (parsedFilesCount++ === 0) {
           // eslint-disable-next-line require-atomic-updates
-          status.rootFolder.folders = [status.rootFolder];
+          status.rootFolder = importedFolder;
+        } else {
+          if (parsedFilesCount++ === 1) {
+            // eslint-disable-next-line require-atomic-updates
+            status.rootFolder.folders = [status.rootFolder];
+          }
+          status.rootFolder.folders.push(importedFolder);
         }
-        status.rootFolder.folders.push(importedFolder);
-      }
-      // eslint-disable-next-line require-atomic-updates
-      status.parsingFile = null;
+        // eslint-disable-next-line require-atomic-updates
+        status.parsingFile = null;
 
-      subject.next({...status});
-      return importedFolder;
-    });
-    return parseQueuedFiles(promises.concat(promiseParsed));
-  };
+        subject.next({...status});
+        return importedFolder;
+      });
+      return parseQueuedFiles(promises.concat(promiseParsed));
+    };
 
-  return {
-    parse(fileList: FileList): Promise<ImportedFolder> {
-      status.rootFolder = newImportedFolder(0, null);
-      status.parsingFile = null;
-      status.queuedFiles = [];
-      parsedFilesCount = 0;
-      for (let i = 0; i < fileList.length; i++) {
-        status.queuedFiles.push(fileList[i]);
-      }
-      subject.next({...status});
-      return Promise.all(parseQueuedFiles([])).then(() => status.rootFolder);
-    },
-    get status() {
-      return status;
-    },
-    statusObservable: () => subject,
-  };
-}
+    return {
+      parse(fileList: FileList): Promise<ImportedFolder> {
+        status.rootFolder = newImportedFolder(0, null);
+        status.parsingFile = null;
+        status.queuedFiles = [];
+        parsedFilesCount = 0;
+        for (let i = 0; i < fileList.length; i++) {
+          status.queuedFiles.push(fileList[i]);
+        }
+        subject.next({...status});
+        return Promise.all(parseQueuedFiles([])).then(() => status.rootFolder);
+      },
+      get status() {
+        return status;
+      },
+      statusObservable: () => subject,
+    };
+  }
 ;

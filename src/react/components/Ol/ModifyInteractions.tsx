@@ -26,13 +26,13 @@ import log from '../../../log';
 import {setModifying} from './hooks/useModifying';
 import {merge} from 'rxjs';
 import {setOlFeatureCoordinates} from './lib/feature';
-import {useVisibleFeaturesDebounced} from './hooks/useVisibleFeatures';
+import {useVisibleFeatures} from './hooks/useVisibleFeatures';
 
 const catalog = getCatalog();
 
 const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
   const map = React.useContext(olMapContext);
-  const olFeatures: OlFeature[] = useVisibleFeaturesDebounced();
+  const olFeatures: OlFeature[] = useVisibleFeatures();
 
   const modifyInteractionRef = React.useRef(null);
 

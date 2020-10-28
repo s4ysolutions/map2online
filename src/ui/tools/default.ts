@@ -15,26 +15,31 @@
  */
 
 import {FeatureType, Tools} from './index';
-import {Color} from '../../lib/colors';
 import {KV} from '../../kv-rx';
+import {Map2Styles, Style} from '../../style';
+import {map} from 'rxjs/operators';
 
-const toolsFactory = (persistStorage: KV): Tools => {
+const toolsFactory = (persistStorage: KV, styles: Map2Styles): Tools => {
+  const byC = (color: string): Style => styles.byColor(color) || styles.defaultStyle;
+
   const th: Tools = {
-    colorLine: persistStorage.get('tcl', Color.RED),
-    colorLineObservable: () => persistStorage.observable('tcl'),
-    colorPoint: persistStorage.get('tcp', Color.RED),
-    colorPointObservable: () => persistStorage.observable('tcp'),
+    lineStyle: byC(persistStorage.get('tsl', styles.defaultStyle.lineStyle.color)),
+    lineStyleObservable: () => persistStorage.observable('tsl')
+      .pipe(map(byC)),
+    pointStyle: byC(persistStorage.get('tsp', styles.defaultStyle.iconStyle.color)),
+    pointStyleObservable: () => persistStorage.observable('tsp')
+      .pipe(map(byC)),
     isLine: persistStorage.get<FeatureType.Point | FeatureType.Line>('tt', FeatureType.Point) === FeatureType.Line,
     isLineObservable: () => persistStorage.observable('tt'),
     isPoint: persistStorage.get('tt', FeatureType.Point) === FeatureType.Point,
     isPointObservable: () => persistStorage.observable('tt'),
-    selectColor (color: Color) {
+    selectStyle (style: Style) {
       if (this.isLine) {
-        persistStorage.set('tcl', color);
-        this.colorLine = color;
+        persistStorage.set('tsl', style);
+        this.colorLine = style;
       } else {
-        persistStorage.set('tcp', color);
-        this.colorPoint = color;
+        persistStorage.set('tcp', style);
+        this.colorPoint = style;
       }
     },
     selectLine () {
@@ -52,7 +57,7 @@ const toolsFactory = (persistStorage: KV): Tools => {
     featureType: persistStorage.get('tt', FeatureType.Point),
     featureTypeObservable: () => persistStorage.observable('tt'),
   };
-  th.selectColor = th.selectColor.bind(th);
+  th.selectStyle = th.selectStyle.bind(th);
   th.selectLine = th.selectLine.bind(th);
   th.selectPoint = th.selectPoint.bind(th);
   return th;

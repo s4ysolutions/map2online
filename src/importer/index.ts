@@ -23,6 +23,8 @@ export interface ImportedFolder {
   folders: ImportedFolder[];
   name: string;
   description: string;
+  open: boolean;
+  visible: boolean;
   parent: ImportedFolder;
   level: number;
 }

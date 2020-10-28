@@ -22,10 +22,11 @@ import {
   removeEmptyImportedFolders, removeTopFolder,
 } from '../post-process';
 import {getImportedFolderStats} from '../stats';
+import {Map2Styles} from '../../style';
 
-export const parserFactory = (): Parser => {
+export const parserFactory = (map2styles: Map2Styles): Parser => {
   const subject = new Subject<ParsingStatus>();
-  const kmlParser = kmlParserFactory();
+  const kmlParser = kmlParserFactory(map2styles);
   return {
     parse (fileList: FileList): Promise<ImportedFolder> {
       return kmlParser.parse(fileList).then(importedFolder => {

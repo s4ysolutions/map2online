@@ -21,6 +21,8 @@ export const newImportedFolder = (level: number, parent: ImportedFolder | null):
   folders: [],
   name: '',
   description: '',
+  visible: true,
+  open: false,
   level,
   parent,
 });

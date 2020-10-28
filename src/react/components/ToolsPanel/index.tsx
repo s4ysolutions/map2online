@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright 2019 s4y.solutions
  *
@@ -15,17 +16,17 @@
  */
 
 import * as React from 'react';
-import {Color} from '../../../lib/colors';
 import FeatureSelect from './FeatureSelect';
 import Line from 'react/components/Svg/Line';
 import Pin from 'react/components/Svg/Pin';
 import Tab from './Tab';
-import {getTools} from '../../../di-default';
+import {getMap2Styles, getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import log from '../../../log';
 import {FeatureType} from '../../../ui/tools';
 
 const tools = getTools();
+const map2styles = getMap2Styles();
 
 const ToolsPanel: React.FunctionComponent = (): React.ReactElement => {
   const toolState = useObservable(tools.featureTypeObservable(), tools.featureType);
@@ -47,19 +48,19 @@ const ToolsPanel: React.FunctionComponent = (): React.ReactElement => {
     </div >
     <div className="buttons" >
       <div className="row" >
-        <FeatureSelect color={Color.RED} />
-        <FeatureSelect color={Color.MAGENTA} />
-        <FeatureSelect color={Color.ORANGE} />
+        <FeatureSelect style={map2styles.styles[0]} />
+        <FeatureSelect style={map2styles.styles[1]} />
+        <FeatureSelect style={map2styles.styles[2]} />
       </div >
       <div className="row" >
-        <FeatureSelect color={Color.GREEN} />
-        <FeatureSelect color={Color.BLUE} />
-        <FeatureSelect color={Color.PINK} />
+        <FeatureSelect style={map2styles.styles[3]} />
+        <FeatureSelect style={map2styles.styles[4]} />
+        <FeatureSelect style={map2styles.styles[5]} />
       </div >
       <div className="row" >
-        <FeatureSelect color={Color.OLIVE} />
-        <FeatureSelect color={Color.CYAN} />
-        <FeatureSelect color={Color.YELLOW} />
+        <FeatureSelect style={map2styles.styles[6]} />
+        <FeatureSelect style={map2styles.styles[7]} />
+        <FeatureSelect style={map2styles.styles[8]} />
       </div >
     </div >
   </div >;

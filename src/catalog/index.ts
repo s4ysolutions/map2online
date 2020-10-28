@@ -15,7 +15,7 @@
  */
 
 import {Observable} from 'rxjs';
-import {Color} from '../lib/colors';
+import {Style} from '../style';
 
 export type ID = string;
 
@@ -57,7 +57,8 @@ export interface FeatureProps {
   summary: string;
   title: string;
   visible: boolean;
-  color: Color;
+  style: Style;
+  styleId?: string;
   geometry: Point | LineString;
 }
 
@@ -70,9 +71,11 @@ export interface Feature extends FeatureProps {
   delete: () => Promise<void>;
   observable: () => Observable<Feature>;
   updateCoordinates: (coord: Coordinate | Coordinate[]) => void;
+  eq: (anotherFeature: Feature) => boolean;
 }
 
 export interface Features extends Iterable<Feature> {
+  ts: ID;
   add: (props: FeatureProps, position?: number) => Promise<Feature>;
   readonly length: number;
   remove: (feauture: Feature) => Promise<number>;
@@ -88,9 +91,11 @@ export interface RouteProps {
   summary: string;
   title: string;
   visible: boolean;
+  open: boolean;
 }
 
 export interface Route extends RouteProps {
+  ts: ID;
   delete: () => Promise<void>;
   features: Features;
   observable: () => Observable<Route>;
@@ -113,6 +118,7 @@ export interface CategoryProps {
   summary: string;
   title: string;
   visible: boolean;
+  open: boolean;
 }
 
 export interface Category extends CategoryProps {
@@ -137,4 +143,6 @@ export interface Catalog {
   categoryById: (id: ID) => Category | null;
   featureById: (id: ID) => Feature | null;
   featuresObservable: () => Observable<Features>;
+  readonly visibleFeatures: Feature[];
+  visibleFeaturesObservable: (debounce?:boolean) => Observable<Feature[]>;
 }

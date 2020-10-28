@@ -23,7 +23,7 @@ interface LocalStorage {
   subject: Subject<{ key: string; value: unknown }>
 }
 
-const localStorageSingleton: KV & LocalStorage = {
+const localStorageFactory = (): KV & LocalStorage => ({
   get <T>(key: string, defaultValue?: T, forcedJSON?: string) {
     if (forcedJSON) {
       return JSON.parse(forcedJSON);
@@ -64,6 +64,6 @@ const localStorageSingleton: KV & LocalStorage = {
       : this.subject;
   },
   hasKey: (key: string): boolean => window.localStorage.getItem(key) !== null,
-};
+});
 
-export default localStorageSingleton;
+export default localStorageFactory;

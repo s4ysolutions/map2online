@@ -48,7 +48,6 @@ const config = merge(baseConfig, {
   optimization: {
     removeAvailableModules: true,
     mergeDuplicateChunks: true,
-    occurrenceOrder: true,
     concatenateModules: true,
     minimize: true,
   },

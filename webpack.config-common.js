@@ -177,6 +177,7 @@ const config = {
       '.jsx',
     ],
     plugins: [new TsconfigPathsPlugin({ /* configFile: "./path/to/tsconfig.json" */ })],
+    fallback: { 'stream': require.resolve('stream-browserify'), 'buffer': require.resolve('buffer/') }, // required by saz
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({ }),

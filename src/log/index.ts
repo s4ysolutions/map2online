@@ -17,9 +17,7 @@
 /* eslint-disable no-console */
 import {Subject} from 'rxjs';
 
-if (!process.env.DEBUG) {
-  console.debug = (): void => undefined;
-}
+console.debug = (): void => undefined;
 
 let prevTS = 0;
 const MS = 1000;

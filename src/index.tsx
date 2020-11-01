@@ -25,6 +25,8 @@ import 'form.scss';
 import 'typo.scss';
 import 'theme-yellow-black.scss';
 
+import amplitude from 'amplitude-js';
+
 import App from 'react/components/App';
 
 window.addEventListener('dragover', (e) => {
@@ -35,6 +37,9 @@ window.addEventListener('drop', (e) => {
   // e = e || event;
   e.preventDefault();
 }, false);
+
+amplitude.getInstance().init('c742fb5cda6af23078ebe5655712b658');
+amplitude.getInstance().logEvent('visit');
 
 ReactDOM.render(
   <App />,

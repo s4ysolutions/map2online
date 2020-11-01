@@ -72,6 +72,8 @@
     "webpack-merge": "^5.3.0"
   },
   "dependencies": {
+    "@types/amplitude-js": "^6.0.0",
+    "amplitude-js": "^7.3.1",
     "buffer": "^5.7.0",
     "file-saver": "^2.0.2",
     "fileapi": "^2.2.0",

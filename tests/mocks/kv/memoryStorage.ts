@@ -18,18 +18,25 @@ import {KV} from '../../../src/kv-rx';
 import {Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
-const memoryStorageFactory = (init: Record<string, string> = {}): KV => {
+export interface MemoryStorage extends KV {
+  readonly mem: Record<string, string>;
+}
+
+const memoryStorageFactory = (init: Record<string, string> = {}): MemoryStorage => {
   const subject = new Subject<{ key: string, value: any }>();
   const mem: Record<string, string> = init;
   return {
-    get <T>(key: string, defaultValue: T, forcedJSON?: string) {
+    get mem() {
+      return mem;
+    },
+    get<T>(key: string, defaultValue: T, forcedJSON?: string) {
       if (forcedJSON) {
         return JSON.parse(forcedJSON);
       }
       const serialized = mem[key];
       return serialized ? JSON.parse(serialized) : defaultValue;
     },
-    set <T>(key: string, value: T) {
+    set<T>(key: string, value: T) {
       if (value === undefined) {
         delete (mem[key]);
       } else {

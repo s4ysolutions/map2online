@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import {getTools} from '../../../../di-default';
-import useObservable from '../../../hooks/useObservable';
-import {SelectedTool} from '../../../../ui/tools';
-
-const tools = getTools();
-
-const useCurrentFeatureType = (): SelectedTool => useObservable(tools.selectedToolObservable(), tools.selectedTool);
-export default useCurrentFeatureType;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const jsdom = require('jsdom-global');
+const cleanup = jsdom();

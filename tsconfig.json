@@ -23,7 +23,10 @@
     "target": "es5",
     "downlevelIteration": true,
     "typeRoots": [
-      "./typesx", "./node_modules/@types"]
+      "./@types",
+      "./node_modules/@types",
+      "tests/mocha/@types"
+    ]
   },
   "include": [
     "./tests/**/*.ts",

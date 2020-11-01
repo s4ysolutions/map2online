@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import {CATEGORY_ID_PREFIX, categoriesFactory, categoryFactory} from './category';
+import {categoriesFactory, CATEGORY_ID_PREFIX, categoryFactory} from './category';
 import {KV} from '../../kv-rx';
-import {Catalog, Category, CategoryProps, Feature, FeatureProps, Features, ID, Route, RouteProps} from '../index';
+import {Catalog, Category, CategoryProps, Feature, FeatureProps, ID, Route, RouteProps} from '../index';
 import {ROUTE_ID_PREFIX, routeFactory} from './route';
 import {FEATURE_ID_PREFIX, featureFactory} from './feature';
-import {debounceTime, filter, map} from 'rxjs/operators';
+import {debounceTime} from 'rxjs/operators';
 import {Wording} from '../../personalization/wording';
 import {Map2Styles} from '../../style';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 const DEBOUNCE_DELAY = 250;
-
-const FEATURE_ID_PREFIX_AT = `${FEATURE_ID_PREFIX}@`;
+// const FEATURE_ID_PREFIX_AT = `${FEATURE_ID_PREFIX}@`;
 
 const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Catalog => {
   const categories: Record<ID, Category> = {};
@@ -53,7 +52,12 @@ const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Cata
     return true;
   };
 
+  const subjectVisibleFeatures = new Subject<Feature[]>();
+  const observableVisisbleFeaturesDebounced = subjectVisibleFeatures.pipe(debounceTime(DEBOUNCE_DELAY));
+  let lastVisibleFeatures: Feature[] = [];
+
   const th: Catalog = {
+    /*
     featuresObservable: () =>
       storage
         .observable<{ key: string; value: Features }>()
@@ -61,13 +65,15 @@ const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Cata
           filter(({key}) => key.indexOf(FEATURE_ID_PREFIX_AT) === 0),
           map(({value}) => value),
         ),
+     */
     categories: null,
     categoryById(id: ID) {
       const category = categories[id];
       if (category) {
         return category;
       }
-      categories[id] = categoryFactory(storage, this, wording, styles, routesIds, featuresIds, storage.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null));
+      // eslint-disable-next-line no-use-before-define
+      categories[id] = categoryFactory(storage, this, wording, styles, routesIds, featuresIds, storage.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null), notifyFeaturesVisibility);
       return categories[id];
     },
     featureById(id: ID) {
@@ -75,7 +81,8 @@ const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Cata
       if (feature) {
         return feature;
       }
-      features[id] = featureFactory(storage, this, storage.get<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${id}`, null), styles);
+      // eslint-disable-next-line no-use-before-define
+      features[id] = featureFactory(storage, this, storage.get<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${id}`, null), styles, notifyFeaturesVisibility);
       return features[id];
     },
     routeById(id: ID) {
@@ -83,41 +90,45 @@ const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Cata
       if (route) {
         return route;
       }
-      routes[id] = routeFactory(storage, this, wording, styles, featuresIds, storage.get<RouteProps | null>(`${ROUTE_ID_PREFIX}@${id}`, null));
+      // eslint-disable-next-line no-use-before-define
+      routes[id] = routeFactory(storage, this, wording, styles, featuresIds, storage.get<RouteProps | null>(`${ROUTE_ID_PREFIX}@${id}`, null), notifyFeaturesVisibility);
       return routes[id];
     },
-    get visibleFeatures(): Feature[] {
-      const ret = [] as Feature[];
-      for (const category of this.categories) {
-        if (category.visible) {
-          for (const route of category.routes) {
-            if (route.visible) {
-              for (const feature of route.features) {
-                if (feature.visible) {
-                  ret.push(feature);
-                }
+    get visibleFeatures() {
+      return lastVisibleFeatures;
+    },
+    visibleFeaturesObservable: (debounce: boolean | undefined): Observable<Feature[]> =>
+      debounce ? observableVisisbleFeaturesDebounced : subjectVisibleFeatures,
+  };
+
+  const findVisibleFeatures = (): Feature[] => {
+    const ret = [] as Feature[];
+    for (const category of th.categories) {
+      if (category.visible) {
+        for (const route of category.routes) {
+          if (route.visible) {
+            for (const feature of route.features) {
+              if (feature.visible) {
+                ret.push(feature);
               }
             }
           }
         }
       }
-      return ret;
-    },
-    visibleFeaturesObservable (debounce = true): Observable<Feature[]> {
-      return debounce ? this.featuresObservable().pipe(
-        debounceTime(DEBOUNCE_DELAY),
-        map(() => this.visibleFeatures),
-        /*
-        does not seem to be effective
-        filter((newFeatures: Feature[]) => isNew(newFeatures)),
-        tap((newFeatures: Feature[]) => {
-          lastFeatures = newFeatures;
-        }),
-         */
-      ) : this.featuresObservable().pipe(map(() => this.visibleFeatures));
-    },
+    }
+    return ret;
   };
-  th.categories = categoriesFactory(storage, th, wording, styles, routesIds, featuresIds);
+
+  const notifyFeaturesVisibility = (): void => {
+    lastVisibleFeatures = findVisibleFeatures();
+    subjectVisibleFeatures.next(lastVisibleFeatures);
+  };
+
+  th.categories = categoriesFactory(storage, th, wording, styles, routesIds, featuresIds, notifyFeaturesVisibility);
+
+  // NOTE: a bit fragile. As a side effect it will create a first category with first router
+  //       if none exists yet.
+  lastVisibleFeatures = findVisibleFeatures();
   return th;
 };
 

@@ -142,7 +142,6 @@ export interface Catalog {
   routeById: (id: ID) => Route | null;
   categoryById: (id: ID) => Category | null;
   featureById: (id: ID) => Feature | null;
-  featuresObservable: () => Observable<Features>;
   readonly visibleFeatures: Feature[];
   visibleFeaturesObservable: (debounce?:boolean) => Observable<Feature[]>;
 }

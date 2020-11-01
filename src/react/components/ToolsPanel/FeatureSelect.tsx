@@ -19,7 +19,7 @@ import Line from 'react/components/Svg/Line';
 import Pin from 'react/components/Svg/Pin';
 import {getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
-import {FeatureType} from '../../../ui/tools';
+import {SelectedTool} from '../../../ui/tools';
 import log from '../../../log';
 import {Style} from '../../../style';
 
@@ -30,16 +30,16 @@ interface Props {
 }
 
 const FeatureSelect: React.FunctionComponent<Props> = ({style}): React.ReactElement => {
-  const tool = useObservable(tools.featureTypeObservable(), tools.featureType);
+  const tool = useObservable(tools.selectedToolObservable(), tools.selectedTool);
   const lineStyle = useObservable(tools.lineStyleObservable(), tools.lineStyle);
   const pointStyle = useObservable(tools.pointStyleObservable(), tools.pointStyle);
-  const on = tool === FeatureType.Line && lineStyle.id === style.id || tool === FeatureType.Point && pointStyle.id === style.id;
+  const on = tool === SelectedTool.Line && lineStyle.id === style.id || tool === SelectedTool.Point && pointStyle.id === style.id;
   log.render(`FeatureSelect style=${style.id} selected=${on}`);
   return <div
     className={`select ${on ? 'on' : 'off'}`}
     onClick={(): void => tools.selectStyle(style)}
   >
-    {tool === FeatureType.Point ? <Pin color={style.iconStyle.color} /> : <Line color={style.lineStyle.color} />}
+    {tool === SelectedTool.Point ? <Pin color={style.iconStyle.color} /> : <Line color={style.lineStyle.color} />}
   </div >;
 };
 

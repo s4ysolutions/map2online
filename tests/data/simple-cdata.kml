@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2019 s4y.solutions
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<kml xmlns="http://www.opengis.net/kml/2.2" >
+  <Document >
+    <open >1</open >
+    <Folder id="bivojunpsi3q4au4mc90" >
+      <open >1</open >
+      <name ><![CDATA[cat1 name]]></name >
+      <description ><![CDATA[cat1 desc]]></description >
+      <Folder id="bivon37psi3q4au4mj0g" >
+        <open >1</open >
+        <name ><![CDATA[Route 11]]></name >
+        <description ><![CDATA[Desc r11]]></description >
+        <Placemark id="bivon37psi3q4au4mj10" >
+          <name ><![CDATA[111]]></name >
+          <description ><![CDATA[Desc 111]]></description >
+          <Point >
+            <coordinates >52.31749,47.30314,0</coordinates >
+          </Point >
+        </Placemark >
+        <Placemark ID="bivon37psi3q4au4mj1g" >
+          <name >112</name >
+          <description >
+            Desc 112
+          </description >
+          <Point >
+            <coordinates >52.97762,47.53079,0</coordinates >
+          </Point >
+        </Placemark >
+      </Folder >
+      <Folder id="bivp6ifpsi3q4au4ml9g" >
+        <open >1</open >
+        <name >Route 12</name >
+        <description >Desc r12</description >
+        <Placemark id="bivp6ifpsi3q4au4mla0" >
+          <name >121</name >
+          <description >Desc 121</description >
+          <Point >
+            <coordinates >52.06981,44.26796,0</coordinates >
+          </Point >
+        </Placemark >
+        <Placemark id="bivp6ifpsi3q4au4mlag" >
+          <name >122</name >
+          <description >Desc 122</description >
+          <Point >
+            <coordinates >52.05362,44.27111,0</coordinates >
+          </Point >
+        </Placemark >
+        <Placemark >
+          <name >123</name >
+          <LineString >
+            <coordinates >
+              52.97762,47.53079,0
+              52.06981,44.26796,0
+              52.05362,44.27111,0
+            </coordinates >
+          </LineString >
+        </Placemark >
+      </Folder >
+    </Folder >
+  </Document >
+</kml >
+

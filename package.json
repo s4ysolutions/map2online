@@ -9,7 +9,7 @@
     "stats": "webpack --config webpack.config-stats.js --profile --json >stats.json",
     "lint": "eslint --fix src",
     "testdel": "mocha -r ts-node/register --require esm --experimental-modules tests/mocha/**/*.spec.ts",
-    "test": "mocha -r ts-node/register --require esm tests/mocha/**/*.spec.ts",
+    "test": "mocha -r ts-node/register --require esm --require ./tests/mocks/jsdom.js tests/mocha/**/*.spec.ts",
     "testcafe": "testcafe chrome testcafe/** --app \"http-server ./dist -s\"",
     "jest": "jest --runInBand"
   },
@@ -47,6 +47,8 @@
     "file-loader": "^6.1.0",
     "fork-ts-checker-webpack-plugin": "^5.1.0",
     "html-webpack-plugin": "^4.4.1",
+    "jsdom": "16.4.0",
+    "jsdom-global": "3.0.2",
     "mini-css-extract-plugin": "^0.10.1",
     "mocha": "^8.1.3",
     "mocha-webpack": "^1.1.0",

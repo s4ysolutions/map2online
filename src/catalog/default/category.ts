@@ -38,7 +38,7 @@ interface Updatebale {
   update: () => void;
 }
 
-export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>, props: CategoryProps | null): Category & Updatebale | null => {
+export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>, props: CategoryProps | null, notifyFeaturesVisibility: () => void): Category & Updatebale | null => {
   const def = newCategoryProps(wording);
   const p: CategoryProps = props === null ? def : {...def, ...props};
   if (!p.id) {
@@ -73,8 +73,12 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
       return p.visible;
     },
     set visible(value) {
+      const notify = value !== p.visible;
       p.visible = value;
       this.update();
+      if (notify) {
+        notifyFeaturesVisibility();
+      }
     },
     get open() {
       return p.open;
@@ -100,18 +104,19 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
     },
     routes: null,
   };
-  th.routes = routesFactory(storage, catalog, wording, styles, th, routesIds, featuresIds);
+  th.routes = routesFactory(storage, catalog, wording, styles, th, routesIds, featuresIds, notifyFeaturesVisibility);
   return th;
 };
 
-
-export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>): Categories => {
+export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>, notifyFeaturesVisibility: () => void): Categories => {
   let prevIds: ID[] = [];
   const key = 'cats';
+  const storeIds = () => {
+    storage.set(key, prevIds);
+  };
   const updateIds = (ids: ID[]) => {
     if (ids !== prevIds) {
       prevIds = ids.slice();
-      storage.set(key, ids);
     }
   };
   const guardedIds = () => {
@@ -126,18 +131,20 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
       const category = newCategoryProps(wording);
       storage.set(`${CATEGORY_ID_PREFIX}@${category.id}`, category);
       updateIds([category.id]);
+      storeIds();
     }
     return prevIds;
   };
 
   return {
     add(props: CategoryProps | null, position?: number): Promise<Category> {
-      const category = categoryFactory(storage, catalog, wording, styles, routesIds, featuresIds, props);
+      const category = categoryFactory(storage, catalog, wording, styles, routesIds, featuresIds, props, notifyFeaturesVisibility);
       category.update();
       const pos = position || guardedIds().length;
       const ids0 = guardedIds();
       updateIds(ids0.slice(0, pos).concat(category.id)
         .concat(ids0.slice(pos)));
+      storeIds();
       return Promise.resolve(catalog.categoryById(category.id));
     },
     byPos: (index: number): Category | null => catalog.categoryById(guardedIds()[index]),
@@ -153,12 +160,17 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
       if (pos < 0) {
         return Promise.resolve(0);
       }
-      updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
-      return category.delete().then(() => 1);
+      prevIds = ids0.slice(0, pos).concat(ids0.slice(pos + 1));
+      return category.delete().then(() => 1)
+        .then(c => {
+          storeIds();
+          return c;
+        });
     },
     reorder(from: number, to: number) {
       const ids0 = guardedIds();
       updateIds(reorder(ids0, from, to));
+      storeIds();
     },
     [Symbol.iterator]() {
       const ids0 = guardedIds();

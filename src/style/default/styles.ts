@@ -16,7 +16,7 @@
 
 import {IconStyle, LineStyle, Map2Styles, Style, StyleColorMode} from '../index';
 import {map2colors} from './colors';
-import {PIN_HOTSPOT_X, PIN_HOTSPOT_Y, PIN_SCALE, makePinURL} from './pin';
+import {makePinURL, PIN_HOTSPOT_X, PIN_HOTSPOT_Y, PIN_SCALE} from './pin';
 
 const makeLineStyle = (color: string, width: number): LineStyle => ({
   color,
@@ -38,13 +38,13 @@ const makeIconStyle = (color: string): IconStyle => ({
 });
 
 export const map2StylesFactory = (): Map2Styles => {
-  const map2stylesByColor: Record<string, Style> = Object.keys(map2colors)
+  const map2stylesByColor: Record<string, Style> = Object.values(map2colors)
     .reduce(
       (acc, color) => ({
         ...acc, [color]: {
-          id: `map2_style_${color}`,
-          iconStyle: makeIconStyle(map2colors[color]),
-          lineStyle: makeLineStyle(map2colors[color], 1),
+          id: `map2_style_${color.slice(1)}`,
+          iconStyle: makeIconStyle(color),
+          lineStyle: makeLineStyle(color, 1),
         },
       })
       , {},
@@ -66,7 +66,7 @@ export const map2StylesFactory = (): Map2Styles => {
   return {
     byColor: (color: string): Style => map2stylesByColor[color],
     byId: (id: string): Style | null => map2stylesById[id],
-    defaultStyle: map2stylesByColor.RED,
+    defaultStyle: map2stylesByColor[map2colors.RED],
     styles: map2styles,
     findEq: (style: Style): Style | null => {
       if (style.balloonStyle) {

@@ -16,7 +16,7 @@
 
 const pins: Record<string, URL> = {};
 export const makePinURL = (colorPin: string): URL => {
-  const cached = pins[colorPin.toString()];
+  const cached = pins[colorPin];
   if (cached) {
     return cached;
   }

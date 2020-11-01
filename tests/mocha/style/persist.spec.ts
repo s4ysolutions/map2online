@@ -23,12 +23,12 @@ import {Style} from '../../../src/style';
 const map2styles = map2StylesFactory();
 const map2DefaultStyle = map2styles.defaultStyle;
 
-describe('Default map2 styles', () => {
+describe('Built in map2 styles', () => {
   let storage: KV;
   beforeEach(() => {
     storage = memoryStorageFactory();
   });
-  it.skip('store and restore', () => {
+  it.skip('style is not supposed to be stored as object. At least built in style', () => {
     storage.set('s', map2DefaultStyle);
     const s: Style = storage.get('s', null);
     expect(s.lineStyle.color).to.be.eq(map2DefaultStyle.lineStyle.color);

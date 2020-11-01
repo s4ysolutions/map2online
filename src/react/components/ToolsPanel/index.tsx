@@ -23,24 +23,24 @@ import Tab from './Tab';
 import {getMap2Styles, getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import log from '../../../log';
-import {FeatureType} from '../../../ui/tools';
+import {SelectedTool} from '../../../ui/tools';
 
 const tools = getTools();
 const map2styles = getMap2Styles();
 
 const ToolsPanel: React.FunctionComponent = (): React.ReactElement => {
-  const toolState = useObservable(tools.featureTypeObservable(), tools.featureType);
+  const toolState = useObservable(tools.selectedToolObservable(), tools.selectedTool);
   log.render('ToolsPanel', {toolState});
   return <div className="tools" >
     <div className="tabs" >
       <Tab
-        on={toolState === FeatureType.Point}
+        on={toolState === SelectedTool.Point}
         onClick={tools.selectPoint}
       >
         <Pin color="white" />
       </Tab >
       <Tab
-        on={toolState === FeatureType.Line}
+        on={toolState === SelectedTool.Line}
         onClick={tools.selectLine}
       >
         <Line color="white" />

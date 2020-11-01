@@ -15,7 +15,7 @@
  */
 
 import {Circle as CircleStyle, Fill, Icon as IconStyle, Stroke, Style, Text} from 'ol/style';
-import {StyleItem, isIconStyle, isLineStyle} from '../../../../style';
+import {isIconStyle, isLineStyle, StyleItem} from '../../../../style';
 
 const backgroundFill = new Fill({color: '#fff8'});
 const createText = (text: string) =>
@@ -26,6 +26,8 @@ const createText = (text: string) =>
     text,
   });
 
+const COLOR_6DIGIT_LENGTH = 7;
+const makeAlpha = (color: string): string => `${(color.length <= COLOR_6DIGIT_LENGTH) ? color : color.slice(0, COLOR_6DIGIT_LENGTH)}a0`;
 export const createOlStyle = (featureStyle: StyleItem, label?: string): Style => {
   if (isIconStyle(featureStyle)) {
     return new Style({
@@ -53,7 +55,7 @@ export const createOlStyle = (featureStyle: StyleItem, label?: string): Style =>
           width: 2,
         }),
         fill: new Fill({
-          color: `${featureStyle.color.toString()}a0`,
+          color: makeAlpha(featureStyle.color.toString()),
         }),
       }),
       text: label ? createText(label) : undefined,

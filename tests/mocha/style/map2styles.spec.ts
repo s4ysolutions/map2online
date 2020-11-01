@@ -29,4 +29,11 @@ describe('Default map2 styles', () => {
     const s = map2styles.findEq(s2);
     expect(s.id).to.be.eq(s2.id);
   })
+  it('find Orange style', () => {
+    const c = "#f58231ff";
+    const s = map2styles.byColor(c);
+    expect(s).to.not.be.undefined;
+    expect(s.lineStyle.color).to.be.eq(c);
+    expect(s.iconStyle.color).to.be.eq(c);
+  })
 });

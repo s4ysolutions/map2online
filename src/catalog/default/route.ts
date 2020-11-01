@@ -39,7 +39,7 @@ interface Updatebale {
   update: () => void;
 }
 
-export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, featuresIds: Record<ID, ID[]>, props: RouteProps | null): Route & Updatebale | null => {
+export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, featuresIds: Record<ID, ID[]>, props: RouteProps | null, notifyFeaturesVisibility: () => void): Route & Updatebale | null => {
   const def = newRouteProps(wording);
   const p: RouteProps = props === null ? def : {...def, ...props};
   if (!p.id) {
@@ -74,8 +74,12 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, st
       return p.visible;
     },
     set visible(value) {
+      const notify = value !== p.visible;
       p.visible = value;
       this.update();
+      if (notify) {
+        notifyFeaturesVisibility();
+      }
     },
     get open() {
       return p.open;
@@ -98,34 +102,40 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, st
       storage.set(key, p);
     },
   };
-  th.features = featuresFactory(storage, catalog, th, styles, featuresIds);
+  th.features = featuresFactory(storage, catalog, th, styles, featuresIds, notifyFeaturesVisibility);
   return th;
 };
 
 // const iids: Record<ID, ID[]> = {};
 
-export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, category: Category, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>): Routes => {
+export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, category: Category, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>, notifyFeaturesVisibility: () => void): Routes => {
   const key = `${ROUTES_ID_PREFIX}@${category.id}`;
   routesIds[key] = storage.get<ID[]>(key, []);
+
+  const storeIds = () => {
+    storage.set(key, routesIds[key]);
+  };
+
   const updateIds = (ids: ID[]) => {
     if (ids !== routesIds[key]) {
       routesIds[key] = ids.slice();
-      storage.set(key, ids);
     }
   };
   if (routesIds[key].length === 0) {
     const route = newRouteProps(wording);
     storage.set(`${ROUTE_ID_PREFIX}@${route.id}`, route);
     updateIds([route.id]);
+    storeIds();
   }
   return {
     add(props: RouteProps, position: number) {
-      const route = routeFactory(storage, catalog, wording, styles, featuresIds, props);
+      const route = routeFactory(storage, catalog, wording, styles, featuresIds, props, notifyFeaturesVisibility);
       route.update();
       const ids0 = routesIds[key];
       const pos = position || ids0.length;
       updateIds(ids0.slice(0, pos).concat(route.id)
         .concat(ids0.slice(pos)));
+      storeIds();
       return Promise.resolve(catalog.routeById(route.id));
     },
     byPos: (index: number): Route | null => catalog.routeById(routesIds[key][index]),
@@ -143,7 +153,10 @@ export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, s
         return Promise.resolve(0);
       }
       updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
-      return route.delete().then(() => 1);
+      return route.delete().then(() => {
+        storeIds();
+        return 1;
+      });
     },
     delete() {
       return Promise.all(Array.from(this).map(route => this.remove(route)))
@@ -155,6 +168,7 @@ export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, s
     reorder(from: number, to: number) {
       const ids0 = routesIds[key];
       updateIds(reorder(ids0, from, to));
+      storeIds();
     },
     [Symbol.iterator]() {
       const ids0 = routesIds[key];

@@ -16,6 +16,7 @@
 
 import './styles.scss';
 import * as React from 'react';
+import {useCallback, useState} from 'react';
 import log from '../../../log';
 import useComponentSize from '../../hooks/useComponentSize';
 import TopNavigation from './TopNavigation';
@@ -29,7 +30,6 @@ import Import from '../Import';
 import GoogleMap from '../GoogleMap/GoogleMap';
 import Wording from '../Personalization/Wording';
 import About from '../About';
-import Modal from '../Modal';
 import Spinner from '../Spinner';
 import useSpinner from '../Spinner/hooks/useSpinner';
 
@@ -39,8 +39,12 @@ const wording = getWording();
 const workspace = getWorkspace();
 
 const Workspace = (): React.ReactElement => {
-  const ref = React.useRef<HTMLDivElement | null>(null);
-  const {height, width} = useComponentSize(ref);
+  // const ref = React.useRef<HTMLDivElement | null>(null);
+  const [el, setEl] = useState<HTMLDivElement | null>(null);
+  const onRefSet = useCallback(ref => {
+    setEl(ref);
+  }, [setEl]);
+  const {height, width} = useComponentSize(el);
   const importUIVisible = useObservable<boolean>(importUI.visibleObservable(), importUI.visible);
   const isPersonalized = useObservable(wording.observableIsPersonalized(), wording.isPersonalized);
   const personalizationVisible = useObservable<boolean>(workspace.personalizationObservable(), workspace.personalizationOpen);
@@ -51,7 +55,7 @@ const Workspace = (): React.ReactElement => {
   return isPersonalized
     ? <React.Fragment >
       <TopNavigation key="topNavigation" />
-      <div className="workspace" key="workspace" ref={ref} >
+      <div className="workspace" key="workspace" ref={onRefSet} >
         <LeftDrawer />
         <div className="map-container" >
           <GoogleMap />

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Category, Coordinate, Feature, LineString, Point, Route, isPoint} from '../../catalog';
+import {Category, Coordinate, Feature, isPoint, LineString, Point, Route} from '../../catalog';
 import {metersToDegrees} from '../../lib/projection';
 import {henc} from '../../lib/entities';
 import {IconStyle, LineStyle, Style} from '../../style';
@@ -39,8 +39,8 @@ const end = (): string =>
 const categoryBegin = (ident: string, category?: Category): string =>
   category
     ? `${ident}<Folder id="${category.id}">
-${ident}  <name>${henc(category.title)}</name>
-${ident}  <description>${henc(category.description)}</description>
+${ident}  <name><![CDATA[${henc(category.title)}]]></name>
+${ident}  <description><![CDATA[${henc(category.description)}]]></description>
 `
     : '';
 
@@ -55,8 +55,8 @@ const categoryEnd = (ident: string, category?: Category): string =>
 // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
 const placemarkBegin = (ident: string, feature: Feature, route: Route, category?: Category): string =>
   `${ident}<Placemark id="${feature.id}">
-${ident}  <name>${henc(feature.title)}</name>
-${ident}  <description>${henc(feature.description)}</description>
+${ident}  <name><![CDATA[${henc(feature.title)}]]></name>
+${ident}  <description><![CDATA[${henc(feature.description)}]]></description>
 ${ident}  <styleUrl>#${feature.style.id}</styleUrl>`;
 
 // noinspection JSUnusedLocalSymbols
@@ -85,8 +85,8 @@ ${placemarkEnd(ident, feature, route, category)}`;
 // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
 const routeBegin = (ident: string, route: Route, category?: Category): string =>
   `${ident}<Folder id="${route.id}">
-${ident}  <name>${henc(route.title)}</name>
-${ident}  <description>${henc(route.description)}</description>`;
+${ident}  <name><![CDATA[${henc(route.title)}]]></name>
+${ident}  <description><![CDATA[${henc(route.description)}]]></description>`;
 
 // noinspection JSUnusedLocalSymbols
 // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
@@ -104,7 +104,7 @@ const routesKML = (ident: string, routes: Route[], category?: Category): string 
 
 const categoryKML = (ident: string, category: Category): string => routesKML(`${ident}  `, Array.from(category.routes), category);
 
-const transp = 'fffffffffffffff';
+const transp = 'fffffffff';
 const COLOR_LEN = 8;
 
 const nc = (color: string): string => {

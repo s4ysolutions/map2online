@@ -17,7 +17,7 @@
 import {Observable} from 'rxjs';
 import {Style} from '../../style';
 
-export enum FeatureType {
+export enum SelectedTool {
   Line,
   Point,
 }
@@ -34,6 +34,6 @@ export interface Tools {
   selectStyle: (style: Style) => void;
   selectLine: () => void;
   selectPoint: () => void;
-  readonly featureType: FeatureType;
-  featureTypeObservable: () => Observable<FeatureType>;
+  readonly selectedTool: SelectedTool;
+  selectedToolObservable: () => Observable<SelectedTool>;
 }

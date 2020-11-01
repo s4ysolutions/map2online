@@ -36,20 +36,20 @@ const getSize = (el?: Element | null): HW => {
   };
 };
 
-const useComponentSize = (ref: React.MutableRefObject<HTMLDivElement>): HW => {
-  const [componentSize, setComponentSize] = React.useState(getSize(ref ? ref.current : null));
+const useComponentSize = (el: HTMLDivElement): HW => {
+  const [componentSize, setComponentSize] = React.useState(getSize(el));
   const handleResize = React.useCallback(
     (): void => {
-      if (ref.current) {
-        setComponentSize(getSize(ref.current));
+      if (el) {
+        setComponentSize(getSize(el));
       }
     },
-    [ref],
+    [el],
   );
 
   React.useLayoutEffect(
     (): void | (() => void | undefined) => {
-      if (!ref.current) {
+      if (!el) {
         return;
       }
 
@@ -61,7 +61,7 @@ const useComponentSize = (ref: React.MutableRefObject<HTMLDivElement>): HW => {
         window.removeEventListener('resize', handleResize);
       };
     },
-    [ref, handleResize],
+    [el, handleResize],
   );
 
   return componentSize;

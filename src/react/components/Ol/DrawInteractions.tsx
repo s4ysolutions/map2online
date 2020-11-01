@@ -19,7 +19,7 @@ import {Draw as DrawInteraction} from 'ol/interaction';
 import usePointStyle from './hooks/usePointStyle';
 import useLineStyle from './hooks/useLineStyle';
 import useCurrentFeatureType from './hooks/useCurrentFeatureType';
-import {FeatureType} from '../../../ui/tools';
+import {SelectedTool} from '../../../ui/tools';
 import {getOlStyle} from './lib/styles';
 import olMapContext from './context/map';
 import {getCatalogUI} from '../../../di-default';
@@ -31,9 +31,9 @@ import {useModifying} from './hooks/useModifying';
 import GeometryType from 'ol/geom/GeometryType';
 import {Style} from '../../../style';
 
-const newDrawInteraction = (type: FeatureType, pointStyle: Style, lineStyle: Style) => new DrawInteraction({
-  style: getOlStyle(type === FeatureType.Point ? pointStyle.iconStyle : lineStyle.lineStyle),
-  type: type === FeatureType.Point ? GeometryType.POINT : GeometryType.LINE_STRING,
+const newDrawInteraction = (type: SelectedTool, pointStyle: Style, lineStyle: Style) => new DrawInteraction({
+  style: getOlStyle(type === SelectedTool.Point ? pointStyle.iconStyle : lineStyle.lineStyle),
+  type: type === SelectedTool.Point ? GeometryType.POINT : GeometryType.LINE_STRING,
 });
 
 const catalogUI = getCatalogUI();

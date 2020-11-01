@@ -28,6 +28,7 @@ import {map} from 'rxjs/operators';
 import {createOlStyle} from '../../../src/react/components/Ol/lib/styles';
 
 describe('26-10-2020 issues', () => {
+
   describe('UseVisible Features return features without style', () => {
     let kv: KV;
     let wording: Wording;
@@ -101,7 +102,8 @@ describe('26-10-2020 issues', () => {
     });
   });
   /* disabled because of dependency on DOM */
-  describe.skip(' Unsupported style [object Object]', () => {
+  describe(' Unsupported style [object Object]', () => {
+
     let map2styles: Map2Styles;
     beforeEach(() => {
       map2styles = map2StylesFactory();

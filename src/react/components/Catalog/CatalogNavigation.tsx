@@ -15,13 +15,12 @@
  */
 
 import * as React from 'react';
-import {getCatalogUI, getWording, getWorkspace} from '../../../di-default';
+import {getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import FolderClose from '../Svg/FolderClose';
 
 const catalogUI = getCatalogUI();
 const wording = getWording();
-const workspace = getWorkspace();
 
 const deselectRoute: () => void = () => {
   catalogUI.selectedRoute = null;
@@ -50,11 +49,7 @@ const CatalogNavigation: React.FunctionComponent = (): React.ReactElement => {
           strokeWidth="2.0366"
         />
       </svg >
-    </button > ||
-    <button onClick={workspace.toggleCatalog} type="button" >
-      <FolderClose />
-    </button >}
-
+    </button > || <FolderClose />}
 
     {!selectedCategory && !selectedRoute && <span className="title" >
       {wording.C('Catalog')}

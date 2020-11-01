@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {FeatureType, Tools} from './index';
+import {SelectedTool, Tools} from './index';
 import {KV} from '../../kv-rx';
 import {Map2Styles, Style} from '../../style';
 import {map} from 'rxjs/operators';
@@ -29,33 +29,33 @@ const toolsFactory = (persistStorage: KV, styles: Map2Styles): Tools => {
     pointStyle: byC(persistStorage.get('tsp', styles.defaultStyle.iconStyle.color)),
     pointStyleObservable: () => persistStorage.observable('tsp')
       .pipe(map(byC)),
-    isLine: persistStorage.get<FeatureType.Point | FeatureType.Line>('tt', FeatureType.Point) === FeatureType.Line,
+    isLine: persistStorage.get<SelectedTool.Point | SelectedTool.Line>('tt', SelectedTool.Point) === SelectedTool.Line,
     isLineObservable: () => persistStorage.observable('tt'),
-    isPoint: persistStorage.get('tt', FeatureType.Point) === FeatureType.Point,
+    isPoint: persistStorage.get('tt', SelectedTool.Point) === SelectedTool.Point,
     isPointObservable: () => persistStorage.observable('tt'),
-    selectStyle (style: Style) {
+    selectStyle(style: Style) {
       if (this.isLine) {
-        persistStorage.set('tsl', style);
-        this.colorLine = style;
+        this.lineStyle = style;
+        persistStorage.set('tsl', style.lineStyle.color);
       } else {
-        persistStorage.set('tcp', style);
-        this.colorPoint = style;
+        this.pointStyle = style;
+        persistStorage.set('tsp', style.iconStyle.color);
       }
     },
     selectLine () {
-      persistStorage.set('tt', FeatureType.Line);
-      this.tool = FeatureType.Line;
+      this.selectedTool = SelectedTool.Line;
       this.isLine = true;
       this.isPoint = false;
+      persistStorage.set('tt', SelectedTool.Line);
     },
-    selectPoint () {
-      persistStorage.set('tt', FeatureType.Point);
-      this.featureType = FeatureType.Point;
+    selectPoint() {
+      this.selectedTool = SelectedTool.Point;
       this.isLine = false;
       this.isPoint = true;
+      persistStorage.set('tt', SelectedTool.Point);
     },
-    featureType: persistStorage.get('tt', FeatureType.Point),
-    featureTypeObservable: () => persistStorage.observable('tt'),
+    selectedTool: persistStorage.get('tt', SelectedTool.Point),
+    selectedToolObservable: () => persistStorage.observable('tt'),
   };
   th.selectStyle = th.selectStyle.bind(th);
   th.selectLine = th.selectLine.bind(th);

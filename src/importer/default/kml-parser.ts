@@ -18,7 +18,7 @@
 import {ImportedFolder, ParsingStatus} from '../index';
 import {Observable, Subject} from 'rxjs';
 import sax, {QualifiedTag, Tag} from 'sax';
-import {Coordinate, FeatureProps } from '../../catalog';
+import {Coordinate, FeatureProps} from '../../catalog';
 import log from '../../log';
 import {degreesToMeters} from '../../lib/projection';
 import {newImportedFolder} from '../new-folder';
@@ -31,7 +31,8 @@ import {
   isLineStyle,
   LabelStyle,
   LineStyle,
-  ListStyle, Map2Styles,
+  ListStyle,
+  Map2Styles,
   PolyStyle,
   Style,
 } from '../../style';
@@ -66,11 +67,11 @@ const parseTriplet = (triplet: string): Coordinate => {
   return degreesToMeters(lla);
 };
 
-const parseCoordinates = (text: string): Coordinate[] =>
+export const parseKMLCoordinates = (text: string): Coordinate[] =>
   text
     .trim()
     // .split(/\r?\n/)
-    .split(/[^0-9.,]/u)
+    .split(/[^-0-9.,]/u)
     // .split("\n")
     .map(t => t.trim())
     .filter(t => Boolean(t))
@@ -146,7 +147,7 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
             style: null,
             description: '',
             geometry: null,
-            id: parseId(node),
+            id: null, // TODO: handle duplicate parseId(node),
             summary: '',
             title: '',
             visible: true,
@@ -435,7 +436,7 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           currentFeature.visible = text.trim().toUpperCase() != 'FALSE';
           break;
         case ParseState.COORDINATES: {
-          const coordinates = parseCoordinates(text.trim());
+          const coordinates = parseKMLCoordinates(text.trim());
           if (coordinates.length === 1) {
             currentFeature.geometry = {
               coordinate: coordinates[0],
@@ -488,8 +489,24 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
     }
 
     parser.onclosecdata = () => {
-      if (lastState() === ParseState.HREF && isIconStyle(currentStyleItem)) {
-        currentStyleItem.icon = new URL(cdata)
+      switch (lastState()) {
+        case ParseState.HREF:
+          if (isIconStyle(currentStyleItem)) {
+            currentStyleItem.icon = new URL(cdata.trim())
+          }
+          break;
+        case ParseState.FOLDER_NAME:
+          lastFolder().name = cdata.trim();
+          break;
+        case ParseState.FOLDER_DESCRIPTION:
+          lastFolder().description = cdata.trim();
+          break;
+        case ParseState.PLACEMARK_NAME:
+          currentFeature.title = cdata.trim();
+          break;
+        case ParseState.PLACEMARK_DESCRIPTION:
+          currentFeature.description = cdata.trim();
+          break;
       }
     }
 

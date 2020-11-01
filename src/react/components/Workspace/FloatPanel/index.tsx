@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react';
+import {useCallback, useState} from 'react';
 import Draggable, {DraggableData} from 'react-draggable';
 import Handle from '../../Svg/Handle';
 import ToolsPanel from 'react/components/ToolsPanel';
@@ -33,8 +34,11 @@ interface Props {
 
 const FloatPanel: React.FunctionComponent<Props> =
   ({parentHeight, parentWidth}): React.ReactElement => {
-    const ref = React.useRef<HTMLDivElement | null>(null);
-    const {height, width} = useComponentSize(ref);
+    const [el, setEl] = useState<HTMLDivElement | null>(null);
+    const onRefSet = useCallback(ref => {
+      setEl(ref);
+    }, [setEl]);
+    const {height, width} = useComponentSize(el);
     const [position, setPosition] = usePosition(width, height, parentWidth, parentHeight);
     const visible = useObservable(workspace.toolsObservable(), workspace.toolsOpen);
 
@@ -51,7 +55,7 @@ const FloatPanel: React.FunctionComponent<Props> =
     >
       <div
         className={`float-panel ${visible ? 'visible' : 'invisible'}`}
-        ref={ref}
+        ref={onRefSet}
       >
         <ToolsPanel />
         <div className="drag-handle" >

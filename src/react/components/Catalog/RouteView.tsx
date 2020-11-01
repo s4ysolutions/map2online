@@ -46,7 +46,7 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
     catalogUI.activeRoute && catalogUI.activeRoute.id === route.id,
   );
 
-  const isVisible = useObservable(routeView.observable().pipe(map(r => r.visible)), routeView.visible);
+  const isVisible = useObservable(routeView.observable().pipe(map(r => r && r.visible)), routeView.visible);
 
   const handleDelete = React.useCallback(() => {
     if (skipConfirmDialog()) {

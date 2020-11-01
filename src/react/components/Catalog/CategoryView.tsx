@@ -49,7 +49,7 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
     catalogUI.activeCategoryObservable().pipe(map(active => active && active.id === category.id)),
     catalogUI.activeCategory && catalogUI.activeCategory.id === category.id,
   );
-  const isVisible = useObservable(categoryView.observable().pipe(map((c: Category) => c.visible)), categoryView.visible);
+  const isVisible = useObservable(categoryView.observable().pipe(map((c: Category) => c && c.visible)), categoryView.visible);
 
   log.render('CategoryView', {title: category.title, canDelete, category, categoryView, isVisible});
 

@@ -19,7 +19,7 @@ import Delete from '../Svg/Delete';
 import Hidden from '../Svg/Hidden';
 import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
-import {Feature, LineString, Route, isPoint} from '../../../catalog';
+import {Feature, isPoint, LineString, Route} from '../../../catalog';
 import {getCatalogUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {filter, map} from 'rxjs/operators';
@@ -42,7 +42,7 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
   );
   log.render('FeatureView', {featureView, feature});
 
-  const isVisible = useObservable(featureView.observable().pipe(map(f => f.visible)), featureView.visible);
+  const isVisible = useObservable(featureView.observable().pipe(map(f => f && f.visible)), featureView.visible);
   const isOpen = useObservable(catalogUI.openObservable(feature.id), catalogUI.isOpen(feature.id));
 
   const handleDelete = React.useCallback(() => {

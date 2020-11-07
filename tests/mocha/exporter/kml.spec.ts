@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-expressions,no-magic-numbers */
 /*
  * Copyright 2019 s4y.solutions
  *
@@ -23,14 +23,14 @@ import memoryStorageFactory from '../../mocks/kv/memoryStorage';
 import {wordingFactory} from '../../../src/personalization/wording/default';
 import {map2StylesFactory} from '../../../src/style/default/styles';
 import catalogFactory from '../../../src/catalog/default/catalog';
-import {getCategoriesKML} from '../../../src/exporter/lib/kml';
+import {getCategoriesKML, nc} from '../../../src/exporter/lib/kml';
 import {ImportedFolder} from '../../../src/importer';
 import {parseKMLString} from '../../../src/importer/default/kml-parser';
 import {expect} from 'chai';
 
 const TEST_STYLE_NO = 2;
 
-describe('KML Exorter', () => {
+describe('KML Exporter', () => {
   let kv: KV;
   let wording: Wording;
   let map2styles: Map2Styles;
@@ -79,5 +79,25 @@ describe('KML Exorter', () => {
     expect(feature.style.iconStyle.icon.toString().indexOf('fill="%23f58231ff"')).to.be.greaterThan(0);
     const map2style = map2styles.findEq(feature.style);
     expect(map2style).to.be.not.null;
+  });
+  it('color of 5 length', () => {
+    const ci = '12345';
+    const co = nc(ci);
+    expect(co).to.be.eq('#fff12345');
+  });
+  it('color of 6 length', () => {
+    const ci = '123456';
+    const co = nc(ci);
+    expect(co).to.be.eq('#ff123456');
+  });
+  it('color of 8 length', () => {
+    const ci = '123456ab';
+    const co = nc(ci);
+    expect(co).to.be.eq('#ab123456');
+  });
+  it('color of 9 length', () => {
+    const ci = '123456abx';
+    const co = nc(ci);
+    expect(co).to.be.eq('#ab123456');
   });
 });

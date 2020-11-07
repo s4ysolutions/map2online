@@ -94,29 +94,30 @@ const routeEnd = (ident: string, route: Route, category?: Category): string =>
   `${ident}</Folder>`;
 
 const routeTag = (ident: string, route: Route, category?: Category): string =>
-  `${routeBegin(ident, route, category)}${Array.from(route.features).reduce((acc, feature) => acc.concat('\n'.concat(placemarkTag(`${ident}  `, feature, route, category))), '')}
+    `${routeBegin(ident, route, category)}${Array.from(route.features).reduce((acc, feature) => acc.concat('\n'.concat(placemarkTag(`${ident}  `, feature, route, category))), '')}
 ${routeEnd(ident, route, category)}
 `;
 
 const routesKML = (ident: string, routes: Route[], category?: Category): string => (categoryBegin(ident, category))
-  .concat(routes.reduce((acc, route) => acc.concat(routeTag(`${ident}  `, route, category)), ''))
-  .concat(categoryEnd(ident, category));
+    .concat(routes.reduce((acc, route) => acc.concat(routeTag(`${ident}  `, route, category)), ''))
+    .concat(categoryEnd(ident, category));
 
 const categoryKML = (ident: string, category: Category): string => routesKML(`${ident}  `, Array.from(category.routes), category);
 
-const transp = 'fffffffff';
-const COLOR_LEN = 8;
+const transp = 'ffffffff';
+const COLOR8_LEN = 8;
+const COLOR6_LEN = 6;
 
-const nc = (color: string): string => {
+export const nc = (color: string): string => {
   const c0 = color.indexOf('#') === 0 ? color.slice(1) : color;
-  const l = COLOR_LEN - c0.length;
+  const l = COLOR8_LEN - c0.length;
   if (l > 0) {
-    return c0 + transp.slice(0, l);
+    return `#${transp.slice(0, l)}${c0}`;
   } else if (l < 0) {
-    return c0.slice(0, COLOR_LEN);
+    const c1 = c0.slice(0, COLOR8_LEN);
+    return `#${c1.slice(COLOR6_LEN, COLOR8_LEN)}${c1.slice(0, COLOR6_LEN)}`;
   }
-  return `#${c0}`;
-
+  return `#${c0.slice(COLOR6_LEN, COLOR8_LEN)}${c0.slice(0, COLOR6_LEN)}`;
 };
 
 const getIconStyleKML = (style: IconStyle): string =>

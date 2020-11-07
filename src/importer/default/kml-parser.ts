@@ -67,15 +67,32 @@ const parseTriplet = (triplet: string): Coordinate => {
   return degreesToMeters(lla);
 };
 
+const transp = 'ffffffff';
+const COLOR8_LEN = 8;
+const COLOR6_LEN = 6;
+const TRANSP_LEN = 2;
+
+export const nc = (color: string): string => {
+  const c0 = color.indexOf('#') === 0 ? color.slice(1) : color;
+  const l = COLOR8_LEN - c0.length;
+  if (l > 0) {
+    return '#' + c0 + transp.slice(0, l);
+  } else if (l < 0) {
+    const c1 = c0.slice(0, COLOR8_LEN);
+    return `#${c1.slice(TRANSP_LEN, COLOR8_LEN)}${c1.slice(0, TRANSP_LEN)}`;
+  }
+  return `#${c0.slice(TRANSP_LEN, COLOR8_LEN)}${c0.slice(0, TRANSP_LEN)}`;
+};
+
 export const parseKMLCoordinates = (text: string): Coordinate[] =>
-  text
-    .trim()
-    // .split(/\r?\n/)
-    .split(/[^-0-9.,]/u)
-    // .split("\n")
-    .map(t => t.trim())
-    .filter(t => Boolean(t))
-    .map(parseTriplet);
+    text
+        .trim()
+        // .split(/\r?\n/)
+        .split(/[^-0-9.,]/u)
+        // .split("\n")
+        .map(t => t.trim())
+        .filter(t => Boolean(t))
+        .map(parseTriplet);
 
 const parseId = (node: Tag | QualifiedTag): string | null => {
   const attrs = node.attributes
@@ -450,7 +467,7 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
         }
         case ParseState.COLOR: {
           if (isLineStyle(currentStyleItem) || isIconStyle(currentStyleItem)) {
-            currentStyleItem.color = text.trim()
+            currentStyleItem.color = nc(text.trim())
           }
           break;
         }

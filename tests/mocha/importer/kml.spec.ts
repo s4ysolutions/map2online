@@ -18,7 +18,7 @@
 import fs from 'fs';
 import path from 'path';
 import {expect} from 'chai';
-import {parseKMLString} from '../../../src/importer/default/kml-parser';
+import {nc, parseKMLString} from '../../../src/importer/default/kml-parser';
 import {ImportedFolder} from '../../../src/importer';
 import {Point} from '../../../src/catalog';
 import {getImportedFolderStats} from '../../../src/importer/stats';
@@ -187,5 +187,25 @@ describe('KML Importer', () => {
     expect(root.features.length).to.be.eq(5);
     const stats = getImportedFolderStats(root);
     expect(stats.routes).to.be.eq(1);
+  });
+  it('color of 5 length', () => {
+    const ci = '12345';
+    const co = nc(ci);
+    expect(co).to.be.eq('#12345fff');
+  });
+  it('color of 6 length', () => {
+    const ci = '123456';
+    const co = nc(ci);
+    expect(co).to.be.eq('#123456ff');
+  });
+  it('color of 8 length', () => {
+    const ci = 'ab123456';
+    const co = nc(ci);
+    expect(co).to.be.eq('#123456ab');
+  });
+  it('color of 9 length', () => {
+    const ci = 'ab123456x';
+    const co = nc(ci);
+    expect(co).to.be.eq('#123456ab');
   });
 });

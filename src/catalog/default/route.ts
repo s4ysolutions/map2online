@@ -48,7 +48,6 @@ export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, st
   const key = `${ROUTE_ID_PREFIX}@${p.id}`;
   const th: Route & Updatebale = {
     id: p.id,
-    ts: makeId(),
     get description() {
       return p.description;
     },

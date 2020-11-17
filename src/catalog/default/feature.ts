@@ -20,12 +20,12 @@ import {
   FeatureProps,
   Features,
   ID,
-  isCoordinate,
-  isLineString,
-  isPoint,
   LineString,
   Point,
   Route,
+  isCoordinate,
+  isLineString,
+  isPoint,
 } from '../index';
 import {KV} from '../../kv-rx';
 import {makeId} from '../../lib/id';
@@ -39,10 +39,10 @@ export const FEATURES_ID_PREFIX = 'fs';
 
 
 interface Updatebale {
-  update: () => void;
+  update: () => Promise<void>;
 }
 
-export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProps | null, map2styles: Map2Styles, notifyFeaturesVisibility: () => void): Feature & Updatebale | null => {
+export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProps | null, map2styles: Map2Styles, notifyFeaturesVisibility: () => void): Promise<Feature & Updatebale | null> => {
   const def: FeatureProps = {
     id: makeId(),
     style: null,
@@ -164,30 +164,28 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
       .pipe(map(value => value === null ? null : catalog.featureById(value.id))),
     delete: () => new Promise<void>((rs) => {
       setTimeout(() => {
-        storage.delete(key);
-        storage.delete(`vis@${p.id}`); // visibility
-        storage.delete(`op@${p.id}`); // visibility
-        rs();
+        const p1 = storage.delete(key);
+        const p2 = storage.delete(`vis@${p.id}`); // visibility
+        const p3 = storage.delete(`op@${p.id}`); // visibility
+        return Promise.all([p1, p2, p3]).then(() => rs())
       }, 0);
     }),
-    update () {
+    update() {
       const map2style = map2styles.findEq(p.style);
       if (map2style) {
         // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
         const {style: _, ...pp} = p;
-        storage.set(key, {...pp, styleId: map2style.id});
+        return storage.set(key, {...pp, styleId: map2style.id});
       } else {
-        storage.set(key, p);
+        return storage.set(key, p);
       }
     },
   };
 };
 
 
-export const featuresFactory = (storage: KV, catalog: Catalog, route: Route, styles: Map2Styles, featuresIds: Record<ID, ID[]>, notifyFeaturesVisibility: () => void): Features => {
+export const featuresFactory = (storage: KV, catalog: Catalog, route: Route, styles: Map2Styles, featuresIds: Record<ID, ID[]>, notifyFeaturesVisibility: () => void): Promise<Features> => {
   const key = `${FEATURES_ID_PREFIX}@${route.id}`;
-
-  featuresIds[key] = storage.get<ID[]>(key, []);
 
   const storeIds = () => {
     storage.set(key, featuresIds[key]);
@@ -199,73 +197,75 @@ export const featuresFactory = (storage: KV, catalog: Catalog, route: Route, sty
     }
   };
 
-  return {
-    ts: makeId(),
-    add(props: FeatureProps, position: number) {
-      const p = {...props};
-      if (!p.title) {
-        p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${featuresIds[key].length + 1}`;
-      }
-      if (!p.id) {
-        p.id = makeId();
-      }
-      const feature = featureFactory(storage, catalog, p, styles, notifyFeaturesVisibility);
-      const ids0 = featuresIds[key];
-      const pos = position || ids0.length;
-
-      // update caches before triggering feature observable
-      // in order to have id of the new feature in the ids array
-      updateIds(ids0.slice(0, pos).concat(feature.id)
-        .concat(ids0.slice(pos)));
-      feature.update();
-      storeIds();
-      // featureById updates features global cache from storage
-      return Promise.resolve(catalog.featureById(feature.id)).then(f => {
-        notifyFeaturesVisibility();
-        return f;
-      });
-    },
-    byPos: (index: number): Feature | null => catalog.featureById(featuresIds[key][index]),
-    get length() {
-      return featuresIds[key] ? featuresIds[key].length : 0;
-    },
-    observable() {
-      return storage.observable(key).pipe(map(() => this));
-    },
-    remove(feature: Feature): Promise<number> {
-      const ids0 = featuresIds[key];
-      const pos = ids0.indexOf(feature.id);
-      if (pos < 0) {
-        return Promise.resolve(0);
-      }
-      updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
-      return feature.delete().then(() => {
-        storeIds();
-        notifyFeaturesVisibility();
-        return 1; // count
-      });
-    },
-    delete() {
-      return Promise.all(Array.from(this).map(feature => this.remove(feature)))
-        .then(() => {
-          storage.delete(key);
-          delete featuresIds[key];
-        });
-    },
-    reorder(from: number, to: number) {
-      const ids0 = featuresIds[key];
-      updateIds(reorder(ids0, from, to));
-      storeIds();
-    },
-    [Symbol.iterator]() {
-      const ids0 = featuresIds[key];
-      const _ids = [...ids0]; // don't reflect modifications after the iterator has been created
-      let _current = 0;
+  return storage.get<ID[]>(key, [])
+    .then(ids => {
+      featuresIds[key] = ids
       return {
-        next: () => _current >= _ids.length
-          ? {done: true, value: null}
-          : {done: false, value: this.byPos(_current++)},
+        add(props: FeatureProps, position: number) {
+          const p = {...props};
+          if (!p.title) {
+            p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${featuresIds[key].length + 1}`;
+          }
+          if (!p.id) {
+            p.id = makeId();
+          }
+          const feature = featureFactory(storage, catalog, p, styles, notifyFeaturesVisibility);
+          const ids0 = featuresIds[key];
+          const pos = position || ids0.length;
+
+          // update caches before triggering feature observable
+          // in order to have id of the new feature in the ids array
+          updateIds(ids0.slice(0, pos).concat(feature.id)
+            .concat(ids0.slice(pos)));
+          feature.update();
+          storeIds();
+          // featureById updates features global cache from storage
+          return Promise.resolve(catalog.featureById(feature.id)).then(f => {
+            notifyFeaturesVisibility();
+            return f;
+          });
+        },
+        byPos: (index: number): Feature | null => catalog.featureById(featuresIds[key][index]),
+        get length() {
+          return featuresIds[key] ? featuresIds[key].length : 0;
+        },
+        observable() {
+          return storage.observable(key).pipe(map(() => this));
+        },
+        remove(feature: Feature): Promise<number> {
+          const ids0 = featuresIds[key];
+          const pos = ids0.indexOf(feature.id);
+          if (pos < 0) {
+            return Promise.resolve(0);
+          }
+          updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
+          return feature.delete().then(() => {
+            storeIds();
+            notifyFeaturesVisibility();
+            return 1; // count
+          });
+        },
+        delete() {
+          return Promise.all(Array.from(this).map(feature => this.remove(feature)))
+            .then(() => {
+              storage.delete(key);
+              delete featuresIds[key];
+            });
+        },
+        reorder(from: number, to: number) {
+          const ids0 = featuresIds[key];
+          updateIds(reorder(ids0, from, to));
+          storeIds();
+        },
+        [Symbol.iterator]() {
+          const ids0 = featuresIds[key];
+          const _ids = [...ids0]; // don't reflect modifications after the iterator has been created
+          let _current = 0;
+          return {
+            next: () => _current >= _ids.length
+              ? {done: true, value: null}
+              : {done: false, value: this.byPos(_current++)},
+          };
+        },
       };
-    },
-  };
-};
+    };

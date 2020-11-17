@@ -24,7 +24,7 @@ interface LocalStorage {
 }
 
 const localStorageFactory = (): KV & LocalStorage => ({
-  get <T>(key: string, defaultValue?: T, forcedJSON?: string) {
+  get<T>(key: string, defaultValue?: T, forcedJSON?: string) {
     if (forcedJSON) {
       return JSON.parse(forcedJSON);
     }
@@ -32,7 +32,7 @@ const localStorageFactory = (): KV & LocalStorage => ({
     return serialized ? JSON.parse(serialized) : defaultValue;
   },
   subject: new Subject<{ key: string, value: unknown }>(),
-  set <T>(key: string, value: T) {
+  set<T>(key: string, value: T) {
     log.debug(`localStorage set ${key}`, value);
     if (value === undefined) {
       window.localStorage.removeItem(key);
@@ -49,13 +49,15 @@ const localStorageFactory = (): KV & LocalStorage => ({
       }
     }
     this.subject.next({key, value});
+    return Promise.resolve();
   },
-  delete <T>(key: string) {
+  delete(key: string) {
     log.debug(`localStorage remove ${key}`);
     window.localStorage.removeItem(key);
     this.subject.next({key, value: null});
+    return Promise.resolve();
   },
-  observable <T>(key?: string) {
+  observable(key?: string) {
     return key
       ? this.subject.pipe(
         filter<{ key: string; value: unknown }>((r): boolean => r.key === key),
@@ -63,7 +65,6 @@ const localStorageFactory = (): KV & LocalStorage => ({
       )
       : this.subject;
   },
-  hasKey: (key: string): boolean => window.localStorage.getItem(key) !== null,
 });
 
 export default localStorageFactory;

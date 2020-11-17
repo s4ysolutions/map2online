@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {categoriesFactory, CATEGORY_ID_PREFIX, categoryFactory} from './category';
+import {CATEGORY_ID_PREFIX, categoriesFactory, categoryFactory} from './category';
 import {KV} from '../../kv-rx';
 import {Catalog, Category, CategoryProps, Feature, FeatureProps, ID, Route, RouteProps} from '../index';
 import {ROUTE_ID_PREFIX, routeFactory} from './route';
@@ -72,9 +72,13 @@ const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Cata
       if (category) {
         return category;
       }
-      // eslint-disable-next-line no-use-before-define
-      categories[id] = categoryFactory(storage, this, wording, styles, routesIds, featuresIds, storage.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null), notifyFeaturesVisibility);
+      storage
+        .get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null)
+        .then(props =>
+          categories[id] = categoryFactory(storage, this, wording, styles, routesIds, featuresIds, props, null), notifyFeaturesVisibility);
       return categories[id];
+        )
+      // eslint-disable-next-line no-use-before-define
     },
     featureById(id: ID) {
       const feature = features[id];

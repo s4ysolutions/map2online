@@ -22,7 +22,11 @@
 }
 
 .hasPointer {
-  cursor: pointer;
+  cursor: pointer !important;
+}
+
+.hasArrow {
+  cursor: default !important;
 }
 
 .edit-dialog, .import-dialog, .about {

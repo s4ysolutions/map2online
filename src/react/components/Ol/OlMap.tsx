@@ -79,7 +79,7 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       baseLayer.state = {x: viewState.center[0], y: viewState.center[1], zoom: viewState.zoom};
       log.d('OlMap moveend', baseLayer.state);
     });
-    m.on('pointerdrag', (e: MapBrowserEvent) => {
+    m.on('pointerdrag', (e: MapBrowserEvent<UIEvent>) => {
       const pos = e.frameState.viewState.center;
       baseLayer.setDragging({lat: pos[1], lon: pos[0], alt: 0});
     });
@@ -117,9 +117,13 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
   return <div className="ol-container" ref={mapAttach} >
     {map && <olMapContext.Provider value={map} >
       <BaseLayer />
+
       <ActiveFeatures />
+
       <DrawInteractions />
+
       <ModifyInteractions />
+
       <SnapInteractions />
     </olMapContext.Provider >}
   </div >;

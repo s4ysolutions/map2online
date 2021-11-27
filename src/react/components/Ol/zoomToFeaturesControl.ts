@@ -19,8 +19,9 @@ import {Control} from 'ol/control';
 import {visibleOlFeatures} from './ActiveFeatures';
 import log from '../../../log';
 import OlFeature from 'ol/Feature';
+import {Geometry as OlGeometry} from 'ol/geom';
 
-const lastFeatures: OlFeature[] = null;
+const lastFeatures: OlFeature<OlGeometry>[] = null;
 let lastExtent: number[] = null;
 
 const MIN_BOUNDS = 100000;

@@ -66,11 +66,11 @@ const config = merge(baseConfig, {
     new webpack.HotModuleReplacementPlugin(),
   ],
   devServer: {
-    contentBase: path.resolve(__dirname, PATH_DIST),
+    //contentBase: path.resolve(__dirname, PATH_DIST),
     compress: false,
     port: 9000,
     hot: true,
-    publicPath: '/',
+    //publicPath: '/',
     historyApiFallback: true,
   },
 });

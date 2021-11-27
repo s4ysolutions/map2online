@@ -23,15 +23,16 @@ import {getOlStyle} from './styles';
 import {coordinate2ol, coordinates2ol} from './coordinates';
 import {Coordinate as OlCoordinate} from 'ol/coordinate';
 import {Style} from 'ol/style';
+import {Geometry as OlGeometry} from 'ol/geom';
 
-const cache: Record<ID, OlFeature> = {};
+const cache: Record<ID, OlFeature<OlGeometry>> = {};
 
 export const olGeometryFactory = (geometry: Point | LineString): OlPoint | OlLineString =>
   isPoint(geometry)
     ? new OlPoint(coordinate2ol(geometry.coordinate))
     : new OlLineString(coordinates2ol(geometry.coordinates));
 
-export const olFeatureFactory = (feature: Feature): OlFeature => {
+export const olFeatureFactory = (feature: Feature): OlFeature<OlGeometry> => {
   let cached = cache[feature.id];
   if (cached) {
     return cached;
@@ -53,7 +54,7 @@ export const olFeatureFactory = (feature: Feature): OlFeature => {
   return cached;
 };
 
-export const setOlFeatureCoordinates = (olFeature: OlFeature, feature: Feature): void => {
+export const setOlFeatureCoordinates = (olFeature: OlFeature<OlGeometry>, feature: Feature): void => {
   if (isPoint(feature.geometry)) {
     const {coordinate} = feature.geometry;
     const olCoordinates: OlCoordinate = coordinate2ol(coordinate);
@@ -65,7 +66,7 @@ export const setOlFeatureCoordinates = (olFeature: OlFeature, feature: Feature):
   }
 };
 
-const getOlFeatureStyle = (olFeature: OlFeature/*, styleLike?: Style | Style[]*/): Style | void => {
+const getOlFeatureStyle = (olFeature: OlFeature<OlGeometry>/*, styleLike?: Style | Style[]*/): Style | void => {
   const slike = /* styleLike || */olFeature.getStyle();
   // if (Object.prototype.hasOwnProperty.call(slike, 'getText')) {
   if ('getText' in slike) {
@@ -86,11 +87,11 @@ const getOlFeatureStyle = (olFeature: OlFeature/*, styleLike?: Style | Style[]*/
   }*/
 };
 
-export const getOlFeatureTitle = (olFeature: OlFeature): string => {
+export const getOlFeatureTitle = (olFeature: OlFeature<OlGeometry>): string => {
   const style = getOlFeatureStyle(olFeature);
   return style ? style.getText().getText() : '';
 };
-export const setOlFeatureTitle = (olFeature: OlFeature, title: string): void => {
+export const setOlFeatureTitle = (olFeature: OlFeature<OlGeometry>, title: string): void => {
   const style = getOlFeatureStyle(olFeature);
   if (style) {
     const st = style.getText();

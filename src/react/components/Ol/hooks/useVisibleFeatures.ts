@@ -21,16 +21,17 @@ import useObservable from '../../../hooks/useObservable';
 import {map} from 'rxjs/operators';
 import {Feature} from '../../../../catalog';
 import {Observable} from 'rxjs';
+import {Geometry as OlGeometry} from 'ol/geom';
 
-const transformVisibleFeatures = (features: Feature[]): OlFeature[] =>
+const transformVisibleFeatures = (features: Feature[]): OlFeature<OlGeometry>[] =>
   features.map(feature => olFeatureFactory(feature));
 
-const observable: Observable<OlFeature[]> = getCatalog()
+const observable: Observable<OlFeature<OlGeometry>[]> = getCatalog()
   .visibleFeaturesObservable()
   .pipe(map((f) => transformVisibleFeatures(f)));
 
-export const useVisibleFeatures = (): OlFeature[] => {
-  const visibleFeatures: OlFeature[] = transformVisibleFeatures(getCatalog().visibleFeatures);
+export const useVisibleFeatures = (): OlFeature<OlGeometry>[] => {
+  const visibleFeatures: OlFeature<OlGeometry>[] = transformVisibleFeatures(getCatalog().visibleFeatures);
   return useObservable(observable, visibleFeatures);
 };
 

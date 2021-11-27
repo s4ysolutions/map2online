@@ -27,12 +27,13 @@ import {setModifying} from './hooks/useModifying';
 import {merge} from 'rxjs';
 import {setOlFeatureCoordinates} from './lib/feature';
 import {useVisibleFeatures} from './hooks/useVisibleFeatures';
+import {Geometry as OlGeometry} from 'ol/geom';
 
 const catalog = getCatalog();
 
 const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
   const map = React.useContext(olMapContext);
-  const olFeatures: OlFeature[] = useVisibleFeatures();
+  const olFeatures: OlFeature<OlGeometry>[] = useVisibleFeatures();
 
   const modifyInteractionRef = React.useRef(null);
 
@@ -81,7 +82,7 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement => {
     map.addInteraction(modifyInteractionRef.current);
 
     const featuresObservables = olFeatures.map(olFeature => catalog.featureById(olFeature.getId().toString()).observable());
-    const olFeaturesById: Record<ID, OlFeature> = {};
+    const olFeaturesById: Record<ID, OlFeature<OlGeometry>> = {};
 
     olFeatures.forEach(olFeature => {
       olFeaturesById[olFeature.getId().toString()] = olFeature;

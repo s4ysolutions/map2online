@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import {XmlEntities} from 'html-entities';
+import {decode, encode} from 'html-entities';
 
-const entities = new XmlEntities();
-
-export const henc = (text: string): string => entities.encode(text);
-export const hdec = (text: string): string => entities.decode(text);
+export const henc = (text: string): string => encode(text);
+export const hdec = (text: string): string => decode(text);

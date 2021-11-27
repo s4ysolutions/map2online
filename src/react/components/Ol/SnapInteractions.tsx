@@ -24,12 +24,13 @@ import {merge} from 'rxjs';
 import {getCatalog} from '../../../di-default';
 import {setOlFeatureCoordinates} from './lib/feature';
 import {useVisibleFeatures} from './hooks/useVisibleFeatures';
+import {Geometry as OlGeometry} from 'ol/geom';
 
 const catalog = getCatalog();
 
 const SnapInteractions: React.FunctionComponent = (): React.ReactElement => {
   const map = React.useContext(olMapContext);
-  const olFeatures: OlFeature[] = useVisibleFeatures();
+  const olFeatures: OlFeature<OlGeometry>[] = useVisibleFeatures();
   const snapInteractionRef = React.useRef(null);
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const SnapInteractions: React.FunctionComponent = (): React.ReactElement => {
     map.addInteraction(snapInteractionRef.current);
 
     const featuresObservables = olFeatures.map(olFeature => catalog.featureById(olFeature.getId().toString()).observable());
-    const olFeaturesById: Record<string, OlFeature> = {};
+    const olFeaturesById: Record<string, OlFeature<OlGeometry>> = {};
     olFeatures.forEach(olFeature => {
       olFeaturesById[olFeature.getId().toString()] = olFeature;
     });

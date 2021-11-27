@@ -25,19 +25,20 @@ import {merge} from 'rxjs';
 import {Feature} from '../../../catalog';
 import {setOlFeatureCoordinates, setOlFeatureTitle} from './lib/feature';
 import {useVisibleFeatures} from './hooks/useVisibleFeatures';
+import {Geometry as OlGeometry} from 'ol/geom';
 
 const catalog = getCatalog();
 
 const source = new VectorSource({wrapX: false});
 const layer = new VectorLayer({source});
 
-let olFeaturesById: Record<string, OlFeature> = {};
+let olFeaturesById: Record<string, OlFeature<OlGeometry>> = {};
 
 // used by zoom 2 extent control
-export const visibleOlFeatures = (): OlFeature[] => Object.values(olFeaturesById);
+export const visibleOlFeatures = (): OlFeature<OlGeometry>[] => Object.values(olFeaturesById);
 
 const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
-  const olFeatures: OlFeature[] = useVisibleFeatures();
+  const olFeatures: OlFeature<OlGeometry>[] = useVisibleFeatures();
   const map = React.useContext(olMapContext);
 
   useEffect(() => {

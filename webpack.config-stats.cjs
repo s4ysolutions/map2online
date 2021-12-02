@@ -20,7 +20,7 @@ const webpack = require('webpack');
 
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
-const baseConfig = require('./webpack.config-prod');
+const baseConfig = require('./webpack.config-prod.cjs');
 
 const config = merge(baseConfig, {
   plugins: [new BundleAnalyzerPlugin()],

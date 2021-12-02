@@ -26,7 +26,7 @@ const {
   cssLoader,
   cssModuleLoader,
   ruleTypescript,
-} = require('./webpack.config-common');
+} = require('./webpack.config-common.cjs');
 
 const ruleCssEmbed = {
   test: /\.css$/u,

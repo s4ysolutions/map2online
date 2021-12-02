@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "moduleResolution": "node",
-    "module": "commonjs",
+    "module": "ESNext",
     "allowJs": false,
     "baseUrl": "./src",
     "declaration": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "jsx": "react",
     "lib": [
       "es2017",

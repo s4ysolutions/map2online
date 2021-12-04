@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {KV} from '../../../src/kv-rx';
+import {KV} from '../../../src/kv/sync';
 import {Wording} from '../../../src/personalization/wording';
 import {Map2Styles} from '../../../src/style';
 import {Catalog, isLineString, isPoint, LineString} from '../../../src/catalog';

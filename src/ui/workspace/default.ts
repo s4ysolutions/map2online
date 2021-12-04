@@ -15,7 +15,7 @@
  */
 
 import {Workspace} from './index';
-import {KV} from '../../kv-rx';
+import {KV} from '../../kv/sync';
 import {Subject} from 'rxjs';
 
 const workspaceFactory = (persistanceStorage: KV): Workspace => {

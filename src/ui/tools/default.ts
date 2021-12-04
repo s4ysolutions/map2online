@@ -15,7 +15,7 @@
  */
 
 import {SelectedTool, Tools} from './index';
-import {KV} from '../../kv-rx';
+import {KV} from '../../kv/sync';
 import {Map2Styles, Style} from '../../style';
 import {map} from 'rxjs/operators';
 

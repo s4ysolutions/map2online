@@ -19,7 +19,7 @@ import catalogFactory from '../../../src/catalog/default/catalog';
 import {expect} from 'chai';
 import {wordingFactory} from '../../../src/personalization/wording/default';
 import {Wording} from '../../../src/personalization/wording';
-import {KV} from '../../../src/kv-rx';
+import {KV} from '../../../src/kv/sync';
 import {Map2Styles} from '../../../src/style';
 import {map2StylesFactory} from '../../../src/style/default/styles';
 

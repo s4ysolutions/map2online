@@ -15,7 +15,7 @@
  */
 
 import {expect} from 'chai';
-import {KV} from '../../../src/kv-rx';
+import {KV} from '../../../src/kv/sync';
 import memoryStorageFactory from '../../mocks/kv/memoryStorage';
 import {map2StylesFactory} from '../../../src/style/default/styles';
 import {Style} from '../../../src/style';

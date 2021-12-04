@@ -58,7 +58,6 @@ export interface FeatureProps {
   title: string;
   visible: boolean;
   style: Style;
-  styleId?: string;
   geometry: Point | LineString;
 }
 
@@ -81,7 +80,7 @@ export interface Features extends Iterable<Feature> {
   remove: (feauture: Feature) => Promise<number>;
   observable: () => Observable<Features>;
   byPos: (index: number) => Feature | null;
-  reorder: (from: number, to: number) => void;
+  reorder: (from: number, to: number) => Promise<void>;
   delete: () => Promise<void>;
 }
 

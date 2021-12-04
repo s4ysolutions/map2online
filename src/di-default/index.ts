@@ -15,7 +15,7 @@
  */
 
 import {Workspace} from '../ui/workspace';
-import {KV} from '../kv-rx';
+import {KV} from '../kv/sync';
 import toolsFactory from '../ui/tools/default';
 import {Tools} from '../ui/tools';
 import {BaseLayer} from '../ui/layers/base';
@@ -35,7 +35,7 @@ import {Wording} from '../personalization/wording';
 import {parserFactory} from '../importer/default';
 import {map2StylesFactory} from '../style/default/styles';
 import {Map2Styles} from '../style';
-import localStorageFactory from '../kv-rx/localStorage';
+import localStorageFactory from '../kv/sync/localStorage';
 
 const localStorageSingleton = localStorageFactory();
 export const getLocalStorage = (): KV => localStorageSingleton;

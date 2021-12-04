@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {KV} from '../../kv-rx';
+import {KV} from '../../kv/sync';
 import {CatalogUI} from './index';
 import {Catalog, Category, Feature, ID, Route} from '../../catalog';
 import {map} from 'rxjs/operators';

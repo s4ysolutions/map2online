@@ -22,6 +22,7 @@ import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
 import {Wording} from '../../personalization/wording';
 import {Map2Styles} from '../../style';
+import {KvPromise} from '../../kv/promise';
 
 export const CATEGORY_ID_PREFIX = 'c';
 
@@ -34,6 +35,7 @@ export const newCategoryProps = (wording: Wording): CategoryProps => ({
   open: false,
 });
 
+class Category
 interface Updatebale {
   update: () => void;
 }
@@ -108,7 +110,7 @@ export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording,
   return th;
 };
 
-export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>, notifyFeaturesVisibility: () => void): Categories => {
+export const categoriesFactory = (storage: KvPromise, catalog: Catalog, wording: Wording, styles: Map2Styles, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>, notifyFeaturesVisibility: () => void): Categories => {
   let prevIds: ID[] = [];
   const key = 'cats';
   const storeIds = () => {
@@ -123,7 +125,7 @@ export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wordin
     if (prevIds.length > 0) {
       return prevIds;
     }
-    prevIds = storage.get('cats', []);
+    prevIds = storage.get(keys, []);
     if (prevIds.length > 0) {
       return prevIds;
     }

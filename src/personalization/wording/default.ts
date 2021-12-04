@@ -16,7 +16,7 @@
 
 import {Wording} from './index';
 import {currentLocale} from '../../l10n';
-import {KV} from '../../kv-rx';
+import {KV} from '../../kv/sync';
 import {Observable, merge} from 'rxjs';
 import {map} from 'rxjs/operators';
 

@@ -14,25 +14,57 @@
  * limitations under the License.
  */
 
-import {categoriesFactory, CATEGORY_ID_PREFIX, categoryFactory} from './category';
+import {categoriesFactory, CATEGORY_ID_PREFIX, categoryFactory} from '../default/category';
 import {KV} from '../../kv/sync';
 import {Catalog, Category, CategoryProps, Feature, FeatureProps, ID, Route, RouteProps} from '../index';
-import {ROUTE_ID_PREFIX, routeFactory} from './route';
-import {FEATURE_ID_PREFIX, featureFactory} from './feature';
+import {ROUTE_ID_PREFIX, routeFactory} from '../default/route';
+import {FEATURE_ID_PREFIX, featureFactory} from '../default/feature';
 import {debounceTime} from 'rxjs/operators';
 import {Wording} from '../../personalization/wording';
 import {Map2Styles} from '../../style';
 import {Observable, Subject} from 'rxjs';
+import {KvPromise} from '../../kv/promise';
+import {CatalogStorage} from '../storage';
 
 const DEBOUNCE_DELAY = 250;
 // const FEATURE_ID_PREFIX_AT = `${FEATURE_ID_PREFIX}@`;
 
-const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Catalog => {
-  const categories: Record<ID, Category> = {};
-  const routes: Record<ID, Route> = {};
-  const features: Record<ID, Feature> = {};
+const CATEGORIES_ID_PREFIX = 'cats';
+const ROUTE_ID_PREFIX = 'r';
+const ROUTES_ID_PREFIX = 'rs';
+
+const catalogPromiseFactory = async (kv: KvPromise, storage: CatalogStorage, wording: Wording, styles: Map2Styles): Promise<Catalog> => {
+  const categoriesCache: Record<ID, Category> = {};
+  const routesCache: Record<ID, Route> = {};
+  const featuresCache: Record<ID, Feature> = {};
+  const categoriesIds: Record<ID, ID[]> = {};
   const routesIds: Record<ID, ID[]> = {};
   const featuresIds: Record<ID, ID[]> = {};
+
+  let promises: Promise<{key: ID,ids: ID[]}>[]
+  promises = []
+  for (const id of ['root']) {
+    const key: ID = `${CATEGORIES_ID_PREFIX}@${id}`
+    promises.push(
+      kv.get<ID[]>(key, [])
+        .then(ids => ({key, ids}))
+    );
+  }
+
+  for (const e of (await Promise.all(promises))){
+    categoriesIds[e.key] = e.ids;
+  }
+
+  categoriesIds[CATEGORIES_ID_PREFIX] = await kv.get<ID[]>(CATEGORIES_ID_PREFIX, []);
+  promises = []
+  for (const id of categoriesIds[CATEGORIES_ID_PREFIX]) {
+    kv.`${CATEGORY_ID_PREFIX}@${id}`
+    promises.push()
+  }
+
+  const promisesRoutesIds: Promise<ID[]>[] = [];
+  for (const routeIds )
+
 
   const lastFeatures: Feature[] = null;
   // noinspection JSUnusedLocalSymbols
@@ -57,15 +89,6 @@ const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Cata
   let lastVisibleFeatures: Feature[] = [];
 
   const th: Catalog = {
-    /*
-    featuresObservable: () =>
-      storage
-        .observable<{ key: string; value: Features }>()
-        .pipe(
-          filter(({key}) => key.indexOf(FEATURE_ID_PREFIX_AT) === 0),
-          map(({value}) => value),
-        ),
-     */
     categories: null,
     categoryById(id: ID) {
       const category = categories[id];
@@ -73,7 +96,7 @@ const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Cata
         return category;
       }
       // eslint-disable-next-line no-use-before-define
-      categories[id] = categoryFactory(storage, this, wording, styles, routesIds, featuresIds, storage.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null), notifyFeaturesVisibility);
+      categories[id] = categoryFactory(kv, this, wording, styles, routesIds, featuresIds, kv.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null), notifyFeaturesVisibility);
       return categories[id];
     },
     featureById(id: ID) {
@@ -82,7 +105,7 @@ const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Cata
         return feature;
       }
       // eslint-disable-next-line no-use-before-define
-      features[id] = featureFactory(storage, this, storage.get<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${id}`, null), styles, notifyFeaturesVisibility);
+      features[id] = featureFactory(kv, this, kv.get<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${id}`, null), styles, notifyFeaturesVisibility);
       return features[id];
     },
     routeById(id: ID) {
@@ -91,7 +114,7 @@ const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Cata
         return route;
       }
       // eslint-disable-next-line no-use-before-define
-      routes[id] = routeFactory(storage, this, wording, styles, featuresIds, storage.get<RouteProps | null>(`${ROUTE_ID_PREFIX}@${id}`, null), notifyFeaturesVisibility);
+      routes[id] = routeFactory(kv, this, wording, styles, featuresIds, kv.get<RouteProps | null>(`${ROUTE_ID_PREFIX}@${id}`, null), notifyFeaturesVisibility);
       return routes[id];
     },
     get visibleFeatures() {
@@ -124,7 +147,7 @@ const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Cata
     subjectVisibleFeatures.next(lastVisibleFeatures);
   };
 
-  th.categories = categoriesFactory(storage, th, wording, styles, routesIds, featuresIds, notifyFeaturesVisibility);
+  th.categories = categoriesFactory(kv, th, wording, styles, routesIds, featuresIds, notifyFeaturesVisibility);
 
   // NOTE: a bit fragile. As a side effect it will create a first category with first router
   //       if none exists yet.

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Index} from './index';
+import {KvPromise} from './index';
 import {filter, map} from 'rxjs/operators';
-import log from '../log';
+import log from '../../log';
 import {openDB} from 'idb';
 import {IDBPDatabase} from 'idb/build/entry';
 import {Subject} from 'rxjs';
@@ -27,7 +27,7 @@ interface IndexedDB {
   readonly subject: Subject<{ key: string; value: unknown }>
 }
 
-const indexedDbFactory = (store: string): Index & IndexedDB => ({
+const indexedDbFactory = (store: string): KvPromise & IndexedDB => ({
   _db: null,
   subject: new Subject<{ key: string; value: unknown }>(),
   get db() {
@@ -55,7 +55,7 @@ const indexedDbFactory = (store: string): Index & IndexedDB => ({
     });
   },
   delete<T>(key: string) {
-    log.debug(`localStorage remove ${key}`);
+    log.debug(`indexedDb remove ${key}`);
     return this.db
       .then((db: IDBPDatabase) => db.delete(store, key))
       .then(() => this.subject.next({key, value: null}));

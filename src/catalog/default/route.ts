@@ -15,7 +15,7 @@
  */
 
 import {Catalog, Category, ID, Route, RouteProps, Routes} from '../index';
-import {KV} from '../../kv-rx';
+import {KV} from '../../kv/sync';
 import {featuresFactory} from './feature';
 import {makeId} from '../../lib/id';
 import {map} from 'rxjs/operators';

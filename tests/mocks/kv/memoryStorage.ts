@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {KV} from '../../../src/kv-rx';
+import {KV} from '../../../src/kv/sync';
 import {Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 

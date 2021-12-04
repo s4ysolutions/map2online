@@ -18,7 +18,7 @@
 import {expect} from 'chai';
 import {Catalog, Feature, FeatureProps} from '../../../src/catalog';
 import memoryStorageFactory from '../../mocks/kv/memoryStorage';
-import {KV} from '../../../src/kv-rx';
+import {KV} from '../../../src/kv/sync';
 import {Wording} from '../../../src/personalization/wording';
 import {Map2Styles} from '../../../src/style';
 import {wordingFactory} from '../../../src/personalization/wording/default';

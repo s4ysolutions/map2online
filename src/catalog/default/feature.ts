@@ -27,7 +27,7 @@ import {
   Point,
   Route,
 } from '../index';
-import {KV} from '../../kv-rx';
+import {KV} from '../../kv/sync';
 import {makeId} from '../../lib/id';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
@@ -52,12 +52,10 @@ export const featureFactory = (storage: KV, catalog: Catalog, props: FeatureProp
     title: '',
     visible: true,
   };
-  const {styleId, style, ...pprops} = props;
   const p: FeatureProps = props === null
     ? def
     : {
-      ...def, ...pprops,
-      style: style || (styleId ? (map2styles.byId(styleId) || map2styles.defaultStyle) : map2styles.defaultStyle),
+      ...def, ...props,
     };
   const key = `${FEATURE_ID_PREFIX}@${p.id}`;
   return {

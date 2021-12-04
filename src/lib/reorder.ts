@@ -27,6 +27,6 @@ const reorder = <T>(items: T[], src: number, dst: number): T[] =>
         .concat(items.slice(src + 1, dst + 1))
         .concat(items[src])
         .concat(items.slice(dst + 1))
-      : items;
+      : items.slice();
 
 export default reorder;

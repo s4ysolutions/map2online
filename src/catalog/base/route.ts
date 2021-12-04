@@ -1,13 +1,14 @@
-import {Categories, Category, CategoryProps, Feature, ID, Route, RouteProps, Routes} from '../index';
+import {Feature, Features, ID, Route, RouteProps, Routes} from '../index';
+import {Observable} from 'rxjs';
 import {CatalogStorage} from '../storage';
 import {makeId} from '../../lib/id';
-import {RoutesDefault} from './route';
-import {Observable} from 'rxjs';
+import {FeaturesDefault} from './feature';
 import {map} from 'rxjs/operators';
+import reorder from '../../lib/reorder';
+import exp from 'constants';
 
-export class CategoryDefault implements Category {
-
-  private readonly p: CategoryProps;
+class RouteDefault implements Route {
+  private readonly p: RouteProps;
 
   private readonly storage: CatalogStorage;
 
@@ -18,15 +19,13 @@ export class CategoryDefault implements Category {
     props: RouteProps | null,
     featuresIdsCache: Record<ID, ID[]>,
     featuresCache: Record<ID, Feature>,
-    routesIdsCache: Record<ID, ID[]>,
-    routesCache: Record<ID, Route>,
     notifyFeaturesVisibility: () => void,
   ) {
     this.storage = storage;
     this.p = props;
     this.id = this.p.id;
     this.notifyFeaturesVisibility = notifyFeaturesVisibility;
-    this.routes = new RoutesDefault(storage, this.id, routesIdsCache, routesCache, featuresIdsCache, featuresCache, notifyFeaturesVisibility);
+    this.features = new FeaturesDefault(storage, this.id, featuresIdsCache, featuresCache, notifyFeaturesVisibility);
   }
 
   readonly id: ID;
@@ -42,7 +41,7 @@ export class CategoryDefault implements Category {
     this.update();
   }
 
-  readonly routes: Routes;
+  readonly features: Features;
 
   get summary() {
     return this.p.summary;
@@ -84,36 +83,34 @@ export class CategoryDefault implements Category {
     this.update();
   }
 
-  update(): void {
-    this.storage.updateCategoryProps(this.p);
-  }
-
   delete(): Promise<void> {
     return Promise.all([
-      this.routes.delete(),
-      this.storage.deleteCategoryProps(this.p),
+      this.features.delete(),
+      this.storage.deleteRouteProps(this.p),
     ]) as unknown as Promise<void>;
   }
 
-  observable(): Observable<Category> {
-    return this.storage.observableCategoryProps(this.p)
+  observable(): Observable<Route> {
+    return this.storage.observableRouter(this.p)
       .pipe(map(value => value === null ? null : this));
   }
+
+  update(): void {
+    this.storage.updateRouteProps(this.p);
+  }
+
 }
 
-export class CategoriesDefault implements Categories {
+export class RoutesDefault implements Routes {
+  readonly ts: ID = makeId();
 
   private readonly cacheKey: ID;
 
-  private readonly catalogId: ID;
-
-  private readonly routesIdsCache: Record<ID, ID[]>;
+  private readonly categoryId: ID;
 
   private readonly routesCache: Record<ID, Route>;
 
   private readonly idsCache: Record<ID, ID[]>;
-
-  private readonly categoriesCache: Record<ID, Category>;
 
   private readonly featuresIdsCache: Record<ID, ID[]>;
 
@@ -131,76 +128,67 @@ export class CategoriesDefault implements Categories {
 
   constructor(
     storage: CatalogStorage,
-    catalogId: ID,
+    categoryId: ID,
     routesIdsCache: Record<ID, ID[]>,
     routesCache: Record<ID, Route>,
-    catrgoriesIdsCache: Record<ID, ID[]>,
-    categoriesCache: Record<ID, Category>,
     featuresIdsCache: Record<ID, ID[]>,
     featuresCache: Record<ID, Feature>,
     notifyFeaturesVisibility: () => void,
   ) {
     this.storage = storage;
     this.idsCache = routesIdsCache;
-    this.cacheKey = catalogId;
+    this.cacheKey = categoryId;
     this.routesCache = routesCache;
-    this.routesIdsCache = routesIdsCache;
     this.featuresCache = featuresCache;
     this.featuresIdsCache = featuresIdsCache;
-    this.categoriesCache = categoriesCache;
-    this.idsCache = catrgoriesIdsCache;
-    this.catalogId = catalogId;
+    this.categoryId = categoryId;
     this.notifyFeaturesVisibility = notifyFeaturesVisibility;
   }
 
-  add(props: CategoryProps, position: number | undefined): Promise<Category> {
+  add(props: RouteProps, position: number | undefined): Promise<Route> {
     const p = {...props};
     if (!p.id) {
       p.id = makeId();
     }
-    const category = new CategoryDefault(
-      this.storage,
-      p,
-      this.featuresIdsCache,
-      this.featuresCache,
-      this.routesIdsCache,
-      this.routesCache,
-      this.notifyFeaturesVisibility,
-    );
-    category.update();
-    this.categoriesCache[category.id] = category;
+    const route = new RouteDefault(this.storage, p, this.featuresIdsCache, this.featuresCache, this.notifyFeaturesVisibility);
+    route.update();
+    this.routesCache[route.id] = route;
 
     const ids = this.idsCache[this.cacheKey];
     const pos = position || ids.length;
     // update caches before triggering feature observable
     // in order to have id of the new feature in the ids array
-    this.updateIds(ids.slice(0, pos).concat(category.id)
+    this.updateIds(ids.slice(0, pos).concat(route.id)
       .concat(ids.slice(pos)));
     return this.update().then(() => {
       this.notifyFeaturesVisibility();
-      return category;
+      return route;
     });
   }
 
   private update(): Promise<void> {
-    return this.storage.updateCategoriesIds(this.catalogId, this.idsCache[this.cacheKey]);
+    return this.storage.updateRoutesIds(this.categoryId, this.idsCache[this.cacheKey]);
   }
 
-  byPos(index: number): Category | null {
-    return this.categoriesCache[this.idsCache[this.cacheKey][index]] || null;
+  byPos(index: number): Route | null {
+    return this.routesCache[this.idsCache[this.cacheKey][index]] || null;
   }
 
   delete(): Promise<void> {
-    return this.storage.deleteRoutesIds(this.catalogId)
-      .then(() => Promise.all(this.idsCache[this.cacheKey].map(id => this.categoriesCache[id].delete()))) as unknown as Promise<void>;
+    return this.storage.deleteRoutesIds(this.categoryId)
+      .then(() => Promise.all(this.idsCache[this.cacheKey].map(id => this.routesCache[id].delete()))) as unknown as Promise<void>;
+  }
+
+  hasRoute(route: Route): boolean {
+    return this.idsCache[this.cacheKey].indexOf(route.id) >= 0;
   }
 
   get length(): number {
     return this.idsCache[this.cacheKey].length;
   }
 
-  observable(): Observable<Categories> {
-    return this.storage.observableCategoriesIds(this.catalogId).pipe(map(() => this));
+  observable(): Observable<Routes> {
+    return this.storage.observableRoutesIds(this.categoryId).pipe(map(() => this));
   }
 
   remove(route: Route): Promise<number> {
@@ -212,9 +200,9 @@ export class CategoriesDefault implements Categories {
     this.updateIds(ids.slice(0, pos).concat(ids.slice(pos + 1)));
 
     return Promise.all([
-        route.delete(),
-        this.update(),
-      ])
+      route.delete(),
+      this.update(),
+    ])
       .then(() => {
         this.notifyFeaturesVisibility();
         return 1; // count

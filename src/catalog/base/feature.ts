@@ -25,6 +25,31 @@ export class FeatureDefault implements Feature {
 
   private readonly notifyFeaturesVisibility: () => void;
 
+  private static makeDefs(): FeatureProps {
+    return {
+      id: makeId(),
+      style: null,
+      description: '',
+      geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
+      summary: '',
+      title: '',
+      visible: true,
+    };
+  }
+
+  constructor(storage: CatalogStorage, props: FeatureProps | null, notifyFeaturesVisibility: () => void) {
+    if (props === null) {
+      this.p = {
+        ...FeatureDefault.makeDefs(),
+        ...props,
+      };
+    } else {
+      this.p = FeatureDefault.makeDefs();
+    }
+    this.id = this.p.id;
+    this.notifyFeaturesVisibility = notifyFeaturesVisibility;
+  }
+
   get style(): Style {
     return this.p.style;
   }
@@ -83,31 +108,6 @@ export class FeatureDefault implements Feature {
     if (notify) {
       this.notifyFeaturesVisibility();
     }
-  }
-
-  private static makeDefs(): FeatureProps {
-    return {
-      id: makeId(),
-      style: null,
-      description: '',
-      geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
-      summary: '',
-      title: '',
-      visible: true,
-    };
-  }
-
-  constructor(storage: CatalogStorage, props: FeatureProps | null, notifyFeaturesVisibility: () => void) {
-    if (props === null) {
-      this.p = {
-        ...FeatureDefault.makeDefs(),
-        ...props,
-      };
-    } else {
-      this.p = FeatureDefault.makeDefs();
-    }
-    this.id = this.p.id;
-    this.notifyFeaturesVisibility = notifyFeaturesVisibility;
   }
 
   eq(anotherFeature: Feature): boolean {
@@ -175,6 +175,8 @@ export class FeatureDefault implements Feature {
 }
 
 export class FeaturesDefault implements Features {
+  readonly ts: ID = makeId();
+
   private readonly cacheKey: ID;
 
   private readonly featuresCache: Record<ID, Feature>;
@@ -193,14 +195,19 @@ export class FeaturesDefault implements Features {
     }
   };
 
-  constructor(storage: CatalogStorage, routeId: ID, idsCache: Record<ID, ID[]>, featuresCache: Record<ID, Feature>, notifyFeaturesVisibility: () => void) {
+  constructor(
+    storage: CatalogStorage,
+    routeId: ID,
+    idsCache: Record<ID, ID[]>,
+    featuresCache: Record<ID, Feature>,
+    notifyFeaturesVisibility: () => void,
+  ) {
     this.storage = storage;
     this.idsCache = idsCache;
     this.cacheKey = routeId;
     this.featuresCache = featuresCache;
     this.routeId = routeId;
     this.notifyFeaturesVisibility = notifyFeaturesVisibility;
-    this.ts = makeId();
   }
 
   add(props: FeatureProps, position: number | undefined): Promise<Feature> {
@@ -227,7 +234,11 @@ export class FeaturesDefault implements Features {
     });
   }
 
-  update(): Promise<void> {
+  hasFeature (feature: Feature): boolean {
+    return this.idsCache[this.cacheKey].indexOf(feature.id) >= 0;
+  }
+
+  private update(): Promise<void> {
     return this.storage.updateFeaturesIds(this.routeId, this.idsCache[this.cacheKey]);
   }
 
@@ -236,7 +247,8 @@ export class FeaturesDefault implements Features {
   }
 
   delete(): Promise<void> {
-    return this.storage.deleteFeaturesIds(this.routeId);
+    return this.storage.deleteFeaturesIds(this.routeId)
+      .then(() => Promise.all(this.idsCache[this.cacheKey].map(id => this.featuresCache[id].delete()))) as unknown as Promise<void>;
   }
 
   get length(): number {
@@ -270,8 +282,6 @@ export class FeaturesDefault implements Features {
     this.updateIds(reorder(ids, from, to));
     return this.update();
   }
-
-  readonly ts: ID;
 
   [Symbol.iterator](): Iterator<Feature> {
     const ids = this.idsCache[this.cacheKey];

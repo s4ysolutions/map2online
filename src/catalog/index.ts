@@ -74,8 +74,9 @@ export interface Feature extends FeatureProps {
 }
 
 export interface Features extends Iterable<Feature> {
-  ts: ID;
+  readonly ts: ID;
   add: (props: FeatureProps, position?: number) => Promise<Feature>;
+  hasFeature: (feature: Feature) => boolean;
   readonly length: number;
   remove: (feauture: Feature) => Promise<number>;
   observable: () => Observable<Features>;
@@ -107,7 +108,7 @@ export interface Routes extends Iterable<Route> {
   remove: (route: Route) => Promise<number>;
   observable: () => Observable<Routes>;
   byPos: (index: number) => Route | null;
-  reorder: (from: number, to: number) => void;
+  reorder: (from: number, to: number) => Promise<void>;
   delete: () => Promise<void>;
 }
 
@@ -124,7 +125,6 @@ export interface Category extends CategoryProps {
   routes: Routes;
   observable: () => Observable<Category>;
   delete: () => Promise<void>;
-  hasRoute: (route: Route) => boolean;
 }
 
 export interface Categories extends Iterable<Category> {

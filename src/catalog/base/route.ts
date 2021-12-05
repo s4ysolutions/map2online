@@ -1,31 +1,59 @@
-import {Feature, Features, ID, Route, RouteProps, Routes} from '../index';
+import {Feature, FeatureProps, Features, ID, Route, RouteProps, Routes} from '../index';
 import {Observable} from 'rxjs';
 import {CatalogStorage} from '../storage';
 import {makeId} from '../../lib/id';
 import {FeaturesDefault} from './feature';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
-import exp from 'constants';
+import {Wording} from '../../personalization/wording';
+import {Map2Styles} from '../../style';
 
-class RouteDefault implements Route {
+export class RouteDefault implements Route {
   private readonly p: RouteProps;
 
   private readonly storage: CatalogStorage;
 
+  private readonly wording: Wording;
+
+  private readonly map2styles: Map2Styles;
+
   private readonly notifyFeaturesVisibility: () => void;
+
+  private readonly cache: Record<ID, Route>;
+
+  private makeDefs(): RouteProps {
+    return {
+      id: makeId(),
+      description: '',
+      summary: '',
+      title: this.wording.R('New route'),
+      visible: true,
+      open: true,
+    };
+  }
 
   constructor(
     storage: CatalogStorage,
+    wording: Wording,
+    map2styles: Map2Styles,
     props: RouteProps | null,
+    cache: Record<ID, Route>,
     featuresIdsCache: Record<ID, ID[]>,
     featuresCache: Record<ID, Feature>,
     notifyFeaturesVisibility: () => void,
   ) {
     this.storage = storage;
-    this.p = props;
+    this.wording = wording;
+    this.map2styles = map2styles;
+    if (props === null) {
+      this.p = this.makeDefs();
+    } else {
+      this.p = {...this.makeDefs(), ...props};
+    }
+    this.cache = cache;
     this.id = this.p.id;
     this.notifyFeaturesVisibility = notifyFeaturesVisibility;
-    this.features = new FeaturesDefault(storage, this.id, featuresIdsCache, featuresCache, notifyFeaturesVisibility);
+    this.features = new FeaturesDefault(storage, map2styles, this.id, featuresIdsCache, featuresCache, notifyFeaturesVisibility);
   }
 
   readonly id: ID;
@@ -84,6 +112,7 @@ class RouteDefault implements Route {
   }
 
   delete(): Promise<void> {
+    delete this.cache[this.id];
     return Promise.all([
       this.features.delete(),
       this.storage.deleteRouteProps(this.p),
@@ -118,7 +147,11 @@ export class RoutesDefault implements Routes {
 
   private readonly storage: CatalogStorage;
 
+  private readonly map2styles: Map2Styles;
+
   private readonly notifyFeaturesVisibility: () => void;
+
+  private readonly wording: Wording;
 
   private updateIds = (ids: ID[]) => {
     if (ids !== this.idsCache[this.cacheKey]) {
@@ -126,8 +159,31 @@ export class RoutesDefault implements Routes {
     }
   };
 
+  private get guardedIds() {
+    const ids = this.idsCache[this.cacheKey];
+    if (!ids) {
+      this.idsCache[this.cacheKey] = [];
+    }
+    if ((!ids || ids.length === 0) && this.wording.isPersonalized) {
+      const route = new RouteDefault(
+        this.storage,
+        this.wording,
+        this.map2styles,
+        null,
+        this.routesCache,
+        this.featuresIdsCache,
+        this.featuresCache,
+        this.notifyFeaturesVisibility,
+      );
+      this.add(route); //  ignore async storage backend, use sync cache
+    }
+    return this.idsCache[this.cacheKey];
+  }
+
   constructor(
     storage: CatalogStorage,
+    wording: Wording,
+    map2styles: Map2Styles,
     categoryId: ID,
     routesIdsCache: Record<ID, ID[]>,
     routesCache: Record<ID, Route>,
@@ -136,6 +192,8 @@ export class RoutesDefault implements Routes {
     notifyFeaturesVisibility: () => void,
   ) {
     this.storage = storage;
+    this.wording = wording;
+    this.map2styles = map2styles;
     this.idsCache = routesIdsCache;
     this.cacheKey = categoryId;
     this.routesCache = routesCache;
@@ -145,16 +203,28 @@ export class RoutesDefault implements Routes {
     this.notifyFeaturesVisibility = notifyFeaturesVisibility;
   }
 
-  add(props: RouteProps, position: number | undefined): Promise<Route> {
+  add(props: RouteProps, position?: number): Promise<Route> {
     const p = {...props};
     if (!p.id) {
       p.id = makeId();
     }
-    const route = new RouteDefault(this.storage, p, this.featuresIdsCache, this.featuresCache, this.notifyFeaturesVisibility);
+    const route = new RouteDefault(
+      this.storage,
+      this.wording,
+      this.map2styles,
+      p,
+      this.routesCache,
+      this.featuresIdsCache,
+      this.featuresCache,
+      this.notifyFeaturesVisibility,
+    );
     route.update();
     this.routesCache[route.id] = route;
 
-    const ids = this.idsCache[this.cacheKey];
+    let ids = this.idsCache[this.cacheKey];
+    if (!ids) {
+      ids = [];
+    }
     const pos = position || ids.length;
     // update caches before triggering feature observable
     // in order to have id of the new feature in the ids array
@@ -167,24 +237,26 @@ export class RoutesDefault implements Routes {
   }
 
   private update(): Promise<void> {
-    return this.storage.updateRoutesIds(this.categoryId, this.idsCache[this.cacheKey]);
+    return this.storage.updateRoutesIds(this.categoryId, this.guardedIds);
   }
 
   byPos(index: number): Route | null {
-    return this.routesCache[this.idsCache[this.cacheKey][index]] || null;
+    return this.routesCache[this.guardedIds[index]] || null;
   }
 
   delete(): Promise<void> {
+    const ids = this.guardedIds;
+    this.updateIds([]);
     return this.storage.deleteRoutesIds(this.categoryId)
-      .then(() => Promise.all(this.idsCache[this.cacheKey].map(id => this.routesCache[id].delete()))) as unknown as Promise<void>;
+      .then(() => Promise.all(ids.map(id => this.routesCache[id].delete()))) as unknown as Promise<void>;
   }
 
   hasRoute(route: Route): boolean {
-    return this.idsCache[this.cacheKey].indexOf(route.id) >= 0;
+    return this.guardedIds.indexOf(route.id) >= 0;
   }
 
   get length(): number {
-    return this.idsCache[this.cacheKey].length;
+    return this.guardedIds.length;
   }
 
   observable(): Observable<Routes> {
@@ -192,7 +264,7 @@ export class RoutesDefault implements Routes {
   }
 
   remove(route: Route): Promise<number> {
-    const ids = this.idsCache[this.cacheKey];
+    const ids = this.guardedIds;
     const pos = ids.indexOf(route.id);
     if (pos < 0) {
       return Promise.resolve(0);
@@ -200,9 +272,9 @@ export class RoutesDefault implements Routes {
     this.updateIds(ids.slice(0, pos).concat(ids.slice(pos + 1)));
 
     return Promise.all([
-      route.delete(),
-      this.update(),
-    ])
+        route.delete(),
+        this.update(),
+      ])
       .then(() => {
         this.notifyFeaturesVisibility();
         return 1; // count
@@ -210,14 +282,13 @@ export class RoutesDefault implements Routes {
   }
 
   reorder(from: number, to: number): Promise<void> {
-    const ids = this.idsCache[this.cacheKey];
+    const ids = this.guardedIds;
     this.updateIds(reorder(ids, from, to));
     return this.update();
   }
 
   [Symbol.iterator](): Iterator<Route> {
-    const ids = this.idsCache[this.cacheKey];
-    const _ids = ids.slice(); // don't reflect modifications after the iterator has been created
+    const _ids = this.guardedIds.slice(); // don't reflect modifications after the iterator has been created
     let _current = 0;
     return {
       next: () => _current >= _ids.length

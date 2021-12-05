@@ -11,7 +11,7 @@ import {
   isPoint,
 } from '../index';
 import {makeId} from '../../lib/id';
-import {Style} from '../../style';
+import {Map2Styles, Style} from '../../style';
 import {Observable} from 'rxjs';
 import {CatalogStorage} from '../storage';
 import {map} from 'rxjs/operators';
@@ -23,12 +23,16 @@ export class FeatureDefault implements Feature {
 
   private readonly storage: CatalogStorage;
 
+  private readonly map2styles: Map2Styles;
+
+  private readonly cache: Record<ID, Feature>;
+
   private readonly notifyFeaturesVisibility: () => void;
 
-  private static makeDefs(): FeatureProps {
+  private makeDefs(): FeatureProps {
     return {
       id: makeId(),
-      style: null,
+      style: this.map2styles.defaultStyle,
       description: '',
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
@@ -37,15 +41,23 @@ export class FeatureDefault implements Feature {
     };
   }
 
-  constructor(storage: CatalogStorage, props: FeatureProps | null, notifyFeaturesVisibility: () => void) {
+  constructor(
+    storage: CatalogStorage,
+    map2styles: Map2Styles,
+    props: FeatureProps | null,
+    cache: Record<ID, Feature>, notifyFeaturesVisibility: () => void,
+  ) {
+    this.storage = storage;
+    this.map2styles = map2styles;
     if (props === null) {
+      this.p = this.makeDefs();
+    } else {
       this.p = {
-        ...FeatureDefault.makeDefs(),
+        ...this.makeDefs(),
         ...props,
       };
-    } else {
-      this.p = FeatureDefault.makeDefs();
     }
+    this.cache = cache;
     this.id = this.p.id;
     this.notifyFeaturesVisibility = notifyFeaturesVisibility;
   }
@@ -161,6 +173,7 @@ export class FeatureDefault implements Feature {
   }
 
   delete(): Promise<void> {
+    delete this.cache[this.id];
     return this.storage.deleteFeatureProps(this.p);
   }
 
@@ -185,6 +198,8 @@ export class FeaturesDefault implements Features {
 
   private readonly storage: CatalogStorage;
 
+  private readonly map2styles: Map2Styles;
+
   private readonly routeId: ID;
 
   private readonly notifyFeaturesVisibility: () => void;
@@ -195,14 +210,24 @@ export class FeaturesDefault implements Features {
     }
   };
 
+  private get guardedIds() {
+    const ids = this.idsCache[this.cacheKey];
+    if (!ids) {
+      this.idsCache[this.cacheKey] = [];
+    }
+    return this.idsCache[this.cacheKey];
+  }
+
   constructor(
     storage: CatalogStorage,
+    map2styles: Map2Styles,
     routeId: ID,
     idsCache: Record<ID, ID[]>,
     featuresCache: Record<ID, Feature>,
     notifyFeaturesVisibility: () => void,
   ) {
     this.storage = storage;
+    this.map2styles = map2styles;
     this.idsCache = idsCache;
     this.cacheKey = routeId;
     this.featuresCache = featuresCache;
@@ -210,19 +235,22 @@ export class FeaturesDefault implements Features {
     this.notifyFeaturesVisibility = notifyFeaturesVisibility;
   }
 
-  add(props: FeatureProps, position: number | undefined): Promise<Feature> {
+  add(props: FeatureProps, position?: number): Promise<Feature> {
     const p = {...props};
     if (!p.title) {
-      p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${this.idsCache[this.cacheKey].length + 1}`;
+      p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${this.guardedIds.length + 1}`;
     }
     if (!p.id) {
       p.id = makeId();
     }
-    const feature = new FeatureDefault(this.storage, p, this.notifyFeaturesVisibility);
+    const feature = new FeatureDefault(this.storage, this.map2styles, p, this.featuresCache, this.notifyFeaturesVisibility);
     feature.update();
     this.featuresCache[feature.id] = feature;
 
-    const ids = this.idsCache[this.cacheKey];
+    let ids = this.idsCache[this.cacheKey];
+    if (!ids) {
+      ids = [];
+    }
     const pos = position || ids.length;
     // update caches before triggering feature observable
     // in order to have id of the new feature in the ids array
@@ -235,24 +263,26 @@ export class FeaturesDefault implements Features {
   }
 
   hasFeature (feature: Feature): boolean {
-    return this.idsCache[this.cacheKey].indexOf(feature.id) >= 0;
+    return this.guardedIds.indexOf(feature.id) >= 0;
   }
 
   private update(): Promise<void> {
-    return this.storage.updateFeaturesIds(this.routeId, this.idsCache[this.cacheKey]);
+    return this.storage.updateFeaturesIds(this.routeId, this.guardedIds);
   }
 
   byPos(index: number): Feature | null {
-    return this.featuresCache[this.idsCache[this.cacheKey][index]] || null;
+    return this.featuresCache[this.guardedIds[index]] || null;
   }
 
   delete(): Promise<void> {
+    const ids = this.guardedIds;
+    this.updateIds([]);
     return this.storage.deleteFeaturesIds(this.routeId)
-      .then(() => Promise.all(this.idsCache[this.cacheKey].map(id => this.featuresCache[id].delete()))) as unknown as Promise<void>;
+      .then(() => Promise.all(ids.map(id => this.featuresCache[id].delete()))) as unknown as Promise<void>;
   }
 
   get length(): number {
-    return this.idsCache[this.cacheKey].length;
+    return this.guardedIds.length;
   }
 
   observable(): Observable<Features> {
@@ -260,7 +290,7 @@ export class FeaturesDefault implements Features {
   }
 
   remove(feature: Feature): Promise<number> {
-    const ids = this.idsCache[this.cacheKey];
+    const ids = this.guardedIds;
     const pos = ids.indexOf(feature.id);
     if (pos < 0) {
       return Promise.resolve(0);
@@ -278,14 +308,13 @@ export class FeaturesDefault implements Features {
   }
 
   reorder(from: number, to: number): Promise<void> {
-    const ids = this.idsCache[this.cacheKey];
+    const ids = this.guardedIds;
     this.updateIds(reorder(ids, from, to));
     return this.update();
   }
 
   [Symbol.iterator](): Iterator<Feature> {
-    const ids = this.idsCache[this.cacheKey];
-    const _ids = ids.slice(); // don't reflect modifications after the iterator has been created
+    const _ids = this.guardedIds.slice(); // don't reflect modifications after the iterator has been created
     let _current = 0;
     return {
       next: () => _current >= _ids.length

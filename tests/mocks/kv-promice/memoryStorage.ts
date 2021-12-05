@@ -18,7 +18,7 @@ import {Observable, Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {KvPromise} from '../../../src/kv/promise';
 
-export interface MemoryStorage extends KvPromise {
+export interface MemoryStoragePromise extends KvPromise {
   readonly mem: Record<string, unknown>;
 }
 
@@ -28,10 +28,10 @@ const wrap = <T>(body: () => T) => new Promise<T>((rs) => {
   setTimeout(() => rs(body()), MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY));
 });
 
-const memoryStoragePromiceFactory = (init: Record<string, string> = {}): MemoryStorage => {
+const memoryStoragePromiseFactory = (init: Record<string, string> = {}): MemoryStoragePromise => {
   const subject = new Subject<{ key: string, value: unknown }>();
   const mem: Record<string, unknown> = init;
-  const th: MemoryStorage = {
+  const th: MemoryStoragePromise = {
     get mem() {
       return mem;
     },
@@ -78,4 +78,4 @@ const memoryStoragePromiceFactory = (init: Record<string, string> = {}): MemoryS
   return th;
 };
 
-export default memoryStoragePromiceFactory;
+export default memoryStoragePromiseFactory;

@@ -15,7 +15,7 @@ interface FeaturePropsStyleId extends FeatureProps {
   styleId: string;
 }
 
-class CatalogStorageIndexedDb implements CatalogStorage {
+export class CatalogStorageIndexedDb implements CatalogStorage {
   private readonly kv: KvPromise;
 
   private readonly map2styles: Map2Styles;

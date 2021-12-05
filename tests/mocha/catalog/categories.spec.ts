@@ -15,36 +15,45 @@
  */
 
 import memoryStorageFactory from '../../mocks/kv/memoryStorage';
-import catalogFactory from '../../../src/catalog/default/catalog';
+import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
 import {expect} from 'chai';
 import {wordingFactory} from '../../../src/personalization/wording/default';
 import {Wording} from '../../../src/personalization/wording';
 import {KV} from '../../../src/kv/sync';
 import {Map2Styles} from '../../../src/style';
 import {map2StylesFactory} from '../../../src/style/default/styles';
+import {KvPromise} from '../../../src/kv/promise';
+import {CatalogStorage} from '../../../src/catalog/storage';
+import {CatalogDefault} from '../../../src/catalog/base/catalog';
+import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
 
 describe('Catalog categories', () => {
-  let storage: KV;
+  let kv: KV;
+  let kvPromise: KvPromise;
   let wording: Wording;
-  let styles: Map2Styles;
+  let map2styles: Map2Styles;
+  let catalogStorage: CatalogStorage;
 
   beforeEach(() => {
-    storage = memoryStorageFactory();
-    styles = map2StylesFactory();
-    wording = wordingFactory(storage);
+    kv = memoryStorageFactory();
+    kvPromise = memoryStoragePromiseFactory();
+    map2styles = map2StylesFactory();
+    wording = wordingFactory(kv);
+    catalogStorage = new CatalogStorageIndexedDb(kvPromise, map2styles);
   });
 
-  it('New Catalog must not have categories till wording initialized', () => {
-    const catalog = catalogFactory(storage, wording, styles);
+  it('New Catalog must not have categories till wording initialized', async () => {
+    const catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
     expect(catalog).has.property('categories');
     expect(catalog.categories).has.property('length', 0);
   });
 
-  it('New Catalog must have 1 category if wording initialized', () => {
+  it('New Catalog must have 1 category if wording initialized', async () => {
     wording.currentRouteVariant = 'ru';
     wording.currentCategoryVariant = 'en';
-    const catalog = catalogFactory(storage, wording, styles);
+    const catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
     expect(catalog).has.property('categories');
     expect(catalog.categories).has.property('length', 1);
   });
+
 });

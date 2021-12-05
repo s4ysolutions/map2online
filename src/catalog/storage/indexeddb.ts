@@ -3,6 +3,8 @@ import {CatalogStorage} from './index';
 import {CategoryProps, FeatureProps, FeaturePropsWithStyleId, ID, RouteProps} from '../index';
 import {Map2Styles, Style} from '../../style';
 import {Observable} from 'rxjs';
+import log from '../../log';
+import {debug} from 'util';
 
 export const FEATURE_ID_PREFIX = 'f';
 export const FEATURES_ID_PREFIX = 'fs';

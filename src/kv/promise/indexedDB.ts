@@ -30,25 +30,52 @@ interface IndexedDB {
 const indexedDbFactory = (store: string): KvPromise & IndexedDB => ({
   _db: null,
   subject: new Subject<{ key: string; value: unknown }>(),
-  get db() {
-    return this._db === null ? openDB('map2').then(db => {
+  get db(): Promise<IDBPDatabase> {
+    return this._db === null ? openDB('map2', 6, {
+      upgrade(database: IDBPDatabase, oldVersion: number, newVersion: number | null, transaction) {
+        log.debug('indexedDb upgrade');
+        try {
+          database.deleteObjectStore(store);
+        } catch (e) {
+          log.debug('indexedDb can not delete database', e);
+        }
+        database.createObjectStore(store, {
+        });
+      },
+      blocked() {
+        log.debug('indexedDb blocked');
+      },
+      blocking() {
+        log.debug('indexedDb blocking');
+      },
+      terminated() {
+        log.debug('indexedDb terminated');
+      },
+    }).then(db => {
+      log.debug('indexedDb init done');
       this._db = db;
       return db;
     }) : Promise.resolve(this._db);
   },
   get<T>(key: string, defaultValue?: T, forcedJSON?: string) {
+    log.debug(`indexedDb get ${key}`);
     if (forcedJSON) {
       return Promise.resolve<T>(JSON.parse(forcedJSON));
     }
     return this.db
-      .then((db: IDBPDatabase) => db.get(store, key));
+      .then((db: IDBPDatabase) => db.get(store, key))
+      .then((v?:T) => v === undefined ? defaultValue : v);
   },
   set<T>(key: string, value: T) {
     log.debug(`indexedDb set ${key}`, value);
+    if (value instanceof Function) {
+      log.error(value);
+      console.trace();
+    }
     const prom =
       (value === undefined)
         ? this.db.then((db: IDBPDatabase) => db.delete(store, key))
-        : this.db.then((db: IDBPDatabase) => db.put(store, value, key));
+        : this.db.then((db: IDBPDatabase) => db.put(store, value, key))
     return prom.then(() => {
       this.subject.next({key, value});
       return {key, value};

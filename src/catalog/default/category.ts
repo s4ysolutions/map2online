@@ -149,7 +149,7 @@ export class CategoriesDefault implements Categories {
     }
     if ((!ids || ids.length === 0) && this.catalog.wording.isPersonalized && this.catalog.autoCreate) {
       const category = new CategoryDefault(this.catalog, null);
-      this.add(category); //  ignore async storage backend, use sync cache
+      this.addCategory(category); //  ignore async storage backend, use sync cache
     }
     return this.idsCache[this.cacheKey];
   }
@@ -167,12 +167,7 @@ export class CategoriesDefault implements Categories {
     this.idsCache = catalog.categoriesIds;
   }
 
-  add(props: CategoryProps, position?: number): Promise<Category> {
-    const p = {...props};
-    if (!p.id) {
-      p.id = makeId();
-    }
-    const category = new CategoryDefault(this.catalog, p);
+  private addCategory(category: CategoryDefault, position?: number): Promise<Category> {
     this.categoriesCache[category.id] = category;
 
     let ids = this.idsCache[this.cacheKey];
@@ -188,6 +183,15 @@ export class CategoriesDefault implements Categories {
     const p2 = this.update();
     this.catalog.notifyVisisbleFeaturesChanged();
     return Promise.all([p1, p2]).then(() => category);
+  }
+
+  add(props: CategoryProps, position?: number): Promise<Category> {
+    const p = {...props};
+    if (!p.id) {
+      p.id = makeId();
+    }
+    const category = new CategoryDefault(this.catalog, p);
+    return this.addCategory(category, position);
   }
 
   has(category: Category): boolean {

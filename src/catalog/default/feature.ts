@@ -234,7 +234,6 @@ export class FeaturesDefault implements Features {
     // in order to have id of the new feature in the ids array
     this.updateIds(ids.slice(0, pos).concat(feature.id)
       .concat(ids.slice(pos)));
-    // TODO: may be worth to wait for promise? Not wise i believe
     const p1 = feature.update();
     const p2 = this.update();
     this.catalog.notifyVisisbleFeaturesChanged();

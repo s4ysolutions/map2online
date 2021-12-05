@@ -27,7 +27,7 @@ import 'theme-yellow-black.scss';
 
 import amplitude from 'amplitude-js';
 
-import App from 'react/components/App';
+import WaitInitialization from './react/components/WaitInitialization';
 
 window.addEventListener('dragover', (e) => {
   // e = e || event;
@@ -41,7 +41,8 @@ window.addEventListener('drop', (e) => {
 amplitude.getInstance().init('c742fb5cda6af23078ebe5655712b658');
 amplitude.getInstance().logEvent('visit');
 
+console.log('rend');
 ReactDOM.render(
-  <App />,
+  <WaitInitialization />,
   document.getElementById('reactMount'),
 );

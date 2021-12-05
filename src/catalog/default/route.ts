@@ -142,7 +142,7 @@ export class RoutesDefault implements Routes {
     }
     if ((!ids || ids.length === 0) && this.catalog.wording.isPersonalized && this.catalog.autoCreate) {
       const route = new RouteDefault(this.catalog, null);
-      this.add(route); //  ignore async storage backend, use sync cache
+      this.addRoute(route); //  ignore async storage backend, use sync cache
     }
     return this.idsCache[this.cacheKey];
   }
@@ -157,12 +157,7 @@ export class RoutesDefault implements Routes {
     this.featuresIdsCache = catalog.featuresIds;
   }
 
-  add(props: RouteProps, position?: number): Promise<Route> {
-    const p = {...props};
-    if (!p.id) {
-      p.id = makeId();
-    }
-    const route = new RouteDefault(this.catalog, p);
+  private addRoute(route: RouteDefault, position?: number): Promise<Route> {
     this.routesCache[route.id] = route;
 
     let ids = this.idsCache[this.cacheKey];
@@ -178,6 +173,15 @@ export class RoutesDefault implements Routes {
     const p2 = this.update();
     this.catalog.notifyVisisbleFeaturesChanged();
     return Promise.all([p1, p2]).then(() => route);
+  }
+
+  add(props: RouteProps, position?: number): Promise<Route> {
+    const p = {...props};
+    if (!p.id) {
+      p.id = makeId();
+    }
+    const route = new RouteDefault(this.catalog, p);
+    return this.addRoute(route, position);
   }
 
   private update(): Promise<void> {

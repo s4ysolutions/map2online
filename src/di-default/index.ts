@@ -72,13 +72,14 @@ export const getExporter = (): Exporter => exporterSingleton;
 
 const catalogStorageSingleton = new CatalogStorageIndexedDb(remoteStorageSingleton, map2StylesSingleton);
 
-let catalogSingleton: Catalog = null;
+const catalogSingleton = new CatalogDefault(catalogStorageSingleton, wordingSingleton, map2StylesSingleton, 'main');
 export const getCatalog = (): Catalog => catalogSingleton;
 
-let catalogUISingleton: CatalogUI = null;
+const catalogUISingleton = catalogUIFactory(localStorageSingleton, catalogSingleton);
 export const getCatalogUI = (): CatalogUI => catalogUISingleton;
 
 export const initDI = async (): Promise<void> => {
-  catalogSingleton = await CatalogDefault.getInstanceAsync(catalogStorageSingleton, wordingSingleton, map2StylesSingleton, 'main');
-  catalogUISingleton = await catalogUIFactory(localStorageSingleton, catalogSingleton);
+  console.log('initDI start');
+  await catalogSingleton.init();
+  console.log('initDI done');
 };

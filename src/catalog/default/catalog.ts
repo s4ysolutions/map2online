@@ -7,72 +7,24 @@ import {CategoriesDefault, CategoryDefault} from './category';
 import {debounceTime} from 'rxjs/operators';
 import {Wording} from '../../personalization/wording';
 import {Map2Styles} from '../../style';
+import log from '../../log';
 
 const DEBOUNCE_DELAY = 250;
 
 export class CatalogDefault implements Catalog {
-  static async getInstanceAsync(storage: CatalogStorage, wording: Wording, map2styles: Map2Styles, catalogId: string): Promise<Catalog> {
-    const categoriesIds: Record<ID, ID[]> = {};
-    await storage.readCategoriesIds(catalogId).then(ids => {
-      categoriesIds[catalogId] = ids;
-    });
-    const categoriesIdsFlat = Object.values(categoriesIds).flat();
-
-    const routesIds: Record<ID, ID[]> = {};
-    await Promise.all(categoriesIdsFlat.map(categoryId => storage.readRoutesIds(categoryId).then(ids => {
-      routesIds[categoryId] = ids;
-    })));
-    const routesIdsFlat: ID[] = Object.values(routesIds).flat();
-
-    const featuresIds: Record<ID, ID[]> = {};
-    await Promise.all(routesIdsFlat.map(routeId => storage.readFeaturesIds(routeId).then(ids => {
-      featuresIds[routeId] = ids;
-    })));
-    const featuresIdsFlat: ID[] = Object.values(routesIds).flat();
-
-    const categoriesCache: Record<ID, Category> = {};
-    const routesCache: Record<ID, Route> = {};
-    const featuresCache: Record<ID, Feature> = {};
+  static getInstanceAsync(storage: CatalogStorage, wording: Wording, map2styles: Map2Styles, catalogId: string): Promise<Catalog> {
 
     const instance = new CatalogDefault(
       storage,
       wording,
       map2styles,
       catalogId,
-      featuresIds,
-      featuresCache,
-      routesIds,
-      routesCache,
-      categoriesIds,
-      categoriesCache,
     );
 
-    instance.disableAutoCreateCategoryAndRoute();
-    await Promise.all(featuresIdsFlat.map(id => storage.readFeatureProps(id)
-      .then(props => {
-        if (props !== null) {
-          const feature = new FeatureDefault(instance, props);
-          featuresCache[feature.id] = feature;
-        }
-      })));
-    await Promise.all(routesIdsFlat.map(id => storage.readRouteProps(id)
-      .then(props => {
-        if (props !== null) {
-          const route = new RouteDefault(instance, props);
-          routesCache[route.id] = route;
-        }
-      })));
-    await Promise.all(categoriesIdsFlat.map(id => storage.readCategoryProps(id)
-      .then(props => {
-        if (props !== null) {
-          const category = new CategoryDefault(instance, props);
-          categoriesCache[category.id] = category;
-        }
-      })));
-    instance.enableAutoCreateCategoryAndRoute();
-
-    return instance;
+    return instance.init();
   }
+
+  readonly id: ID;
 
   readonly storage: CatalogStorage;
 
@@ -103,22 +55,11 @@ export class CatalogDefault implements Catalog {
     wording: Wording,
     map2styles: Map2Styles,
     catalogId: ID,
-    featuresIds: Record<ID, ID[]>,
-    featuresCache: Record<ID, Feature>,
-    routesIds: Record<ID, ID[]>,
-    routesCache: Record<ID, Route>,
-    categoriesIds: Record<ID, ID[]>,
-    categoriesCache: Record<ID, Category>,
   ) {
+    this.id = catalogId;
     this.storage = storage;
     this.wording = wording;
     this.map2styles = map2styles;
-    this.categoriesCache = categoriesCache;
-    this.routesCache = routesCache;
-    this.featuresCache = featuresCache;
-    this.categoriesIds = categoriesIds;
-    this.routesIds = routesIds;
-    this.featuresIds = featuresIds;
     this.notifyVisisbleFeaturesChanged = () => {
       const prevVisibleIds = this.visibleIds;
       const prevLength = this.visibleFeatures.length;
@@ -147,6 +88,53 @@ export class CatalogDefault implements Catalog {
       }
     };
     this.categories = new CategoriesDefault(this, catalogId);
+  }
+
+  async init(): Promise<CatalogDefault> {
+    const autoCreate = this.disableAutoCreateCategoryAndRoute();
+
+    await this.storage.readCategoriesIds(this.id).then(ids => {
+      this.categoriesIds[this.id] = ids;
+    });
+    const categoriesIdsFlat = Object.values(this.categoriesIds).flat();
+    log.debug('CatalogDefault init, categoriesIds', categoriesIdsFlat);
+
+    await Promise.all(categoriesIdsFlat.map(categoryId => this.storage.readRoutesIds(categoryId).then(ids => {
+      this.routesIds[categoryId] = ids;
+    })));
+    const routesIdsFlat: ID[] = Object.values(this.routesIds).flat();
+
+    await Promise.all(routesIdsFlat.map(routeId => this.storage.readFeaturesIds(routeId).then(ids => {
+      this.featuresIds[routeId] = ids;
+    })));
+    const featuresIdsFlat: ID[] = Object.values(this.routesIds).flat();
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    await Promise.all(featuresIdsFlat.map(id => this.storage.readFeatureProps(id)
+      .then(props => {
+        if (props !== null) {
+          const feature = new FeatureDefault(this, props);
+          this.featuresCache[feature.id] = feature;
+        }
+      })));
+    await Promise.all(routesIdsFlat.map(id => this.storage.readRouteProps(id)
+      .then(props => {
+        if (props !== null) {
+          const route = new RouteDefault(this, props);
+          this.routesCache[route.id] = route;
+        }
+      })));
+    await Promise.all(categoriesIdsFlat.map(id => this.storage.readCategoryProps(id)
+      .then(props => {
+        if (props !== null) {
+          const category = new CategoryDefault(this, props);
+          this.categoriesCache[category.id] = category;
+        }
+      })));
+    if (autoCreate) {
+      this.enableAutoCreateCategoryAndRoute();
+    }
+    return this;
   }
 
   readonly categories: Categories;

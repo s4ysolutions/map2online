@@ -190,6 +190,10 @@ export class CategoriesDefault implements Categories {
     return Promise.all([p1, p2]).then(() => category);
   }
 
+  has(category: Category): boolean {
+    return this.guardedIds.indexOf(category.id) >= 0;
+  }
+
   private update(): Promise<void> {
     return this.catalog.storage.updateCategoriesIds(this.catalogId, this.guardedIds);
   }

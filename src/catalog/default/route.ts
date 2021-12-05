@@ -197,7 +197,7 @@ export class RoutesDefault implements Routes {
       .then(() => Promise.all(promises)) as unknown as Promise<void>;
   }
 
-  hasRoute(route: Route): boolean {
+  has(route: Route): boolean {
     return this.guardedIds.indexOf(route.id) >= 0;
   }
 

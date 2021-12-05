@@ -108,7 +108,7 @@ export interface Route extends RouteProps {
 
 export interface Routes extends Iterable<Route> {
   add: (props: RouteProps, position?: number) => Promise<Route>;
-  hasRoute: (route: Route) => boolean;
+  has: (route: Route) => boolean;
   readonly length: number;
   remove: (route: Route) => Promise<number>;
   observable: () => Observable<Routes>;
@@ -134,6 +134,7 @@ export interface Category extends CategoryProps {
 
 export interface Categories extends Iterable<Category> {
   add: (props: CategoryProps | null, position?: number) => Promise<Category>;
+  has: (category: Category) => boolean;
   readonly length: number;
   remove: (category: Category) => Promise<number>;
   observable: () => Observable<Categories>;

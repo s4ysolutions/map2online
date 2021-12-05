@@ -22,7 +22,6 @@ import {BaseLayer} from '../ui/layers/base';
 import baseLayerFactory from '../ui/layers/base/default';
 import workspaceFactory from '../ui/workspace/default';
 import {Catalog} from '../catalog';
-import catalogFactory from '../catalog/default/catalog';
 import catalogUIFactory from '../ui/catalog/default';
 import {CatalogUI} from '../ui/catalog';
 import {importUIFactory} from '../ui/import/default';
@@ -36,9 +35,16 @@ import {parserFactory} from '../importer/default';
 import {map2StylesFactory} from '../style/default/styles';
 import {Map2Styles} from '../style';
 import localStorageFactory from '../kv/sync/localStorage';
+import indexedDbFactory from '../kv/promise/indexedDB';
+import {KvPromise} from '../kv/promise';
+import {CatalogDefault} from '../catalog/default/catalog';
+import {CatalogStorageIndexedDb} from '../catalog/storage/indexeddb';
 
 const localStorageSingleton = localStorageFactory();
 export const getLocalStorage = (): KV => localStorageSingleton;
+
+const remoteStorageSingleton = indexedDbFactory('map2');
+export const getRemoteStorage = (): KvPromise => remoteStorageSingleton;
 
 const map2StylesSingleton = map2StylesFactory();
 export const getMap2Styles = (): Map2Styles => map2StylesSingleton;
@@ -55,12 +61,6 @@ export const getWorkspace = (): Workspace => workspaceSingleton;
 const wordingSingleton = wordingFactory(localStorageSingleton);
 export const getWording = (): Wording => wordingSingleton;
 
-const catalogSingleton = catalogFactory(localStorageSingleton, wordingSingleton, map2StylesSingleton);
-export const getCatalog = (): Catalog => catalogSingleton;
-
-const catalogUISingleton = catalogUIFactory(localStorageSingleton, catalogSingleton);
-export const getCatalogUI = (): CatalogUI => catalogUISingleton;
-
 const importUISingleton = importUIFactory(localStorageSingleton);
 export const getImportUI = (): ImportUI => importUISingleton;
 
@@ -69,3 +69,16 @@ export const getParser = (): Parser => parserSingleton;
 
 const exporterSingleton = exporterFactory(localStorageSingleton);
 export const getExporter = (): Exporter => exporterSingleton;
+
+const catalogStorageSingleton = new CatalogStorageIndexedDb(remoteStorageSingleton, map2StylesSingleton);
+
+let catalogSingleton: Catalog = null;
+export const getCatalog = (): Catalog => catalogSingleton;
+
+let catalogUISingleton: CatalogUI = null;
+export const getCatalogUI = (): CatalogUI => catalogUISingleton;
+
+export const initDI = async (): Promise<void> => {
+  catalogSingleton = await CatalogDefault.getInstanceAsync(catalogStorageSingleton, wordingSingleton, map2StylesSingleton, 'main');
+  catalogUISingleton = await catalogUIFactory(localStorageSingleton, catalogSingleton);
+};

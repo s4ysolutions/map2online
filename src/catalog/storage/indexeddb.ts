@@ -1,7 +1,7 @@
 import {KvPromise} from '../../kv/promise';
 import {CatalogStorage} from './index';
-import {CategoryProps, FeatureProps, ID, RouteProps} from '../index';
-import {Map2Styles} from '../../style';
+import {CategoryProps, FeatureProps, FeaturePropsWithStyleId, ID, RouteProps} from '../index';
+import {Map2Styles, Style} from '../../style';
 import {Observable} from 'rxjs';
 
 export const FEATURE_ID_PREFIX = 'f';
@@ -10,10 +10,6 @@ export const ROUTE_ID_PREFIX = 'r';
 export const ROUTES_ID_PREFIX = 'rs';
 export const CATEGORY_ID_PREFIX = 'c';
 export const CATEGORIES_ID_PREFIX = 'cs';
-
-interface FeaturePropsStyleId extends FeatureProps {
-  styleId: string;
-}
 
 export class CatalogStorageIndexedDb implements CatalogStorage {
   private readonly kv: KvPromise;
@@ -38,7 +34,7 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
   }
 
   readFeatureProps(id: ID): Promise<FeatureProps | null> {
-    return this.kv.get<FeaturePropsStyleId | null>(`${FEATURE_ID_PREFIX}@${id}`, null).then(props => {
+    return this.kv.get<FeaturePropsWithStyleId | null>(`${FEATURE_ID_PREFIX}@${id}`, null).then(props => {
       if (props === null) {
         return null;
       }
@@ -52,14 +48,13 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
   }
 
   updateFeatureProps(props: FeatureProps): Promise<void> {
-    const map2style = this.map2styles.findEq(props.style);
+    // i forgot the purpose of the code
+    // make sure the style is known?
+    // const map2style = this.map2styles.findEq(props.style) || props.style;
+    const map2style = props.style || this.map2styles.defaultStyle;
     const key = `${FEATURE_ID_PREFIX}@${props.id}`;
-    // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-    const {style: _, ...pp} = props;
-    if (map2style) {
-      return this.kv.set(key, {...pp, styleId: map2style.id});
-    }
-    return this.kv.set(key, pp);
+    const pp = {...props, style: null as Style, styleId: map2style.id};
+    return this.kv.set<FeaturePropsWithStyleId>(key, pp);
   }
 
   readFeaturesIds(routeId: ID): Promise<ID[]| null> {

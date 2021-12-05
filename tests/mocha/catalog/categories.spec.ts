@@ -24,21 +24,21 @@ import {Map2Styles} from '../../../src/style';
 import {map2StylesFactory} from '../../../src/style/default/styles';
 import {KvPromise} from '../../../src/kv/promise';
 import {CatalogStorage} from '../../../src/catalog/storage';
-import {CatalogDefault} from '../../../src/catalog/base/catalog';
+import {CatalogDefault} from '../../../src/catalog/default/catalog';
 import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
 
 describe('Catalog categories', () => {
   let kv: KV;
-  let kvPromise: KvPromise;
   let wording: Wording;
   let map2styles: Map2Styles;
+  let kvPromise: KvPromise;
   let catalogStorage: CatalogStorage;
 
   beforeEach(() => {
     kv = memoryStorageFactory();
-    kvPromise = memoryStoragePromiseFactory();
     map2styles = map2StylesFactory();
     wording = wordingFactory(kv);
+    kvPromise = memoryStoragePromiseFactory();
     catalogStorage = new CatalogStorageIndexedDb(kvPromise, map2styles);
   });
 

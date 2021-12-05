@@ -89,14 +89,7 @@ const folderToCategory = (folder: ImportedFolder): CategoryProps => ({
 const importFoldersToCatalog = (folders: ImportedFolder[], catalog: Catalog): Promise<Feature[]> =>
   Promise.all([].concat(folders.map(folder =>
     catalog.categories.add(folderToCategory(folder))
-      .then(category => {
-        // remove auto added (usually one) route
-        const removes: Promise<number>[] = [];
-        while (category.routes.length > 0) {
-          removes.push(category.routes.remove(category.routes.byPos(0)));
-        }
-        return Promise.all(removes).then(() => importFoldersToCategory(folder.folders, category));
-      }))));
+      .then(category => importFoldersToCategory(folder.folders, category)))));
 
 export const importFlatFolders = (rootFolder: ImportedFolder, importTo: ImportTo, catalog: Catalog, activeCategory: Category, activeRoute: Route): Promise<Feature[]> => {
   const folders = isFlatRoot(rootFolder) ? rootFolder.folders : [rootFolder];

@@ -10,6 +10,7 @@
     "stats": "webpack --config webpack.config-stats.cjs --profile --json >stats.json",
     "lint": "eslint --fix src",
     "test": "mocha -n loader=ts-node/esm -n es-module-specifier-resolution=node -r tests/mocks/jsdom.cjs tests/mocha/**/*.spec.ts",
+    "test_catalog": "mocha -n loader=ts-node/esm -n es-module-specifier-resolution=node -r tests/mocks/jsdom.cjs tests/mocha/catalog/**/*.spec.ts",
     "testcafe": "testcafe chrome testcafe/** --app \"http-server ./dist -s\"",
     "jest": "jest --runInBand"
   },

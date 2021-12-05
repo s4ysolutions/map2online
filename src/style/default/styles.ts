@@ -69,11 +69,9 @@ export const map2StylesFactory = (): Map2Styles => {
     defaultStyle: map2stylesByColor[map2colors.RED],
     styles: map2styles,
     findEq: (style: Style): Style | null => {
-      /*
       if (!style) { // should never happen bu just in case TODO: warn?
         return null;
       }
-       */
       if (style.balloonStyle) {
         return null;
       }

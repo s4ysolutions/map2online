@@ -18,25 +18,36 @@
 import {KV} from '../../../src/kv/sync';
 import {Wording} from '../../../src/personalization/wording';
 import {Map2Styles} from '../../../src/style';
-import {Catalog, isLineString, isPoint, LineString} from '../../../src/catalog';
+import {Catalog, LineString, isLineString, isPoint} from '../../../src/catalog';
 import memoryStorageFactory from '../../mocks/kv/memoryStorage';
 import {wordingFactory} from '../../../src/personalization/wording/default';
 import {map2StylesFactory} from '../../../src/style/default/styles';
-import catalogFactory from '../../../src/catalog/default/catalog';
 import fs from 'fs';
 import path from 'path';
 import {ImportedFolder} from '../../../src/importer';
 import {parseKMLCoordinates, parseKMLString} from '../../../src/importer/default/kml-parser';
 import {flatImportedFoldersToCategories} from '../../../src/importer/post-process';
-import {importFlatFolders, ImportTo} from '../../../src/importer/import-to';
+import {ImportTo, importFlatFolders} from '../../../src/importer/import-to';
 import {expect} from 'chai';
+import {KvPromise} from '../../../src/kv/promise';
+import {CatalogStorage} from '../../../src/catalog/storage';
+import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
+import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
+import {CatalogDefault} from '../../../src/catalog/default/catalog';
+import {fileURLToPath} from 'url';
+import { dirname } from 'path';
 
-describe('26-10-2020 issues', () => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+describe('01-11-2020 issues', () => {
   let kv: KV;
   let wording: Wording;
   let map2styles: Map2Styles;
-  let catalog: Catalog;
   let kml: string;
+  let kvPromise: KvPromise;
+  let catalogStorage: CatalogStorage;
+  let catalog: Catalog;
 
   beforeEach(async () => {
     kv = memoryStorageFactory();
@@ -44,12 +55,14 @@ describe('26-10-2020 issues', () => {
     wording.currentRouteVariant = 'en';
     wording.currentCategoryVariant = 'en';
     map2styles = map2StylesFactory();
-    catalog = catalogFactory(kv, wording, map2styles);
+    kvPromise = memoryStoragePromiseFactory();
+    catalogStorage = new CatalogStorageIndexedDb(kvPromise, map2styles);
+    catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
+    catalog.disableAutoCreateCategoryAndRoute();
     kml = fs.readFileSync(path.join(__dirname, '..', '..', 'data', '01-11-2020.kml'), 'utf-8');
     const root: ImportedFolder = await parseKMLString({name: '01-11-2020.kml'} as File, kml, map2styles);
     const flat: ImportedFolder = flatImportedFoldersToCategories(root);
     await importFlatFolders(flat, ImportTo.ALL_CATEGORIES_TO_CATALOG, catalog, null, null);
-    await catalog.categories.remove(catalog.categories.byPos(0));
   });
 
   it('parse coordinate', () => {

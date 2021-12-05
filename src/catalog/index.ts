@@ -61,13 +61,18 @@ export interface FeatureProps {
   geometry: Point | LineString;
 }
 
+// used for persisting
+export interface FeaturePropsWithStyleId extends FeatureProps {
+  styleId: ID
+}
+
 // eslint-disable-next-line no-extra-parens
 export const isPoint = (geometry: Point | LineString): geometry is Point => geometry && (geometry as Point).coordinate !== undefined;
 // eslint-disable-next-line no-extra-parens
 export const isLineString = (geometry: Point | LineString): geometry is LineString => geometry && (geometry as LineString).coordinates !== undefined;
 
 export interface Feature extends FeatureProps {
-  delete: () => Promise<void>;
+  delete: (notify?: boolean) => Promise<void>;
   observable: () => Observable<Feature>;
   updateCoordinates: (coord: Coordinate | Coordinate[]) => void;
   eq: (anotherFeature: Feature) => boolean;
@@ -96,7 +101,7 @@ export interface RouteProps {
 
 export interface Route extends RouteProps {
   ts: ID;
-  delete: () => Promise<void>;
+  delete: (notify?: boolean) => Promise<void>;
   features: Features;
   observable: () => Observable<Route>;
 }
@@ -124,7 +129,7 @@ export interface CategoryProps {
 export interface Category extends CategoryProps {
   routes: Routes;
   observable: () => Observable<Category>;
-  delete: () => Promise<void>;
+  delete: (notify?: boolean) => Promise<void>;
 }
 
 export interface Categories extends Iterable<Category> {
@@ -143,4 +148,7 @@ export interface Catalog {
   featureById: (id: ID) => Feature | null;
   readonly visibleFeatures: Feature[];
   visibleFeaturesObservable: (debounce?:boolean) => Observable<Feature[]>;
+  // return previous state
+  disableAutoCreateCategoryAndRoute: () => boolean;
+  enableAutoCreateCategoryAndRoute: () => boolean;
 }

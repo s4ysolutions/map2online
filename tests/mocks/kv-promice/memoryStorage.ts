@@ -22,8 +22,8 @@ export interface MemoryStoragePromise extends KvPromise {
   readonly mem: Record<string, unknown>;
 }
 
-const MIN_DELAY = 50;
-const MAX_DELAY = 200;
+const MIN_DELAY = 5;
+const MAX_DELAY = 20;
 const wrap = <T>(body: () => T) => new Promise<T>((rs) => {
   setTimeout(() => rs(body()), MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY));
 });

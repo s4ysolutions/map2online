@@ -28,7 +28,7 @@ import {KvPromise} from '../../../src/kv/promise';
 import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
 import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
 import {CatalogStorage} from '../../../src/catalog/storage';
-import {CatalogDefault} from '../../../src/catalog/base/catalog';
+import {CatalogDefault} from '../../../src/catalog/default/catalog';
 
 const fid1 = 'fid1';
 const fid2 = 'fid2';

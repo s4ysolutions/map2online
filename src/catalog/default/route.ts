@@ -176,12 +176,16 @@ export class RoutesDefault implements Routes {
   }
 
   add(props: RouteProps, position?: number): Promise<Route> {
-    const p = {...props};
-    if (!p.id) {
-      p.id = makeId();
+    if ((props as RouteDefault).update) {
+      return this.addRoute(props as RouteDefault, position);
+    } else {
+      const p = {...props};
+      if (!p.id) {
+        p.id = makeId();
+      }
+      const route = new RouteDefault(this.catalog, p);
+      return this.addRoute(route, position);
     }
-    const route = new RouteDefault(this.catalog, p);
-    return this.addRoute(route, position);
   }
 
   private update(): Promise<void> {

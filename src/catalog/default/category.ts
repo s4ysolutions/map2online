@@ -1,6 +1,6 @@
 import {Categories, Category, CategoryProps, Feature, ID, Route, RouteProps, Routes} from '../index';
 import {makeId} from '../../lib/id';
-import {RoutesDefault} from './route';
+import {RouteDefault, RoutesDefault} from './route';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
@@ -186,12 +186,16 @@ export class CategoriesDefault implements Categories {
   }
 
   add(props: CategoryProps, position?: number): Promise<Category> {
-    const p = {...props};
-    if (!p.id) {
-      p.id = makeId();
+    if ((props as CategoryDefault).update) {
+      return this.addCategory(props as CategoryDefault, position);
+    } else {
+      const p = {...props};
+      if (!p.id) {
+        p.id = makeId();
+      }
+      const category = new CategoryDefault(this.catalog, p);
+      return this.addCategory(category, position);
     }
-    const category = new CategoryDefault(this.catalog, p);
-    return this.addCategory(category, position);
   }
 
   has(category: Category): boolean {

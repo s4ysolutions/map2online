@@ -17,6 +17,7 @@ import {map} from 'rxjs/operators';
 import T from '../../l10n';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
+import {RouteDefault} from './route';
 
 export class FeatureDefault implements Feature {
   private readonly p: FeatureProps;
@@ -214,15 +215,7 @@ export class FeaturesDefault implements Features {
     this.routeId = routeId;
   }
 
-  add(props: FeatureProps, position?: number): Promise<Feature> {
-    const p = {...props};
-    if (!p.title) {
-      p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${this.guardedIds.length + 1}`;
-    }
-    if (!p.id) {
-      p.id = makeId();
-    }
-    const feature = new FeatureDefault(this.catalog, p);
+  private addFeature(feature: FeatureDefault, position?: number): Promise<Feature> {
     this.featuresCache[feature.id] = feature;
 
     let ids = this.idsCache[this.cacheKey];
@@ -238,6 +231,22 @@ export class FeaturesDefault implements Features {
     const p2 = this.update();
     this.catalog.notifyVisisbleFeaturesChanged();
     return Promise.all([p1, p2]).then(() => feature);
+  }
+
+  add(props: FeatureProps, position?: number): Promise<Feature> {
+    if ((props as FeatureDefault).update) {
+      return this.addFeature(props as FeatureDefault, position);
+    } else {
+      const p = {...props};
+      if (!p.title) {
+        p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${this.guardedIds.length + 1}`;
+      }
+      if (!p.id) {
+        p.id = makeId();
+      }
+      const feature = new FeatureDefault(this.catalog, p);
+      return this.addFeature(feature, position);
+    }
   }
 
   hasFeature (feature: Feature): boolean {

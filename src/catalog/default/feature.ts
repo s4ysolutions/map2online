@@ -8,7 +8,7 @@ import {
   Point,
   isCoordinate,
   isLineString,
-  isPoint,
+  isPoint, RouteProps,
 } from '../index';
 import {makeId} from '../../lib/id';
 import {Style} from '../../style';
@@ -180,6 +180,10 @@ export class FeatureDefault implements Feature {
   }
 }
 
+const isFeatureDefault = (propsOrFeature: FeatureProps | FeatureDefault): propsOrFeature is FeatureDefault => {
+  return (propsOrFeature as FeatureDefault).update !== undefined;
+}
+
 export class FeaturesDefault implements Features {
   readonly ts: ID = makeId();
 
@@ -234,8 +238,8 @@ export class FeaturesDefault implements Features {
   }
 
   add(props: FeatureProps, position?: number): Promise<Feature> {
-    if ((props as FeatureDefault).update) {
-      return this.addFeature(props as FeatureDefault, position);
+    if (isFeatureDefault(props)) {
+      return this.addFeature(props, position);
     } else {
       const p = {...props};
       if (!p.title) {

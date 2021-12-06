@@ -1,10 +1,11 @@
-import {Categories, Category, CategoryProps, Feature, ID, Route, RouteProps, Routes} from '../index';
+import {Categories, Category, CategoryProps, Feature, FeatureProps, ID, Route, RouteProps, Routes} from '../index';
 import {makeId} from '../../lib/id';
 import {RouteDefault, RoutesDefault} from './route';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
+import {FeatureDefault} from './feature';
 
 export class CategoryDefault implements Category {
 
@@ -115,6 +116,10 @@ export class CategoryDefault implements Category {
   }
 }
 
+const isCategoryDefault = (propsOrCategory: CategoryProps | CategoryDefault): propsOrCategory is CategoryDefault => {
+  return (propsOrCategory as CategoryDefault).update !== undefined;
+}
+
 export class CategoriesDefault implements Categories {
 
   private readonly catalog: CatalogDefault;
@@ -186,8 +191,8 @@ export class CategoriesDefault implements Categories {
   }
 
   add(props: CategoryProps, position?: number): Promise<Category> {
-    if ((props as CategoryDefault).update) {
-      return this.addCategory(props as CategoryDefault, position);
+    if (isCategoryDefault(props)) {
+      return this.addCategory(props, position);
     } else {
       const p = {...props};
       if (!p.id) {

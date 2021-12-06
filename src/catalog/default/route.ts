@@ -112,6 +112,10 @@ export class RouteDefault implements Route {
 
 }
 
+const isRouteDefault = (propsOrRoute: RouteProps | RouteDefault): propsOrRoute is RouteDefault => {
+  return (propsOrRoute as RouteDefault).update !== undefined;
+}
+
 export class RoutesDefault implements Routes {
   readonly ts: ID = makeId();
 
@@ -176,8 +180,8 @@ export class RoutesDefault implements Routes {
   }
 
   add(props: RouteProps, position?: number): Promise<Route> {
-    if ((props as RouteDefault).update) {
-      return this.addRoute(props as RouteDefault, position);
+    if (isRouteDefault(props)) {
+      return this.addRoute(props, position);
     } else {
       const p = {...props};
       if (!p.id) {

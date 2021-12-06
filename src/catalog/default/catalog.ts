@@ -133,6 +133,7 @@ export class CatalogDefault implements Catalog {
     if (autoCreate) {
       this.enableAutoCreateCategoryAndRoute();
     }
+    this.notifyVisisbleFeaturesChanged();
     return this;
   }
 

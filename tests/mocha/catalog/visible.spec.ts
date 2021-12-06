@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-import {KV} from '../../../src/kv-rx';
+import {KV} from '../../../src/kv/sync';
 import {Wording} from '../../../src/personalization/wording';
 import {Map2Styles, Style} from '../../../src/style';
 import memoryStorageFactory from '../../mocks/kv/memoryStorage';
 import {map2StylesFactory} from '../../../src/style/default/styles';
 import {wordingFactory} from '../../../src/personalization/wording/default';
-import catalogFactory from '../../../src/catalog/default/catalog';
 import {expect} from 'chai';
 import {Catalog, Category, Feature, Route} from '../../../src/catalog';
 import {Subscription} from 'rxjs';
+import {KvPromise} from '../../../src/kv/promise';
+import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
+import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
+import {CatalogStorage} from '../../../src/catalog/storage';
+import {CatalogDefault} from '../../../src/catalog/default/catalog';
 
 const fid1 = 'fid1';
 const fid2 = 'fid2';
@@ -33,23 +37,27 @@ const fid4 = 'fid4';
 const fid5 = 'fid4';
 
 describe('Catalog visibleFeatures', () => {
-  let storage: KV;
+  let kv: KV;
+  let kvPromise: KvPromise;
   let wording: Wording;
-  let styles: Map2Styles;
-  let catalog: Catalog;
+  let map2styles: Map2Styles;
   let testStyle: Style;
+  let catalog: Catalog;
   let subscription1: Subscription;
   let subscription2: Subscription;
   let subscription3: Subscription;
+  let catalogStorage: CatalogStorage;
 
-  beforeEach(() => {
-    storage = memoryStorageFactory();
-    styles = map2StylesFactory();
-    testStyle = styles.styles[2];
-    wording = wordingFactory(storage);
+  beforeEach(async () => {
+    kv = memoryStorageFactory();
+    kvPromise = memoryStoragePromiseFactory();
+    map2styles = map2StylesFactory();
+    testStyle = map2styles.styles[2];
+    wording = wordingFactory(kv);
     wording.currentRouteVariant = 'ru';
     wording.currentCategoryVariant = 'en';
-    catalog = catalogFactory(storage, wording, styles);
+    catalogStorage = new CatalogStorageIndexedDb(kvPromise, map2styles);
+    catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
   });
 
   afterEach(() => {
@@ -100,6 +108,9 @@ describe('Catalog visibleFeatures', () => {
 
     it('Expected fixtures', () => {
       expect(catalog.categories.length).to.be.eq(1);
+      expect(catalog.categories.byPos(0).routes.length).to.be.eq(1);
+      expect(catalog.categories.byPos(0).routes.byPos(0).features.length).to.be.eq(2);
+      expect(catalog.categories.byPos(0).routes.byPos(0).features.byPos(0).id).to.be.eq('fid1');
     });
 
     it('Visibility of features', () => {

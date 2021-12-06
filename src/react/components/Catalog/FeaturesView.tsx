@@ -65,7 +65,9 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
   const featureEdit = useObservable(catalogUI.featureEditObservable(), catalogUI.featureEdit);
   const featureDelete = useObservable(catalogUI.featureDeleteObservable(), catalogUI.featureDelete);
   const handleDragEnd = useCallback(
-    ({source: {index: indexS}, destination: {index: indexD}}): void => route.features.reorder(indexS, indexD),
+    ({source: {index: indexS}, destination: {index: indexD}}): void => {
+      route.features.reorder(indexS, indexD);
+    },
     [route.features],
   );
   const handleAdd = useCallback(() => {

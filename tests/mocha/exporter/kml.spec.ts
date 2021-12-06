@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-import {KV} from '../../../src/kv-rx';
+import {KV} from '../../../src/kv/sync';
 import {Wording} from '../../../src/personalization/wording';
 import {Map2Styles} from '../../../src/style';
 import {Catalog} from '../../../src/catalog';
 import memoryStorageFactory from '../../mocks/kv/memoryStorage';
 import {wordingFactory} from '../../../src/personalization/wording/default';
 import {map2StylesFactory} from '../../../src/style/default/styles';
-import catalogFactory from '../../../src/catalog/default/catalog';
 import {getCategoriesKML, nc} from '../../../src/exporter/lib/kml';
 import {ImportedFolder} from '../../../src/importer';
 import {parseKMLString} from '../../../src/importer/default/kml-parser';
 import {expect} from 'chai';
+import {KvPromise} from '../../../src/kv/promise';
+import {CatalogStorage} from '../../../src/catalog/storage';
+import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
+import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
+import {CatalogDefault} from '../../../src/catalog/default/catalog';
 
 const TEST_STYLE_NO = 2;
 
@@ -34,15 +38,19 @@ describe('KML Exporter', () => {
   let kv: KV;
   let wording: Wording;
   let map2styles: Map2Styles;
+  let kvPromise: KvPromise;
+  let catalogStorage: CatalogStorage;
   let catalog: Catalog;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     kv = memoryStorageFactory();
     wording = wordingFactory(kv);
     wording.currentRouteVariant = 'en';
     wording.currentCategoryVariant = 'en';
     map2styles = map2StylesFactory();
-    catalog = catalogFactory(kv, wording, map2styles);
+    kvPromise = memoryStoragePromiseFactory();
+    catalogStorage = new CatalogStorageIndexedDb(kvPromise, map2styles);
+    catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
   });
 
   it('One feature, default style', async () => {

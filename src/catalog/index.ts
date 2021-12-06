@@ -58,8 +58,12 @@ export interface FeatureProps {
   title: string;
   visible: boolean;
   style: Style;
-  styleId?: string;
   geometry: Point | LineString;
+}
+
+// used for persisting
+export interface FeaturePropsWithStyleId extends FeatureProps {
+  styleId: ID
 }
 
 // eslint-disable-next-line no-extra-parens
@@ -68,20 +72,20 @@ export const isPoint = (geometry: Point | LineString): geometry is Point => geom
 export const isLineString = (geometry: Point | LineString): geometry is LineString => geometry && (geometry as LineString).coordinates !== undefined;
 
 export interface Feature extends FeatureProps {
-  delete: () => Promise<void>;
   observable: () => Observable<Feature>;
   updateCoordinates: (coord: Coordinate | Coordinate[]) => void;
   eq: (anotherFeature: Feature) => boolean;
 }
 
 export interface Features extends Iterable<Feature> {
-  ts: ID;
+  readonly ts: ID;
   add: (props: FeatureProps, position?: number) => Promise<Feature>;
+  hasFeature: (feature: Feature) => boolean;
   readonly length: number;
   remove: (feauture: Feature) => Promise<number>;
   observable: () => Observable<Features>;
   byPos: (index: number) => Feature | null;
-  reorder: (from: number, to: number) => void;
+  reorder: (from: number, to: number) => Promise<void>;
   delete: () => Promise<void>;
 }
 
@@ -96,19 +100,18 @@ export interface RouteProps {
 
 export interface Route extends RouteProps {
   ts: ID;
-  delete: () => Promise<void>;
   features: Features;
   observable: () => Observable<Route>;
 }
 
 export interface Routes extends Iterable<Route> {
   add: (props: RouteProps, position?: number) => Promise<Route>;
-  hasRoute: (route: Route) => boolean;
+  has: (route: Route) => boolean;
   readonly length: number;
   remove: (route: Route) => Promise<number>;
   observable: () => Observable<Routes>;
   byPos: (index: number) => Route | null;
-  reorder: (from: number, to: number) => void;
+  reorder: (from: number, to: number) => Promise<void>;
   delete: () => Promise<void>;
 }
 
@@ -124,12 +127,11 @@ export interface CategoryProps {
 export interface Category extends CategoryProps {
   routes: Routes;
   observable: () => Observable<Category>;
-  delete: () => Promise<void>;
-  hasRoute: (route: Route) => boolean;
 }
 
 export interface Categories extends Iterable<Category> {
   add: (props: CategoryProps | null, position?: number) => Promise<Category>;
+  has: (category: Category) => boolean;
   readonly length: number;
   remove: (category: Category) => Promise<number>;
   observable: () => Observable<Categories>;
@@ -144,4 +146,7 @@ export interface Catalog {
   featureById: (id: ID) => Feature | null;
   readonly visibleFeatures: Feature[];
   visibleFeaturesObservable: (debounce?:boolean) => Observable<Feature[]>;
+  // return previous state
+  disableAutoCreateCategoryAndRoute: () => boolean;
+  enableAutoCreateCategoryAndRoute: () => boolean;
 }

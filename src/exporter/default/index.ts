@@ -17,7 +17,7 @@
 import {Exporter} from '../index';
 import {Category, Route} from '../../catalog';
 import {getCategoriesKML, getRoutesKML} from '../lib/kml';
-import {KV} from '../../kv-rx';
+import {KV} from '../../kv/sync';
 
 const MIME_KML = 'application/vnd.GoogleMap-earth.kml+xml';
 

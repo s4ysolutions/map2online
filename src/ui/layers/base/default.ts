@@ -15,7 +15,7 @@
  */
 
 import {BaseLayer, BaseLayerState} from './index';
-import {KV} from '../../../kv-rx';
+import {KV} from '../../../kv/sync';
 import {Subject} from 'rxjs';
 import {Coordinate} from '../../../catalog';
 

@@ -63,7 +63,9 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
   const routeEdit = useObservable(catalogUI.routeEditObservable(), catalogUI.routeEdit);
   const routeDelete = useObservable(catalogUI.routeDeleteObservable(), catalogUI.routeDelete);
   const handleDragEnd = useCallback(
-    ({source: {index: indexS}, destination: {index: indexD}}): void => category.routes.reorder(indexS, indexD),
+    ({source: {index: indexS}, destination: {index: indexD}}): void => {
+      category.routes.reorder(indexS, indexD);
+    },
     [category.routes],
   );
   const handleAdd = useCallback(() => {
@@ -110,8 +112,8 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
         setSpinnerActive(true);
         setTimeout(() => {
           category.routes.remove(c.route).then(() => {
-            setSpinnerActive(false);
-          })
+              setSpinnerActive(false);
+            })
             .catch(() => setSpinnerActive(false));
         }, 1);
       }}

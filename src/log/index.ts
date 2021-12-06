@@ -29,7 +29,7 @@ const log = {
    * debug: (a?: any, b?: any, c?: any) => undefined, //console.debug,
    */
   d: console.debug,
-  debug: console.debug,
+  debug: console.log,
   error: console.error,
   info: console.info,
   warn: console.warn,

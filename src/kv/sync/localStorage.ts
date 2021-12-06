@@ -17,7 +17,7 @@
 import {KV} from './index';
 import {Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import log from '../log';
+import log from '../../log';
 
 interface LocalStorage {
   subject: Subject<{ key: string; value: unknown }>

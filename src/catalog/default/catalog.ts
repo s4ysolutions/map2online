@@ -1,135 +1,175 @@
-/*
- * Copyright 2019 s4y.solutions
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {categoriesFactory, CATEGORY_ID_PREFIX, categoryFactory} from './category';
-import {KV} from '../../kv-rx';
-import {Catalog, Category, CategoryProps, Feature, FeatureProps, ID, Route, RouteProps} from '../index';
-import {ROUTE_ID_PREFIX, routeFactory} from './route';
-import {FEATURE_ID_PREFIX, featureFactory} from './feature';
+import {Catalog, Categories, Category, Feature, ID, Route} from '../index';
+import {CatalogStorage} from '../storage';
+import {FeatureDefault} from './feature';
+import {Observable, Subject} from 'rxjs';
+import {RouteDefault} from './route';
+import {CategoriesDefault, CategoryDefault} from './category';
 import {debounceTime} from 'rxjs/operators';
 import {Wording} from '../../personalization/wording';
 import {Map2Styles} from '../../style';
-import {Observable, Subject} from 'rxjs';
+import log from '../../log';
 
 const DEBOUNCE_DELAY = 250;
-// const FEATURE_ID_PREFIX_AT = `${FEATURE_ID_PREFIX}@`;
 
-const catalogFactory = (storage: KV, wording: Wording, styles: Map2Styles): Catalog => {
-  const categories: Record<ID, Category> = {};
-  const routes: Record<ID, Route> = {};
-  const features: Record<ID, Feature> = {};
-  const routesIds: Record<ID, ID[]> = {};
-  const featuresIds: Record<ID, ID[]> = {};
+export class CatalogDefault implements Catalog {
+  static getInstanceAsync(storage: CatalogStorage, wording: Wording, map2styles: Map2Styles, catalogId: string): Promise<Catalog> {
 
-  const lastFeatures: Feature[] = null;
-  // noinspection JSUnusedLocalSymbols
-  // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
-  const isNew = (newFeatures: Feature[]): boolean => {
-    if (lastFeatures === null) {
-      return true;
-    }
-    if (lastFeatures.length !== newFeatures.length) {
-      return true;
-    }
-    for (let i = 0; i < newFeatures.length; i++) {
-      if (!lastFeatures[i].eq(newFeatures[i])) {
-        return false;
-      }
-    }
-    return true;
-  };
+    const instance = new CatalogDefault(
+      storage,
+      wording,
+      map2styles,
+      catalogId,
+    );
 
-  const subjectVisibleFeatures = new Subject<Feature[]>();
-  const observableVisisbleFeaturesDebounced = subjectVisibleFeatures.pipe(debounceTime(DEBOUNCE_DELAY));
-  let lastVisibleFeatures: Feature[] = [];
+    return instance.init();
+  }
 
-  const th: Catalog = {
-    /*
-    featuresObservable: () =>
-      storage
-        .observable<{ key: string; value: Features }>()
-        .pipe(
-          filter(({key}) => key.indexOf(FEATURE_ID_PREFIX_AT) === 0),
-          map(({value}) => value),
-        ),
-     */
-    categories: null,
-    categoryById(id: ID) {
-      const category = categories[id];
-      if (category) {
-        return category;
-      }
-      // eslint-disable-next-line no-use-before-define
-      categories[id] = categoryFactory(storage, this, wording, styles, routesIds, featuresIds, storage.get<CategoryProps | null>(`${CATEGORY_ID_PREFIX}@${id}`, null), notifyFeaturesVisibility);
-      return categories[id];
-    },
-    featureById(id: ID) {
-      const feature = features[id];
-      if (feature) {
-        return feature;
-      }
-      // eslint-disable-next-line no-use-before-define
-      features[id] = featureFactory(storage, this, storage.get<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${id}`, null), styles, notifyFeaturesVisibility);
-      return features[id];
-    },
-    routeById(id: ID) {
-      const route = routes[id];
-      if (route) {
-        return route;
-      }
-      // eslint-disable-next-line no-use-before-define
-      routes[id] = routeFactory(storage, this, wording, styles, featuresIds, storage.get<RouteProps | null>(`${ROUTE_ID_PREFIX}@${id}`, null), notifyFeaturesVisibility);
-      return routes[id];
-    },
-    get visibleFeatures() {
-      return lastVisibleFeatures;
-    },
-    visibleFeaturesObservable: (debounce: boolean | undefined): Observable<Feature[]> =>
-      debounce ? observableVisisbleFeaturesDebounced : subjectVisibleFeatures,
-  };
+  readonly id: ID;
 
-  const findVisibleFeatures = (): Feature[] => {
-    const ret = [] as Feature[];
-    for (const category of th.categories) {
-      if (category.visible) {
-        for (const route of category.routes) {
-          if (route.visible) {
-            for (const feature of route.features) {
-              if (feature.visible) {
-                ret.push(feature);
+  readonly storage: CatalogStorage;
+
+  readonly categoriesCache: Record<ID, CategoryDefault> = {};
+
+  readonly routesCache: Record<ID, RouteDefault> = {};
+
+  readonly featuresCache: Record<ID, FeatureDefault> = {};
+
+  readonly categoriesIds: Record<ID, ID[]> = {};
+
+  readonly routesIds: Record<ID, ID[]> = {};
+
+  readonly featuresIds: Record<ID, ID[]> = {};
+
+  readonly wording: Wording;
+
+  readonly map2styles: Map2Styles;
+
+  readonly subjectVisibleFeatures = new Subject<Feature[]>();
+
+  readonly observableVisisbleFeaturesDebounced = this.subjectVisibleFeatures.pipe(debounceTime(DEBOUNCE_DELAY));
+
+  notifyVisisbleFeaturesChanged: () => void;
+
+  constructor(
+    storage: CatalogStorage,
+    wording: Wording,
+    map2styles: Map2Styles,
+    catalogId: ID,
+  ) {
+    this.id = catalogId;
+    this.storage = storage;
+    this.wording = wording;
+    this.map2styles = map2styles;
+    this.notifyVisisbleFeaturesChanged = () => {
+      const prevVisibleIds = this.visibleIds;
+      const prevLength = this.visibleFeatures.length;
+      this.visibleFeatures = [];
+      this.visibleIds = new Set();
+      let needNotify = false;
+      for (const category of this.categories) {
+        if (category.visible) {
+          for (const route of category.routes) {
+            if (route.visible) {
+              for (const feature of route.features) {
+                if (feature.visible) {
+                  this.visibleFeatures.push(feature);
+                  this.visibleIds.add(feature.id);
+                  if (!prevVisibleIds.has(feature.id)) {
+                    needNotify = true;
+                  }
+                }
               }
             }
           }
         }
       }
+      if (needNotify || this.visibleFeatures.length !== prevLength) {
+        this.subjectVisibleFeatures.next(this.visibleFeatures);
+      }
+    };
+    this.categories = new CategoriesDefault(this, catalogId);
+  }
+
+  async init(): Promise<CatalogDefault> {
+    const autoCreate = this.disableAutoCreateCategoryAndRoute();
+
+    await this.storage.readCategoriesIds(this.id).then(ids => {
+      this.categoriesIds[this.id] = ids;
+    });
+    const categoriesIdsFlat = Object.values(this.categoriesIds).flat();
+
+    await Promise.all(categoriesIdsFlat.map(categoryId => this.storage.readRoutesIds(categoryId).then(ids => {
+      this.routesIds[categoryId] = ids;
+    })));
+    const routesIdsFlat: ID[] = Object.values(this.routesIds).flat();
+
+    await Promise.all(routesIdsFlat.map(routeId => this.storage.readFeaturesIds(routeId).then(ids => {
+      this.featuresIds[routeId] = ids;
+    })));
+    const featuresIdsFlat: ID[] = Object.values(this.featuresIds).flat();
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    await Promise.all(featuresIdsFlat.map(id => this.storage.readFeatureProps(id)
+      .then(props => {
+        if (props !== null) {
+          const feature = new FeatureDefault(this, props);
+          this.featuresCache[feature.id] = feature;
+        }
+      })));
+    await Promise.all(routesIdsFlat.map(id => this.storage.readRouteProps(id)
+      .then(props => {
+        if (props !== null) {
+          const route = new RouteDefault(this, props);
+          this.routesCache[route.id] = route;
+        }
+      })));
+    await Promise.all(categoriesIdsFlat.map(id => this.storage.readCategoryProps(id)
+      .then(props => {
+        if (props !== null) {
+          const category = new CategoryDefault(this, props);
+          this.categoriesCache[category.id] = category;
+        }
+      })));
+    if (autoCreate) {
+      this.enableAutoCreateCategoryAndRoute();
     }
+    this.notifyVisisbleFeaturesChanged();
+    return this;
+  }
+
+  readonly categories: Categories;
+
+  categoryById(id: ID): Category | null {
+    return this.categoriesCache[id];
+  }
+
+  featureById(id: ID): Feature | null {
+    return this.featuresCache[id];
+  }
+
+  routeById(id: ID): Route | null {
+    return this.routesCache[id];
+  }
+
+  visibleIds: Set<ID> = new Set();
+
+  visibleFeatures: Feature[] = [];
+
+  visibleFeaturesObservable(debounce?: boolean): Observable<Feature[]> {
+    return debounce ? this.observableVisisbleFeaturesDebounced : this.subjectVisibleFeatures;
+  }
+
+  autoCreate = true;
+
+  disableAutoCreateCategoryAndRoute() {
+    const ret = this.autoCreate;
+    this.autoCreate = false;
     return ret;
-  };
+  }
 
-  const notifyFeaturesVisibility = (): void => {
-    lastVisibleFeatures = findVisibleFeatures();
-    subjectVisibleFeatures.next(lastVisibleFeatures);
-  };
-
-  th.categories = categoriesFactory(storage, th, wording, styles, routesIds, featuresIds, notifyFeaturesVisibility);
-
-  // NOTE: a bit fragile. As a side effect it will create a first category with first router
-  //       if none exists yet.
-  lastVisibleFeatures = findVisibleFeatures();
-  return th;
-};
-
-export default catalogFactory;
+  enableAutoCreateCategoryAndRoute() {
+    const ret = this.autoCreate;
+    this.autoCreate = true;
+    return ret;
+  }
+}

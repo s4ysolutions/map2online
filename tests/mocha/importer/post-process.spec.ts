@@ -28,6 +28,11 @@ import fs from 'fs';
 import path from 'path';
 import {parseKMLString} from '../../../src/importer/default/kml-parser';
 import {map2StylesFactory} from '../../../src/style/default/styles';
+import {fileURLToPath} from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const map2styles = map2StylesFactory();
 const map2DefaultStyle = map2styles.defaultStyle;

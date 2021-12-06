@@ -75,5 +75,5 @@ const config = merge(baseConfig, {
   },
 });
 
-require('./webpack.log')(config);
+require('./webpack.log.cjs')(config);
 module.exports = config;

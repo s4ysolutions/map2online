@@ -1,184 +1,253 @@
-/*
- * Copyright 2019 s4y.solutions
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {Catalog, Category, ID, Route, RouteProps, Routes} from '../index';
-import {KV} from '../../kv-rx';
-import {featuresFactory} from './feature';
+import {Features, ID, Route, RouteProps, Routes} from '../index';
+import {Observable} from 'rxjs';
 import {makeId} from '../../lib/id';
+import {FeatureDefault, FeaturesDefault} from './feature';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
-import {Wording} from '../../personalization/wording';
-import {Map2Styles} from '../../style';
+import {CatalogDefault} from './catalog';
 
-export const ROUTE_ID_PREFIX = 'r';
-export const ROUTES_ID_PREFIX = 'rs';
+export class RouteDefault implements Route {
+  private readonly p: RouteProps;
 
-const newRouteProps = (wording: Wording): RouteProps => ({
-  id: makeId(),
-  description: '',
-  summary: '',
-  title: wording.R('New route'),
-  visible: true,
-  open: true,
-});
+  private readonly catalog: CatalogDefault;
 
-interface Updatebale {
-  update: () => void;
+  private readonly cache: Record<ID, Route>;
+
+  private makeDefs(): RouteProps {
+    return {
+      id: makeId(),
+      description: '',
+      summary: '',
+      title: this.catalog.wording.R('New route'),
+      visible: true,
+      open: true,
+    };
+  }
+
+  constructor(catalog: CatalogDefault, props: RouteProps | null) {
+    this.catalog = catalog;
+    if (props === null) {
+      this.p = this.makeDefs();
+    } else {
+      this.p = {...this.makeDefs(), ...props};
+    }
+    this.cache = catalog.routesCache;
+    this.id = this.p.id;
+    this.features = new FeaturesDefault(catalog, this.id);
+  }
+
+  readonly id: ID;
+
+  readonly ts = makeId();
+
+  get description() {
+    return this.p.description;
+  }
+
+  set description(value) {
+    this.p.description = value;
+    this.update();
+  }
+
+  readonly features: Features;
+
+  get summary() {
+    return this.p.summary;
+  }
+
+  set summary(value) {
+    this.p.summary = value;
+    this.update();
+  }
+
+  get title() {
+    return this.p.title;
+  }
+
+  set title(value) {
+    this.p.title = value;
+    this.update();
+  }
+
+  get visible() {
+    return this.p.visible;
+  }
+
+  set visible(value) {
+    const notify = value !== this.p.visible;
+    this.p.visible = value;
+    this.update();
+    if (notify) {
+      this.catalog.notifyVisisbleFeaturesChanged();
+    }
+  }
+
+  get open() {
+    return this.p.open;
+  }
+
+  set open(value) {
+    this.p.open = value;
+    this.update();
+  }
+
+  delete(notify = true): Promise<void> {
+    delete this.cache[this.id];
+    const p1 = this.features.delete();
+    const p2 = this.catalog.storage.deleteRouteProps(this.p);
+    if (notify) {
+      this.catalog.notifyVisisbleFeaturesChanged();
+    }
+    return Promise.all([p1, p2]) as unknown as Promise<void>;
+  }
+
+  observable(): Observable<Route> {
+    return this.catalog.storage.observableRouter(this.p)
+      .pipe(map(value => value === null ? null : this));
+  }
+
+  update(): Promise<void> {
+    return this.catalog.storage.updateRouteProps(this.p);
+  }
+
 }
 
-export const routeFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, featuresIds: Record<ID, ID[]>, props: RouteProps | null, notifyFeaturesVisibility: () => void): Route & Updatebale | null => {
-  const def = newRouteProps(wording);
-  const p: RouteProps = props === null ? def : {...def, ...props};
-  if (!p.id) {
-    p.id = makeId();
-  }
-  const key = `${ROUTE_ID_PREFIX}@${p.id}`;
-  const th: Route & Updatebale = {
-    id: p.id,
-    ts: makeId(),
-    get description() {
-      return p.description;
-    },
-    set description(value) {
-      p.description = value;
-      this.update();
-    },
-    get summary() {
-      return p.summary;
-    },
-    set summary(value) {
-      p.summary = value;
-      this.update();
-    },
-    get title() {
-      return p.title;
-    },
-    set title(value) {
-      p.title = value;
-      this.update();
-    },
-    get visible() {
-      return p.visible;
-    },
-    set visible(value) {
-      const notify = value !== p.visible;
-      p.visible = value;
-      this.update();
-      if (notify) {
-        notifyFeaturesVisibility();
-      }
-    },
-    get open() {
-      return p.open;
-    },
-    set open(value) {
-      p.open = value;
-      this.update();
-    },
-    observable: () => storage.observable<RouteProps | null>(key)
-      .pipe(map(value => value === null ? null : catalog.routeById(value.id))),
-    delete() {
-      return this.features.delete().then(() => {
-        storage.delete(key);
-        storage.delete(`vis@${p.id}`); // visibility
-        storage.delete(`op@${p.id}`); // expand
-      });
-    },
-    features: null,
-    update: () => {
-      storage.set(key, p);
-    },
-  };
-  th.features = featuresFactory(storage, catalog, th, styles, featuresIds, notifyFeaturesVisibility);
-  return th;
-};
+const isRouteDefault = (propsOrRoute: RouteProps | RouteDefault): propsOrRoute is RouteDefault =>
+  (propsOrRoute as RouteDefault).update !== undefined;
 
-// const iids: Record<ID, ID[]> = {};
+export class RoutesDefault implements Routes {
+  readonly ts: ID = makeId();
 
-export const routesFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, category: Category, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>, notifyFeaturesVisibility: () => void): Routes => {
-  const key = `${ROUTES_ID_PREFIX}@${category.id}`;
-  routesIds[key] = storage.get<ID[]>(key, []);
+  private readonly cacheKey: ID;
 
-  const storeIds = () => {
-    storage.set(key, routesIds[key]);
-  };
+  private readonly categoryId: ID;
 
-  const updateIds = (ids: ID[]) => {
-    if (ids !== routesIds[key]) {
-      routesIds[key] = ids.slice();
+  private readonly routesCache: Record<ID, RouteDefault>;
+
+  private readonly idsCache: Record<ID, ID[]>;
+
+  private readonly featuresIdsCache: Record<ID, ID[]>;
+
+  private readonly featuresCache: Record<ID, FeatureDefault>;
+
+  private readonly catalog: CatalogDefault;
+
+  private updateIds = (ids: ID[]) => {
+    if (ids !== this.idsCache[this.cacheKey]) {
+      this.idsCache[this.cacheKey] = ids;
     }
   };
-  if (routesIds[key].length === 0) {
-    const route = newRouteProps(wording);
-    storage.set(`${ROUTE_ID_PREFIX}@${route.id}`, route);
-    updateIds([route.id]);
-    storeIds();
+
+  private get guardedIds() {
+    const ids = this.idsCache[this.cacheKey];
+    if (!ids) {
+      this.idsCache[this.cacheKey] = [];
+    }
+    if ((!ids || ids.length === 0) && this.catalog.wording.isPersonalized && this.catalog.autoCreate) {
+      const route = new RouteDefault(this.catalog, null);
+      this.addRoute(route); //  ignore async storage backend, use sync cache
+    }
+    return this.idsCache[this.cacheKey];
   }
-  return {
-    add(props: RouteProps, position: number) {
-      const route = routeFactory(storage, catalog, wording, styles, featuresIds, props, notifyFeaturesVisibility);
-      route.update();
-      const ids0 = routesIds[key];
-      const pos = position || ids0.length;
-      updateIds(ids0.slice(0, pos).concat(route.id)
-        .concat(ids0.slice(pos)));
-      storeIds();
-      return Promise.resolve(catalog.routeById(route.id));
-    },
-    byPos: (index: number): Route | null => catalog.routeById(routesIds[key][index]),
-    get length() {
-      return routesIds[key] ? routesIds[key].length : 0;
-    },
-    hasRoute: (route: Route) => routesIds[key].indexOf(route.id) >= 0,
-    observable() {
-      return storage.observable(key).pipe(map(() => this));
-    },
-    remove(route: Route): Promise<number> {
-      const ids0 = routesIds[key];
-      const pos = ids0.indexOf(route.id);
-      if (pos < 0) {
-        return Promise.resolve(0);
-      }
-      updateIds(ids0.slice(0, pos).concat(ids0.slice(pos + 1)));
-      return route.delete().then(() => {
-        storeIds();
-        return 1;
-      });
-    },
-    delete() {
-      return Promise.all(Array.from(this).map(route => this.remove(route)))
-        .then(() => {
-          storage.delete(key);
-          delete routesIds[key];
-        });
-    },
-    reorder(from: number, to: number) {
-      const ids0 = routesIds[key];
-      updateIds(reorder(ids0, from, to));
-      storeIds();
-    },
-    [Symbol.iterator]() {
-      const ids0 = routesIds[key];
-      const _ids = [...ids0];
-      let _current = 0;
-      return {
-        next: () => _current >= _ids.length
-          ? {done: true, value: null}
-          : {done: false, value: this.byPos(_current++)},
-      };
-    },
-  };
-};
+
+  constructor(catalog: CatalogDefault, categoryId: ID) {
+    this.catalog = catalog;
+    this.cacheKey = categoryId;
+    this.categoryId = categoryId;
+    this.idsCache = catalog.routesIds;
+    this.routesCache = catalog.routesCache;
+    this.featuresCache = catalog.featuresCache;
+    this.featuresIdsCache = catalog.featuresIds;
+  }
+
+  private addRoute(route: RouteDefault, position?: number): Promise<Route> {
+    this.routesCache[route.id] = route;
+
+    let ids = this.idsCache[this.cacheKey];
+    if (!ids) {
+      ids = [];
+    }
+    const pos = position || ids.length;
+    // update caches before triggering feature observable
+    // in order to have id of the new feature in the ids array
+    this.updateIds(ids.slice(0, pos).concat(route.id)
+      .concat(ids.slice(pos)));
+    const p1 = route.update();
+    const p2 = this.update();
+    this.catalog.notifyVisisbleFeaturesChanged();
+    return Promise.all([p1, p2]).then(() => route);
+  }
+
+  add(props: RouteProps, position?: number): Promise<Route> {
+    if (isRouteDefault(props)) {
+      return this.addRoute(props, position);
+    }
+    const p = {...props};
+    if (!p.id) {
+      p.id = makeId();
+    }
+    const route = new RouteDefault(this.catalog, p);
+    return this.addRoute(route, position);
+
+  }
+
+  private update(): Promise<void> {
+    return this.catalog.storage.updateRoutesIds(this.categoryId, this.guardedIds);
+  }
+
+  byPos(index: number): Route | null {
+    return this.routesCache[this.guardedIds[index]] || null;
+  }
+
+  delete(): Promise<void> {
+    const ids = this.guardedIds;
+    this.updateIds([]);
+    const promises = ids.map(id => this.routesCache[id].delete(false));
+    this.catalog.notifyVisisbleFeaturesChanged();
+    return this.catalog.storage.deleteRoutesIds(this.categoryId)
+      .then(() => Promise.all(promises)) as unknown as Promise<void>;
+  }
+
+  has(route: Route): boolean {
+    return this.guardedIds.indexOf(route.id) >= 0;
+  }
+
+  get length(): number {
+    return this.guardedIds.length;
+  }
+
+  observable(): Observable<Routes> {
+    return this.catalog.storage.observableRoutesIds(this.categoryId).pipe(map(() => this));
+  }
+
+  remove(route: Route): Promise<number> {
+    const ids = this.guardedIds;
+    const pos = ids.indexOf(route.id);
+    if (pos < 0) {
+      return Promise.resolve(0);
+    }
+    this.updateIds(ids.slice(0, pos).concat(ids.slice(pos + 1)));
+
+    const p1 = this.update();
+    const p2 = (route as RouteDefault).delete(false);
+    this.catalog.notifyVisisbleFeaturesChanged();
+    return Promise.all([p1, p2]).then(() => 1 /* count*/);
+  }
+
+  reorder(from: number, to: number): Promise<void> {
+    const ids = this.guardedIds;
+    this.updateIds(reorder(ids, from, to));
+    return this.update();
+  }
+
+  [Symbol.iterator](): Iterator<Route> {
+    const _ids = this.guardedIds.slice(); // don't reflect modifications after the iterator has been created
+    let _current = 0;
+    return {
+      next: () => _current >= _ids.length
+        ? {done: true, value: null}
+        : {done: false, value: this.byPos(_current++)},
+    };
+  }
+
+}

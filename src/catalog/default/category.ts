@@ -1,186 +1,264 @@
-/*
- * Copyright 2019 s4y.solutions
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {Catalog, Categories, Category, CategoryProps, ID, Route} from '../index';
-import {KV} from '../../kv-rx';
-import {routesFactory} from './route';
+import {Categories, Category, CategoryProps, ID, RouteProps, Routes} from '../index';
 import {makeId} from '../../lib/id';
+import {RouteDefault, RoutesDefault} from './route';
+import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
-import {Wording} from '../../personalization/wording';
-import {Map2Styles} from '../../style';
+import {CatalogDefault} from './catalog';
+import {FeatureDefault} from './feature';
 
-export const CATEGORY_ID_PREFIX = 'c';
+export class CategoryDefault implements Category {
 
-export const newCategoryProps = (wording: Wording): CategoryProps => ({
-  id: makeId(),
-  description: '',
-  summary: '',
-  title: wording.C('New category'),
-  visible: true,
-  open: false,
-});
+  private readonly p: CategoryProps;
 
-interface Updatebale {
-  update: () => void;
+  private readonly catalog: CatalogDefault;
+
+  private readonly cache: Record<ID, Category>;
+
+  private makeDefs(): CategoryProps {
+    return {
+      id: makeId(),
+      description: '',
+      summary: '',
+      title: this.catalog.wording.C('New category'),
+      visible: true,
+      open: false,
+    };
+  }
+
+  constructor(
+    catalog: CatalogDefault,
+    props: RouteProps | null,
+  ) {
+    this.catalog = catalog;
+    if (props === null) {
+      this.p = this.makeDefs();
+    } else {
+      this.p = {...this.makeDefs(), ...props};
+    }
+    this.cache = catalog.categoriesCache;
+    this.id = this.p.id;
+    this.routes = new RoutesDefault(catalog, this.id);
+  }
+
+  readonly id: ID;
+
+  readonly ts = makeId();
+
+  get description() {
+    return this.p.description;
+  }
+
+  set description(value) {
+    this.p.description = value;
+    this.update();
+  }
+
+  readonly routes: Routes;
+
+  get summary() {
+    return this.p.summary;
+  }
+
+  set summary(value) {
+    this.p.summary = value;
+    this.update();
+  }
+
+  get title() {
+    return this.p.title;
+  }
+
+  set title(value) {
+    this.p.title = value;
+    this.update();
+  }
+
+  get visible() {
+    return this.p.visible;
+  }
+
+  set visible(value) {
+    const notify = value !== this.p.visible;
+    this.p.visible = value;
+    this.update();
+    if (notify) {
+      this.catalog.notifyVisisbleFeaturesChanged();
+    }
+  }
+
+  get open() {
+    return this.p.open;
+  }
+
+  set open(value) {
+    this.p.open = value;
+    this.update();
+  }
+
+  update(): Promise<void> {
+    return this.catalog.storage.updateCategoryProps(this.p);
+  }
+
+  delete(notify = true): Promise<void> {
+    delete this.cache[this.id];
+    const p1 = this.routes.delete();
+    const p2 = this.catalog.storage.deleteCategoryProps(this.p);
+    if (notify) {
+      this.catalog.notifyVisisbleFeaturesChanged();
+    }
+    return Promise.all([p1, p2]) as unknown as Promise<void>;
+  }
+
+  observable(): Observable<Category> {
+    return this.catalog.storage.observableCategoryProps(this.p)
+      .pipe(map(value => value === null ? null : this));
+  }
 }
 
-export const categoryFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>, props: CategoryProps | null, notifyFeaturesVisibility: () => void): Category & Updatebale | null => {
-  const def = newCategoryProps(wording);
-  const p: CategoryProps = props === null ? def : {...def, ...props};
-  if (!p.id) {
-    p.id = makeId();
+const isCategoryDefault = (propsOrCategory: CategoryProps | CategoryDefault): propsOrCategory is CategoryDefault =>
+  (propsOrCategory as CategoryDefault).update !== undefined;
+
+export class CategoriesDefault implements Categories {
+
+  private readonly catalog: CatalogDefault;
+
+  private readonly cacheKey: ID;
+
+  private readonly catalogId: ID;
+
+  private readonly routesIdsCache: Record<ID, ID[]>;
+
+  private readonly routesCache: Record<ID, RouteDefault>;
+
+  private readonly idsCache: Record<ID, ID[]>;
+
+  private readonly categoriesCache: Record<ID, CategoryDefault>;
+
+  private readonly featuresIdsCache: Record<ID, ID[]>;
+
+  private readonly featuresCache: Record<ID, FeatureDefault>;
+
+
+  private updateIds = (ids: ID[]) => {
+    if (ids !== this.idsCache[this.cacheKey]) {
+      this.idsCache[this.cacheKey] = ids;
+    }
+  };
+
+  private get guardedIds() {
+    const ids = this.idsCache[this.cacheKey];
+    if (!ids) {
+      this.idsCache[this.cacheKey] = [];
+    }
+    if ((!ids || ids.length === 0) && this.catalog.wording.isPersonalized && this.catalog.autoCreate) {
+      const category = new CategoryDefault(this.catalog, null);
+      this.addCategory(category); //  ignore async storage backend, use sync cache
+    }
+    return this.idsCache[this.cacheKey];
   }
-  const key = `${CATEGORY_ID_PREFIX}@${p.id}`;
 
-  const th: Category & Updatebale = {
-    get description() {
-      return p.description;
-    },
-    set description(value) {
-      p.description = value;
-      this.update();
-    },
-    id: p.id,
-    get summary() {
-      return p.summary;
-    },
-    set summary(value) {
-      p.summary = value;
-      this.update();
-    },
-    get title() {
-      return p.title;
-    },
-    set title(value) {
-      p.title = value;
-      this.update();
-    },
-    get visible() {
-      return p.visible;
-    },
-    set visible(value) {
-      const notify = value !== p.visible;
-      p.visible = value;
-      this.update();
-      if (notify) {
-        notifyFeaturesVisibility();
-      }
-    },
-    get open() {
-      return p.open;
-    },
-    set open(value) {
-      p.open = value;
-      this.update();
-    },
-    delete() {
-      return this.routes.delete().then(() => {
-        storage.delete(key);
-        storage.delete(`vis@${p.id}`); // visibility
-        storage.delete(`op@${p.id}`); // visibility
-      });
-    },
-    hasRoute(route: Route) {
-      return this.routes.hasRoute(route);
-    },
-    observable: () => storage.observable<CategoryProps | null>(key)
-      .pipe(map(value => value === null ? null : catalog.categoryById(value.id))),
-    update: () => {
-      storage.set(key, p);
-    },
-    routes: null,
-  };
-  th.routes = routesFactory(storage, catalog, wording, styles, th, routesIds, featuresIds, notifyFeaturesVisibility);
-  return th;
-};
+  constructor(catalog: CatalogDefault, catalogId: ID) {
+    this.catalog = catalog;
+    this.catalogId = catalogId;
+    this.cacheKey = catalogId;
+    this.idsCache = catalog.routesIds;
+    this.routesCache = catalog.routesCache;
+    this.routesIdsCache = catalog.routesIds;
+    this.featuresCache = catalog.featuresCache;
+    this.featuresIdsCache = catalog.featuresIds;
+    this.categoriesCache = catalog.categoriesCache;
+    this.idsCache = catalog.categoriesIds;
+  }
 
-export const categoriesFactory = (storage: KV, catalog: Catalog, wording: Wording, styles: Map2Styles, routesIds: Record<ID, ID[]>, featuresIds: Record<ID, ID[]>, notifyFeaturesVisibility: () => void): Categories => {
-  let prevIds: ID[] = [];
-  const key = 'cats';
-  const storeIds = () => {
-    storage.set(key, prevIds);
-  };
-  const updateIds = (ids: ID[]) => {
-    if (ids !== prevIds) {
-      prevIds = ids.slice();
-    }
-  };
-  const guardedIds = () => {
-    if (prevIds.length > 0) {
-      return prevIds;
-    }
-    prevIds = storage.get('cats', []);
-    if (prevIds.length > 0) {
-      return prevIds;
-    }
-    if (wording.isPersonalized) {
-      const category = newCategoryProps(wording);
-      storage.set(`${CATEGORY_ID_PREFIX}@${category.id}`, category);
-      updateIds([category.id]);
-      storeIds();
-    }
-    return prevIds;
-  };
+  private addCategory(category: CategoryDefault, position?: number): Promise<Category> {
+    this.categoriesCache[category.id] = category;
 
-  return {
-    add(props: CategoryProps | null, position?: number): Promise<Category> {
-      const category = categoryFactory(storage, catalog, wording, styles, routesIds, featuresIds, props, notifyFeaturesVisibility);
-      category.update();
-      const pos = position || guardedIds().length;
-      const ids0 = guardedIds();
-      updateIds(ids0.slice(0, pos).concat(category.id)
-        .concat(ids0.slice(pos)));
-      storeIds();
-      return Promise.resolve(catalog.categoryById(category.id));
-    },
-    byPos: (index: number): Category | null => catalog.categoryById(guardedIds()[index]),
-    get length() {
-      return guardedIds().length;
-    },
-    observable() {
-      return storage.observable('cats').pipe(map(() => this));
-    },
-    remove(category: Category): Promise<number> {
-      const ids0 = guardedIds();
-      const pos = ids0.indexOf(category.id);
-      if (pos < 0) {
-        return Promise.resolve(0);
-      }
-      prevIds = ids0.slice(0, pos).concat(ids0.slice(pos + 1));
-      return category.delete().then(() => 1)
-        .then(c => {
-          storeIds();
-          return c;
-        });
-    },
-    reorder(from: number, to: number) {
-      const ids0 = guardedIds();
-      updateIds(reorder(ids0, from, to));
-      storeIds();
-    },
-    [Symbol.iterator]() {
-      const ids0 = guardedIds();
-      const _ids = [...ids0];
-      let _current = 0;
-      return {
-        next: () => _current >= _ids.length
-          ? {done: true, value: null}
-          : {done: false, value: this.byPos(_current++)},
-      };
-    },
-  };
-};
+    let ids = this.idsCache[this.cacheKey];
+    if (!ids) {
+      ids = [];
+    }
+    const pos = position || ids.length;
+    // update caches before triggering feature observable
+    // in order to have id of the new feature in the ids array
+    this.updateIds(ids.slice(0, pos).concat(category.id)
+      .concat(ids.slice(pos)));
+    const p1 = category.update();
+    const p2 = this.update();
+    this.catalog.notifyVisisbleFeaturesChanged();
+    return Promise.all([p1, p2]).then(() => category);
+  }
+
+  add(props: CategoryProps, position?: number): Promise<Category> {
+    if (isCategoryDefault(props)) {
+      return this.addCategory(props, position);
+    }
+    const p = {...props};
+    if (!p.id) {
+      p.id = makeId();
+    }
+    const category = new CategoryDefault(this.catalog, p);
+    return this.addCategory(category, position);
+
+  }
+
+  has(category: Category): boolean {
+    return this.guardedIds.indexOf(category.id) >= 0;
+  }
+
+  private update(): Promise<void> {
+    return this.catalog.storage.updateCategoriesIds(this.catalogId, this.guardedIds);
+  }
+
+  byPos(index: number): Category | null {
+    return this.categoriesCache[this.guardedIds[index]] || null;
+  }
+
+  delete(): Promise<void> {
+    const ids = this.guardedIds;
+    this.updateIds([]);
+    const promises = ids.map(id => this.categoriesCache[id].delete(false));
+    this.catalog.notifyVisisbleFeaturesChanged();
+    return this.catalog.storage.deleteRoutesIds(this.catalogId)
+      .then(() => Promise.all(promises)) as unknown as Promise<void>;
+  }
+
+  get length(): number {
+    return this.guardedIds.length;
+  }
+
+  observable(): Observable<Categories> {
+    return this.catalog.storage.observableCategoriesIds(this.catalogId).pipe(map((p) => p === null ? null : this));
+  }
+
+  remove(category: Category): Promise<number> {
+    const ids = this.guardedIds;
+    const pos = ids.indexOf(category.id);
+    if (pos < 0) {
+      return Promise.resolve(0);
+    }
+    this.updateIds(ids.slice(0, pos).concat(ids.slice(pos + 1)));
+
+    const p2 = this.update();
+    const p1 = (category as CategoryDefault).delete(false);
+    this.catalog.notifyVisisbleFeaturesChanged();
+    return Promise.all([p1, p2])
+      .then(() => 1 /* count*/);
+  }
+
+  reorder(from: number, to: number): Promise<void> {
+    const ids = this.guardedIds;
+    this.updateIds(reorder(ids, from, to));
+    return this.update();
+  }
+
+  [Symbol.iterator](): Iterator<Category> {
+    const _ids = this.guardedIds.slice(); // don't reflect modifications after the iterator has been created
+    let _current = 0;
+    return {
+      next: () => _current >= _ids.length
+        ? {done: true, value: null}
+        : {done: false, value: this.byPos(_current++)},
+    };
+  }
+}

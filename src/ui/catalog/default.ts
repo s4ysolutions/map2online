@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import {KV} from '../../kv-rx';
+import {KV} from '../../kv/sync';
 import {CatalogUI} from './index';
 import {Catalog, Category, Feature, ID, Route} from '../../catalog';
 import {map} from 'rxjs/operators';
 import {Subject, merge} from 'rxjs';
-import {ROUTE_ID_PREFIX} from '../../catalog/default/route';
 
 const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
   const categoryEditSubject = new Subject<Category | null>();
@@ -57,7 +56,7 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
       const activeRoute = this.getStoredActiveRoute();
       if (activeRoute) {
         for (const category of catalog.categories) {
-          if (category.hasRoute(activeRoute)) {
+          if (category.routes.has(activeRoute)) {
             return category;
           }
         }
@@ -70,7 +69,7 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     },
     set activeCategory(category) {
       const {activeRoute} = this;
-      if (!category.hasRoute(activeRoute) && category.routes.length > 0) {
+      if (!category.routes.has(activeRoute) && category.routes.length > 0) {
         this.activeRoute = category.routes.byPos(0);
       }
     },
@@ -82,7 +81,7 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     },
     getStoredActiveRoute() {
       const id = storage.get<ID | null>('ar', null);
-      if (id && storage.hasKey(`${ROUTE_ID_PREFIX}@${id}`)) {
+      if (id) {
         const activeRoute = catalog.routeById(id);
         if (activeRoute) {
           return activeRoute;

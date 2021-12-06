@@ -18,7 +18,7 @@
 import {ImportedFolder, ParsingStatus} from '../index';
 import {Observable, Subject} from 'rxjs';
 import sax, {QualifiedTag, Tag} from 'sax';
-import {Coordinate, FeatureProps} from '../../catalog';
+import {Coordinate, FeatureProps, FeaturePropsWithStyleId} from '../../catalog';
 import log from '../../log';
 import {degreesToMeters} from '../../lib/projection';
 import {newImportedFolder} from '../new-folder';
@@ -112,7 +112,7 @@ const nl = `
 
 const updateStyles = (rootFolder: ImportedFolder, styles: Record<string, Style>, defaultStyle: Style) => {
   for (const featurep of rootFolder.features) {
-    const feature = featurep as FeatureProps
+    const feature = featurep as FeaturePropsWithStyleId
     if (feature.styleId == null) {
       feature.style = defaultStyle;
     } else {
@@ -135,7 +135,7 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
   const parser = sax.parser(true, {normalize: true, trim: true, xmlns: true});
   const parseStateStack: ParseState[] = [ParseState.NONE];
   const lastState = () => parseStateStack[parseStateStack.length - 1];
-  let currentFeature = null as FeatureProps
+  let currentFeature = null as FeaturePropsWithStyleId;
 
   let currentStyle: Style & {id: string}= null
   const styles: Record<string, Style> = {}; // global styles

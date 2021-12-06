@@ -18,14 +18,18 @@
 import {expect} from 'chai';
 import {Catalog, Feature, FeatureProps} from '../../../src/catalog';
 import memoryStorageFactory from '../../mocks/kv/memoryStorage';
-import {KV} from '../../../src/kv-rx';
+import {KV} from '../../../src/kv/sync';
 import {Wording} from '../../../src/personalization/wording';
 import {Map2Styles} from '../../../src/style';
 import {wordingFactory} from '../../../src/personalization/wording/default';
 import {map2StylesFactory} from '../../../src/style/default/styles';
-import catalogFactory from '../../../src/catalog/default/catalog';
 import {map} from 'rxjs/operators';
 import {createOlStyle} from '../../../src/react/components/Ol/lib/styles';
+import {KvPromise} from '../../../src/kv/promise';
+import {CatalogStorage} from '../../../src/catalog/storage';
+import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
+import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
+import {CatalogDefault} from '../../../src/catalog/default/catalog';
 
 describe('26-10-2020 issues', () => {
 
@@ -33,6 +37,8 @@ describe('26-10-2020 issues', () => {
     let kv: KV;
     let wording: Wording;
     let map2styles: Map2Styles;
+    let kvPromise: KvPromise;
+    let catalogStorage: CatalogStorage;
     let catalog: Catalog;
 
     const fid1 = 'fid1';
@@ -43,7 +49,9 @@ describe('26-10-2020 issues', () => {
       wording.currentRouteVariant = 'en';
       wording.currentCategoryVariant = 'en';
       map2styles = map2StylesFactory();
-      catalog = catalogFactory(kv, wording, map2styles);
+      kvPromise = memoryStoragePromiseFactory();
+      catalogStorage = new CatalogStorageIndexedDb(kvPromise, map2styles);
+      catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
       await catalog.categories.byPos(0).routes.byPos(0).features.add({
         id: fid1,
         style: map2styles.defaultStyle,
@@ -68,10 +76,10 @@ describe('26-10-2020 issues', () => {
       expect(features[0]).to.not.has.property('styleId');
     });
 
-    it('feature is stored with style id', () => {
-      const props: FeatureProps = kv.get(`f@${fid1}`, null);
+    it('feature is stored with style id', async () => {
+      const props: FeatureProps = await kvPromise.get(`f@${fid1}`, null);
       expect(props).to.be.not.null;
-      expect(props).to.not.has.property('style');
+      expect(props).to.has.property('style', null);
       expect(props).to.has.property('styleId', map2styles.defaultStyle.id);
     });
 

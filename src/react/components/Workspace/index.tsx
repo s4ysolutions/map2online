@@ -55,18 +55,27 @@ const Workspace = (): React.ReactElement => {
   return isPersonalized
     ? <React.Fragment >
       <TopNavigation key="topNavigation" />
+
       <div className="workspace" key="workspace" ref={onRefSet} >
         <LeftDrawer />
+
         <div className="map-container" >
           <GoogleMap />
+
           <OlMap />
         </div >
+
         <RightDrawer />
+
         <FloatPanel parentHeight={height} parentWidth={width} />
       </div >
+
       {importUIVisible && <Import />}
+
       {personalizationVisible && <Wording />}
+
       {aboutVisible && <About />}
+
       {spinner && <Spinner />}
     </React.Fragment >
     : <Wording />;

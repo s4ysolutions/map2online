@@ -23,8 +23,14 @@ import {ImportedFolder} from '../../../src/importer';
 import {Point} from '../../../src/catalog';
 import {getImportedFolderStats} from '../../../src/importer/stats';
 import {map2StylesFactory} from '../../../src/style/default/styles';
+import {fileURLToPath} from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const map2styles = map2StylesFactory();
+
 
 describe('KML Importer', () => {
   it('rrb-like simple correct file with cdata', async () => {

@@ -41,8 +41,8 @@ describe('Catalog visibleFeatures', () => {
   let kvPromise: KvPromise;
   let wording: Wording;
   let map2styles: Map2Styles;
-  let catalog: Catalog;
   let testStyle: Style;
+  let catalog: Catalog;
   let subscription1: Subscription;
   let subscription2: Subscription;
   let subscription3: Subscription;

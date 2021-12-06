@@ -75,14 +75,13 @@ const indexedDbFactory = (store: string): KvPromise & IndexedDB => ({
     const prom =
       (value === undefined)
         ? this.db.then((db: IDBPDatabase) => db.delete(store, key))
-        : this.db.then((db: IDBPDatabase) => db.put(store, value, key))
+        : this.db.then((db: IDBPDatabase) => db.put(store, value, key));
     return prom.then(() => {
       this.subject.next({key, value});
       return {key, value};
     });
   },
   delete<T>(key: string) {
-    log.debug(`indexedDb remove ${key}`);
     return this.db
       .then((db: IDBPDatabase) => db.delete(store, key))
       .then(() => this.subject.next({key, value: null}));

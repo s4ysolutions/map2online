@@ -1,7 +1,7 @@
-import {Feature, Features, ID, Route, RouteProps, Routes} from '../index';
+import {Features, ID, Route, RouteProps, Routes} from '../index';
 import {Observable} from 'rxjs';
 import {makeId} from '../../lib/id';
-import {FeaturesDefault} from './feature';
+import {FeatureDefault, FeaturesDefault} from './feature';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
@@ -112,9 +112,8 @@ export class RouteDefault implements Route {
 
 }
 
-const isRouteDefault = (propsOrRoute: RouteProps | RouteDefault): propsOrRoute is RouteDefault => {
-  return (propsOrRoute as RouteDefault).update !== undefined;
-}
+const isRouteDefault = (propsOrRoute: RouteProps | RouteDefault): propsOrRoute is RouteDefault =>
+  (propsOrRoute as RouteDefault).update !== undefined;
 
 export class RoutesDefault implements Routes {
   readonly ts: ID = makeId();
@@ -123,13 +122,13 @@ export class RoutesDefault implements Routes {
 
   private readonly categoryId: ID;
 
-  private readonly routesCache: Record<ID, Route>;
+  private readonly routesCache: Record<ID, RouteDefault>;
 
   private readonly idsCache: Record<ID, ID[]>;
 
   private readonly featuresIdsCache: Record<ID, ID[]>;
 
-  private readonly featuresCache: Record<ID, Feature>;
+  private readonly featuresCache: Record<ID, FeatureDefault>;
 
   private readonly catalog: CatalogDefault;
 
@@ -182,14 +181,14 @@ export class RoutesDefault implements Routes {
   add(props: RouteProps, position?: number): Promise<Route> {
     if (isRouteDefault(props)) {
       return this.addRoute(props, position);
-    } else {
-      const p = {...props};
-      if (!p.id) {
-        p.id = makeId();
-      }
-      const route = new RouteDefault(this.catalog, p);
-      return this.addRoute(route, position);
     }
+    const p = {...props};
+    if (!p.id) {
+      p.id = makeId();
+    }
+    const route = new RouteDefault(this.catalog, p);
+    return this.addRoute(route, position);
+
   }
 
   private update(): Promise<void> {
@@ -230,7 +229,7 @@ export class RoutesDefault implements Routes {
     this.updateIds(ids.slice(0, pos).concat(ids.slice(pos + 1)));
 
     const p1 = this.update();
-    const p2 = route.delete(false);
+    const p2 = (route as RouteDefault).delete(false);
     this.catalog.notifyVisisbleFeaturesChanged();
     return Promise.all([p1, p2]).then(() => 1 /* count*/);
   }

@@ -8,7 +8,7 @@ import {
   Point,
   isCoordinate,
   isLineString,
-  isPoint, RouteProps,
+  isPoint,
 } from '../index';
 import {makeId} from '../../lib/id';
 import {Style} from '../../style';
@@ -17,7 +17,6 @@ import {map} from 'rxjs/operators';
 import T from '../../l10n';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
-import {RouteDefault} from './route';
 
 export class FeatureDefault implements Feature {
   private readonly p: FeatureProps;
@@ -180,16 +179,15 @@ export class FeatureDefault implements Feature {
   }
 }
 
-const isFeatureDefault = (propsOrFeature: FeatureProps | FeatureDefault): propsOrFeature is FeatureDefault => {
-  return (propsOrFeature as FeatureDefault).update !== undefined;
-}
+const isFeatureDefault = (propsOrFeature: FeatureProps | FeatureDefault): propsOrFeature is FeatureDefault =>
+  (propsOrFeature as FeatureDefault).update !== undefined;
 
 export class FeaturesDefault implements Features {
   readonly ts: ID = makeId();
 
   private readonly cacheKey: ID;
 
-  private readonly featuresCache: Record<ID, Feature>;
+  private readonly featuresCache: Record<ID, FeatureDefault>;
 
   private readonly idsCache: Record<ID, ID[]>;
 
@@ -240,17 +238,17 @@ export class FeaturesDefault implements Features {
   add(props: FeatureProps, position?: number): Promise<Feature> {
     if (isFeatureDefault(props)) {
       return this.addFeature(props, position);
-    } else {
-      const p = {...props};
-      if (!p.title) {
-        p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${this.guardedIds.length + 1}`;
-      }
-      if (!p.id) {
-        p.id = makeId();
-      }
-      const feature = new FeatureDefault(this.catalog, p);
-      return this.addFeature(feature, position);
     }
+    const p = {...props};
+    if (!p.title) {
+      p.title = `${isPoint(props.geometry) ? T`Point` : T`Line`} ${this.guardedIds.length + 1}`;
+    }
+    if (!p.id) {
+      p.id = makeId();
+    }
+    const feature = new FeatureDefault(this.catalog, p);
+    return this.addFeature(feature, position);
+
   }
 
   hasFeature (feature: Feature): boolean {
@@ -291,7 +289,7 @@ export class FeaturesDefault implements Features {
     this.updateIds(ids.slice(0, pos).concat(ids.slice(pos + 1)));
 
     const p2 = this.update();
-    const p1 = feature.delete(false); // will notify visibility
+    const p1 = (feature as FeatureDefault).delete(false); // will notify visibility
     this.catalog.notifyVisisbleFeaturesChanged(); // NOTIFY ASAP - not necessary but just in case
 
     return Promise.all([p1, p2])

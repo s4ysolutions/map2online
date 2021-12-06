@@ -28,11 +28,11 @@ export class CatalogDefault implements Catalog {
 
   readonly storage: CatalogStorage;
 
-  readonly categoriesCache: Record<ID, Category> = {};
+  readonly categoriesCache: Record<ID, CategoryDefault> = {};
 
-  readonly routesCache: Record<ID, Route> = {};
+  readonly routesCache: Record<ID, RouteDefault> = {};
 
-  readonly featuresCache: Record<ID, Feature> = {};
+  readonly featuresCache: Record<ID, FeatureDefault> = {};
 
   readonly categoriesIds: Record<ID, ID[]> = {};
 
@@ -97,7 +97,6 @@ export class CatalogDefault implements Catalog {
       this.categoriesIds[this.id] = ids;
     });
     const categoriesIdsFlat = Object.values(this.categoriesIds).flat();
-    log.debug('CatalogDefault init, categoriesIds', categoriesIdsFlat);
 
     await Promise.all(categoriesIdsFlat.map(categoryId => this.storage.readRoutesIds(categoryId).then(ids => {
       this.routesIds[categoryId] = ids;
@@ -107,7 +106,7 @@ export class CatalogDefault implements Catalog {
     await Promise.all(routesIdsFlat.map(routeId => this.storage.readFeaturesIds(routeId).then(ids => {
       this.featuresIds[routeId] = ids;
     })));
-    const featuresIdsFlat: ID[] = Object.values(this.routesIds).flat();
+    const featuresIdsFlat: ID[] = Object.values(this.featuresIds).flat();
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     await Promise.all(featuresIdsFlat.map(id => this.storage.readFeatureProps(id)

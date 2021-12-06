@@ -72,7 +72,6 @@ export const isPoint = (geometry: Point | LineString): geometry is Point => geom
 export const isLineString = (geometry: Point | LineString): geometry is LineString => geometry && (geometry as LineString).coordinates !== undefined;
 
 export interface Feature extends FeatureProps {
-  delete: (notify?: boolean) => Promise<void>;
   observable: () => Observable<Feature>;
   updateCoordinates: (coord: Coordinate | Coordinate[]) => void;
   eq: (anotherFeature: Feature) => boolean;
@@ -101,7 +100,6 @@ export interface RouteProps {
 
 export interface Route extends RouteProps {
   ts: ID;
-  delete: (notify?: boolean) => Promise<void>;
   features: Features;
   observable: () => Observable<Route>;
 }
@@ -129,7 +127,6 @@ export interface CategoryProps {
 export interface Category extends CategoryProps {
   routes: Routes;
   observable: () => Observable<Category>;
-  delete: (notify?: boolean) => Promise<void>;
 }
 
 export interface Categories extends Iterable<Category> {

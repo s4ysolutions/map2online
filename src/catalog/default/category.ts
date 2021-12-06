@@ -1,4 +1,4 @@
-import {Categories, Category, CategoryProps, Feature, FeatureProps, ID, Route, RouteProps, Routes} from '../index';
+import {Categories, Category, CategoryProps, ID, RouteProps, Routes} from '../index';
 import {makeId} from '../../lib/id';
 import {RouteDefault, RoutesDefault} from './route';
 import {Observable} from 'rxjs';
@@ -116,9 +116,8 @@ export class CategoryDefault implements Category {
   }
 }
 
-const isCategoryDefault = (propsOrCategory: CategoryProps | CategoryDefault): propsOrCategory is CategoryDefault => {
-  return (propsOrCategory as CategoryDefault).update !== undefined;
-}
+const isCategoryDefault = (propsOrCategory: CategoryProps | CategoryDefault): propsOrCategory is CategoryDefault =>
+  (propsOrCategory as CategoryDefault).update !== undefined;
 
 export class CategoriesDefault implements Categories {
 
@@ -130,15 +129,15 @@ export class CategoriesDefault implements Categories {
 
   private readonly routesIdsCache: Record<ID, ID[]>;
 
-  private readonly routesCache: Record<ID, Route>;
+  private readonly routesCache: Record<ID, RouteDefault>;
 
   private readonly idsCache: Record<ID, ID[]>;
 
-  private readonly categoriesCache: Record<ID, Category>;
+  private readonly categoriesCache: Record<ID, CategoryDefault>;
 
   private readonly featuresIdsCache: Record<ID, ID[]>;
 
-  private readonly featuresCache: Record<ID, Feature>;
+  private readonly featuresCache: Record<ID, FeatureDefault>;
 
 
   private updateIds = (ids: ID[]) => {
@@ -193,14 +192,14 @@ export class CategoriesDefault implements Categories {
   add(props: CategoryProps, position?: number): Promise<Category> {
     if (isCategoryDefault(props)) {
       return this.addCategory(props, position);
-    } else {
-      const p = {...props};
-      if (!p.id) {
-        p.id = makeId();
-      }
-      const category = new CategoryDefault(this.catalog, p);
-      return this.addCategory(category, position);
     }
+    const p = {...props};
+    if (!p.id) {
+      p.id = makeId();
+    }
+    const category = new CategoryDefault(this.catalog, p);
+    return this.addCategory(category, position);
+
   }
 
   has(category: Category): boolean {
@@ -241,7 +240,7 @@ export class CategoriesDefault implements Categories {
     this.updateIds(ids.slice(0, pos).concat(ids.slice(pos + 1)));
 
     const p2 = this.update();
-    const p1 = category.delete(false);
+    const p1 = (category as CategoryDefault).delete(false);
     this.catalog.notifyVisisbleFeaturesChanged();
     return Promise.all([p1, p2])
       .then(() => 1 /* count*/);
@@ -262,5 +261,4 @@ export class CategoriesDefault implements Categories {
         : {done: false, value: this.byPos(_current++)},
     };
   }
-
 }

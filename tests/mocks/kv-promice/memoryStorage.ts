@@ -17,6 +17,7 @@
 import {Observable, Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {KvPromise} from '../../../src/kv/promise';
+import log from '../../../src/log';
 
 export interface MemoryStoragePromise extends KvPromise {
   readonly mem: Record<string, unknown>;

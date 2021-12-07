@@ -19,7 +19,7 @@ import Delete from '../Svg/Delete';
 import Hidden from '../Svg/Hidden';
 import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
-import {Feature, isPoint, LineString, Route} from '../../../catalog';
+import {Feature, LineString, Route, isPoint} from '../../../catalog';
 import {getCatalogUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {filter, map} from 'rxjs/operators';
@@ -28,6 +28,7 @@ import Pin from '../Svg/Pin';
 import Line from '../Svg/Line';
 import {formatCoordinate, formatCoordinates} from '../../../lib/format';
 import {skipConfirmDialog} from '../../../lib/confirmation';
+import Edit from '../Svg/Edit';
 
 const catalogUI = getCatalogUI();
 
@@ -72,6 +73,7 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
       >
         <Delete />
       </div >
+
       <div className="complex-title" key="complex-title" onClick={handleOpen} >
         {[
           <span className="index" key="index" >
@@ -85,18 +87,22 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
           </div >,
         ]}
       </div >
+
       <div className="edit" key="edit" onClick={handleEdit} >
-        <Prefs />
+        <Edit />
       </div >
+
       <div className="visibility" key="visibility" onClick={handleVisible} >
         {isVisible ? <Visible /> : <Hidden />}
       </div >
+
       <div className="type" key="type" >
         {isPoint(feature.geometry)
           ? <Pin color={feature.style.iconStyle.color} />
           : <Line color={feature.style.lineStyle.color} />}
       </div >
     </div >
+
     {isOpen && <div className="body" >
       <div >
         {

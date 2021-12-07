@@ -43,7 +43,7 @@
   padding-right: 8px;
 }
 
-.catalog-navigation button {
+.catalog-navigation button, .catalog-navigation .void-button {
   max-width: 30%;
 }
 
@@ -171,6 +171,6 @@
   margin-bottom: 2px;
 }
 
-button svg {
+button svg, .void-button svg {
   padding-right: 0.3em;
 }

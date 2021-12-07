@@ -34,13 +34,16 @@ const ConfirmDialog: React.FunctionComponent<Props> = ({confirm, onCancel: handl
     <h2 className="confirm-dialog-title" >
       {title}
     </h2 >
+
     <div className="confirm-dialog-message" >
       {message}
     </div >
+
     <div className="buttons-row" >
       <button onClick={handleCancel} type="button" >
         {T`Cancel`}
       </button >
+
       <button
         onClick={() => {
           handleConfirm();
@@ -52,6 +55,7 @@ const ConfirmDialog: React.FunctionComponent<Props> = ({confirm, onCancel: handl
         {confirm || T`Confirm`}
       </button >
     </div >
+
     <div className="buttons-row" >
       <label htmlFor="set_skip_checkbox" >
         <input

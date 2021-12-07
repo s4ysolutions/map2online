@@ -30,6 +30,7 @@ const SettingsMenu: React.FunctionComponent = (): React.ReactElement => {
         {T`Tools`}
       </div >
     </MenuItem >
+
     <MenuItem onClick={workspace.togglePersonalization} >
       <div className="title" >
         {T`Personalization`}

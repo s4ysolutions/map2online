@@ -44,7 +44,9 @@ const RightDrawer: React.FunctionComponent = (): React.ReactElement => {
   log.render(`RightDrawer fileMenu=${stateFile} sourceMenu=${stateSources} settings=${stateSettings}`);
   return <PosedMenu className="right-drawer" pose={stateFile || stateSources || stateSettings ? 'show' : 'hide'} >
     {stateSources && <MapSourcesMenu />}
+
     {stateFile && <FileMenu />}
+
     {stateSettings && <SettingsMenu />}
   </PosedMenu >;
 };

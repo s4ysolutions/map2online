@@ -53,10 +53,12 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
       <h2 >
         {wording.C('Modify category')}
       </h2 >
+
       <div className="field-row" >
         <label htmlFor="title" >
           {T`Title`}
         </label >
+
         <input
           name="title"
           onChange={(ev): void => {
@@ -65,10 +67,12 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
           ref={titleRef}
           value={category.title} />
       </div >
+
       <div className="field-row" >
         <label htmlFor="description" >
           {T`Description`}
         </label >
+
         <textarea
           name="description"
           onChange={(ev): void => {
@@ -77,6 +81,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
           rows={10}
           value={category.description} />
       </div >
+
       <div className="buttons-row" >
         <button onClick={handleClose} type="button" >
           {T`Close`}

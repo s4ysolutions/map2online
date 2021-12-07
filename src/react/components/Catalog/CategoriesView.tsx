@@ -97,10 +97,13 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
         </div >}
       </Droppable >
     </DragDropContext >
+
     <button className="add" onClick={handleAdd} type="button" >
       {T`Add`}
     </button >
+
     {categoryEdit && <CategoryEdit category={categoryEdit} />}
+
     {categoryDelete && <ConfirmDialog
       confirm={wording.C('Yes, delete the category')}
       message={wording.CR('Delete category warning')}

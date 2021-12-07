@@ -40,9 +40,11 @@ const Wording = (): React.ReactElement => {
       <h2 >
         {T`Personalize wording`}
       </h2 >
+
       <h3 >
         {T`Choose best category`}
       </h3 >
+
       <div className="field-row" >
         {wording.categoryVariants.map(category =>
           <div className="radio-row" key={category} >
@@ -62,9 +64,11 @@ const Wording = (): React.ReactElement => {
             </label >
           </div >)}
       </div >
+
       <h4 >
         {T`Choose best route`}
       </h4 >
+
       <div className="field-row" >
         {wording.routeVariants.map(route =>
           <div className="radio-row" key={route} >
@@ -84,6 +88,7 @@ const Wording = (): React.ReactElement => {
             </label >
           </div >)}
       </div >
+
       {categoryVariant && routeVariant &&
       <div className="buttons-row" >
         <button onClick={workspace.togglePersonalization} type="button">

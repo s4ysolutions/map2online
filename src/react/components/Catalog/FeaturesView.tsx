@@ -110,10 +110,13 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
         </div >}
       </Droppable >
     </DragDropContext >
+
     <button className="add" onClick={handleAdd} type="button" >
       {T`Add`}
     </button >
+
     {featureEdit && <FeatureEdit feature={featureEdit} />}
+
     {featureDelete && <ConfirmDialog
       confirm={T`Yes, delete the feature`}
       message={T`The feature will be deleted, are you sure?`}

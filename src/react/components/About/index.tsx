@@ -35,48 +35,65 @@ const About: React.FunctionComponent = () => <Modal className="about" onClose={(
     <h2 >
       {T`About`}
     </h2 >
+
     <p >
       {T`About service`}
     </p >
+
     <p >
       {T`About beta`}
     </p >
+
     <h3 >
       {T`Credentials`}
     </h3 >
+
     <p >
       {T`About Red Off-road`}
+
       {' '}
+
       <a href="https://red-offroad.ru" target="_redoffroad" >
         Red off-road expedition.
       </a >
     </p >
+
     <p >
       {T`About Tulupov`}
+
       {' '}
+
       <a href="https://www.facebook.com/aleksey.tulupov" target="_tulupov" >
         Алексей Тулупов.
       </a >
     </p >
+
     <p >
       {T`About Nevinski`}
+
       {' '}
+
       <a href="https://www.facebook.com/kirillnev" target="_nevinsky" >
         Кирилл Невинский.
       </a >
     </p >
+
     <br />
+
     <p >
       <a href="mailto:sergey@s4y.solutions?subject=map2online%20-%20feedback" >
         {T`Feedback`}
       </a >
     </p >
+
     <div className="buttons-row" >
       <button onClick={workspace.toggleAbout} type="button" >
         {T`Close`}
       </button >
     </div >
+
     <hr />
+
     <h4 >
       &copy;S4Y.Solutions, 2020
     </h4 >

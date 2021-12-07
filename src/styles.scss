@@ -31,7 +31,8 @@ body {
 
 label[for="file"],
 button {
-  align-items: flex-start;
+  // align-items: flex-start;
+  align-items: center; // align svg verticaly
   display: flex;
   justify-content: center;
   flex-shrink: 0;
@@ -48,7 +49,7 @@ button.add {
   display: block;
 }
 
-button svg {
+button svg, .void-button svg {
   height: 100%;
   width: auto;
 }

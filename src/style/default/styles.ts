@@ -16,7 +16,7 @@
 
 import {IconStyle, LineStyle, Map2Styles, Style, StyleColorMode} from '../index';
 import {map2colors} from './colors';
-import {makePinURL, PIN_HOTSPOT_X, PIN_HOTSPOT_Y, PIN_SCALE} from './pin';
+import {PIN_HOTSPOT_X, PIN_HOTSPOT_Y, PIN_SCALE, makePinURL} from './pin';
 
 const makeLineStyle = (color: string, width: number): LineStyle => ({
   color,

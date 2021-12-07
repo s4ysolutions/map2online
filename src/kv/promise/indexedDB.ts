@@ -27,11 +27,14 @@ interface IndexedDB {
   readonly subject: Subject<{ key: string; value: unknown }>
 }
 
-const indexedDbFactory = (store: string): KvPromise & IndexedDB => ({
+const DB_VERSION = 7;
+
+const indexedDbFactory = (dbname: string, store = 'default'): KvPromise & IndexedDB => ({
   _db: null,
   subject: new Subject<{ key: string; value: unknown }>(),
   get db(): Promise<IDBPDatabase> {
-    return this._db === null ? openDB('map2', 6, {
+    return this._db === null ? openDB(dbname, DB_VERSION, {
+      // eslint-disable-next-line no-unused-vars
       upgrade(database: IDBPDatabase, oldVersion: number, newVersion: number | null, transaction) {
         log.debug('indexedDb upgrade');
         try {
@@ -39,8 +42,7 @@ const indexedDbFactory = (store: string): KvPromise & IndexedDB => ({
         } catch (e) {
           log.debug('indexedDb can not delete database', e);
         }
-        database.createObjectStore(store, {
-        });
+        database.createObjectStore(store, {});
       },
       blocked() {
         log.debug('indexedDb blocked');
@@ -64,7 +66,7 @@ const indexedDbFactory = (store: string): KvPromise & IndexedDB => ({
     }
     return this.db
       .then((db: IDBPDatabase) => db.get(store, key))
-      .then((v?:T) => v === undefined ? defaultValue : v);
+      .then((v?: T) => v === undefined ? defaultValue : v);
   },
   set<T>(key: string, value: T) {
     log.debug(`indexedDb set ${key}`, value);

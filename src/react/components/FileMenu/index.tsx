@@ -63,25 +63,31 @@ const FileMenu: React.FunctionComponent = (): React.ReactElement => {
     <MenuItem key="visible" onClick={toggleVisible} >
       <div className={`title all-visible-menu ${allVisible ? 'on' : 'off'}`} >
         <Check />
+
         {T`Only visible`}
       </div >
     </MenuItem >
+
     <MenuItem key="all" onClick={handleExportAll} >
       <div className="title" >
         {T`Export all`}
       </div >
     </MenuItem >
+
     <MenuItem key="export_category" onClick={handleExportCategory} >
       <div className="title" >
         {wording.C('Export category')}
       </div >
     </MenuItem >
+
     <MenuItem key="export_route" onClick={handleExportRoute} >
       <div className="title" >
         {wording.R('Export route')}
       </div >
     </MenuItem >
+
     <MenuSep key="sep1" />
+
     <MenuItem
       key="import"
       onClick={() => {

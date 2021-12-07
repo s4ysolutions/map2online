@@ -39,11 +39,13 @@ import indexedDbFactory from '../kv/promise/indexedDB';
 import {KvPromise} from '../kv/promise';
 import {CatalogDefault} from '../catalog/default/catalog';
 import {CatalogStorageIndexedDb} from '../catalog/storage/indexeddb';
+import log from '../log';
 
 const localStorageSingleton = localStorageFactory();
 export const getLocalStorage = (): KV => localStorageSingleton;
 
-const remoteStorageSingleton = indexedDbFactory('map2');
+const indexeddbName = window && window.location && window.location.hostname || 'not_browser';
+const remoteStorageSingleton = indexedDbFactory(`map2_${indexeddbName}`, 'catalog');
 export const getRemoteStorage = (): KvPromise => remoteStorageSingleton;
 
 const map2StylesSingleton = map2StylesFactory();
@@ -79,7 +81,7 @@ const catalogUISingleton = catalogUIFactory(localStorageSingleton, catalogSingle
 export const getCatalogUI = (): CatalogUI => catalogUISingleton;
 
 export const initDI = async (): Promise<void> => {
-  console.log('initDI start');
+  log.d('initDI start');
   await catalogSingleton.init();
-  console.log('initDI done');
+  log.d('initDI done');
 };

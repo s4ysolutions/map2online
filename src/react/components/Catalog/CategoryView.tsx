@@ -19,7 +19,6 @@ import Delete from '../Svg/Delete';
 import Edit from '../Svg/Edit2';
 import Empty from '../Svg/Empty';
 import Hidden from '../Svg/Hidden';
-import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
 import {Category} from '../../../catalog';
 import {getCatalog, getCatalogUI, getWording} from '../../../di-default';
@@ -27,6 +26,7 @@ import useObservable from '../../hooks/useObservable';
 import {filter, map} from 'rxjs/operators';
 import log from '../../../log';
 import {skipConfirmDialog} from '../../../lib/confirmation';
+import Active from '../Svg/Active';
 
 interface Props {
   canDelete: boolean;
@@ -92,35 +92,39 @@ const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: cate
     >
       {canDelete ? <Delete /> : <Empty />}
     </div >
+
     <div
       className="title"
       key="title"
       onClick={handleSelect}
-      title={wording.R('Open category hint')}
+      title={wording.CR('Open category hint')}
     >
       {category.title + (categoryView.routes.length > 0 && ` (${categoryView.routes.length})` || ' (0)')}
     </div >
+
     <div
       className="edit"
       key="edit"
       onClick={handleEdit}
-      title={wording.C('Modifiy category hint')}
+      title={wording.C('Modify category hint')}
     >
-      <Prefs />
+      <Edit />
     </div >
+
     <div
       className="active"
       key="active"
       onClick={handleActive}
       title={wording.C('Activate category hint')}
     >
-      <Edit />
+      <Active />
     </div >
+
     <div
       className="visibility"
       key="visibility"
       onClick={handleVisible}
-      title={wording.C('Visibility category hint')}
+      title={wording.C(isVisible ? 'Visibility off category hint' : 'Visibility on category hint')}
     >
       {isVisible ? <Visible /> : <Hidden />}
     </div >

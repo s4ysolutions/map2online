@@ -28,6 +28,7 @@ import {filter, map} from 'rxjs/operators';
 import log from '../../../log';
 import T from '../../../l10n';
 import {skipConfirmDialog} from '../../../lib/confirmation';
+import Active from '../Svg/Active';
 
 const noOp = (): null => null;
 const catalogUI = getCatalogUI();
@@ -79,6 +80,7 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
     >
       {canDelete ? <Delete /> : <Empty />}
     </div >
+
     <div
       className="title"
       key="title"
@@ -87,22 +89,25 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
     >
       {route.title + (routeView.features.length > 0 && ` (${routeView.features.length})` || ' (0)')}
     </div >
+
     <div
       className="edit"
       key="edit"
       onClick={handleEdit}
       title={T`Open features`}
     >
-      <Prefs />
+      <Edit />
     </div >
+
     <div
       className="active"
       key="active"
       onClick={handleActive}
       title={wording.R('Activate route hint')}
     >
-      <Edit />
+      <Active />
     </div >
+
     <div
       className="visibility"
       key="visibility"

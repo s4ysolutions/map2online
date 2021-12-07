@@ -161,7 +161,8 @@ form {
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-input:focus, button:focus {
+// button:focus - ugly in bottom catalog navigator
+input:focus {
   background-color: rgba(255, 255, 255, 0.2);
 }
 

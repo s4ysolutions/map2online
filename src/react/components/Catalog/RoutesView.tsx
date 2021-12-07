@@ -97,10 +97,13 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
         </div >}
       </Droppable >
     </DragDropContext >
+
     <button className="add" onClick={handleAdd} type="button" >
       {T`Add`}
     </button >
+
     {routeEdit && <RouteEdit route={routeEdit} />}
+
     {routeDelete && <ConfirmDialog
       confirm={wording.R('Yes, delete the route')}
       message={wording.R('Delete route warning')}
@@ -112,8 +115,8 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
         setSpinnerActive(true);
         setTimeout(() => {
           category.routes.remove(c.route).then(() => {
-              setSpinnerActive(false);
-            })
+            setSpinnerActive(false);
+          })
             .catch(() => setSpinnerActive(false));
         }, 1);
       }}

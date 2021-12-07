@@ -58,6 +58,7 @@ const FloatPanel: React.FunctionComponent<Props> =
         ref={onRefSet}
       >
         <ToolsPanel />
+
         <div className="drag-handle" >
           <Handle />
         </div >

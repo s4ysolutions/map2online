@@ -39,6 +39,7 @@ const Catalog: React.FunctionComponent = (): React.ReactElement => {
       : selectedCategory
         ? <RoutesView category={selectedCategory} />
         : <CategoriesView />}
+
     <CatalogNavigation />
   </div >;
 };

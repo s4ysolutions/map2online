@@ -81,6 +81,7 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
       <h2 >
         {T`Import KML`}
       </h2 >
+
       <div className="import" >
         <div className="upload-area" >
           {window.File && window.FileReader && window.FileList && window.Blob &&
@@ -89,29 +90,36 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
             File Upload is not supported
           </div >}
         </div >
+
         {inProgress &&
         <div className="upload-results" >
           <em >
             {wording.C('Found categories: ') + parseStats.categories}
           </em >
+
           <em className="last">
             {wording.R('Found routes: ') + parseStats.routes}
           </em >
+
           <ImportedFolders folder={parseState.rootFolder} />
+
           {mixProblem &&
           <div className="import-problem">
             <em >
               {T`Problem: Some folders have both features and subfolders`}
             </em >
+
             <p >
               <strong >
                 {T`Possible actions:`}
               </strong >
             </p >
+
             <ul >
               <li >
                 {T`Cancel import and fix the file manually`}
               </li >
+
               <li >
                 <button className="fix-import" onClick={() => parser.convertMixedToRoutes()} type="button" >
                   {T`Click fix the file automatically`}
@@ -119,20 +127,24 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
               </li >
             </ul >
           </div >}
+
           {flatProblem && !mixProblem &&
           <div className="import-problem">
             <em >
               {T`Problem: Some folders have more than 2 levels on nesting`}
             </em >
+
             <p >
               <strong >
                 {T`Possible actions:`}
               </strong >
             </p >
+
             <ul >
               <li >
                 {T`Cancel import and fix the file manually`}
               </li >
+
               <li >
                 <button className="fix-import" onClick={() => parser.flatCategories()} type="button" >
                   {T`Click fix the file automatically`}
@@ -140,6 +152,7 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
               </li >
             </ul >
           </div >}
+
           <div className="import-kind">
             <label >
               <input
@@ -150,10 +163,12 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 }}
                 type="radio"
                 value={ImportTo.ALL_FEATURES_TO_ACTIVE_ROUTE} />
+
               {wording.R('Import all features into the active route')}
               &nbsp;
             </label >
           </div >
+
           {parseStats.routes === 1 &&
           <div className="import-kind">
             <label >
@@ -165,10 +180,12 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 }}
                 type="radio"
                 value={ImportTo.ALL_ROUTES_TO_CATEGORY} />
+
               {wording.CR('Import the route into the active category')}
               &nbsp;
             </label >
           </div >}
+
           {parseStats.routes > 1 &&
           <div className="import-kind">
             <label >
@@ -180,10 +197,12 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 }}
                 type="radio"
                 value={ImportTo.ALL_ROUTES_TO_CATEGORY} />
+
               {wording.CR('Import all routes into the active category')}
               &nbsp;
             </label >
           </div >}
+
           {parseStats.categories > 0 &&
           <div className="import-kind">
             <label >
@@ -195,16 +214,19 @@ const Import: React.FunctionComponent = (): React.ReactElement => {
                 }}
                 type="radio"
                 value={ImportTo.ALL_CATEGORIES_TO_CATALOG} />
+
               {wording.C('Import the categories into the catalog')}
               &nbsp;
             </label >
           </div >}
         </div >}
       </div >
+
       <div className="buttons-row" >
         <button onClick={importUI.close} type="button" >
           {T`Cancel`}
         </button >
+
         {!mixProblem && !flatProblem && parseState.rootFolder.folders.length > 0 &&
         <button onClick={handleImport} type="button" >
           {T`Import`}

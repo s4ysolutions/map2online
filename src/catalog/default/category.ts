@@ -191,7 +191,7 @@ export class CategoriesDefault implements Categories {
 
   add(props: CategoryProps | null, position?: number): Promise<Category> {
     if (props === null) {
-      const category = new CategoryDefault(this.catalog,null);
+      const category = new CategoryDefault(this.catalog, null);
       return this.addCategory(category, position);
     } else if (isCategoryDefault(props)) {
       return this.addCategory(props, position);

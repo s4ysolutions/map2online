@@ -15,7 +15,7 @@
  */
 
 import {Circle as CircleStyle, Fill, Icon as IconStyle, Stroke, Style, Text} from 'ol/style';
-import {isIconStyle, isLineStyle, StyleItem} from '../../../../style';
+import {StyleItem, isIconStyle, isLineStyle} from '../../../../style';
 
 const backgroundFill = new Fill({color: '#fff8'});
 const createText = (text: string) =>

@@ -58,10 +58,12 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
       <h2 >
         {wording.R('Modify route')}
       </h2 >
+
       <div className="field-row" >
         <label htmlFor="title" >
           {T`Title`}
         </label >
+
         <input
           name="title"
           onChange={(ev): void => {
@@ -70,10 +72,12 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
           ref={titleRef}
           value={route.title} />
       </div >
+
       <div className="field-row" >
         <label htmlFor="description" >
           {T`Description`}
         </label >
+
         <textarea
           name="description"
           onChange={(ev): void => {
@@ -82,6 +86,7 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
           rows={10}
           value={route.description} />
       </div >
+
       <div className="buttons-row" >
         <button onClick={handleClose} type="button">
           {T`Close`}

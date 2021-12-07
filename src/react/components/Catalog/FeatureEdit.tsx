@@ -112,10 +112,12 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
       <h2 >
         {isPoint(featureEdit.geometry) ? T`Modify point` : T`Modify line`}
       </h2 >
+
       <div className="field-row" >
         <label htmlFor="title" >
           {T`Title`}
         </label >
+
         <input
           name="title"
           onChange={(ev): void => {
@@ -124,10 +126,12 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
           ref={titleRef}
           value={featureEdit.title} />
       </div >
+
       <div className="field-row" >
         <label htmlFor="description" >
           {T`Description`}
         </label >
+
         <textarea
           name="description"
           onChange={(ev): void => {
@@ -136,10 +140,12 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
           rows={5}
           value={feature.description} />
       </div >
+
       <div className="field-row" >
         <label htmlFor="coordinates" >
           {T`LatLon`}
         </label >
+
         <textarea
           name="coordinates"
           onChange={(ev): void => {
@@ -149,6 +155,7 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
           rows={Math.max(Math.min(MIN_COORDINATES_ROWS, coordinates.length), MAX_COORDINATES_ROWS)}
           value={coordinates} />
       </div >
+
       <div className="buttons-row" >
         <button onClick={handleClose} type="button">
           {T`Close`}

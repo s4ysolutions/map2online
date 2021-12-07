@@ -31,6 +31,7 @@ const MapSourcesMenu: React.FunctionComponent = (): React.ReactElement => {
         <div className="title" >
           {T`${group.id}`}
         </div >
+
         <div className="sub-items" >
           {group.maps.map((map): React.ReactElement => <MapSourceItem key={map.id} source={map} />)}
         </div >

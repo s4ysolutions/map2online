@@ -236,7 +236,10 @@ export class FeaturesDefault implements Features {
   }
 
   add(props: FeatureProps, position?: number): Promise<Feature> {
-    if (isFeatureDefault(props)) {
+    if (props === null) {
+      const feature = new FeatureDefault(this.catalog, null);
+      return this.addFeature(feature, position);
+    } else if (isFeatureDefault(props)) {
       return this.addFeature(props, position);
     }
     const p = {...props};
@@ -248,7 +251,6 @@ export class FeaturesDefault implements Features {
     }
     const feature = new FeatureDefault(this.catalog, p);
     return this.addFeature(feature, position);
-
   }
 
   hasFeature (feature: Feature): boolean {

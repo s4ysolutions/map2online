@@ -79,7 +79,7 @@ export interface Feature extends FeatureProps {
 
 export interface Features extends Iterable<Feature> {
   readonly ts: ID;
-  add: (props: FeatureProps, position?: number) => Promise<Feature>;
+  add: (props: FeatureProps | null, position?: number) => Promise<Feature>;
   hasFeature: (feature: Feature) => boolean;
   readonly length: number;
   remove: (feauture: Feature) => Promise<number>;
@@ -105,7 +105,7 @@ export interface Route extends RouteProps {
 }
 
 export interface Routes extends Iterable<Route> {
-  add: (props: RouteProps, position?: number) => Promise<Route>;
+  add: (props: RouteProps | null, position?: number) => Promise<Route>;
   has: (route: Route) => boolean;
   readonly length: number;
   remove: (route: Route) => Promise<number>;

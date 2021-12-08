@@ -27,7 +27,7 @@ interface IndexedDB {
   readonly subject: Subject<{ key: string; value: unknown }>
 }
 
-const DB_VERSION = 7;
+const DB_VERSION = 8;
 
 const indexedDbFactory = (dbname: string, store = 'default'): KvPromise & IndexedDB => ({
   _db: null,
@@ -42,7 +42,12 @@ const indexedDbFactory = (dbname: string, store = 'default'): KvPromise & Indexe
         } catch (e) {
           log.debug('indexedDb can not delete database', e);
         }
-        database.createObjectStore(store, {});
+        try {
+          database.createObjectStore(store, {});
+        } catch (e) {
+          log.error('indexedDb createObjectStore', e);
+          throw (e);
+        }
       },
       blocked() {
         log.debug('indexedDb blocked');
@@ -66,14 +71,14 @@ const indexedDbFactory = (dbname: string, store = 'default'): KvPromise & Indexe
     }
     return this.db
       .then((db: IDBPDatabase) => db.get(store, key))
-      .then((v?: T) => v === undefined ? defaultValue : v);
+      .then((v?: T) => v === undefined ? defaultValue : v)
+      .catch((e: Error) => {
+        log.error('indexedDB get', e);
+        throw (e);
+      });
   },
   set<T>(key: string, value: T) {
     log.debug(`indexedDb set ${key}`, value);
-    if (value instanceof Function) {
-      log.error(value);
-      console.trace();
-    }
     const prom =
       (value === undefined)
         ? this.db.then((db: IDBPDatabase) => db.delete(store, key))

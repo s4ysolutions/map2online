@@ -19,14 +19,12 @@ import Delete from '../Svg/Delete';
 import Edit from '../Svg/Edit2';
 import Empty from '../Svg/Empty';
 import Hidden from '../Svg/Hidden';
-import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
 import {Category, Route} from '../../../catalog';
 import {getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {filter, map} from 'rxjs/operators';
 import log from '../../../log';
-import T from '../../../l10n';
 import {skipConfirmDialog} from '../../../lib/confirmation';
 import Active from '../Svg/Active';
 
@@ -76,7 +74,7 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
       className="delete"
       key="delete"
       onClick={canDelete ? handleDelete : noOp}
-      title={wording.C('Delete route hint')}
+      title={wording.R('Delete route hint')}
     >
       {canDelete ? <Delete /> : <Empty />}
     </div >
@@ -85,7 +83,7 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
       className="title"
       key="title"
       onClick={handleSelect}
-      title={T`Open features`}
+      title={wording.R('Open route hint')}
     >
       {route.title + (routeView.features.length > 0 && ` (${routeView.features.length})` || ' (0)')}
     </div >
@@ -94,7 +92,7 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
       className="edit"
       key="edit"
       onClick={handleEdit}
-      title={T`Open features`}
+      title={wording.R('Modify route hint')}
     >
       <Edit />
     </div >
@@ -112,7 +110,7 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
       className="visibility"
       key="visibility"
       onClick={handleVisible}
-      title={wording.C('Visibility route hint')}
+      title={wording.R(isVisible ? 'Visibility off route hint' : 'Visibility on route hint')}
     >
       {isVisible ? <Visible /> : <Hidden />}
     </div >

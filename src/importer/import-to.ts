@@ -19,8 +19,11 @@ import {isFlatRoot} from './post-process';
 import {ImportedFolder} from './index';
 
 export enum ImportTo {
+  // eslint-disable-next-line no-unused-vars
   ALL_FEATURES_TO_ACTIVE_ROUTE,
+  // eslint-disable-next-line no-unused-vars
   ALL_ROUTES_TO_CATEGORY,
+  // eslint-disable-next-line no-unused-vars
   ALL_CATEGORIES_TO_CATALOG
 }
 

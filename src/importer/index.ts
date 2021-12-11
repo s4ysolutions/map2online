@@ -36,6 +36,7 @@ export interface ParsingStatus {
 }
 
 export interface Parser {
+  // eslint-disable-next-line no-unused-vars
   parse: (fileList: FileList) => Promise<ImportedFolder>;
   status: ParsingStatus;
   statusObservable: () => Observable<ParsingStatus>;

@@ -25,8 +25,10 @@ import {formatCoordinate, formatCoordinates} from '../../../lib/format';
 import log from '../../../log';
 import {map} from 'rxjs/operators';
 import {degreesToMeters} from '../../../lib/projection';
+import ColorSelect from '../ColorSelect';
 
 const catalogUI = getCatalogUI();
+// eslint-disable-next-line no-unused-vars
 const handleSubmit: (ev: FormEvent) => void = (ev: FormEvent) => {
   ev.preventDefault();
   catalogUI.commitEditFeature().then(r => r);
@@ -83,10 +85,10 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
       .pipe(map(f => ({
         title: f.title,
         description: f.description,
-      /*
-       * pointCoordinates: isPoint(feature.geometry) ? formatCoordinate(feature.geometry.coordinate) : null,
-       * lineCoordinates: isLineString(feature.geometry) ? formatCoordinates(feature.geometry.coordinates).split(' ') : null,
-       */
+        /*
+         * pointCoordinates: isPoint(feature.geometry) ? formatCoordinate(feature.geometry.coordinate) : null,
+         * lineCoordinates: isLineString(feature.geometry) ? formatCoordinates(feature.geometry.coordinates).split(' ') : null,
+         */
       })))
     , featureEdit, /* {
       title: featureEdit.title,
@@ -146,18 +148,30 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
           {T`LatLon`}
         </label >
 
-        <textarea
-          name="coordinates"
-          onChange={(ev): void => {
-            setCoordinates(ev.target.value);
-            featureEdit.geometry = makeGeometry(ev.target.value);
-          }}
-          rows={Math.max(Math.min(MIN_COORDINATES_ROWS, coordinates.length), MAX_COORDINATES_ROWS)}
-          value={coordinates} />
+        {isPoint(featureEdit.geometry)
+          ? <input
+              name="coordinates"
+              onChange={(ev): void => {
+                setCoordinates(ev.target.value);
+                featureEdit.geometry = makeGeometry(ev.target.value);
+              }}
+              value={coordinates} />
+          : <textarea
+              name="coordinates"
+              onChange={(ev): void => {
+                setCoordinates(ev.target.value);
+                featureEdit.geometry = makeGeometry(ev.target.value);
+              }}
+              rows={Math.max(Math.min(MIN_COORDINATES_ROWS, coordinates.length), MAX_COORDINATES_ROWS)}
+              value={coordinates} />}
       </div >
 
       <div className="buttons-row" >
-        <button onClick={handleClose} type="button">
+        <ColorSelect isPoint={isPoint(featureEdit.geometry)} onColorSelect={(style) => {log.d(style); featureEdit.style=style}} selected={featureEdit.style} />
+      </div>
+
+      <div className="buttons-row" >
+        <button onClick={handleClose} type="button" >
           {T`Close`}
         </button >
       </div >

@@ -7,7 +7,6 @@ import {CategoriesDefault, CategoryDefault} from './category';
 import {debounceTime} from 'rxjs/operators';
 import {Wording} from '../../personalization/wording';
 import {Map2Styles} from '../../style';
-import log from '../../log';
 
 const DEBOUNCE_DELAY = 250;
 

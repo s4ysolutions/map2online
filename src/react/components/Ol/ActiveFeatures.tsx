@@ -23,9 +23,12 @@ import OlFeature from 'ol/Feature';
 import {getCatalog} from '../../../di-default';
 import {merge} from 'rxjs';
 import {Feature} from '../../../catalog';
-import {setOlFeatureCoordinates, setOlFeatureTitle} from './lib/feature';
+import {setOlFeatureCoordinates, setOlFeatureStyle} from './lib/feature';
 import {useVisibleFeatures} from './hooks/useVisibleFeatures';
 import {Geometry as OlGeometry} from 'ol/geom';
+import {debounceTime} from 'rxjs/operators';
+
+const DEBOUNCE_DELAY = 50;
 
 const catalog = getCatalog();
 
@@ -58,15 +61,17 @@ const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
       olFeaturesById[olFeature.getId().toString()] = olFeature;
     });
     // subsribe to feature modifications
-    const featuresObservable = merge(...featuresObservables).subscribe((feature: Feature) => {
-      if (!feature) {
-        // feature deletion is handled in the outer useEffect
-        return;
-      }
-      const olFeature = olFeaturesById[feature.id];
-      setOlFeatureCoordinates(olFeature, feature);
-      setOlFeatureTitle(olFeature, feature.title);
-    });
+    const featuresObservable = merge(...featuresObservables).pipe(debounceTime(DEBOUNCE_DELAY))
+      .subscribe((feature: Feature) => {
+        if (!feature) {
+          // feature deletion is handled in the outer useEffect
+          return;
+        }
+        const olFeature = olFeaturesById[feature.id];
+        setOlFeatureCoordinates(olFeature, feature);
+        // setOlFeatureTitle(olFeature, feature.title);
+        setOlFeatureStyle(olFeature, feature);
+      });
     return () => featuresObservable.unsubscribe();
   }, [map, olFeatures]);
 

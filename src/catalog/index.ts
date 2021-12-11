@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-unused-vars */
+
 import {Observable} from 'rxjs';
 import {Style} from '../style';
 

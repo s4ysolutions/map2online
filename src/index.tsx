@@ -41,7 +41,6 @@ window.addEventListener('drop', (e) => {
 amplitude.getInstance().init('c742fb5cda6af23078ebe5655712b658');
 amplitude.getInstance().logEvent('visit');
 
-console.log('rend');
 ReactDOM.render(
   <WaitInitialization />,
   document.getElementById('reactMount'),

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {CategoryProps, FeatureProps, ID, RouteProps} from '../index';
 import {Observable} from 'rxjs';
 

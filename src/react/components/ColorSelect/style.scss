@@ -1,5 +1,5 @@
-/*
- * Copyright 2019 s4y.solutions
+/*!
+ * Copyright 2021 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint-disable no-unused-vars */
-import {Category, Route} from '../catalog';
-import {Observable} from 'rxjs';
 
-export interface Exporter {
-  exportCategoriesKML: (categories: Category[]) => void
-  exportRoutesKML: (routes: Route[], category?: Category) => void
-  onlyVisible: boolean;
-  onlyVisibleObservable: () => Observable<boolean>;
+.color-selector-view {
+  display: flex;
+  flex-direction: row;
+
+  .color-selector-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    svg {
+      height: 80%;
+      width: 80%;
+      display: block;
+    }
+    &.selected {
+      background-color: rgba(255, 255, 255, 0.5)
+    }
+  }
 }

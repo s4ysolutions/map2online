@@ -19,11 +19,12 @@ import {Feature, ID, LineString, Point, isLineString, isPoint} from '../../../..
 import OlLineString from 'ol/geom/LineString';
 import OlFeature from 'ol/Feature';
 import OlPoint from 'ol/geom/Point';
-import {getOlStyle} from './styles';
+import {createOlStyle, getOlStyle} from './styles';
 import {coordinate2ol, coordinates2ol} from './coordinates';
 import {Coordinate as OlCoordinate} from 'ol/coordinate';
-import {Style} from 'ol/style';
+import {Style as OlStyle} from 'ol/style';
 import {Geometry as OlGeometry} from 'ol/geom';
+import {IconStyle, Style} from '../../../../style';
 
 const cache: Record<ID, OlFeature<OlGeometry>> = {};
 
@@ -66,14 +67,14 @@ export const setOlFeatureCoordinates = (olFeature: OlFeature<OlGeometry>, featur
   }
 };
 
-const getOlFeatureStyle = (olFeature: OlFeature<OlGeometry>/*, styleLike?: Style | Style[]*/): Style | void => {
+const getOlFeatureStyle = (olFeature: OlFeature<OlGeometry>/*, styleLike?: Style | Style[]*/): OlStyle | void => {
   const slike = /* styleLike || */olFeature.getStyle();
   // if (Object.prototype.hasOwnProperty.call(slike, 'getText')) {
   if ('getText' in slike) {
-    return slike as Style;
+    return slike as OlStyle;
   }
   if (Array.isArray(slike)) {
-    const sa = slike as Style[];
+    const sa = slike as OlStyle[];
     if (sa.length > 0) {
       return sa[0];
     }
@@ -86,11 +87,12 @@ const getOlFeatureStyle = (olFeature: OlFeature<OlGeometry>/*, styleLike?: Style
     return getOlFeatureStyle(olFeature, sfs);
   }*/
 };
-
+/*
 export const getOlFeatureTitle = (olFeature: OlFeature<OlGeometry>): string => {
   const style = getOlFeatureStyle(olFeature);
   return style ? style.getText().getText() : '';
 };
+*/
 export const setOlFeatureTitle = (olFeature: OlFeature<OlGeometry>, title: string): void => {
   const style = getOlFeatureStyle(olFeature);
   if (style) {
@@ -102,3 +104,12 @@ export const setOlFeatureTitle = (olFeature: OlFeature<OlGeometry>, title: strin
     }
   }
 };
+
+export const setOlFeatureStyle = (olFeature: OlFeature<OlGeometry>, feature: Feature): void => {
+  olFeature.setStyle(
+    createOlStyle(
+      isPoint(feature.geometry) ? feature.style.iconStyle : feature.style.lineStyle,
+      feature.title
+    )
+  );
+}

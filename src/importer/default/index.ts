@@ -19,7 +19,7 @@ import {kmlParserFactory} from './kml-parser';
 import {Observable, Subject, merge} from 'rxjs';
 import {
   CATEGORY_DEPTH, convertMixedFeaturesToFolder, flatImportedFoldersToCategories,
-  removeEmptyImportedFolders, removeTopFolder,
+  removeEmptyImportedFolders,
 } from '../post-process';
 import {getImportedFolderStats} from '../stats';
 import {Map2Styles} from '../../style';

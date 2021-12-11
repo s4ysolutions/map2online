@@ -17,7 +17,6 @@
 import * as React from 'react';
 import Delete from '../Svg/Delete';
 import Hidden from '../Svg/Hidden';
-import Prefs from '../Svg/Prefs';
 import Visible from '../Svg/Visible';
 import {Feature, LineString, Route, isPoint} from '../../../catalog';
 import {getCatalogUI} from '../../../di-default';
@@ -29,10 +28,15 @@ import Line from '../Svg/Line';
 import {formatCoordinate, formatCoordinates} from '../../../lib/format';
 import {skipConfirmDialog} from '../../../lib/confirmation';
 import Edit from '../Svg/Edit';
+import T from '../../../l10n';
 
 const catalogUI = getCatalogUI();
 
-const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; index: number }> = ({index, feature: featureView, route}): React.ReactElement => {
+const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; index: number }> = ({
+  index,
+  feature: featureView,
+  route,
+}): React.ReactElement => {
   const feature = useObservable(
     featureView.observable()
       .pipe(
@@ -70,11 +74,17 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
         className="delete"
         key="delete"
         onClick={handleDelete}
+        title={isPoint(featureView.geometry) ? T`Delete feature point hint` : T`Delete feature line hint`}
       >
         <Delete />
       </div >
 
-      <div className="complex-title" key="complex-title" onClick={handleOpen} >
+      <div
+        className="complex-title"
+        key="complex-title"
+        onClick={handleOpen}
+        title={isPoint(featureView.geometry) ? T`Open feature point hint` : T`Open feature line hint`}
+      >
         {[
           <span className="index" key="index" >
             {`${index + 1}.`}
@@ -88,11 +98,23 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
         ]}
       </div >
 
-      <div className="edit" key="edit" onClick={handleEdit} >
+      <div
+        className="edit"
+        key="edit"
+        onClick={handleEdit}
+        title={isPoint(featureView.geometry) ? T`Modify feature point hint` : T`Modify feature line hint`}
+      >
         <Edit />
       </div >
 
-      <div className="visibility" key="visibility" onClick={handleVisible} >
+      <div
+        className="visibility"
+        key="visibility"
+        onClick={handleVisible}
+        title={isVisible
+          ? (isPoint(featureView.geometry) ? T`Visibility off feature point hint` : T`Visibility off feature line hint`)
+          : (isPoint(featureView.geometry) ? T`Visibility on feature point hint` : T`Visibility on feature line hint`)}
+      >
         {isVisible ? <Visible /> : <Hidden />}
       </div >
 

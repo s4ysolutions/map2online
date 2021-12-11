@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import T from './index';
+
 const translation = {
   'en': {
     'Add': 'Add',
@@ -80,6 +82,17 @@ const translation = {
     'YandexPublic': 'Public',
     'YandexSatellite': 'Sattelite',
     'Yes, delete the feature': 'Да, удалить',
+
+    'Delete feature point hint': 'Delete the point',
+    'Delete feature line hint': 'Delete the line',
+    'Modify feature point hint': 'Modify the point',
+    'Modify feature line hint': 'Modify the line',
+    'Open feature point hint': 'Show properties of the point',
+    'Open feature line hint': 'Show properties of the line',
+    'Visibility off feature point hint': 'Hide the point on the map',
+    'Visibility off feature line hint': 'Hide the line on the map',
+    'Visibility on feature point hint': 'Show the point on the map',
+    'Visibility on feature line hint': 'Show the line on the map',
   },
   'ru': {
     'About': 'О сервисе',
@@ -173,6 +186,17 @@ const translation = {
     'YandexSatellite': 'Спутник',
     'Zoom in': 'Увеличить масштаб',
     'Zoom out': 'Уменьшить масштаб',
+
+    'Delete feature point hint': 'Удалить точку',
+    'Delete feature line hint': 'Удалить трек',
+    'Modify feature point hint': 'Изменить точку',
+    'Modify feature line hint': 'Изменить трек',
+    'Open feature point hint': 'Показать свойства точки',
+    'Open feature line hint': 'Показать свойства трека',
+    'Visibility off feature point hint': 'Не отображать точку на карте',
+    'Visibility off feature line hint': 'Не отображать трек на карте',
+    'Visibility on feature point hint': 'Отображать точку на карте',
+    'Visibility on feature line hint': 'Отображать трек на карте',
   },
 };
 

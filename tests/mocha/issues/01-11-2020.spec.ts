@@ -36,6 +36,9 @@ import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
 import {CatalogDefault} from '../../../src/catalog/default/catalog';
 import {fileURLToPath} from 'url';
 import { dirname } from 'path';
+import log from '../../../src/log';
+
+log.disableDebug();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,11 +61,13 @@ describe('01-11-2020 issues', () => {
     kvPromise = memoryStoragePromiseFactory();
     catalogStorage = new CatalogStorageIndexedDb(kvPromise, map2styles);
     catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
-    catalog.disableAutoCreateCategoryAndRoute();
+    catalog.setAutoCreateCategoryAndRoute(false);
+    console.log(catalog.categories.length);
     kml = fs.readFileSync(path.join(__dirname, '..', '..', 'data', '01-11-2020.kml'), 'utf-8');
     const root: ImportedFolder = await parseKMLString({name: '01-11-2020.kml'} as File, kml, map2styles);
     const flat: ImportedFolder = flatImportedFoldersToCategories(root);
     await importFlatFolders(flat, ImportTo.ALL_CATEGORIES_TO_CATALOG, catalog, null, null);
+    console.log(catalog.categories.length);
   });
 
   it('parse coordinate', () => {

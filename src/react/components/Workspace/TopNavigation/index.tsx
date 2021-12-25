@@ -19,10 +19,11 @@ import * as React from 'react';
 import CatalogButton from './CatalogButton';
 import MenuButton from './MenuButton';
 import T from 'l10n';
-import {getCatalogUI, getWorkspace} from '../../../../di-default';
+import {getCatalogUI, getImportUI, getWorkspace} from '../../../../di-default';
 import log from '../../../../log';
 import useObservable from '../../../hooks/useObservable';
 
+const importUI = getImportUI();
 const workspace = getWorkspace();
 const catalogUI = getCatalogUI();
 
@@ -33,6 +34,11 @@ const deselectRoute = (): void => {
 const deselectCategory = () => {
   catalogUI.selectedCategory = null;
   deselectRoute();
+};
+
+const openImport = (): void => {
+  workspace.closeMenus();
+  importUI.open();
 };
 
 const TopNavigation = (): React.ReactElement => {
@@ -57,9 +63,11 @@ const TopNavigation = (): React.ReactElement => {
       {selectedRoute ? ` - ${selectedRoute.title}` : ''}
     </h1 >
 
-    <MenuButton onClick={workspace.toggleFile} title={T`File`} />
-
     <MenuButton onClick={workspace.toggleSettings} title={T`Settings`} />
+
+    <MenuButton onClick={openImport} title={T`Import menu`} />
+
+    <MenuButton onClick={workspace.toggleExport} title={T`Export menu`} />
 
     <MenuButton onClick={workspace.toggleSources} title={T`Sources`} />
 

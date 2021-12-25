@@ -22,9 +22,12 @@ import {Category} from '../../../catalog';
 import useObservable from '../../hooks/useObservable';
 import T from '../../../l10n';
 import {map} from 'rxjs/operators';
+import RichTextEditor from '../RichTextEditor';
+import log from '../../../log';
 
 const wording = getWording();
 const catalogUI = getCatalogUI();
+// eslint-disable-next-line no-unused-vars
 const handleSubmit: (ev: FormEvent) => void = (ev: FormEvent) => {
   ev.preventDefault();
   // noinspection JSIgnoredPromiseFromCall
@@ -35,6 +38,7 @@ const handleSubmit: (ev: FormEvent) => void = (ev: FormEvent) => {
 const handleClose = () => catalogUI.cancelEditCategory();
 
 const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category: categoryEdit}): React.ReactElement => {
+  log.render('CategoryEdit', categoryEdit);
 
   const category = useObservable(
     categoryEdit.observable()
@@ -73,13 +77,11 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
           {T`Description`}
         </label >
 
-        <textarea
-          name="description"
-          onChange={(ev): void => {
-            categoryEdit.description = ev.target.value;
-          }}
-          rows={10}
-          value={category.description} />
+        <RichTextEditor
+          content={category.description}
+          onChange={content => {
+            categoryEdit.description = content;
+          }} />
       </div >
 
       <div className="buttons-row" >

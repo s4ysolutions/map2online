@@ -17,6 +17,7 @@
 import {Catalog, Category, CategoryProps, Feature, FeatureProps, Route, RouteProps} from '../catalog';
 import {isFlatRoot} from './post-process';
 import {ImportedFolder} from './index';
+import {makeEmptyRichText} from '../richtext';
 
 export enum ImportTo {
   // eslint-disable-next-line no-unused-vars
@@ -39,8 +40,14 @@ const foldersToFeaturesRecursive = (folders: ImportedFolder[], features: Feature
 
 const foldersToFeatures = (folders: ImportedFolder[]): FeatureProps[] => foldersToFeaturesRecursive(folders, []);
 
-const importFeaturesToRoute = (features: FeatureProps[], route: Route): Promise<Feature[]> =>
-  Promise.all(features.map(feature => route.features.add(feature)));
+const importFeaturesToRoute = (catalog: Catalog, features: FeatureProps[], route: Route): Promise<Feature[]> => {
+  const autoCreate = catalog.disableAutoCreateCategoryAndRoute();
+  return Promise.all(features.map(feature => route.features.add(feature)))
+    .then(retFeatures => {
+      catalog.setAutoCreateCategoryAndRoute(autoCreate);
+      return retFeatures;
+    });
+};
 
 const folderToRoute = (folder: ImportedFolder): RouteProps => ({
   description: folder.description,
@@ -63,10 +70,16 @@ const foldersOfRoutesRecursive = (folders: ImportedFolder[], routes: ImportedFol
 
 const foldersOfRoutes = (folders: ImportedFolder[]): ImportedFolder[] => foldersOfRoutesRecursive(folders, []);
 
-const importFoldersToCategory = (folders: ImportedFolder[], category: Category): Promise<Feature[]> =>
-  Promise.all([].concat(folders.map(folder =>
+const importFoldersToCategory = (catalog: Catalog, folders: ImportedFolder[], category: Category): Promise<Feature[]> => {
+  const autoCreate = catalog.disableAutoCreateCategoryAndRoute();
+  return Promise.all([].concat(folders.map(folder =>
     category.routes.add(folderToRoute(folder))
-      .then(route => importFeaturesToRoute(folder.features, route)))));
+      .then(route => importFeaturesToRoute(catalog, folder.features, route)))))
+    .then(features => {
+      catalog.setAutoCreateCategoryAndRoute(autoCreate);
+      return features;
+    });
+};
 
 const foldersOfCategoriesRecursive = (folders: ImportedFolder[], categories: ImportedFolder[]): ImportedFolder[] => {
   for (const folder of folders) {
@@ -81,7 +94,7 @@ const foldersOfCategoriesRecursive = (folders: ImportedFolder[], categories: Imp
 const foldersOfCategories = (folders: ImportedFolder[]): ImportedFolder[] => foldersOfCategoriesRecursive(folders, []);
 
 const folderToCategory = (folder: ImportedFolder): CategoryProps => ({
-  description: folder.description,
+  description: folder.description ? folder.description : makeEmptyRichText(),
   id: null,
   summary: '',
   title: folder.name,
@@ -89,20 +102,26 @@ const folderToCategory = (folder: ImportedFolder): CategoryProps => ({
   open: folder.open,
 });
 
-const importFoldersToCatalog = (folders: ImportedFolder[], catalog: Catalog): Promise<Feature[]> =>
-  Promise.all([].concat(folders.map(folder =>
+const importFoldersToCatalog = (catalog: Catalog, folders: ImportedFolder[]): Promise<Feature[]> => {
+  const autoCreate = catalog.disableAutoCreateCategoryAndRoute();
+  return Promise.all([].concat(folders.map(folder =>
     catalog.categories.add(folderToCategory(folder))
-      .then(category => importFoldersToCategory(folder.folders, category)))));
+      .then(category => importFoldersToCategory(catalog, folder.folders, category)))))
+    .then(features => {
+      catalog.setAutoCreateCategoryAndRoute(autoCreate);
+      return features;
+    });
+};
 
 export const importFlatFolders = (rootFolder: ImportedFolder, importTo: ImportTo, catalog: Catalog, activeCategory: Category, activeRoute: Route): Promise<Feature[]> => {
   const folders = isFlatRoot(rootFolder) ? rootFolder.folders : [rootFolder];
   switch (importTo) {
     case ImportTo.ALL_FEATURES_TO_ACTIVE_ROUTE:
-      return importFeaturesToRoute(foldersToFeatures(folders), activeRoute);
+      return importFeaturesToRoute(catalog, foldersToFeatures(folders), activeRoute);
     case ImportTo.ALL_ROUTES_TO_CATEGORY:
-      return importFoldersToCategory(foldersOfRoutes(folders), activeCategory);
+      return importFoldersToCategory(catalog, foldersOfRoutes(folders), activeCategory);
     case ImportTo.ALL_CATEGORIES_TO_CATALOG:
-      return importFoldersToCatalog(foldersOfCategories(folders), catalog);
+      return importFoldersToCatalog(catalog, foldersOfCategories(folders));
     default:
       throw Error('Invalid importTo');
   }

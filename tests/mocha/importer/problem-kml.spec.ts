@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
+import '../../../src/extensions/array+serializePlainText';
+import '../../../src/extensions/array+serializeRichText';
+import '../../../src/extensions/string+richtext';
+import '../../../src/extensions/string+format';
 import fs from 'fs';
 import path from 'path';
 import {ImportedFolder} from '../../../src/importer';
@@ -23,6 +27,9 @@ import {expect} from 'chai';
 import {map2StylesFactory} from '../../../src/style/default/styles';
 import {fileURLToPath} from 'url';
 import { dirname } from 'path';
+import log from '../../../src/log';
+
+log.disableDebug();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

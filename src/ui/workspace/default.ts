@@ -21,11 +21,12 @@ import {Subject} from 'rxjs';
 const workspaceFactory = (persistanceStorage: KV): Workspace => {
   const aboutObservable = new Subject<boolean>();
   const filesObservable = new Subject<boolean>();
+  const exportObservable = new Subject<boolean>();
   const sourcesObservable = new Subject<boolean>();
   const settingsObservable = new Subject<boolean>();
   const personalizationObservable = new Subject<boolean>();
 
-  const th: Workspace & { closeAbout: () => void; closeFile: () => void; closeSources: () => void; closeSettings: () => void } = {
+  const th: Workspace & { closeAbout: () => void; closeExport: () => void; closeFile: () => void; closeSources: () => void; closeSettings: () => void } = {
     aboutObservable: () => persistanceStorage.observable('a'),
     aboutOpen: false,
     catalogObservable: () => persistanceStorage.observable('cato'),
@@ -34,6 +35,8 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
     toolsOpen: persistanceStorage.get('feo', true),
     fileObservable: () => filesObservable,
     fileOpen: false,
+    exportObservable: () => exportObservable,
+    exportOpen: false,
     sourcesObservable: () => sourcesObservable,
     sourcesOpen: false,
     settingsObservable: () => settingsObservable,
@@ -42,6 +45,7 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
     personalizationOpen: false,
     toggleAbout () {
       this.closeFile();
+      this.closeExport();
       this.closeSources();
       this.closeSettings();
       const value = !this.aboutOpen;
@@ -59,8 +63,18 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
       persistanceStorage.set('feo', value);
       this.toolsOpen = value;
     },
+    toggleExport () {
+      this.closeAbout();
+      this.closeFile();
+      this.closeSources();
+      this.closeSettings();
+      const value = !this.exportOpen;
+      exportObservable.next(value);
+      this.exportOpen = value;
+    },
     toggleFile () {
       this.closeAbout();
+      this.closeExport();
       this.closeSources();
       this.closeSettings();
       const value = !this.fileOpen;
@@ -70,6 +84,7 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
     toggleSources () {
       this.closeAbout();
       this.closeFile();
+      this.closeExport();
       this.closeSettings();
       const value = !this.sourcesOpen;
       sourcesObservable.next(value);
@@ -78,6 +93,7 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
     toggleSettings () {
       this.closeAbout();
       this.closeFile();
+      this.closeExport();
       this.closeSources();
       const value = !this.settingsOpen;
       settingsObservable.next(value);
@@ -93,6 +109,10 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
       aboutObservable.next(false);
       this.aboutOpen = false;
     },
+    closeExport () {
+      exportObservable.next(false);
+      this.exportOpen = false;
+    },
     closeFile () {
       filesObservable.next(false);
       this.fileOpen = false;
@@ -107,6 +127,7 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
     },
     closeMenus () {
       this.closeFile();
+      this.closeExport();
       this.closeSources();
       this.closeSettings();
     },
@@ -115,6 +136,7 @@ const workspaceFactory = (persistanceStorage: KV): Workspace => {
   th.toggleCatalog = th.toggleCatalog.bind(th);
   th.toggleTools = th.toggleTools.bind(th);
   th.toggleFile = th.toggleFile.bind(th);
+  th.toggleExport = th.toggleExport.bind(th);
   th.toggleSources = th.toggleSources.bind(th);
   th.toggleSettings = th.toggleSettings.bind(th);
   th.togglePersonalization = th.togglePersonalization.bind(th);

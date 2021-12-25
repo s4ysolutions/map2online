@@ -134,7 +134,7 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
 
   observableCategoryProps(props: CategoryProps): Observable<CategoryProps> {
     const key = `${CATEGORY_ID_PREFIX}@${props.id}`;
-    return this.kv.observable<RouteProps | null>(key);
+    return this.kv.observable<CategoryProps | null>(key);
   }
 
   readCategoriesIds(catalogId: string): Promise<ID[] | null> {

@@ -18,7 +18,7 @@
 import {ImportedFolder, ParsingStatus} from '../index';
 import {Observable, Subject} from 'rxjs';
 import sax, {QualifiedTag, Tag} from 'sax';
-import {Coordinate, FeatureProps, FeaturePropsWithStyleId} from '../../catalog';
+import {Coordinate, FeaturePropsWithStyleId} from '../../catalog';
 import log from '../../log';
 import {degreesToMeters} from '../../lib/projection';
 import {newImportedFolder} from '../new-folder';
@@ -36,6 +36,7 @@ import {
   PolyStyle,
   Style,
 } from '../../style';
+import {makeEmptyRichText} from '../../richtext';
 
 enum ParseState {
   NONE,
@@ -57,8 +58,17 @@ enum ParseState {
   ICON,
   HREF,
   STYLE_URL,
+  EXTENDED_DATA,
+  DATA,
+  VALUE,
   UNKNOWN,
 }
+
+let extendedData:Record<string, string | null> = {};
+const currentExtendedData = {
+  name: null as string,
+  value: null as string,
+};
 
 let cdata = "";
 
@@ -69,7 +79,6 @@ const parseTriplet = (triplet: string): Coordinate => {
 
 const transp = 'ffffffff';
 const COLOR8_LEN = 8;
-const COLOR6_LEN = 6;
 const TRANSP_LEN = 2;
 
 export const nc = (color: string): string => {
@@ -95,7 +104,7 @@ export const parseKMLCoordinates = (text: string): Coordinate[] =>
         .map(parseTriplet);
 
 const parseId = (node: Tag | QualifiedTag): string | null => {
-  const attrs = node.attributes
+  const attrs = node.attributes;
   const id = attrs && (attrs.id || attrs.ID || attrs.iD || attrs.Id);
   if (id) {
     if (typeof (id) === 'string') {
@@ -112,7 +121,7 @@ const nl = `
 
 const updateStyles = (rootFolder: ImportedFolder, styles: Record<string, Style>, defaultStyle: Style) => {
   for (const featurep of rootFolder.features) {
-    const feature = featurep as FeaturePropsWithStyleId
+    const feature = featurep as FeaturePropsWithStyleId;
     if (feature.styleId == null) {
       feature.style = defaultStyle;
     } else {
@@ -123,7 +132,7 @@ const updateStyles = (rootFolder: ImportedFolder, styles: Record<string, Style>,
   for (const folder of rootFolder.folders) {
     updateStyles(folder, styles, defaultStyle)
   }
-}
+};
 
 export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles): Promise<ImportedFolder> => {
   const rootFolder = newImportedFolder(0, null);
@@ -137,10 +146,10 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
   const lastState = () => parseStateStack[parseStateStack.length - 1];
   let currentFeature = null as FeaturePropsWithStyleId;
 
-  let currentStyle: Style & {id: string}= null
+  let currentStyle: Style & {id: string}= null;
   const styles: Record<string, Style> = {}; // global styles
 
-  let currentStyleItem: BaloonStyle | IconStyle | LabelStyle | LineStyle | ListStyle | PolyStyle = null
+  let currentStyleItem: BaloonStyle | IconStyle | LabelStyle | LineStyle | ListStyle | PolyStyle = null;
 
   return new Promise<ImportedFolder>((rs, rj) => {
     parser.onopentag = (node) => {
@@ -149,6 +158,8 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
       switch (name) {
         case 'DOCUMENT':
         case 'FOLDER': {
+          extendedData = {};
+          currentExtendedData.name = null;
           parseStateStack.push(ParseState.FOLDER);
           log.debug('parseStateStack.push(ParseState.FOLDER)', parseStateStack);
           const nextFolder = newImportedFolder(foldersStack.length, lastFolder());
@@ -157,12 +168,14 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           break;
         }
         case 'PLACEMARK': {
+          extendedData = {};
+          currentExtendedData.name = null;
           parseStateStack.push(ParseState.PLACEMARK);
           log.debug('parseStateStack.push(ParseState.FEATURE)', parseStateStack);
           currentFeature = {
             styleId: makeId(),
             style: null,
-            description: '',
+            description: makeEmptyRichText(),
             geometry: null,
             id: null, // TODO: handle duplicate parseId(node),
             summary: '',
@@ -196,7 +209,7 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           break;
         case 'STYLE':
           if (lastState() === ParseState.PLACEMARK) {
-            currentStyle = {id: currentFeature.styleId}
+            currentStyle = {id: currentFeature.styleId};
             parseStateStack.push(ParseState.STYLE);
             log.debug('parseStateStack.push(ParseState.PLACEMARK_STYLE)', parseStateStack);
           } else {
@@ -254,8 +267,26 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
         case 'OPEN':
           if (lastState() === ParseState.FOLDER) {
             parseStateStack.push(ParseState.FOLDER_OPEN);
-            log.debug('parseStateStack.push(ParseState.FOLDER_VISIBILITY)', parseStateStack);
+            log.debug('parseStateStack.push(ParseState.FOLDER_OPEN)', parseStateStack);
           }
+          break;
+        case 'EXTENDEDDATA':
+          currentExtendedData.name = null;
+          parseStateStack.push(ParseState.EXTENDED_DATA);
+          extendedData = {};
+          log.debug('parseStateStack.push(ParseState.EXTENDED_DATA)', parseStateStack);
+          break;
+        case 'DATA':
+          if (lastState() === ParseState.EXTENDED_DATA) {
+            currentExtendedData.name = node.attributes.name ? node.attributes.name.toString().trim() : null;
+            currentExtendedData.value = null;
+          }
+          parseStateStack.push(ParseState.DATA);
+          log.debug('parseStateStack.push(ParseState.EXTENDED_DATA_DATA)', parseStateStack);
+          break;
+        case 'VALUE':
+          parseStateStack.push(ParseState.VALUE);
+          log.debug('parseStateStack.push(ParseState.EXTENDED_DATA_DATA)', parseStateStack);
           break;
         default:
           parseStateStack.push(ParseState.UNKNOWN);
@@ -269,6 +300,9 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
         case 'DOCUMENT':
         case 'FOLDER': {
           log.debug('parseStateStack.pop(ParseState.FOLDER)', parseStateStack);
+          if (extendedData['RT_DESCRIPTION']) {
+            lastFolder().description = extendedData['RT_DESCRIPTION'].parseToRichText();
+          }
           const state = parseStateStack.pop();
           if (state === ParseState.FOLDER) {
             if (foldersStack.length === 0) {
@@ -417,6 +451,36 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
             }
           }
           break;
+        case 'EXTENDEDDATA':
+          if (lastState() === ParseState.EXTENDED_DATA) {
+            log.debug('parseStateStack.pop(ParseState.EXTENDED_DATA)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'DATA':
+          if (lastState() === ParseState.DATA) {
+            log.debug('parseStateStack.pop(ParseState.DATA)', parseStateStack);
+            parseStateStack.pop();
+            if (currentExtendedData.name) {
+              extendedData[currentExtendedData.name.toUpperCase()] = currentExtendedData.value;
+            }
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
+        case 'VALUE':
+          if (lastState() === ParseState.VALUE) {
+            log.debug('parseStateStack.pop(ParseState.VALUE)', parseStateStack);
+            parseStateStack.pop();
+          } else {
+            log.warn(`${nodeName} tag does not match`, lastState());
+            rj(Error(`${nodeName} tag does not match, lasts state=${lastState()}`));
+          }
+          break;
         default:
           if (lastState() === ParseState.UNKNOWN) {
             log.debug('parseStateStack.pop(ParseState.UNKNOWN)', parseStateStack);
@@ -435,7 +499,7 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           lastFolder().name = text.trim();
           break;
         case ParseState.FOLDER_DESCRIPTION:
-          lastFolder().description = text.trim();
+          lastFolder().description = text.trim().convertToRichText();
           break;
         case ParseState.FOLDER_OPEN:
           lastFolder().open = text.trim().toUpperCase() != 'FALSE';
@@ -446,8 +510,11 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
         case ParseState.PLACEMARK_NAME:
           currentFeature.title = text.trim();
           break;
+        case ParseState.VALUE:
+          currentExtendedData.value = text.trim();
+          break;
         case ParseState.PLACEMARK_DESCRIPTION:
-          currentFeature.description = text.trim();
+          currentFeature.description = text.trim().convertToRichText();
           break;
         case ParseState.PLACEMARK_VISIBILITY:
           currentFeature.visible = text.trim().toUpperCase() != 'FALSE';
@@ -472,7 +539,7 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           break;
         }
         case ParseState.HREF: {
-          console.log('href', text)
+          console.log('href', text);
           if (isIconStyle(currentStyleItem)) {
             currentStyleItem.icon = new URL(text.trim())
           }
@@ -480,14 +547,14 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
         }
         case ParseState.STYLE_URL: {
           if (currentFeature) {
-            const urlhash = text.trim()
+            const urlhash = text.trim();
             currentFeature.styleId = urlhash.length > 0 && urlhash[0] === '#' ? urlhash.slice(1) : urlhash;
           }
           break;
         }
         case ParseState.WIDTH: {
           if (isLineStyle(currentStyleItem)) {
-            const w = Number(text.trim())
+            const w = Number(text.trim());
             if (!isNaN(w)) {
               currentStyleItem.width = w;
             }
@@ -499,11 +566,11 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
 
     parser.onopencdata = () => {
       cdata = "";
-    }
+    };
 
     parser.oncdata = (text) => {
       cdata += text;
-    }
+    };
 
     parser.onclosecdata = () => {
       switch (lastState()) {
@@ -516,23 +583,23 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           lastFolder().name = cdata.trim();
           break;
         case ParseState.FOLDER_DESCRIPTION:
-          lastFolder().description = cdata.trim();
+          lastFolder().description = cdata.trim().convertToRichText();
           break;
         case ParseState.PLACEMARK_NAME:
           currentFeature.title = cdata.trim();
           break;
         case ParseState.PLACEMARK_DESCRIPTION:
-          currentFeature.description = cdata.trim();
+          currentFeature.description = cdata.trim().convertToRichText();
           break;
       }
-    }
+    };
 
     parser.onend = () => {
       log.debug('end');
       log.debug('resolve');
 
       const normilizedStyles: Record<string, Style> = Object.entries(styles).reduce((acc, [styleId, style]) => {
-        const map2style = map2styles.findEq(style)
+        const map2style = map2styles.findEq(style);
         return {...acc, [styleId]: map2style || style}
       }, {});
 

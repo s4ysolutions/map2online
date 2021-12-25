@@ -1,0 +1,75 @@
+/*!
+ * Copyright 2021 s4y.solutions
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.rich-textarea {
+  padding: 4px;
+  height: 10em !important;
+  overflow-y: auto;
+  em {
+    font-style: italic;
+  }
+  strong {
+    font-weight: bold;
+  }
+  u {
+    text-decoration: underline;
+  }
+  code {
+    font-family: monospace, monospace;
+  }
+  h1 {
+    display: block;
+    font-weight: bold;
+    font-size: 120%;
+    padding-bottom: 0.8em;
+  }
+
+  h2 {
+    display: block;
+    font-weight: bold;
+    font-size: 110%;
+    padding-bottom: 0.8em;
+  }
+
+  ol {
+    list-style: decimal;
+    padding-inline-start: 2em;
+  }
+
+  ul {
+    list-style: circle;
+    padding-inline-start: 2em;
+  }
+
+  div.image {
+    position: relative;
+    padding-bottom: 0.5em;
+    img {
+      display: block;
+      max-width: 100%;
+      max-height: 8em;
+      box-shadow: none;
+      /*
+      &.focused {
+        box-shadow: 0 0 0 3px #B4D5FF;
+      }
+       */
+      &.selected {
+        box-shadow: 0 0 0 3px #B4D5FF;
+      }
+    }
+  }
+}

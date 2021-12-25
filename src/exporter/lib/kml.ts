@@ -40,7 +40,8 @@ const categoryBegin = (ident: string, category?: Category): string =>
   category
     ? `${ident}<Folder id="${category.id}">
 ${ident}  <name><![CDATA[${henc(category.title)}]]></name>
-${ident}  <description><![CDATA[${henc(category.description)}]]></description>
+${ident}  <description><![CDATA[${henc(category.description.serializePlainText())}]]></description>
+${ident}  <ExtendedData><Data name="rt_description"><value><![CDATA[${henc(category.description.serializeRichText())}]]></value></Data></ExtendedData>
 `
     : '';
 
@@ -56,7 +57,8 @@ const categoryEnd = (ident: string, category?: Category): string =>
 const placemarkBegin = (ident: string, feature: Feature, route: Route, category?: Category): string =>
   `${ident}<Placemark id="${feature.id}">
 ${ident}  <name><![CDATA[${henc(feature.title)}]]></name>
-${ident}  <description><![CDATA[${henc(feature.description)}]]></description>
+${ident}  <description><![CDATA[${henc(feature.description.serializePlainText())}]]></description>
+${ident}  <ExtendedData><Data name="rt_description"><value><![CDATA[${henc(feature.description.serializeRichText())}]]></value></Data></ExtendedData>
 ${ident}  <styleUrl>#${feature.style.id}</styleUrl>`;
 
 // noinspection JSUnusedLocalSymbols
@@ -86,7 +88,8 @@ ${placemarkEnd(ident, feature, route, category)}`;
 const routeBegin = (ident: string, route: Route, category?: Category): string =>
   `${ident}<Folder id="${route.id}">
 ${ident}  <name><![CDATA[${henc(route.title)}]]></name>
-${ident}  <description><![CDATA[${henc(route.description)}]]></description>`;
+${ident}  <description><![CDATA[${henc(route.description.serializePlainText())}]]></description>
+${ident}  <ExtendedData><Data name="rt_description"><value><![CDATA[${henc(route.description.serializeRichText())}]]></value></Data></ExtendedData>`;
 
 // noinspection JSUnusedLocalSymbols
 // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars

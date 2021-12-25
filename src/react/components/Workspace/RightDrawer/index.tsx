@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import FileMenu from '../../FileMenu';
+import ExportMenu from '../../ExportMenu';
 import MapSourcesMenu from '../../MapSourcesMenu';
 import React from 'react';
 import posed from 'react-pose';
@@ -23,6 +23,7 @@ import log from '../../../../log';
 import {getWorkspace} from '../../../../di-default';
 import useObservable from '../../../hooks/useObservable';
 import SettingsMenu from '../../SettingsMenu';
+import './style.scss';
 
 const PosedMenu = posed.div({
   hide: {
@@ -38,14 +39,14 @@ const PosedMenu = posed.div({
 const workspace = getWorkspace();
 
 const RightDrawer: React.FunctionComponent = (): React.ReactElement => {
-  const stateFile = useObservable(workspace.fileObservable(), workspace.fileOpen);
+  const stateExport = useObservable(workspace.exportObservable(), workspace.exportOpen);
   const stateSources = useObservable(workspace.sourcesObservable(), workspace.sourcesOpen);
   const stateSettings = useObservable(workspace.settingsObservable(), workspace.settingsOpen);
-  log.render(`RightDrawer fileMenu=${stateFile} sourceMenu=${stateSources} settings=${stateSettings}`);
-  return <PosedMenu className="right-drawer" pose={stateFile || stateSources || stateSettings ? 'show' : 'hide'} >
+  log.render(`RightDrawer exportMenu=${stateExport} sourceMenu=${stateSources} settings=${stateSettings}`);
+  return <PosedMenu className="right-drawer" pose={stateExport || stateSources || stateSettings ? 'show' : 'hide'} >
     {stateSources && <MapSourcesMenu />}
 
-    {stateFile && <FileMenu />}
+    {stateExport && <ExportMenu />}
 
     {stateSettings && <SettingsMenu />}
   </PosedMenu >;

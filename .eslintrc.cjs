@@ -44,6 +44,7 @@ module.exports = {
   // Enable custom plugin known as eslint-plugin-react
   'plugins': ['react', 'async-await', 'react-perf', 'react-hooks'],
   'rules': {
+    'no-use-before-define': 'off', // fucking react before use
     'react-perf/jsx-no-new-function-as-prop': 'off',
     'react/function-component-definition': [1, {'namedComponents': 'arrow-function'}],
     'react/forbid-component-props': 'off',
@@ -159,12 +160,17 @@ module.exports = {
   },
   'settings': {
     'react': {
+      'version': '17.0', // React version, default to the latest React stable release
+    },
+    /*
+    'react': {
       'createClass': 'createReactClass', // Regex for Component Factory to use,
       // default to "createReactClass"
       'pragma': 'React', // Pragma to use, default to "React"
       'version': '16.0', // React version, default to the latest React stable release
     },
     'propWrapperFunctions': ['forbidExtraProps'], // The names of any functions used to wrap the
+     */
     /*
      * propTypes object, e.g. `forbidExtraProps`.
      * If this isn't set, any propTypes wrapped in

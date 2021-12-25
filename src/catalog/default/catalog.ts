@@ -1,4 +1,4 @@
-import {Catalog, Categories, Category, Feature, ID, Route} from '../index';
+import {Catalog, Categories, Category, CategoryProps, Feature, FeatureProps, ID, Route, RouteProps} from '../index';
 import {CatalogStorage} from '../storage';
 import {FeatureDefault} from './feature';
 import {Observable, Subject} from 'rxjs';
@@ -45,7 +45,7 @@ export class CatalogDefault implements Catalog {
 
   readonly subjectVisibleFeatures = new Subject<Feature[]>();
 
-  readonly observableVisisbleFeaturesDebounced = this.subjectVisibleFeatures.pipe(debounceTime(DEBOUNCE_DELAY));
+  readonly observableVisisbleFeaturesDebounced: Observable<Feature[]>;
 
   notifyVisisbleFeaturesChanged: () => void;
 
@@ -59,6 +59,8 @@ export class CatalogDefault implements Catalog {
     this.storage = storage;
     this.wording = wording;
     this.map2styles = map2styles;
+    this.observableVisisbleFeaturesDebounced = this.subjectVisibleFeatures.pipe(debounceTime(DEBOUNCE_DELAY));
+    this.categories = new CategoriesDefault(this, catalogId);
     this.notifyVisisbleFeaturesChanged = () => {
       const prevVisibleIds = this.visibleIds;
       const prevLength = this.visibleFeatures.length;
@@ -86,7 +88,6 @@ export class CatalogDefault implements Catalog {
         this.subjectVisibleFeatures.next(this.visibleFeatures);
       }
     };
-    this.categories = new CategoriesDefault(this, catalogId);
   }
 
   async init(): Promise<CatalogDefault> {
@@ -109,30 +110,33 @@ export class CatalogDefault implements Catalog {
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     await Promise.all(featuresIdsFlat.map(id => this.storage.readFeatureProps(id)
-      .then(props => {
+      .then((props: FeatureProps) => {
         if (props !== null) {
           const feature = new FeatureDefault(this, props);
           this.featuresCache[feature.id] = feature;
         }
       })));
     await Promise.all(routesIdsFlat.map(id => this.storage.readRouteProps(id)
-      .then(props => {
+      .then((props: RouteProps | null) => {
         if (props !== null) {
           const route = new RouteDefault(this, props);
           this.routesCache[route.id] = route;
         }
       })));
     await Promise.all(categoriesIdsFlat.map(id => this.storage.readCategoryProps(id)
-      .then(props => {
+      .then((props: CategoryProps | null) => {
         if (props !== null) {
           const category = new CategoryDefault(this, props);
           this.categoriesCache[category.id] = category;
         }
       })));
+    const length = this.categories.length;
     if (autoCreate) {
       this.enableAutoCreateCategoryAndRoute();
     }
-    this.notifyVisisbleFeaturesChanged();
+    if (length > 0) {
+      this.notifyVisisbleFeaturesChanged();
+    }
     return this;
   }
 
@@ -160,15 +164,19 @@ export class CatalogDefault implements Catalog {
 
   autoCreate = true;
 
-  disableAutoCreateCategoryAndRoute() {
+  disableAutoCreateCategoryAndRoute(): boolean {
     const ret = this.autoCreate;
     this.autoCreate = false;
     return ret;
   }
 
-  enableAutoCreateCategoryAndRoute() {
+  enableAutoCreateCategoryAndRoute(): boolean {
     const ret = this.autoCreate;
     this.autoCreate = true;
     return ret;
+  }
+
+  setAutoCreateCategoryAndRoute(enabled: boolean): void {
+    this.autoCreate = enabled;
   }
 }

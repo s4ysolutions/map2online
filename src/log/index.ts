@@ -101,6 +101,10 @@ const log = {
   rxDelSubject<T>(id: string, subject: Subject<T>): void {
     this.debug(`rx: ${id} = ${subject.observers.length} -`);
   },
+  disableDebug() {
+    this.d = (): void => undefined;
+    this.debug = (): void => undefined;
+  },
 };
 
 export default log;

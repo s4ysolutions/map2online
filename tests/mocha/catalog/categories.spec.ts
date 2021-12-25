@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import {makeEmptyRichText} from '../../../src/richtext';
+
 const fid1 = 'fid1';
 const fid2 = 'fid2';
 const fid3 = 'fid3';
@@ -79,7 +81,7 @@ describe('Catalog categories', () => {
     await catalog.categories.byPos(0).routes.byPos(0).features.add({
       id: fid1,
       style: testStyle,
-      description: '',
+      description: makeEmptyRichText(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: 't1',
@@ -96,7 +98,7 @@ describe('Catalog categories', () => {
     await catalog.categories.byPos(0).routes.byPos(0).features.add({
       id: fid2,
       style: testStyle,
-      description: '',
+      description: makeEmptyRichText(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: 't2',
@@ -107,7 +109,7 @@ describe('Catalog categories', () => {
     const f3 = await catalog.categories.byPos(0).routes.byPos(0).features.add({
       id: fid3,
       style: testStyle,
-      description: '',
+      description: makeEmptyRichText(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: 't3',
@@ -122,7 +124,7 @@ describe('Catalog categories', () => {
     const f4 = await catalog.categories.byPos(0).routes.byPos(0).features.add({
       id: fid4,
       style: testStyle,
-      description: '',
+      description: makeEmptyRichText(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: 't4',
@@ -153,7 +155,7 @@ describe('Catalog categories', () => {
     await catalog.categories.byPos(0).routes.byPos(0).features.add({
       id: fid1,
       style: testStyle,
-      description: '',
+      description: makeEmptyRichText(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: 't1',
@@ -167,7 +169,7 @@ describe('Catalog categories', () => {
     await catalog.categories.byPos(0).routes.byPos(0).features.add({
       id: fid2,
       style: testStyle,
-      description: '',
+      description: makeEmptyRichText(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: 't2',
@@ -178,7 +180,7 @@ describe('Catalog categories', () => {
     await catalog.categories.byPos(0).routes.byPos(0).features.add({
       id: fid3,
       style: testStyle,
-      description: '',
+      description: makeEmptyRichText(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: 't3',
@@ -189,7 +191,7 @@ describe('Catalog categories', () => {
     await catalog.categories.byPos(0).routes.byPos(0).features.add({
       id: fid4,
       style: testStyle,
-      description: '',
+      description: makeEmptyRichText(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: 't4',

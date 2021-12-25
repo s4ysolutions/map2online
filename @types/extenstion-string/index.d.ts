@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+type RichText = import('../richtext').RichText;
+
 declare interface String {
   format(...args: any[]): string;
+  parseToRichText(): RichText;
+  convertToRichText(): RichText;
 }

@@ -15,162 +15,151 @@
  */
 
 @import "../../../dims";
+
 .catalog {
   height: 100%;
   display: flex;
   flex-direction: column;
-}
 
-.catalog button.add {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  border-radius: 50%;
-  height: $buttonHeight;
-  width: $buttonWight;
-}
-
-.catalog-navigation {
-  align-items: center;
-  display: flex;
-  flex-shrink: 0;
-  min-height: 32px;
-}
-
-.catalog-navigation .title {
-  flex-grow: 1;
-  text-align: right;
-  padding-right: 8px;
-}
-
-.catalog-navigation button, .catalog-navigation .void-button {
-  max-width: 30%;
-}
-
-.folders, .features {
-  flex-grow: 1;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  overflow-y: hidden;
-}
-
-.folders.top, .folders.level-1, .features {
-}
-
-.catalog .list {
-  direction: rtl;
-  flex-grow: 1;
-  overflow-y: auto;
-  padding-bottom: 72px; // place for "Add button"
-}
-
-.catalog .list .draggable {
-  direction: ltr;
-}
-
-.catalog .draggable .open {
-  cursor: default;
-}
-
-.catalog .draggable .item {
-  display: flex;
-  align-items: center;
-  align-content: stretch;
-  height: 2em;
-}
-
-.catalog .draggable .item .complex-title .index {
-  min-width: 2em;
-}
-
-.catalog .draggable .item .complex-title svg {
-  margin-right: 0;
-}
-
-.catalog .draggable .item .complex-title .title {
-  padding-left: 2px;
-}
-
-.catalog .draggable .item .complex-title,
-.catalog .draggable .item .title {
-  flex-grow: 1;
-  display: flex;
-  height: 100%;
-  align-items: center;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-.catalog .draggable .item .visibility,
-.catalog .draggable .item .edit,
-.catalog .draggable .item .active,
-.catalog .draggable .item .type,
-.catalog .draggable .item .delete {
-  height: 100%;
-  width: auto;
-  display: flex;
-  align-items: center;
-  cursor: default;
-}
-
-.catalog .draggable .item svg {
-  margin-right: 0.25em;
-  margin-left: 0.25em;
-  height: 60%;
-  width: auto;
-}
-
-.catalog .draggable .item .active svg,
-.catalog .draggable .item .edit svg,
-.catalog .draggable .item .delete svg {
-  height: 60%;
-}
-
-.catalog .draggable .item .delete svg {
-  margin-right: 0;
-}
-
-@media (hover: hover) {
-  .catalog .draggable .item .active svg,
-  .catalog .draggable .item .edit svg {
-    display: none;
+  button.add {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    border-radius: 50%;
+    height: $buttonHeight;
+    width: $buttonWight;
   }
 
-  .catalog .draggable .item.current .active svg,
-  .catalog .draggable .item:hover .active svg,
-  .catalog .draggable .item:hover .edit svg {
-    display: block;
+  button, .void-button {
+    max-width: 30%;
   }
 
-  .catalog .draggable .item .delete svg {
-    visibility: hidden;
+  .catalog-navigation {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    min-height: 32px;
+
+    .title {
+      flex-grow: 1;
+      text-align: right;
+      padding-right: 8px;
+    }
   }
 
-  .catalog .draggable .item:hover .delete svg {
-    visibility: visible;
+  .folders, .features {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
   }
-}
 
-.right-drawer .title {
-  padding: 4px;
-}
+  .folders.top, .folders.level-1, .features {
+  }
 
-.right-drawer .menu-item {
-  margin: 0 0 1px;
-}
+  .list {
+    direction: rtl;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 72px; // place for "Add button"
+    .draggable {
+      margin-bottom: 2px;
+      direction: ltr;
 
-.right-drawer .sub-menu {
-  padding-right: 16px;
-  padding-left: 32px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
+      .open {
+        cursor: default;
+      }
 
-.catalog .draggable {
-  margin-bottom: 2px;
-}
+      .item {
+        display: flex;
+        align-items: center;
+        align-content: stretch;
+        height: 2em;
 
-button svg, .void-button svg {
-  padding-right: 0.3em;
+        .complex-title {
+          .title {
+            padding-left: 2px;
+          }
+
+          .index {
+            min-width: 2em;
+
+            svg {
+              margin-right: 0;
+            }
+          }
+        }
+
+        .complex-title,
+        .title {
+          flex-grow: 1;
+          display: flex;
+          height: 100%;
+          align-items: center;
+          padding-left: 4px;
+          padding-right: 4px;
+        }
+
+        &.current {
+          .active {
+            svg {
+              display: block;
+            }
+          }
+        }
+
+        .delete {
+          margin-right: 0;
+          visibility: hidden;
+        }
+
+        .active,
+        .edit {
+          svg {
+            display: none;
+          }
+        }
+
+        .active,
+        .delete,
+        .edit {
+          height: 60%;
+        }
+
+        .active,
+        .delete,
+        .edit,
+        .type,
+        .visibility {
+          height: 100%;
+          width: auto;
+          display: flex;
+          align-items: center;
+          cursor: default;
+        }
+
+        svg {
+          margin-right: 0.25em;
+          margin-left: 0.25em;
+          height: 60%;
+          width: auto;
+        }
+
+        &:hover {
+          .active,
+          .edit {
+            svg {
+              display: block;
+            }
+          }
+          .delete {
+            svg {
+              visibility: visible;
+            }
+          }
+        }
+      }
+    }
+  }
 }

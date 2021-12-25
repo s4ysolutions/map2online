@@ -17,19 +17,20 @@ import {map} from 'rxjs/operators';
 import T from '../../l10n';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
+import {makeEmptyRichText} from '../../richtext';
 
 export class FeatureDefault implements Feature {
   private readonly p: FeatureProps;
 
   private readonly catalog: CatalogDefault;
 
-  private readonly cache: Record<ID, Feature>;
+  private readonly cache: Record<ID, FeatureDefault>;
 
   private makeDefs(): FeatureProps {
     return {
       id: makeId(),
       style: this.catalog.map2styles.defaultStyle,
-      description: '',
+      description: makeEmptyRichText(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: '',
@@ -69,11 +70,11 @@ export class FeatureDefault implements Feature {
     this.update();
   }
 
-  get description(): string {
+  get description(): RichText {
     return this.p.description;
   }
 
-  set description(value: string) {
+  set description(value: RichText) {
     this.p.description = value;
     this.update();
   }
@@ -195,11 +196,11 @@ export class FeaturesDefault implements Features {
 
   private readonly routeId: ID;
 
-  private updateIds = (ids: ID[]) => {
+  private updateIds(ids: ID[]) {
     if (ids !== this.idsCache[this.cacheKey]) {
       this.idsCache[this.cacheKey] = ids;
     }
-  };
+  }
 
   private get guardedIds() {
     const ids = this.idsCache[this.cacheKey];

@@ -23,6 +23,7 @@ import useObservable from '../../hooks/useObservable';
 import T from '../../../l10n';
 import log from '../../../log';
 import {map} from 'rxjs/operators';
+import RichTextEditor from '../RichTextEditor';
 
 const catalogUI = getCatalogUI();
 const wording = getWording();
@@ -78,13 +79,11 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
           {T`Description`}
         </label >
 
-        <textarea
-          name="description"
-          onChange={(ev): void => {
-            routeEdit.description = ev.target.value;
-          }}
-          rows={10}
-          value={route.description} />
+        <RichTextEditor
+          content={route.description}
+          onChange={content => {
+            routeEdit.description = content;
+          }} />
       </div >
 
       <div className="buttons-row" >

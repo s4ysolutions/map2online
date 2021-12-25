@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "esnext",
     "allowJs": false,
     "baseUrl": "./src",
     "declaration": true,

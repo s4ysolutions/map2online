@@ -30,6 +30,7 @@ import {useCursorOver} from './hooks/useCursorOver';
 import {useModifying} from './hooks/useModifying';
 import GeometryType from 'ol/geom/GeometryType';
 import {Style} from '../../../style';
+import {makeEmptyRichText} from '../../../richtext';
 
 const newDrawInteraction = (type: SelectedTool, pointStyle: Style, lineStyle: Style) => new DrawInteraction({
   style: getOlStyle(type === SelectedTool.Point ? pointStyle.iconStyle : lineStyle.lineStyle),
@@ -58,7 +59,7 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
       const isPoint = coordinates.length === OL_FLATCOORDINATE_LENGTH;
       const featureProps: FeatureProps = {
         style: isPoint ? pointStyle : lineStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: isPoint ? {coordinate: ol2coordinate2(coordinates)} : {coordinates: ol2coordinates2(coordinates)},
         id: null,
         summary: '',

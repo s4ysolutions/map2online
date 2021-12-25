@@ -20,6 +20,7 @@ export interface Workspace {
   readonly aboutOpen: boolean;
   readonly catalogOpen: boolean;
   readonly fileOpen: boolean;
+  readonly exportOpen: boolean;
   readonly personalizationOpen: boolean;
   readonly toolsOpen: boolean;
   readonly settingsOpen: boolean;
@@ -28,6 +29,7 @@ export interface Workspace {
   aboutObservable: () => Observable<boolean>;
   catalogObservable: () => Observable<boolean>;
   fileObservable: () => Observable<boolean>;
+  exportObservable: () => Observable<boolean>;
   personalizationObservable: () => Observable<boolean>;
   settingsObservable: () => Observable<boolean>;
   sourcesObservable: () => Observable<boolean>;
@@ -36,6 +38,7 @@ export interface Workspace {
   toggleAbout: () => void;
   toggleCatalog: () => void;
   toggleFile: () => void;
+  toggleExport: () => void;
   togglePersonalization: () => void;
   toggleSettings: () => void;
   toggleSources: () => void;

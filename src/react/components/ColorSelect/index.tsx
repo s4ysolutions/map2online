@@ -24,7 +24,7 @@ import log from '../../../log';
 
 const map2styles = getMap2Styles().styles;
 
-//onClick={() => handleColorSelect(style)}
+// onClick={() => handleColorSelect(style)}
 // eslint-disable-next-line no-unused-vars
 const ColorSelect: React.FunctionComponent<{ isPoint: boolean, selected: Style, onColorSelect: (style: Style) => void }> = ({
   isPoint,

@@ -16,13 +16,14 @@
 
 import {Observable} from 'rxjs';
 import {FeatureProps} from '../catalog';
+import {RichText} from '../richtext';
 
 export interface ImportedFolder {
   id?: string;
   features: FeatureProps[];
   folders: ImportedFolder[];
   name: string;
-  description: string;
+  description: RichText;
   open: boolean;
   visible: boolean;
   parent: ImportedFolder;

@@ -29,6 +29,7 @@ import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
 import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
 import {CatalogStorage} from '../../../src/catalog/storage';
 import {CatalogDefault} from '../../../src/catalog/default/catalog';
+import {makeEmptyRichText} from '../../../src/richtext';
 
 const fid1 = 'fid1';
 const fid2 = 'fid2';
@@ -85,7 +86,7 @@ describe('Catalog visibleFeatures', () => {
       await catalog.categories.byPos(0).routes.byPos(0).features.add({
         id: fid1,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't1',
@@ -94,7 +95,7 @@ describe('Catalog visibleFeatures', () => {
       await catalog.categories.byPos(0).routes.byPos(0).features.add({
         id: fid2,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't1',
@@ -138,7 +139,7 @@ describe('Catalog visibleFeatures', () => {
       await catalog.categories.byPos(0).routes.byPos(0).features.add({
         id: fid3,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't3',
@@ -191,13 +192,13 @@ describe('Catalog visibleFeatures', () => {
     beforeEach(async () => {
       category = catalog.categories.byPos(0);
       route1 = category.routes.byPos(0);
-      await category.routes.add({description: '', id: null, open: true, summary: '', title: 'r2', visible: true});
+      await category.routes.add({description: makeEmptyRichText(), id: null, open: true, summary: '', title: 'r2', visible: true});
       route2 = category.routes.byPos(1);
 
       await route1.features.add({
         id: fid1,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't1',
@@ -207,7 +208,7 @@ describe('Catalog visibleFeatures', () => {
       await route1.features.add({
         id: fid2,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't1',
@@ -217,7 +218,7 @@ describe('Catalog visibleFeatures', () => {
       await route2.features.add({
         id: fid3,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't3',
@@ -263,7 +264,7 @@ describe('Catalog visibleFeatures', () => {
       await route2.features.add({
         id: fid4,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't4',
@@ -317,17 +318,17 @@ describe('Catalog visibleFeatures', () => {
 
     beforeEach(async () => {
       category1 = catalog.categories.byPos(0);
-      await catalog.categories.add({description: '', id: null, open: false, summary: '', title: '', visible: true});
+      await catalog.categories.add({description: [], id: null, open: false, summary: '', title: '', visible: true});
       category2 = catalog.categories.byPos(1);
       route11 = category1.routes.byPos(0);
-      await category1.routes.add({description: '', id: null, open: true, summary: '', title: 'r2', visible: true});
+      await category1.routes.add({description: makeEmptyRichText(), id: null, open: true, summary: '', title: 'r2', visible: true});
       route12 = category1.routes.byPos(1);
       route21 = category2.routes.byPos(0);
 
       await route11.features.add({
         id: fid1,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't1',
@@ -337,7 +338,7 @@ describe('Catalog visibleFeatures', () => {
       await route11.features.add({
         id: fid2,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't1',
@@ -347,7 +348,7 @@ describe('Catalog visibleFeatures', () => {
       await route12.features.add({
         id: fid3,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't3',
@@ -357,7 +358,7 @@ describe('Catalog visibleFeatures', () => {
       await route21.features.add({
         id: fid4,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't3',
@@ -406,7 +407,7 @@ describe('Catalog visibleFeatures', () => {
       await route21.features.add({
         id: fid5,
         style: testStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't5',

@@ -30,8 +30,9 @@ import {CatalogStorage} from '../../../src/catalog/storage';
 import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
 import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
 import {CatalogDefault} from '../../../src/catalog/default/catalog';
+import {makeEmptyRichText} from '../../../src/richtext';
 
-describe('26-10-2020 issues', () => {
+describe.skip('26-10-2020 issues', () => {
 
   describe('UseVisible Features return features without style', () => {
     let kv: KV;
@@ -55,7 +56,7 @@ describe('26-10-2020 issues', () => {
       await catalog.categories.byPos(0).routes.byPos(0).features.add({
         id: fid1,
         style: map2styles.defaultStyle,
-        description: '',
+        description: makeEmptyRichText(),
         geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
         summary: '',
         title: 't1',

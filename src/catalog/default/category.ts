@@ -1,4 +1,4 @@
-import {Categories, Category, CategoryProps, ID, RouteProps, Routes} from '../index';
+import {Categories, Category, CategoryProps, ID, Routes} from '../index';
 import {makeId} from '../../lib/id';
 import {RouteDefault, RoutesDefault} from './route';
 import {Observable} from 'rxjs';
@@ -6,6 +6,7 @@ import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
 import {FeatureDefault} from './feature';
+import {makeEmptyRichText} from '../../richtext';
 
 export class CategoryDefault implements Category {
 
@@ -18,7 +19,7 @@ export class CategoryDefault implements Category {
   private makeDefs(): CategoryProps {
     return {
       id: makeId(),
-      description: '',
+      description: makeEmptyRichText(),
       summary: '',
       title: this.catalog.wording.C('New category'),
       visible: true,
@@ -28,7 +29,7 @@ export class CategoryDefault implements Category {
 
   constructor(
     catalog: CatalogDefault,
-    props: RouteProps | null,
+    props: CategoryProps | null,
   ) {
     this.catalog = catalog;
     if (props === null) {
@@ -45,55 +46,55 @@ export class CategoryDefault implements Category {
 
   readonly ts = makeId();
 
-  get description() {
+  get description(): RichText {
     return this.p.description;
   }
 
-  set description(value) {
+  set description(value: RichText) {
     this.p.description = value;
-    this.update();
+    this.update().then();
   }
 
   readonly routes: Routes;
 
-  get summary() {
+  get summary(): string {
     return this.p.summary;
   }
 
-  set summary(value) {
+  set summary(value: string) {
     this.p.summary = value;
-    this.update();
+    this.update().then();
   }
 
-  get title() {
+  get title(): string {
     return this.p.title;
   }
 
-  set title(value) {
+  set title(value: string) {
     this.p.title = value;
-    this.update();
+    this.update().then();
   }
 
-  get visible() {
+  get visible(): boolean {
     return this.p.visible;
   }
 
-  set visible(value) {
+  set visible(value: boolean) {
     const notify = value !== this.p.visible;
     this.p.visible = value;
-    this.update();
+    this.update().then();
     if (notify) {
       this.catalog.notifyVisisbleFeaturesChanged();
     }
   }
 
-  get open() {
+  get open(): boolean {
     return this.p.open;
   }
 
-  set open(value) {
+  set open(value: boolean) {
     this.p.open = value;
-    this.update();
+    this.update().then();
   }
 
   update(): Promise<void> {
@@ -140,11 +141,11 @@ export class CategoriesDefault implements Categories {
   private readonly featuresCache: Record<ID, FeatureDefault>;
 
 
-  private updateIds = (ids: ID[]) => {
+  private updateIds(ids: ID[]) {
     if (ids !== this.idsCache[this.cacheKey]) {
       this.idsCache[this.cacheKey] = ids;
     }
-  };
+  }
 
   private get guardedIds() {
     const ids = this.idsCache[this.cacheKey];
@@ -153,7 +154,7 @@ export class CategoriesDefault implements Categories {
     }
     if ((!ids || ids.length === 0) && this.catalog.wording.isPersonalized && this.catalog.autoCreate) {
       const category = new CategoryDefault(this.catalog, null);
-      this.addCategory(category); //  ignore async storage backend, use sync cache
+      this.addCategory(category).then(); //  ignore async storage backend, use sync cache
     }
     return this.idsCache[this.cacheKey];
   }

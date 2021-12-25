@@ -18,6 +18,7 @@
 
 import {Observable} from 'rxjs';
 import {Style} from '../style';
+import {RichText} from '../richtext';
 
 export type ID = string;
 
@@ -33,6 +34,7 @@ export const isCoordinate = (coordinate: Coordinate | Coordinate[] | number | nu
 
 
 export const coordinateEq = (c1: Coordinate, c2: Coordinate): boolean => c1.lat === c2.lat && c1.lon === c2.lon;
+/*
 export const coordinatesEq = (c1: Coordinate[], c2: Coordinate[]): boolean => {
   if (c1.length !== c2.length) {
     return false;
@@ -44,7 +46,7 @@ export const coordinatesEq = (c1: Coordinate[], c2: Coordinate[]): boolean => {
   }
   return true;
 };
-
+*/
 export interface Point {
   coordinate: Coordinate;
 }
@@ -54,7 +56,7 @@ export interface LineString {
 }
 
 export interface FeatureProps {
-  description: string;
+  description: RichText;
   id: ID;
   summary: string;
   title: string;
@@ -92,7 +94,7 @@ export interface Features extends Iterable<Feature> {
 }
 
 export interface RouteProps {
-  description: string;
+  description: RichText;
   id: ID;
   summary: string;
   title: string;
@@ -119,7 +121,7 @@ export interface Routes extends Iterable<Route> {
 
 export interface CategoryProps {
   id: ID;
-  description: string;
+  description: RichText;
   summary: string;
   title: string;
   visible: boolean;
@@ -151,4 +153,5 @@ export interface Catalog {
   // return previous state
   disableAutoCreateCategoryAndRoute: () => boolean;
   enableAutoCreateCategoryAndRoute: () => boolean;
+  setAutoCreateCategoryAndRoute: (enabled: boolean) => void;
 }

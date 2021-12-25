@@ -74,3 +74,29 @@ a {
   text-decoration: none;
   border-bottom: 1px dotted;
 }
+
+.field-row .rich-text,
+.field-row textarea,
+.field-row input {
+  flex-grow: 1;
+}
+
+.field-row label,
+.field-row .DraftEditor-root,
+.field-row textarea,
+.field-row input {
+  box-sizing: border-box;
+  padding: 1rem;
+}
+
+// reset
+h1 {
+  margin: 0;
+}
+
+h2 {
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}

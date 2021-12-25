@@ -17,8 +17,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import 'normalize.css';
 import 'reset-css';
+import 'normalize.css';
 import 'styles.scss';
 import 'modal.scss';
 import 'form.scss';
@@ -26,6 +26,11 @@ import 'typo.scss';
 import 'theme-yellow-black.scss';
 
 import amplitude from 'amplitude-js';
+
+import './extensions/array+serializePlainText';
+import './extensions/array+serializeRichText';
+import './extensions/string+richtext';
+import './extensions/string+format';
 
 import WaitInitialization from './react/components/WaitInitialization';
 

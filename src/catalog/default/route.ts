@@ -5,6 +5,7 @@ import {FeatureDefault, FeaturesDefault} from './feature';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
+import {makeEmptyRichText} from '../../richtext';
 
 export class RouteDefault implements Route {
   private readonly p: RouteProps;
@@ -16,7 +17,7 @@ export class RouteDefault implements Route {
   private makeDefs(): RouteProps {
     return {
       id: makeId(),
-      description: '',
+      description: makeEmptyRichText(),
       summary: '',
       title: this.catalog.wording.R('New route'),
       visible: true,
@@ -40,40 +41,40 @@ export class RouteDefault implements Route {
 
   readonly ts = makeId();
 
-  get description() {
+  get description(): RichText {
     return this.p.description;
   }
 
-  set description(value) {
+  set description(value: RichText) {
     this.p.description = value;
     this.update();
   }
 
   readonly features: Features;
 
-  get summary() {
+  get summary(): string {
     return this.p.summary;
   }
 
-  set summary(value) {
+  set summary(value: string) {
     this.p.summary = value;
     this.update();
   }
 
-  get title() {
+  get title(): string {
     return this.p.title;
   }
 
-  set title(value) {
+  set title(value: string) {
     this.p.title = value;
     this.update();
   }
 
-  get visible() {
+  get visible(): boolean {
     return this.p.visible;
   }
 
-  set visible(value) {
+  set visible(value: boolean) {
     const notify = value !== this.p.visible;
     this.p.visible = value;
     this.update();
@@ -82,13 +83,13 @@ export class RouteDefault implements Route {
     }
   }
 
-  get open() {
+  get open(): boolean {
     return this.p.open;
   }
 
-  set open(value) {
+  set open(value: boolean) {
     this.p.open = value;
-    this.update();
+    this.update().then();
   }
 
   delete(notify = true): Promise<void> {
@@ -132,11 +133,11 @@ export class RoutesDefault implements Routes {
 
   private readonly catalog: CatalogDefault;
 
-  private updateIds = (ids: ID[]) => {
+  private updateIds(ids: ID[]) {
     if (ids !== this.idsCache[this.cacheKey]) {
       this.idsCache[this.cacheKey] = ids;
     }
-  };
+  }
 
   private get guardedIds() {
     const ids = this.idsCache[this.cacheKey];

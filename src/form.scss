@@ -31,7 +31,9 @@ form h3 {
 
 .field-row {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: stretch;
+	justify-content: space-between;
 	margin-block-start: 1em;
 	margin-block-end: 1em;
 	margin-inline-start: 0px;
@@ -60,3 +62,8 @@ form h3 {
 	padding-top: 0.5em;
 }
 
+@media screen and (max-width: 700px) {
+	.radio-row {
+		margin-bottom: 10px;
+	}
+}

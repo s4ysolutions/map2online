@@ -18,6 +18,8 @@
   position: relative;
   display: flex;
   flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: space-between;
 
   h1 {
     font-size: 1em;
@@ -31,6 +33,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .menu-item {
+
+  }
+
+  @media screen and (max-width: 560px) {
+    .menu-item {
+      margin-bottom: 10px;
+    }
   }
 
   .menu-item-title {

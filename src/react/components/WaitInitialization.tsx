@@ -3,7 +3,6 @@ import {useEffect, useState} from 'react';
 import T from '../../l10n';
 import {getCatalog, initDI} from '../../di-default';
 import App from './App';
-import {hot} from 'react-hot-loader';
 import log from '../../log';
 
 const WaitInitialization: React.FunctionComponent = (): React.ReactElement => {
@@ -24,4 +23,4 @@ const WaitInitialization: React.FunctionComponent = (): React.ReactElement => {
   </div >;
 };
 
-export default hot(module)(WaitInitialization);
+export default WaitInitialization;

@@ -22,7 +22,9 @@ import Line from '../Svg/Line';
 import './style.scss';
 import log from '../../../log';
 
-const map2styles = getMap2Styles().styles;
+const map2styles = getMap2Styles();
+const styles = map2styles.styles;
+const defaultStyles = map2styles.defaultStyle;
 
 // onClick={() => handleColorSelect(style)}
 // eslint-disable-next-line no-unused-vars
@@ -33,12 +35,14 @@ const ColorSelect: React.FunctionComponent<{ isPoint: boolean, selected: Style, 
 }): React.ReactElement => {
   log.render('ColorSelect', {selected});
   return <div className="color-selector-view" >
-    {map2styles.map((style: Style) => <div
+    {styles.map((style: Style) => <div
       className={`color-selector-button ${selected.id === style.id ? 'selected' : ''}`}
       key={style.id}
       onClick={() => handleColorSelect(style)}
     >
-      {isPoint ? <Pin color={style.iconStyle.color} /> : <Line color={style.lineStyle.color} />}
+      {isPoint
+        ? <Pin color={style.iconStyle?.color || defaultStyles.iconStyle.color} />
+        : <Line color={style.lineStyle?.color || defaultStyles.lineStyle.color} />}
     </div >)}
   </div >;
 };

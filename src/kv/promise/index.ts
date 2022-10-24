@@ -17,9 +17,10 @@
 import {Observable} from 'rxjs';
 
 export interface KvPromise {
-  delete: <T>(key: string) => Promise<void>;
+  delete: <T>(key: string) => Promise<T | null>;
   get: <T>(key: string, def: T) => Promise<T>;
   set: <T>(key: string, value: T) => Promise<void>;
-  observable: <T>(key?: string) => Observable<T>;
+  observable: <T>(key: string) => Observable<T>;
+  observableDelete: <T>(key: string) => Observable<T | null>;
 }
 

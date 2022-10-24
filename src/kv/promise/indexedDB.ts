@@ -19,12 +19,13 @@ import {filter, map} from 'rxjs/operators';
 import log from '../../log';
 import {openDB} from 'idb';
 import {IDBPDatabase} from 'idb/build/entry';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 interface IndexedDB {
   _db: IDBPDatabase | null,
   readonly db: Promise<IDBPDatabase>
   readonly subject: Subject<{ key: string; value: unknown }>
+  readonly subjectDelete: Subject<{ key: string; value: unknown }>
 }
 
 const DB_VERSION = 8;
@@ -32,6 +33,7 @@ const DB_VERSION = 8;
 const indexedDbFactory = (dbname: string, store = 'default'): KvPromise & IndexedDB => ({
   _db: null,
   subject: new Subject<{ key: string; value: unknown }>(),
+  subjectDelete: new Subject<{ key: string; value: unknown }>(),
   get db(): Promise<IDBPDatabase> {
     return this._db === null ? openDB(dbname, DB_VERSION, {
       // eslint-disable-next-line no-unused-vars
@@ -64,14 +66,15 @@ const indexedDbFactory = (dbname: string, store = 'default'): KvPromise & Indexe
       return db;
     }) : Promise.resolve(this._db);
   },
-  get<T>(key: string, defaultValue?: T, forcedJSON?: string) {
+  get<T>(key: string, defaultValue: T, forcedJSON?: string): Promise<T> {
     log.debug(`indexedDb get ${key}`);
     if (forcedJSON) {
       return Promise.resolve<T>(JSON.parse(forcedJSON));
     }
     return this.db
       .then((db: IDBPDatabase) => db.get(store, key))
-      .then((v?: T) => v === undefined ? defaultValue : v)
+      .then((v?: T) =>
+        v === undefined ? defaultValue : v as T)
       .catch((e: Error) => {
         log.error('indexedDB get', e);
         throw (e);
@@ -85,21 +88,31 @@ const indexedDbFactory = (dbname: string, store = 'default'): KvPromise & Indexe
         : this.db.then((db: IDBPDatabase) => db.put(store, value, key));
     return prom.then(() => {
       this.subject.next({key, value});
-      return {key, value};
-    });
+    })
+      .catch(err => {
+        log.error(err);
+        log.error({key, value});
+      });
   },
-  delete<T>(key: string) {
-    return this.db
-      .then((db: IDBPDatabase) => db.delete(store, key))
-      .then(() => this.subject.next({key, value: null}));
+  delete<T>(key: string): Promise<T | null> {
+    return this.get<T | undefined>(key, undefined).then(existing => this.db.then((db: IDBPDatabase) => db.delete(store, key))
+      .then(() => {
+        const ret: T | null = existing === undefined ? null : existing as T;
+        this.subject.next({key, value: ret});
+        return ret;
+      }));
   },
-  observable<T>(key?: string) {
-    return key
-      ? this.subject.pipe(
-        filter<{ key: string; value: unknown }>((r): boolean => r.key === key),
-        map<{ key: string; value: unknown }, unknown>((r) => r.value),
-      )
-      : this.subject;
+  observable<T>(key: string): Observable<T> {
+    return this.subject.pipe(
+      filter<{ key: string; value: unknown }>((r): boolean => r.key === key),
+      map<{ key: string; value: unknown }, T>((r) => r.value as T),
+    );
+  },
+  observableDelete<T>(key: string): Observable<T> {
+    return this.subjectDelete.pipe(
+      filter<{ key: string; value: unknown }>((r): boolean => r.key === key),
+      map<{ key: string; value: unknown }, T>((r) => r.value as T),
+    );
   },
 });
 

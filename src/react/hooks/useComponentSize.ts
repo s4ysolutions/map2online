@@ -36,7 +36,7 @@ const getSize = (el?: Element | null): HW => {
   };
 };
 
-const useComponentSize = (el: HTMLDivElement): HW => {
+const useComponentSize = (el: HTMLDivElement | null): HW => {
   const [componentSize, setComponentSize] = React.useState(getSize(el));
   const handleResize = React.useCallback(
     (): void => {

@@ -40,29 +40,42 @@ let olFeaturesById: Record<string, OlFeature<OlGeometry>> = {};
 // used by zoom 2 extent control
 export const visibleOlFeatures = (): OlFeature<OlGeometry>[] => Object.values(olFeaturesById);
 
-const ActiveFeatures: React.FunctionComponent = (): React.ReactElement => {
+const ActiveFeatures: React.FunctionComponent = (): React.ReactElement | null => {
   const olFeatures: OlFeature<OlGeometry>[] = useVisibleFeatures();
   const map = React.useContext(olMapContext);
 
   useEffect(() => {
-    map.addLayer(layer);
-    return () => {
-      map.removeLayer(layer);
-    };
+    if (map) {
+      map.addLayer(layer);
+      return () => {
+        map.removeLayer(layer);
+      };
+    }
+    return () => null;
   }, [map]);
 
   useEffect(() => {
     source.clear();
     source.addFeatures(olFeatures);
 
-    const featuresObservables = olFeatures.map(olFeature => catalog.featureById(olFeature.getId().toString()).observable());
+    const featuresObservables = olFeatures
+      .map(olFeature => olFeature.getId())
+      .filter(id => Boolean(id))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .map(id => catalog.featureById(id!.toString()))
+      .filter(feature => Boolean(feature))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .map(feature => feature!.observable());
     olFeaturesById = {};
     olFeatures.forEach(olFeature => {
-      olFeaturesById[olFeature.getId().toString()] = olFeature;
+      const id = olFeature.getId()?.toString();
+      if (id) {
+        olFeaturesById[id] = olFeature;
+      }
     });
     // subsribe to feature modifications
     const featuresObservable = merge(...featuresObservables).pipe(debounceTime(DEBOUNCE_DELAY))
-      .subscribe((feature: Feature) => {
+      .subscribe((feature: Feature | null) => {
         if (!feature) {
           // feature deletion is handled in the outer useEffect
           return;

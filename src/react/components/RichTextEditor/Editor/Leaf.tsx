@@ -17,12 +17,11 @@
 import React, {ReactElement} from 'react';
 import {StyledText} from '../../../../richtext';
 import log from '../../../../log';
-import {RenderElementProps} from 'slate-react';
+import {RenderLeafProps} from 'slate-react/dist/components/editable';
 
-type LeafProps = RenderElementProps & {leaf: StyledText};
-
-const Leaf = (props: LeafProps): ReactElement => {
-  const { attributes, children, leaf } = props;
+const Leaf = (props: RenderLeafProps): ReactElement => {
+  const { attributes, children, leaf: textLeaf} = props;
+  const leaf = textLeaf as StyledText;
   log.render('RichText Leaf', {attributes, children, leaf});
   let ch = children;
   if (leaf.bold) {

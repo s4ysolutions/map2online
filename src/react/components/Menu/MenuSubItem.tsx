@@ -15,9 +15,11 @@
  */
 
 import * as React from 'react';
+import {ReactNode} from 'react';
 
 interface Props {
-  onClick: React.MouseEventHandler;
+  onClick: React.MouseEventHandler
+  children: ReactNode[] | ReactNode
 }
 
 const MenuSubItem: React.FunctionComponent<Props> =

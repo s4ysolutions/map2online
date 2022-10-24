@@ -33,15 +33,18 @@ const Catalog: React.FunctionComponent = (): React.ReactElement => {
   const selectedRoute = useObservable(catalog.selectedRouteObservable(), catalog.selectedRoute);
   log.render(`Catalog open=${openCatalog} category=${selectedCategory} route=${selectedRoute}`);
 
-  return openCatalog && <div className="catalog" >
-    {selectedCategory && selectedRoute
-      ? <FeaturesView route={selectedRoute} />
-      : selectedCategory
-        ? <RoutesView category={selectedCategory} />
-        : <CategoriesView />}
+  if (openCatalog) {
+    return <div className="catalog" >
+      {(selectedCategory && selectedRoute)
+        ? <FeaturesView route={selectedRoute} />
+        : selectedCategory
+          ? <RoutesView category={selectedCategory} />
+          : <CategoriesView />}
 
-    <CatalogNavigation />
-  </div >;
+      <CatalogNavigation />
+    </div >;
+  }
+  return null as unknown as React.ReactElement;
 };
 
 export default Catalog;

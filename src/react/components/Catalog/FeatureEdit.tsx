@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import {FormEvent, useState} from 'react';
+import {FormEvent, useCallback, useState} from 'react';
 import Modal from '../Modal';
 import {getCatalogUI} from '../../../di-default';
 import {Coordinate, Feature, LineString, Point, isPoint} from '../../../catalog';
@@ -27,6 +27,8 @@ import {map} from 'rxjs/operators';
 import {degreesToMeters} from '../../../lib/projection';
 import ColorSelect from '../ColorSelect';
 import RichTextEditor from '../RichTextEditor';
+import {makeEmptyRichText} from '../../../richtext';
+import {Descendant} from 'slate';
 
 const catalogUI = getCatalogUI();
 // eslint-disable-next-line no-unused-vars
@@ -65,7 +67,11 @@ const makeCoordinate = (line: string): Coordinate => {
 };
 
 const makeGeometry = (text: string): Point | LineString => {
-  const lines = text.match(/[^\r\n]+/gu).map(s => s.trim())
+  if (text === null) {
+    return {coordinate: {lon: 0, lat: 0, alt: 0}};
+  }
+  const matches = text.match(/[^\r\n]+/gu) || [];
+  const lines = matches.map(s => s.trim())
     .filter(s => s);
   if (lines.length === 0) {
     return {coordinate: {lon: 0, lat: 0, alt: 0}};
@@ -73,7 +79,6 @@ const makeGeometry = (text: string): Point | LineString => {
     return {coordinate: makeCoordinate(lines[0])};
   }
   return {coordinates: lines.map(s => makeCoordinate(s))};
-
 };
 
 const MIN_COORDINATES_ROWS = 5;
@@ -84,8 +89,8 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
   const feature = useObservable(
     featureEdit.observable()
       .pipe(map(f => ({
-        title: f.title,
-        description: f.description,
+        title: f?.title || '',
+        description: f?.description || makeEmptyRichText(),
         /*
          * pointCoordinates: isPoint(feature.geometry) ? formatCoordinate(feature.geometry.coordinate) : null,
          * lineCoordinates: isLineString(feature.geometry) ? formatCoordinates(feature.geometry.coordinates).split(' ') : null,
@@ -106,9 +111,15 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
   log.render('FeatureEdit');
 
   React.useEffect((): void => {
-    titleRef.current.focus();
-    titleRef.current.select();
+    if (titleRef.current) {
+      titleRef.current.focus();
+      titleRef.current.select();
+    }
   }, []);
+
+  const handleChange = useCallback((content: Descendant[]) => {
+    featureEdit.description = content as RichText;
+  }, [featureEdit]);
 
   return <Modal className="edit-dialog" closeOnEnter onClose={handleClose} >
     <form onSubmit={handleSubmit} >
@@ -137,9 +148,7 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
 
         <RichTextEditor
           content={feature.description}
-          onChange={content => {
-            featureEdit.description = content;
-          }} />
+          onChange={handleChange} />
       </div >
 
       <div className="field-row" >
@@ -149,20 +158,20 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
 
         {isPoint(featureEdit.geometry)
           ? <input
-              name="coordinates"
-              onChange={(ev): void => {
+            name="coordinates"
+            onChange={(ev): void => {
               setCoordinates(ev.target.value);
               featureEdit.geometry = makeGeometry(ev.target.value);
             }}
-              value={coordinates} />
+            value={coordinates} />
           : <textarea
-              name="coordinates"
-              onChange={(ev): void => {
+            name="coordinates"
+            onChange={(ev): void => {
               setCoordinates(ev.target.value);
               featureEdit.geometry = makeGeometry(ev.target.value);
             }}
-              rows={Math.max(Math.min(MIN_COORDINATES_ROWS, coordinates.length), MAX_COORDINATES_ROWS)}
-              value={coordinates} />}
+            rows={Math.max(Math.min(MIN_COORDINATES_ROWS, coordinates.length), MAX_COORDINATES_ROWS)}
+            value={coordinates} />}
       </div >
 
       <div className="buttons-row" >
@@ -173,7 +182,7 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
             featureEdit.style = style;
           }}
           selected={featureEdit.style} />
-      </div>
+      </div >
 
       <div className="buttons-row" >
         <button onClick={handleClose} type="button" >

@@ -18,6 +18,7 @@ import {ImportedFolder} from './index';
 import {makeEmptyRichText} from '../richtext';
 
 export const newImportedFolder = (level: number, parent: ImportedFolder | null): ImportedFolder => ({
+  importedFeatures: [],
   features: [],
   folders: [],
   name: '',

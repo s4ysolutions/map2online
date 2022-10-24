@@ -1,14 +1,14 @@
 /*
  * Copyright 2019 s4y.solutions
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -123,7 +123,6 @@ module.exports = {
     'quotes': ['error', 'single'],
     'semi': ['error', 'always'],
     'no-console': ['warn'],
-    'no-unused-vars': ['warn'],
     'comma-dangle': ['error', 'always-multiline'],
     'comma-spacing': ['warn', { 'before': false, 'after': true }],
     'key-spacing': ['warn', { }],
@@ -141,6 +140,13 @@ module.exports = {
     'new-cap': 'off',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
+    // https://stackoverflow.com/questions/63961803/eslint-says-all-enums-in-typescript-app-are-already-declared-in-the-upper-scope
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
+    // https://stackoverflow.com/questions/55280555/typescript-eslint-eslint-plugin-error-route-is-defined-but-never-used-no-un
+    // 'no-unused-vars': ['warn'],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
   },
   'globals': {
     '_': true,
@@ -165,8 +171,8 @@ module.exports = {
     /*
     'react': {
       'createClass': 'createReactClass', // Regex for Component Factory to use,
-      // default to "createReactClass"
-      'pragma': 'React', // Pragma to use, default to "React"
+      // default to 'createReactClass'
+      'pragma': 'React', // Pragma to use, default to 'React'
       'version': '16.0', // React version, default to the latest React stable release
     },
     'propWrapperFunctions': ['forbidExtraProps'], // The names of any functions used to wrap the
@@ -177,5 +183,14 @@ module.exports = {
      * a function will be skipped.
      */
   },
+  'overrides': [
+    {
+      'files': ['*.spec.ts'],
+      'rules': {
+        'no-unused-expressions': 'off',
+        // 'no-magic-numbers' : 'off',
+      }
+    }
+  ]
 };
 // set filetype=javascript

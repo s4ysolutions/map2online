@@ -28,26 +28,28 @@ import {Subscription} from 'rxjs';
 import {googleLonLat} from '../../../lib/googlemap';
 
 const baseLayer = getBaseLayer();
-let stateSubscription: Subscription = null;
-let draggingSubscription: Subscription = null;
-let recentMap: google.maps.Map = null;
+let stateSubscription: Subscription | null = null;
+let draggingSubscription: Subscription | null = null;
+let recentMap: google.maps.Map | null = null;
 
 const moveRecentMap = (x: number, y: number, zoom: number) => {
   if (recentMap) {
     const c = recentMap.getCenter();
-    const cc = googleLonLat(x, y);
-    if (c.lat() !== cc.lat || c.lng() !== cc.lng) {
-      recentMap.setCenter(cc);
-    }
-    if (zoom !== recentMap.getZoom()) {
-      recentMap.setZoom(zoom);
+    if (c) {
+      const cc = googleLonLat(x, y);
+      if (c.lat() !== cc.lat || c.lng() !== cc.lng) {
+        recentMap.setCenter(cc);
+      }
+      if (zoom !== recentMap.getZoom()) {
+        recentMap.setZoom(zoom);
+      }
     }
   }
 };
 
-const GoogleMap: React.FunctionComponent = (): React.ReactElement => {
+const GoogleMap: React.FunctionComponent = (): React.ReactElement | null => {
   const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
-  const [map, setMap] = React.useState<google.maps.Map>(null);
+  const [map, setMap] = React.useState<google.maps.Map | null>(null);
   recentMap = map;
   log.render(`GoogleMap map is ${map ? 'set' : 'not set'} sourceName=${baseLayerName}`);
 
@@ -102,11 +104,15 @@ const GoogleMap: React.FunctionComponent = (): React.ReactElement => {
   }, []);
 
   const md = getMapDefinition(baseLayerName);
-  return md && isGoogleMapDefinition(md) && <div className="google-map-container" ref={mapAttach} >
-    {map && <mapContext.Provider value={map} >
-      <BaseLayer />
-    </mapContext.Provider >}
-  </div >;
+  if (md && isGoogleMapDefinition(md)) {
+    return <div className="google-map-container" ref={mapAttach} >
+      {map ? <mapContext.Provider value={map} >
+        <BaseLayer />
+      </mapContext.Provider > : null}
+    </div >;
+  }
+
+  return null;
 };
 
 export default React.memo(GoogleMap);

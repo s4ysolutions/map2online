@@ -18,6 +18,7 @@ import {Catalog, Category, CategoryProps, Feature, FeatureProps, Route, RoutePro
 import {isFlatRoot} from './post-process';
 import {ImportedFolder} from './index';
 import {makeEmptyRichText} from '../richtext';
+import {ID_NULL} from '../lib/id';
 
 export enum ImportTo {
   // eslint-disable-next-line no-unused-vars
@@ -51,7 +52,7 @@ const importFeaturesToRoute = (catalog: Catalog, features: FeatureProps[], route
 
 const folderToRoute = (folder: ImportedFolder): RouteProps => ({
   description: folder.description,
-  id: null,
+  id: ID_NULL,
   summary: '',
   title: folder.name,
   visible: folder.visible,
@@ -72,12 +73,14 @@ const foldersOfRoutes = (folders: ImportedFolder[]): ImportedFolder[] => folders
 
 const importFoldersToCategory = (catalog: Catalog, folders: ImportedFolder[], category: Category): Promise<Feature[]> => {
   const autoCreate = catalog.disableAutoCreateCategoryAndRoute();
-  return Promise.all([].concat(folders.map(folder =>
-    category.routes.add(folderToRoute(folder))
-      .then(route => importFeaturesToRoute(catalog, folder.features, route)))))
-    .then(features => {
+  const featuresPromises = folders.map(folder => category.routes.add(folderToRoute(folder))
+    .then(route => importFeaturesToRoute(catalog, folder.features, route)));
+
+  const allFeaturesPromise = Promise.all(featuresPromises);
+
+  return allFeaturesPromise.then((featuresArray: Feature[][]) => featuresArray.flat())
+    .finally(() => {
       catalog.setAutoCreateCategoryAndRoute(autoCreate);
-      return features;
     });
 };
 
@@ -95,7 +98,7 @@ const foldersOfCategories = (folders: ImportedFolder[]): ImportedFolder[] => fol
 
 const folderToCategory = (folder: ImportedFolder): CategoryProps => ({
   description: folder.description ? folder.description : makeEmptyRichText(),
-  id: null,
+  id: ID_NULL,
   summary: '',
   title: folder.name,
   visible: folder.visible,
@@ -104,22 +107,33 @@ const folderToCategory = (folder: ImportedFolder): CategoryProps => ({
 
 const importFoldersToCatalog = (catalog: Catalog, folders: ImportedFolder[]): Promise<Feature[]> => {
   const autoCreate = catalog.disableAutoCreateCategoryAndRoute();
-  return Promise.all([].concat(folders.map(folder =>
+  const featuresPromises: Promise<Feature[]>[] = folders.map(folder =>
     catalog.categories.add(folderToCategory(folder))
-      .then(category => importFoldersToCategory(catalog, folder.folders, category)))))
-    .then(features => {
+      .then(category => importFoldersToCategory(catalog, folder.folders, category)));
+
+  const featuresPromise: Promise<Feature[][]> = Promise.all(featuresPromises);
+
+  return featuresPromise.then((featuresArray: Feature[][]) => featuresArray.flat())
+    .finally(() => {
       catalog.setAutoCreateCategoryAndRoute(autoCreate);
-      return features;
     });
 };
 
-export const importFlatFolders = (rootFolder: ImportedFolder, importTo: ImportTo, catalog: Catalog, activeCategory: Category, activeRoute: Route): Promise<Feature[]> => {
+export const importFlatFolders = (rootFolder: ImportedFolder, importTo: ImportTo, catalog: Catalog, activeCategory: Category | null, activeRoute: Route | null): Promise<Feature[]> => {
   const folders = isFlatRoot(rootFolder) ? rootFolder.folders : [rootFolder];
   switch (importTo) {
     case ImportTo.ALL_FEATURES_TO_ACTIVE_ROUTE:
-      return importFeaturesToRoute(catalog, foldersToFeatures(folders), activeRoute);
+      if (activeRoute === null) {
+        throw Error('Route must not be null');
+      } else {
+        return importFeaturesToRoute(catalog, foldersToFeatures(folders), activeRoute);
+      }
     case ImportTo.ALL_ROUTES_TO_CATEGORY:
-      return importFoldersToCategory(catalog, foldersOfRoutes(folders), activeCategory);
+      if (activeCategory === null) {
+        throw Error('Category must not be null');
+      } else {
+        return importFoldersToCategory(catalog, foldersOfRoutes(folders), activeCategory);
+      }
     case ImportTo.ALL_CATEGORIES_TO_CATALOG:
       return importFoldersToCatalog(catalog, foldersOfCategories(folders));
     default:

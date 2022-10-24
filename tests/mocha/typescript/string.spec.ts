@@ -31,4 +31,13 @@ describe('Test string extension', () => {
     expect(richText[0]).to.be.eql({a: 1});
     expect(richText[1]).to.be.eql({b: 2});
   });
+  it('empty script is false', () => {
+    const empty = '';
+    expect(Boolean(empty)).to.be.false;
+    expect(empty).not.to.be.true;
+    expect(!empty).to.be.true;
+    expect(empty && true).not.to.be.true;
+    expect(empty || false).to.be.false;
+    expect(empty ? 0 : 1).to.be.eq(1);
+  });
 });

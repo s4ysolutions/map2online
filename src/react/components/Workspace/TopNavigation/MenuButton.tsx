@@ -15,17 +15,19 @@
  */
 
 import * as React from 'react';
+import {ReactNode} from 'react';
 
-const MenuButton: React.FunctionComponent<{ title: string, onClick: React.MouseEventHandler }> = ({title, children, onClick}): React.ReactElement =>
-  <button className="menu-item" onClick={onClick} type="button" >
-    {children}
+const MenuButton: React.FunctionComponent<{ title: string, onClick: React.MouseEventHandler, children?: ReactNode[] | ReactNode }> =
+  ({title, children, onClick}): React.ReactElement =>
+    <button className="menu-item" onClick={onClick} type="button" >
+      {children}
 
-    <div className="button-title" >
-      <div >
-        {title}
+      <div className="button-title" >
+        <div >
+          {title}
+        </div >
       </div >
-    </div >
-  </button >
+    </button >
 ;
 
 export default MenuButton;

@@ -86,7 +86,7 @@ const log = {
   rxAddSubject<T>(id: string, subject: Subject<T>): void {
     this.debug(`rx: ${id} = ${subject.observers.length} +`);
   },
-  rxCounters: {},
+  rxCounters: {} as Record<string, number>,
   rxDel(id: string): void {
     if (!this.rxCounters[id]) {
       this.rxCounters[id] = 0;

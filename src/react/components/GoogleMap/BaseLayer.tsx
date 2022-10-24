@@ -23,7 +23,7 @@ import {sourceNameToMapId} from './lib/mapid';
 
 const baseLayer = getBaseLayer();
 
-const BaseLayer: React.FunctionComponent = (): React.ReactElement => {
+const BaseLayer: React.FunctionComponent = (): React.ReactElement | null => {
   const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
   log.render(`GoogleBaseLayer sourceName=${baseLayerName}`);
 

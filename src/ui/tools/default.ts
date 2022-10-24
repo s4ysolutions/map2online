@@ -20,41 +20,45 @@ import {Map2Styles, Style} from '../../style';
 import {map} from 'rxjs/operators';
 
 const toolsFactory = (persistStorage: KV, styles: Map2Styles): Tools => {
-  const byC = (color: string): Style => styles.byColor(color) || styles.defaultStyle;
+  const byC = (color: string): Style => styles.byColorId(color) || styles.defaultStyle;
 
   const th: Tools = {
-    lineStyle: byC(persistStorage.get('tsl', styles.defaultStyle.lineStyle.color)),
-    lineStyleObservable: () => persistStorage.observable('tsl')
+    get lineStyle() {
+      return byC(persistStorage.get('tsl', styles.defaultStyle.lineStyle.color));
+    },
+    lineStyleObservable: () => persistStorage.observable<string>('tsl')
       .pipe(map(byC)),
-    pointStyle: byC(persistStorage.get('tsp', styles.defaultStyle.iconStyle.color)),
-    pointStyleObservable: () => persistStorage.observable('tsp')
+    get pointStyle() {
+      return byC(persistStorage.get('tsp', styles.defaultStyle.iconStyle.color));
+    },
+    pointStyleObservable: () => persistStorage.observable<string>('tsp')
       .pipe(map(byC)),
-    isLine: persistStorage.get<SelectedTool.Point | SelectedTool.Line>('tt', SelectedTool.Point) === SelectedTool.Line,
+    get isLine() {
+      return persistStorage.get<SelectedTool.Point | SelectedTool.Line>('tt', SelectedTool.Point) === SelectedTool.Line;
+    },
     isLineObservable: () => persistStorage.observable('tt'),
-    isPoint: persistStorage.get('tt', SelectedTool.Point) === SelectedTool.Point,
+    get isPoint() {
+      return persistStorage.get('tt', SelectedTool.Point) === SelectedTool.Point;
+    },
     isPointObservable: () => persistStorage.observable('tt'),
     selectStyle(style: Style) {
       if (this.isLine) {
-        this.lineStyle = style;
-        persistStorage.set('tsl', style.lineStyle.color);
-      } else {
-        this.pointStyle = style;
+        if (style.lineStyle?.color) {
+          persistStorage.set('tsl', style.lineStyle.color);
+        }
+      } else if (style.iconStyle?.color) {
         persistStorage.set('tsp', style.iconStyle.color);
       }
     },
-    selectLine () {
-      this.selectedTool = SelectedTool.Line;
-      this.isLine = true;
-      this.isPoint = false;
+    selectLine() {
       persistStorage.set('tt', SelectedTool.Line);
     },
     selectPoint() {
-      this.selectedTool = SelectedTool.Point;
-      this.isLine = false;
-      this.isPoint = true;
       persistStorage.set('tt', SelectedTool.Point);
     },
-    selectedTool: persistStorage.get('tt', SelectedTool.Point),
+    get selectedTool():SelectedTool {
+      return persistStorage.get<SelectedTool>('tt', SelectedTool.Point);
+    },
     selectedToolObservable: () => persistStorage.observable('tt'),
   };
   th.selectStyle = th.selectStyle.bind(th);

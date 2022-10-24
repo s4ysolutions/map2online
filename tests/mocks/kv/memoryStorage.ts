@@ -15,7 +15,7 @@
  */
 
 import {KV} from '../../../src/kv/sync';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
 export interface MemoryStorage extends KV {
@@ -23,7 +23,8 @@ export interface MemoryStorage extends KV {
 }
 
 const memoryStorageFactory = (init: Record<string, string> = {}): MemoryStorage => {
-  const subject = new Subject<{ key: string, value: any }>();
+  const subject = new Subject<{ key: string, value: unknown }>();
+  const subjectDeleted = new Subject<{ key: string, value: unknown }>();
   const mem: Record<string, string> = init;
   return {
     get mem() {
@@ -40,26 +41,32 @@ const memoryStorageFactory = (init: Record<string, string> = {}): MemoryStorage 
       if (value === undefined) {
         delete (mem[key]);
       } else {
-        const valueToStore = value instanceof Function ? value(this.get(key)) : value;
-        const json = JSON.stringify(valueToStore);
-        mem[key] = json;
+        const valueToStore = value instanceof Function ? value(this.get(key, null)) : value;
+        mem[key] = JSON.stringify(valueToStore);
       }
       subject.next({key, value});
     },
-    hasKey (key: string): boolean {
+    hasKey(key: string): boolean {
       return mem[key] !== undefined;
     },
-    delete <T>(key: string) {
+    delete<T>(key: string): T | null {
+      const existing = this.get(key, undefined);
       delete (mem[key]);
-      subject.next({key, value: null});
+      const ret = existing === undefined ? null : existing;
+      subjectDeleted.next({key, value: ret});
+      return ret;
     },
-    observable <T>(key?: string) {
-      return key
-        ? subject.pipe(
-          filter<{ key: string; value: any }>((r): boolean => r.key === key),
-          map<{ key: string; value: any }, any>((r) => r.value),
-        )
-        : subject;
+    observable<T>(key: string): Observable<T> {
+      return subject.pipe(
+        filter<{ key: string; value: unknown }>((r): boolean => r.key === key),
+        map<{ key: string; value: unknown }, T>((r) => r.value as T),
+      );
+    },
+    observableDelete<T>(key: string): Observable<T | null> {
+      return subjectDeleted.pipe(
+        filter<{ key: string; value: unknown }>((r): boolean => r.key === key),
+        map<{ key: string; value: unknown }, T>((r) => r.value as T),
+      );
     },
   };
 };

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import {PIN_HOTSPOT_X, PIN_HOTSPOT_Y, PIN_SCALE, makePinURL} from './default/pin';
-
-type Color = string
+export type ColorId = string
 
 export enum StyleDisplayMode {
   DEFAULT = 'default',
@@ -35,17 +33,25 @@ export enum StyleListItemType {
   RADIOFOLDER
 }
 
-interface ColorStyle {
-  color: Color
+export interface ColorStyle {
+  color: ColorId
   colorMode: StyleColorMode
 }
 
-export interface BaloonStyle {
-  bgColor: Color
+export const isColorStyle = (style: unknown): style is ColorStyle => Boolean(style) &&
+  (style as ColorStyle).color !== undefined &&
+  (style as ColorStyle).colorMode !== undefined;
+
+export interface BalloonStyle {
+  bgColor: ColorId
   textColor: string
   text: string
   displayMode: StyleDisplayMode
 }
+
+export const isBalloonStyle = (style: unknown): style is BalloonStyle => Boolean(style) &&
+  (style as BalloonStyle).bgColor !== undefined &&
+  (style as BalloonStyle).textColor !== undefined;
 
 export interface IconStyle extends ColorStyle {
   scale: number
@@ -54,41 +60,54 @@ export interface IconStyle extends ColorStyle {
   hotspot: { x: number, y: number }
 }
 
-// eslint-disable-next-line
-export const isIconStyle = (style: any): style is IconStyle => style && style.icon !== undefined && style.hotspot !== undefined;
+export const isIconStyle = (style: unknown): style is IconStyle => Boolean(style) &&
+  (style as IconStyle).icon !== undefined &&
+  (style as IconStyle).hotspot !== undefined;
 
 export interface LabelStyle extends ColorStyle {
   scale: number
 }
 
+export const isLabelStyle = (style: unknown): style is IconStyle => isColorStyle(style) &&
+  (style as IconStyle).scale !== undefined;
+
 export interface LineStyle extends ColorStyle {
   width: number
-  outerColor: Color
-  outerWidth: number
-  metersWidth: number
-  labelVisibility: boolean
+  outerColor?: ColorId
+  outerWidth?: number
+  metersWidth?: number
+  labelVisibility?: boolean
 }
 
 // eslint-disable-next-line
-export const isLineStyle = (style: any): style is LineStyle => style && style.labelVisibility !== undefined;
+export const isLineStyle = (style: unknown): style is LineStyle => isColorStyle(style) &&
+  (style as LineStyle).width !== undefined;
 
 export interface ListStyle {
   listItemType: StyleListItemType
-  bgColor: Color
+  bgColor: ColorId
   itemIcon: URL
   itemOpen: boolean
 }
 
+export const isListStyle = (style: unknown): style is ListStyle => Boolean(style) &&
+  (style as ListStyle).listItemType !== undefined &&
+  (style as ListStyle).bgColor !== undefined;
+
 export interface PolyStyle {
-  color: Color
+  color: ColorId
   scale: number
 }
 
-export type StyleItem = BaloonStyle | IconStyle | LabelStyle | LineStyle | ListStyle | PolyStyle;
+export const isPolyStyle = (style: unknown): style is PolyStyle => Boolean(style) &&
+  (style as PolyStyle).color !== undefined &&
+  (style as PolyStyle).scale !== undefined;
+
+export type StyleItem = BalloonStyle | IconStyle | LabelStyle | LineStyle | ListStyle | PolyStyle;
 
 export interface Style {
   id: string
-  balloonStyle?: BaloonStyle
+  balloonStyle?: BalloonStyle
   iconStyle?: IconStyle
   labelStyle?: LabelStyle
   lineStyle?: LineStyle
@@ -96,10 +115,20 @@ export interface Style {
   polyStyle?: PolyStyle
 }
 
+export interface DefaultStyle {
+  id: string
+  balloonStyle: BalloonStyle
+  iconStyle: IconStyle
+  labelStyle: LabelStyle
+  lineStyle: LineStyle
+  listStyle: ListStyle
+  polyStyle: PolyStyle
+}
+
 export interface Map2Styles {
-  defaultStyle: Style,
+  defaultStyle: DefaultStyle,
   byId: (id: string) => Style | null;
-  byColor: (color: Color) => Style | null;
+  byColorId: (color: ColorId) => Style | null;
   styles: Style[];
   findEq: (style: Style) => Style | null;
 }

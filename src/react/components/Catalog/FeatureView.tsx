@@ -18,8 +18,8 @@ import * as React from 'react';
 import Delete from '../Svg/Delete';
 import Hidden from '../Svg/Hidden';
 import Visible from '../Svg/Visible';
-import {Feature, LineString, Route, isPoint} from '../../../catalog';
-import {getCatalogUI} from '../../../di-default';
+import {Feature, Geometry, ID, LineString, Route, isPoint} from '../../../catalog';
+import {getCatalogUI, getMap2Styles} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {filter, map} from 'rxjs/operators';
 import log from '../../../log';
@@ -29,19 +29,23 @@ import {formatCoordinate, formatCoordinates} from '../../../lib/format';
 import {skipConfirmDialog} from '../../../lib/confirmation';
 import Edit from '../Svg/Edit';
 import T from '../../../l10n';
+import {Style} from '../../../style';
 
 const catalogUI = getCatalogUI();
+const map2styles = getMap2Styles();
 
-const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; index: number }> = ({
+type FeatureMin = { feature: Feature; route: Route; index: number };
+const FeatureView: React.FunctionComponent<FeatureMin> = ({
   index,
   feature: featureView,
   route,
 }): React.ReactElement => {
-  const feature = useObservable(
+  const feature = useObservable<{id: ID, title: string, geometry: Geometry, style: Style}>(
     featureView.observable()
       .pipe(
         filter(f => Boolean(f)),
-        map(f => ({id: f.id, title: f.title, geometry: f.geometry, style: f.style})),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        map((f) => ({id: f!.id, title: f!.title, geometry: f!.geometry, style: f!.style})),
       ),
     featureView,
   );
@@ -120,12 +124,12 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
 
       <div className="type" key="type" >
         {isPoint(feature.geometry)
-          ? <Pin color={feature.style.iconStyle.color} />
-          : <Line color={feature.style.lineStyle.color} />}
+          ? <Pin color={feature.style.iconStyle?.color || map2styles.defaultStyle.iconStyle.color} />
+          : <Line color={feature.style.lineStyle?.color || map2styles.defaultStyle.lineStyle.color} />}
       </div >
     </div >
 
-    {isOpen && <div className="body" >
+    {isOpen ? <div className="body" >
       <div >
         {
           (`${feature.id} : ${isPoint(feature.geometry)
@@ -133,7 +137,7 @@ const FeatureView: React.FunctionComponent<{ feature: Feature; route: Route; ind
             : formatCoordinates((feature.geometry as LineString).coordinates)}`)
         }
       </div >
-    </div >}
+    </div > : null}
   </div >;
 };
 

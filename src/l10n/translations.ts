@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import T from './index';
-
 const translation = {
   'en': {
     'Add': 'Add',

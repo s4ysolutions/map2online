@@ -1,7 +1,7 @@
 import {KvPromise} from '../../kv/promise';
 import {CatalogStorage} from './index';
 import {CategoryProps, FeatureProps, FeaturePropsWithStyleId, ID, RouteProps} from '../index';
-import {Map2Styles, Style} from '../../style';
+import {Map2Styles} from '../../style';
 import {Observable} from 'rxjs';
 
 export const FEATURE_ID_PREFIX = 'f';
@@ -29,7 +29,7 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
     ]) as unknown as Promise<void>;
   }
 
-  observableFeatureProps(props: FeatureProps): Observable<FeatureProps> {
+  observableFeatureProps(props: FeatureProps): Observable<FeatureProps | null> {
     return this.kv.observable<FeatureProps | null>(`${FEATURE_ID_PREFIX}@${props.id}`);
   }
 
@@ -48,18 +48,18 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
   }
 
   updateFeatureProps(props: FeatureProps): Promise<void> {
-    // i forgot the purpose of the code
-    // make sure the style is known?
-    // const map2style = this.map2styles.findEq(props.style) || props.style;
-    const map2style = props.style || this.map2styles.defaultStyle;
+    const map2style = this.map2styles.findEq(props.style) || props.style;
+    // const map2style = props.style || this.map2styles.defaultStyle;
     const key = `${FEATURE_ID_PREFIX}@${props.id}`;
-    const pp = {...props, style: null as Style, styleId: map2style.id};
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {style, ...bean} = props;
+    const pp = {...bean, styleId: map2style.id};
     return this.kv.set<FeaturePropsWithStyleId>(key, pp);
   }
 
-  readFeaturesIds(routeId: ID): Promise<ID[]| null> {
+  readFeaturesIds(routeId: ID): Promise<ID[] | null> {
     const key = `${FEATURES_ID_PREFIX}@${routeId}`;
-    return this.kv.get<ID[]>(key, null);
+    return this.kv.get<ID[] | null>(key, null);
   }
 
   updateFeaturesIds(routeId: ID, ids: ID[]): Promise<void> {
@@ -67,9 +67,9 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
     return this.kv.set<ID[]>(key, ids);
   }
 
-  deleteFeaturesIds(routeId: ID): Promise<void> {
+  deleteFeaturesIds(routeId: ID): Promise<Array<ID> | null> {
     const key = `${FEATURES_ID_PREFIX}@${routeId}`;
-    return this.kv.delete(key);
+    return this.kv.delete<Array<ID>>(key);
   }
 
   observableFeaturesIds(routeId: ID): Observable<ID[] | null> {
@@ -87,12 +87,12 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
     return this.kv.set(key, props);
   }
 
-  deleteRouteProps(props: RouteProps): Promise<void> {
+  deleteRouteProps(props: RouteProps): Promise<RouteProps | null> {
     const key = `${ROUTE_ID_PREFIX}@${props.id}`;
-    return this.kv.delete(key);
+    return this.kv.delete<RouteProps>(key);
   }
 
-  observableRouter(props: RouteProps): Observable<RouteProps> {
+  observableRouter(props: RouteProps): Observable<RouteProps | null> {
     const key = `${ROUTE_ID_PREFIX}@${props.id}`;
     return this.kv.observable<RouteProps | null>(key);
   }
@@ -107,9 +107,9 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
     return this.kv.set<ID[]>(key, ids);
   }
 
-  deleteRoutesIds(categoryId: ID): Promise<void> {
+  deleteRoutesIds(categoryId: ID): Promise<Array<ID> | null> {
     const key = `${ROUTES_ID_PREFIX}@${categoryId}`;
-    return this.kv.delete(key);
+    return this.kv.delete<Array<ID>>(key);
   }
 
   observableRoutesIds(categoryId: ID): Observable<ID[] | null> {
@@ -117,7 +117,7 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
     return this.kv.observable<ID[] | null>(key);
   }
 
-  readCategoryProps(id: string): Promise<CategoryProps> {
+  readCategoryProps(id: string): Promise<CategoryProps | null> {
     const key = `${CATEGORY_ID_PREFIX}@${id}`;
     return this.kv.get<CategoryProps | null>(key, null);
   }
@@ -127,12 +127,12 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
     return this.kv.set(key, props);
   }
 
-  deleteCategoryProps(props: CategoryProps): Promise<void> {
+  deleteCategoryProps(props: CategoryProps): Promise<CategoryProps | null> {
     const key = `${CATEGORY_ID_PREFIX}@${props.id}`;
-    return this.kv.delete(key);
+    return this.kv.delete<CategoryProps>(key);
   }
 
-  observableCategoryProps(props: CategoryProps): Observable<CategoryProps> {
+  observableCategoryProps(props: CategoryProps): Observable<CategoryProps | null> {
     const key = `${CATEGORY_ID_PREFIX}@${props.id}`;
     return this.kv.observable<CategoryProps | null>(key);
   }
@@ -147,12 +147,12 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
     return this.kv.set(key, ids);
   }
 
-  deleteCategoriesIds(catalogId: string): Promise<void> {
+  deleteCategoriesIds(catalogId: string): Promise<Array<ID> | null> {
     const key = `${CATEGORIES_ID_PREFIX}@${catalogId}`;
-    return this.kv.delete(key);
+    return this.kv.delete<Array<ID>>(key);
   }
 
-  observableCategoriesIds(catalogId: string): Observable<string[]> {
+  observableCategoriesIds(catalogId: string): Observable<ID[] | null> {
     const key = `${CATEGORIES_ID_PREFIX}@${catalogId}`;
     return this.kv.observable<ID[] | null>(key);
   }

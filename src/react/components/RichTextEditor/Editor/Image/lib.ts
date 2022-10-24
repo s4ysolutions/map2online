@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {BaseEditor, Transforms, Node} from 'slate';
+import {BaseEditor, Node, Transforms} from 'slate';
 import isUrl from 'is-url';
 import imageExtensions from 'image-extensions';
 import {StyledText} from '../../../../../richtext';
@@ -40,5 +40,8 @@ export const isImageUrl = (url: string): boolean => {
     return false;
   }
   const ext = new URL(url).pathname.split('.').pop();
+  if (ext === undefined) {
+    return false;
+  }
   return imageExtensions.includes(ext);
 };

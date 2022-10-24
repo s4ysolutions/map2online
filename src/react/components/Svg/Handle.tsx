@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 
-const Handle: React.SFC = (): React.ReactElement =>
+const Handle: React.FunctionComponent = (): React.ReactElement =>
   <svg viewBox="0 0 512 512" >
     <g >
       <rect height="32" width="512" y="144" />

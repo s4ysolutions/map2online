@@ -3,7 +3,7 @@ import {RichText, RichTextElementType} from '../richtext';
 if (!String.prototype.parseToRichText) {
   // eslint-disable-next-line no-extend-native,func-names
   String.prototype.parseToRichText = function (): RichText {
-    return JSON.parse(this);
+    return JSON.parse(this.toString());
   };
 }
 

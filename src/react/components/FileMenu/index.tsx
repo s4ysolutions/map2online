@@ -51,7 +51,7 @@ const handleExportCategory: () => void = () => {
 const handleExportRoute: () => void = () => {
   workspace.closeMenus();
   const {activeRoute} = catalogUI;
-  if (activeRoute) {
+  if (activeRoute && catalogUI.activeCategory) {
     exporter.exportRoutesKML([activeRoute], catalogUI.activeCategory);
   }
 };

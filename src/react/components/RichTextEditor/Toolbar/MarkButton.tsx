@@ -20,10 +20,13 @@ import {ReactElement} from 'react';
 import log from '../../../../log';
 import Icon from '../Icon';
 import {useSlate} from 'slate-react';
-import {Editor} from 'slate';
+import { Editor } from 'slate';
 
 const isMarkActive = (editor: Editor, format: string): boolean => {
-  const marks: {[key: string]: boolean} = Editor.marks(editor);
+  const marks = Editor.marks(editor);
+  // TODO: investigate marks
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   return marks ? marks[format] === true : false;
 };
 

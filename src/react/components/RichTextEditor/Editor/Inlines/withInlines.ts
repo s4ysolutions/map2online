@@ -17,13 +17,14 @@
 import {ReactEditor} from 'slate-react';
 import isUrl from 'is-url';
 import {wrapLink} from '../link/lib';
+import {BaseElement} from 'slate';
 import {RichTextElement} from '../../../../../richtext';
 
 const withInlines = (editor: ReactEditor): ReactEditor => {
   const { insertData, insertText, isInline } = editor;
 
-  editor.isInline = (element: RichTextElement): boolean =>
-    ['link'].includes(element.type) || isInline(element);
+  editor.isInline = (element: BaseElement): boolean =>
+    RichTextElement.isElement(element) && ['link'].includes(element.type) || isInline(element);
 
   editor.insertText = text => {
     if (text && isUrl(text)) {

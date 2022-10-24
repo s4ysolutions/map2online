@@ -18,10 +18,10 @@ import {Observable} from 'rxjs';
 import {Category, Feature, ID, Route} from '../../catalog';
 
 export interface CatalogUI {
-  selectedCategory: Category;
-  selectedCategoryObservable: () => Observable<Category>;
-  selectedRoute: Route;
-  selectedRouteObservable: () => Observable<Route>;
+  selectedCategory: Category | null;
+  selectedCategoryObservable: () => Observable<Category | null>;
+  selectedRoute: Route | null;
+  selectedRouteObservable: () => Observable<Route | null>;
   activeCategory: Category | null;
   activeCategoryObservable: () => Observable<Category | null>;
   activeRoute: Route | null;
@@ -35,9 +35,9 @@ export interface CatalogUI {
 
   readonly categoryEdit: Category | null;
   categoryEditObservable: () => Observable<Category | null>;
-  startEditCategory: (category: Category | null) => Category;
+  startEditCategory: (category: Category) => Category;
   cancelEditCategory: () => void;
-  commitEditCategory: () => Promise<Category>;
+  commitEditCategory: () => Promise<Category | null>;
 
   readonly categoryDelete: Category | null;
   categoryDeleteObservable: () => Observable<Category | null>;
@@ -45,10 +45,10 @@ export interface CatalogUI {
   endDeleteCategory: () => void;
 
   readonly routeEdit: Route | null;
-  routeEditObservable: () => Observable<Route> | null;
-  startEditRoute: (route: Route | null) => Route;
+  routeEditObservable: () => Observable<Route | null>;
+  startEditRoute: (route: Route) => Route;
   cancelEditRoute: () => void;
-  commitEditRoute: () => Promise<Route>;
+  commitEditRoute: () => Promise<Route | null>;
 
   readonly routeDelete: { route: Route; category: Category } | null;
   routeDeleteObservable: () => Observable<{ route: Route; category: Category } | null>;
@@ -56,10 +56,10 @@ export interface CatalogUI {
   endDeleteRoute: () => void;
 
   readonly featureEdit: Feature | null;
-  featureEditObservable: () => Observable<Feature> | null;
-  startEditFeature: (feature: Feature | null) => Feature;
+  featureEditObservable: () => Observable<Feature | null>;
+  startEditFeature: (feature: Feature) => Feature;
   cancelEditFeature: () => void;
-  commitEditFeature: () => Promise<Feature>;
+  commitEditFeature: () => Promise<Feature | null>;
 
   readonly featureDelete: { feature: Feature; route: Route } | null;
   featureDeleteObservable: () => Observable<{ feature: Feature; route: Route } | null>;

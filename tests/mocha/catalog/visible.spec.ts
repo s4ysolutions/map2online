@@ -23,13 +23,14 @@ import {map2StylesFactory} from '../../../src/style/default/styles';
 import {wordingFactory} from '../../../src/personalization/wording/default';
 import {expect} from 'chai';
 import {Catalog, Category, Feature, Route} from '../../../src/catalog';
-import {Subscription} from 'rxjs';
+import {first} from 'rxjs/operators';
 import {KvPromise} from '../../../src/kv/promise';
 import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
 import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
 import {CatalogStorage} from '../../../src/catalog/storage';
 import {CatalogDefault} from '../../../src/catalog/default/catalog';
 import {makeEmptyRichText} from '../../../src/richtext';
+import {ID_NULL} from '../../../src/lib/id';
 
 const fid1 = 'fid1';
 const fid2 = 'fid2';
@@ -44,9 +45,6 @@ describe('Catalog visibleFeatures', () => {
   let map2styles: Map2Styles;
   let testStyle: Style;
   let catalog: Catalog;
-  let subscription1: Subscription;
-  let subscription2: Subscription;
-  let subscription3: Subscription;
   let catalogStorage: CatalogStorage;
 
   beforeEach(async () => {
@@ -61,29 +59,13 @@ describe('Catalog visibleFeatures', () => {
     catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
   });
 
-  afterEach(() => {
-    if (subscription1) {
-      subscription1.unsubscribe();
-      subscription1 = null;
-    }
-    if (subscription2) {
-      subscription2.unsubscribe();
-      subscription2 = null;
-    }
-    if (subscription3) {
-      subscription3.unsubscribe();
-      subscription3 = null;
-    }
-  });
-
   describe('Features of the single route', () => {
     let category: Category;
     let route: Route;
     let feature1: Feature;
-    let feature2: Feature;
 
     beforeEach(async () => {
-      await catalog.categories.byPos(0).routes.byPos(0).features.add({
+      await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
         id: fid1,
         style: testStyle,
         description: makeEmptyRichText(),
@@ -92,7 +74,7 @@ describe('Catalog visibleFeatures', () => {
         title: 't1',
         visible: true,
       });
-      await catalog.categories.byPos(0).routes.byPos(0).features.add({
+      await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
         id: fid2,
         style: testStyle,
         description: makeEmptyRichText(),
@@ -101,42 +83,42 @@ describe('Catalog visibleFeatures', () => {
         title: 't1',
         visible: true,
       });
-      category = catalog.categories.byPos(0);
-      route = category.routes.byPos(0);
-      feature1 = route.features.byPos(0);
-      feature2 = route.features.byPos(1);
+      category = catalog.categories.byPos(0)!;
+      route = category.routes.byPos(0)!;
+      feature1 = route.features.byPos(0)!;
     });
 
     it('Expected fixtures', () => {
       expect(catalog.categories.length).to.be.eq(1);
-      expect(catalog.categories.byPos(0).routes.length).to.be.eq(1);
-      expect(catalog.categories.byPos(0).routes.byPos(0).features.length).to.be.eq(2);
-      expect(catalog.categories.byPos(0).routes.byPos(0).features.byPos(0).id).to.be.eq('fid1');
+      expect(catalog.categories.byPos(0)!.routes.length).to.be.eq(1);
+      expect(catalog.categories.byPos(0)!.routes.byPos(0)!.features.length).to.be.eq(2);
+      expect(catalog.categories.byPos(0)!.routes.byPos(0)!.features.byPos(0)!.id).to.be.eq('fid1');
     });
 
-    it('Visibility of features', () => {
+    it('Visibility of features', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(2);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
-
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(features.length).to.be.eq(1);
+          expect(catalog.visibleFeatures.length).to.be.eq(1);
+          done();
+        });
       feature1.visible = false;
-
-      expect(expected.length).to.be.eq(1);
-      expect(catalog.visibleFeatures.length).to.be.eq(1);
     });
 
-    it('Visibility of added features', async () => {
+    it('Visibility of added features', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(2);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(catalog.visibleFeatures.length).to.be.eq(3);
+          expect(features.length).to.be.not.null;
+          expect(features.length).to.be.eq(3);
+          done();
+        });
 
-      await catalog.categories.byPos(0).routes.byPos(0).features.add({
+      catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
         id: fid3,
         style: testStyle,
         description: makeEmptyRichText(),
@@ -144,40 +126,34 @@ describe('Catalog visibleFeatures', () => {
         summary: '',
         title: 't3',
         visible: true,
-      });
-
-      expect(catalog.visibleFeatures.length).to.be.eq(3);
-      expect(expected.length).to.be.not.null;
-      expect(expected.length).to.be.eq(3);
+      }).then();
     });
 
-    it('Visibility of removed features', async () => {
+    it('Visibility of removed features', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(2);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(catalog.visibleFeatures.length).to.be.eq(1);
+          expect(features.length).to.be.not.null;
+          expect(features.length).to.be.eq(1);
+          done();
+        });
 
-      await route.features.remove(feature1);
-
-      expect(catalog.visibleFeatures.length).to.be.eq(1);
-      expect(expected.length).to.be.not.null;
-      expect(expected.length).to.be.eq(1);
+      route.features.remove(feature1).then();
     });
 
-    it('Visibility of route', () => {
+    it('Visibility of route', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(2);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(features.length).to.be.eq(0);
+          expect(catalog.visibleFeatures.length).to.be.eq(0);
+          done();
+        });
 
       route.visible = false;
-
-      expect(expected.length).to.be.eq(0);
-      expect(catalog.visibleFeatures.length).to.be.eq(0);
     });
   });
 
@@ -186,14 +162,19 @@ describe('Catalog visibleFeatures', () => {
     let route1: Route;
     let route2: Route;
     let feature11: Feature;
-    let feature12: Feature;
-    let feature21: Feature;
 
     beforeEach(async () => {
-      category = catalog.categories.byPos(0);
-      route1 = category.routes.byPos(0);
-      await category.routes.add({description: makeEmptyRichText(), id: null, open: true, summary: '', title: 'r2', visible: true});
-      route2 = category.routes.byPos(1);
+      category = catalog.categories.byPos(0)!;
+      route1 = category.routes.byPos(0)!;
+      await category.routes.add({
+        description: makeEmptyRichText(),
+        id: ID_NULL,
+        open: true,
+        summary: '',
+        title: 'r2',
+        visible: true,
+      });
+      route2 = category.routes.byPos(1)!;
 
       await route1.features.add({
         id: fid1,
@@ -225,14 +206,12 @@ describe('Catalog visibleFeatures', () => {
         visible: true,
       });
 
-      feature11 = route1.features.byPos(0);
-      feature12 = route1.features.byPos(1);
-      feature21 = route2.features.byPos(0);
+      feature11 = route1.features.byPos(0)!;
     });
 
     it('Expected fixtures', () => {
       expect(catalog.categories.length).to.be.eq(1);
-      expect(catalog.categories.byPos(0).id === category.id).to.be.true;
+      expect(catalog.categories.byPos(0)!.id === category.id).to.be.true;
       expect(category.routes.length).to.be.eq(2);
       expect(category.routes.byPos(0) === route1).to.be.true;
       expect(category.routes.byPos(1) === route2).to.be.true;
@@ -240,28 +219,31 @@ describe('Catalog visibleFeatures', () => {
       expect(route2.features.length).to.be.eq(1);
     });
 
-    it('Visibility of features', () => {
+    it('Visibility of features', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(3);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(features.length).to.be.eq(2);
+          expect(catalog.visibleFeatures.length).to.be.eq(2);
+          done();
+        });
 
       feature11.visible = false;
-      expect(expected.length).to.be.eq(2);
-      expect(catalog.visibleFeatures.length).to.be.eq(2);
     });
 
-    it('Visibility of added features', async () => {
+    it('Visibility of added features', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(3);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(catalog.visibleFeatures.length).to.be.eq(4);
+          expect(features.length).to.be.not.null;
+          expect(features.length).to.be.eq(4);
+          done();
+        });
 
-      await route2.features.add({
+      route2.features.add({
         id: fid4,
         style: testStyle,
         description: makeEmptyRichText(),
@@ -269,39 +251,34 @@ describe('Catalog visibleFeatures', () => {
         summary: '',
         title: 't4',
         visible: true,
-      });
-
-      expect(catalog.visibleFeatures.length).to.be.eq(4);
-      expect(expected.length).to.be.not.null;
-      expect(expected.length).to.be.eq(4);
+      }).then();
     });
 
-    it('Visibility of removed features', async () => {
+    it('Visibility of removed features', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(3);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(catalog.visibleFeatures.length).to.be.eq(2);
+          expect(features.length).to.be.not.null;
+          expect(features.length).to.be.eq(2);
+          done();
+        });
 
-      await route1.features.remove(feature11);
-
-      expect(catalog.visibleFeatures.length).to.be.eq(2);
-      expect(expected.length).to.be.not.null;
-      expect(expected.length).to.be.eq(2);
+      route1.features.remove(feature11).then();
     });
 
-    it('Visibility of routes', () => {
+    it('Visibility of routes', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(3);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(features.length).to.be.eq(1);
+          expect(catalog.visibleFeatures.length).to.be.eq(1);
+          done();
+        });
 
       route1.visible = false;
-      expect(expected.length).to.be.eq(1);
-      expect(catalog.visibleFeatures.length).to.be.eq(1);
     });
   });
 
@@ -312,18 +289,22 @@ describe('Catalog visibleFeatures', () => {
     let route12: Route;
     let route21: Route;
     let feature111: Feature;
-    let feature112: Feature;
-    let feature121: Feature;
-    let feature211: Feature;
 
     beforeEach(async () => {
-      category1 = catalog.categories.byPos(0);
-      await catalog.categories.add({description: [], id: null, open: false, summary: '', title: '', visible: true});
-      category2 = catalog.categories.byPos(1);
-      route11 = category1.routes.byPos(0);
-      await category1.routes.add({description: makeEmptyRichText(), id: null, open: true, summary: '', title: 'r2', visible: true});
-      route12 = category1.routes.byPos(1);
-      route21 = category2.routes.byPos(0);
+      category1 = catalog.categories.byPos(0)!;
+      await catalog.categories.add({description: [], id: ID_NULL, open: false, summary: '', title: '', visible: true});
+      category2 = catalog.categories.byPos(1)!;
+      route11 = category1.routes.byPos(0)!;
+      await category1.routes.add({
+        description: makeEmptyRichText(),
+        id: ID_NULL,
+        open: true,
+        summary: '',
+        title: 'r2',
+        visible: true,
+      });
+      route12 = category1.routes.byPos(1)!;
+      route21 = category2.routes.byPos(0)!;
 
       await route11.features.add({
         id: fid1,
@@ -365,16 +346,13 @@ describe('Catalog visibleFeatures', () => {
         visible: true,
       });
 
-      feature111 = route11.features.byPos(0);
-      feature112 = route11.features.byPos(1);
-      feature121 = route12.features.byPos(0);
-      feature211 = route21.features.byPos(0);
+      feature111 = route11.features.byPos(0)!;
     });
 
     it('Expected fixtures', () => {
       expect(catalog.categories.length).to.be.eq(2);
-      expect(catalog.categories.byPos(0).id === category1.id).to.be.true;
-      expect(catalog.categories.byPos(1).id === category2.id).to.be.true;
+      expect(catalog.categories.byPos(0)!.id === category1.id).to.be.true;
+      expect(catalog.categories.byPos(1)!.id === category2.id).to.be.true;
       expect(category1.routes.length).to.be.eq(2);
       expect(category1.routes.byPos(0) === route11).to.be.true;
       expect(category1.routes.byPos(1) === route12).to.be.true;
@@ -383,28 +361,31 @@ describe('Catalog visibleFeatures', () => {
       expect(route21.features.length).to.be.eq(1);
     });
 
-    it('Visibility of features', () => {
+    it('Visibility of features', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(4);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(features.length).to.be.eq(3);
+          expect(catalog.visibleFeatures.length).to.be.eq(3);
+          done();
+        });
 
       feature111.visible = false;
-      expect(expected.length).to.be.eq(3);
-      expect(catalog.visibleFeatures.length).to.be.eq(3);
     });
 
-    it('Visibility of added features', async () => {
+    it('Visibility of added features', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(4);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(catalog.visibleFeatures.length).to.be.eq(5);
+          expect(features.length).to.be.not.null;
+          expect(features.length).to.be.eq(5);
+          done();
+        });
 
-      await route21.features.add({
+      route21.features.add({
         id: fid5,
         style: testStyle,
         description: makeEmptyRichText(),
@@ -412,52 +393,46 @@ describe('Catalog visibleFeatures', () => {
         summary: '',
         title: 't5',
         visible: true,
-      });
-
-      expect(catalog.visibleFeatures.length).to.be.eq(5);
-      expect(expected.length).to.be.not.null;
-      expect(expected.length).to.be.eq(5);
+      }).then();
     });
 
-    it('Visibility of removed features', async () => {
+    it('Visibility of removed features', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(4);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
-
-      await route11.features.remove(feature111);
-
-      expect(catalog.visibleFeatures.length).to.be.eq(3);
-      expect(expected.length).to.be.not.null;
-      expect(expected.length).to.be.eq(3);
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(catalog.visibleFeatures.length).to.be.eq(3);
+          expect(features.length).to.be.not.null;
+          expect(features.length).to.be.eq(3);
+          done();
+        });
+      route11.features.remove(feature111).then();
     });
 
-    it('Visibility of routes', () => {
+    it('Visibility of routes', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(4);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(features.length).to.be.eq(2);
+          expect(catalog.visibleFeatures.length).to.be.eq(2);
+          done();
+        });
 
       route11.visible = false;
-      expect(expected.length).to.be.eq(2);
-      expect(catalog.visibleFeatures.length).to.be.eq(2);
     });
 
-    it('Visibility of categories', () => {
+    it('Visibility of categories', (done) => {
       expect(catalog.visibleFeatures.length).to.be.eq(4);
 
-      let expected: Feature[] = null;
-      subscription1 = catalog.visibleFeaturesObservable(false).subscribe((features) => {
-        expected = features;
-      });
+      catalog.visibleFeaturesObservable(false).pipe(first())
+        .subscribe((features) => {
+          expect(features.length).to.be.eq(1);
+          expect(catalog.visibleFeatures.length).to.be.eq(1);
+          done();
+        });
 
       category1.visible = false;
-      expect(expected.length).to.be.eq(1);
-      expect(catalog.visibleFeatures.length).to.be.eq(1);
     });
   });
 });

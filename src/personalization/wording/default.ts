@@ -493,7 +493,7 @@ const wordings: Record<string, Record<string, Record<string, string>>> = {
 export const wordingFactory = (storage: KV): Wording => {
   const r: Wording = {
     get isPersonalized(): boolean {
-      return this.currentCategoryVariant && this.currentRouteVariant;
+      return Boolean(this.currentCategoryVariant) && Boolean(this.currentRouteVariant);
     },
     observableIsPersonalized(): Observable<boolean> {
       return merge(this.observableCurrentCategoryVariant(), this.observableCurrentRouteVariant())
@@ -517,12 +517,19 @@ export const wordingFactory = (storage: KV): Wording => {
     set currentRouteVariant(variant: string | null) {
       storage.set('curroute', variant);
     },
-    observableCurrentCategoryVariant: (): Observable<string> => storage.observable<string | null>('curcat'),
-    observableCurrentRouteVariant: (): Observable<string> => storage.observable<string | null>('curroute'),
+    observableCurrentCategoryVariant: (): Observable<string | null> => merge(
+      storage.observable<string>('curcat'),
+      storage.observableDelete<string>('curcat').pipe(map(() => null)),
+    ),
+    observableCurrentRouteVariant: (): Observable<string | null> => merge(
+      storage.observable<string | null>('curroute'),
+      storage.observableDelete<string>('curroute').pipe(map(() => null)),
+    ),
     C: (key) => {
       const localized = wordings[currentLocale()] || wordings.en;
-      if (localized) {
-        const variant = localized[r.currentCategoryVariant];
+      const currentCategoryVariant = r.currentCategoryVariant;
+      if (localized && currentCategoryVariant !== null) {
+        const variant = localized[currentCategoryVariant];
         if (variant) {
           const t = variant[key];
           if (t) {
@@ -534,8 +541,9 @@ export const wordingFactory = (storage: KV): Wording => {
     },
     R: (key) => {
       const localized = wordings[currentLocale()] || wordings.en;
-      if (localized) {
-        const variant = localized[r.currentRouteVariant];
+      const currentRouteVariant = r.currentRouteVariant;
+      if (localized && currentRouteVariant !== null) {
+        const variant = localized[currentRouteVariant];
         if (variant) {
           const t = variant[key];
           if (t) {

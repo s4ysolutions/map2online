@@ -23,7 +23,8 @@ import log from '../../../../../log';
 import './style.scss';
 import {ImageElement} from '../../../../../richtext';
 
-export type ImageProps = RenderElementProps & { element: ImageElement };
+export type ImageProps =
+  Omit<RenderElementProps, 'children'> & { element: ImageElement, children? : React.ReactNode | React.ReactNode[]};
 
 const Image = (props: ImageProps): ReactElement => {
   const {attributes, element, children} = props;

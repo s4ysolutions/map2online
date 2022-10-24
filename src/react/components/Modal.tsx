@@ -16,6 +16,7 @@
 
 import * as React from 'react';
 import ReactDOM from 'react-dom';
+import {ReactNode} from 'react';
 
 const root = document.createElement('div');
 document.body.appendChild(root);
@@ -25,7 +26,7 @@ const KEY_ENTER = 0x001C;
 
 const stopPropagation = (ev: React.MouseEvent<HTMLDivElement>): void => ev && ev.stopPropagation && ev.stopPropagation();
 
-const Modal: React.FunctionComponent<{ onClose: () => void, closeOnEnter?: boolean, className?: string }> =
+const Modal: React.FunctionComponent<{ onClose: () => void, closeOnEnter?: boolean, className?: string, children: ReactNode[] | ReactNode }> =
   ({onClose: handleClose, children, className, closeOnEnter}): React.ReactElement => {
     const handleKeyPress: React.KeyboardEventHandler = (ev: React.KeyboardEvent): void => {
       if (ev.key === 'Escape' || ev.keyCode === KEY_ESC) {

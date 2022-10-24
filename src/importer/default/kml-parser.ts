@@ -23,9 +23,9 @@ import log from '../../log';
 import {degreesToMeters} from '../../lib/projection';
 import {newImportedFolder} from '../new-folder';
 import {hdec} from '../../lib/entities';
-import {makeId} from '../../lib/id';
+import {ID_NULL, makeId} from '../../lib/id';
 import {
-  BaloonStyle,
+  BalloonStyle,
   IconStyle,
   isIconStyle,
   isLineStyle,
@@ -66,8 +66,8 @@ enum ParseState {
 
 let extendedData:Record<string, string | null> = {};
 const currentExtendedData = {
-  name: null as string,
-  value: null as string,
+  name: null as string | null,
+  value: null as string | null,
 };
 
 let cdata = "";
@@ -120,14 +120,10 @@ const nl = `
 `;
 
 const updateStyles = (rootFolder: ImportedFolder, styles: Record<string, Style>, defaultStyle: Style) => {
-  for (const featurep of rootFolder.features) {
-    const feature = featurep as FeaturePropsWithStyleId;
-    if (feature.styleId == null) {
-      feature.style = defaultStyle;
-    } else {
-      feature.style = styles[feature.styleId] || defaultStyle
-    }
-    delete feature.styleId
+  for (const importedFeature of rootFolder.importedFeatures) {
+    const {styleId, ...props} = importedFeature;
+    const style = (styleId == null) ? defaultStyle : styles[styleId] || defaultStyle
+    rootFolder.features.push({style, ...props})
   }
   for (const folder of rootFolder.folders) {
     updateStyles(folder, styles, defaultStyle)
@@ -144,12 +140,12 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
   const parser = sax.parser(true, {normalize: true, trim: true, xmlns: true});
   const parseStateStack: ParseState[] = [ParseState.NONE];
   const lastState = () => parseStateStack[parseStateStack.length - 1];
-  let currentFeature = null as FeaturePropsWithStyleId;
+  let currentImportedFeature = null as FeaturePropsWithStyleId | null;
 
-  let currentStyle: Style & {id: string}= null;
+  let currentStyle: Style & {id: string} | null = null;
   const styles: Record<string, Style> = {}; // global styles
 
-  let currentStyleItem: BaloonStyle | IconStyle | LabelStyle | LineStyle | ListStyle | PolyStyle = null;
+  let currentStyleItem: BalloonStyle | IconStyle | LabelStyle | LineStyle | ListStyle | PolyStyle | null = null;
 
   return new Promise<ImportedFolder>((rs, rj) => {
     parser.onopentag = (node) => {
@@ -172,17 +168,17 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           currentExtendedData.name = null;
           parseStateStack.push(ParseState.PLACEMARK);
           log.debug('parseStateStack.push(ParseState.FEATURE)', parseStateStack);
-          currentFeature = {
+          const initFeature : FeaturePropsWithStyleId = {
             styleId: makeId(),
-            style: null,
             description: makeEmptyRichText(),
-            geometry: null,
-            id: null, // TODO: handle duplicate parseId(node),
+            geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
+            id: ID_NULL, // TODO: handle duplicate parseId(node),
             summary: '',
             title: '',
             visible: true,
           };
-          lastFolder().features.push(currentFeature);
+          currentImportedFeature = initFeature;
+          lastFolder().importedFeatures.push(initFeature);
           break;
         }
         case 'NAME':
@@ -209,27 +205,32 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           break;
         case 'STYLE':
           if (lastState() === ParseState.PLACEMARK) {
-            currentStyle = {id: currentFeature.styleId};
-            parseStateStack.push(ParseState.STYLE);
+            if (currentImportedFeature !== null) {
+              currentStyle = {id: currentImportedFeature.styleId};
+              parseStateStack.push(ParseState.STYLE);
+            }
             log.debug('parseStateStack.push(ParseState.PLACEMARK_STYLE)', parseStateStack);
           } else {
-            currentStyle = {id: parseId(node)};
-            styles[currentStyle.id] = currentStyle;
+            const styleId = parseId(node)
+            if (styleId !== null) {
+              currentStyle = {id: styleId};
+              styles[currentStyle.id] = currentStyle;
+            }
             parseStateStack.push(ParseState.STYLE);
             log.debug('parseStateStack.push(ParseState.STYLE)', parseStateStack);
           }
           break;
         case 'ICONSTYLE':
           if (currentStyle !== null) {
-            currentStyle.iconStyle = {...map2styles.defaultStyle.iconStyle}
+            currentStyle.iconStyle = {...map2styles.defaultStyle.iconStyle!}
+            currentStyleItem = currentStyle.iconStyle;
           }
-          currentStyleItem = currentStyle.iconStyle;
           parseStateStack.push(ParseState.STYLE_ICON);
           log.debug('parseStateStack.push(ParseState.STYLE_ICON)', parseStateStack);
           break;
         case 'LINESTYLE':
           if (currentStyle !== null) {
-            currentStyle.lineStyle = {...map2styles.defaultStyle.lineStyle};
+            currentStyle.lineStyle = {...map2styles.defaultStyle.lineStyle!};
             currentStyleItem = currentStyle.lineStyle;
           }
           parseStateStack.push(ParseState.STYLE_LINE);
@@ -508,27 +509,35 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           lastFolder().visible = text.trim().toUpperCase() != 'FALSE';
           break;
         case ParseState.PLACEMARK_NAME:
-          currentFeature.title = text.trim();
+          if (currentImportedFeature !== null) {
+            currentImportedFeature.title = text.trim();
+          }
           break;
         case ParseState.VALUE:
           currentExtendedData.value = text.trim();
           break;
         case ParseState.PLACEMARK_DESCRIPTION:
-          currentFeature.description = text.trim().convertToRichText();
+          if (currentImportedFeature !== null) {
+            currentImportedFeature.description = text.trim().convertToRichText();
+          }
           break;
         case ParseState.PLACEMARK_VISIBILITY:
-          currentFeature.visible = text.trim().toUpperCase() != 'FALSE';
+          if (currentImportedFeature !== null) {
+            currentImportedFeature.visible = text.trim().toUpperCase() != 'FALSE';
+          }
           break;
         case ParseState.COORDINATES: {
-          const coordinates = parseKMLCoordinates(text.trim());
-          if (coordinates.length === 1) {
-            currentFeature.geometry = {
-              coordinate: coordinates[0],
-            };
-          } else {
-            currentFeature.geometry = {
-              coordinates,
-            };
+          if (currentImportedFeature !== null) {
+            const coordinates = parseKMLCoordinates(text.trim());
+            if (coordinates.length === 1) {
+              currentImportedFeature.geometry = {
+                coordinate: coordinates[0],
+              };
+            } else {
+              currentImportedFeature.geometry = {
+                coordinates,
+              };
+            }
           }
           break;
         }
@@ -546,9 +555,9 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           break;
         }
         case ParseState.STYLE_URL: {
-          if (currentFeature) {
+          if (currentImportedFeature !== null) {
             const urlhash = text.trim();
-            currentFeature.styleId = urlhash.length > 0 && urlhash[0] === '#' ? urlhash.slice(1) : urlhash;
+            currentImportedFeature.styleId = urlhash.length > 0 && urlhash[0] === '#' ? urlhash.slice(1) : urlhash;
           }
           break;
         }
@@ -586,10 +595,14 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           lastFolder().description = cdata.trim().convertToRichText();
           break;
         case ParseState.PLACEMARK_NAME:
-          currentFeature.title = cdata.trim();
+          if (currentImportedFeature !== null) {
+            currentImportedFeature.title = cdata.trim();
+          }
           break;
         case ParseState.PLACEMARK_DESCRIPTION:
-          currentFeature.description = cdata.trim().convertToRichText();
+          if (currentImportedFeature !== null) {
+            currentImportedFeature.description = cdata.trim().convertToRichText();
+          }
           break;
       }
     };
@@ -598,12 +611,12 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
       log.debug('end');
       log.debug('resolve');
 
-      const normilizedStyles: Record<string, Style> = Object.entries(styles).reduce((acc, [styleId, style]) => {
+      const normalizedStyles: Record<string, Style> = Object.entries(styles).reduce((acc, [styleId, style]) => {
         const map2style = map2styles.findEq(style);
         return {...acc, [styleId]: map2style || style}
       }, {});
 
-      updateStyles(rootFolder, normilizedStyles, map2styles.defaultStyle);
+      updateStyles(rootFolder, normalizedStyles, map2styles.defaultStyle);
       rs(rootFolder);
     };
     parser.onerror = (e) => {
@@ -620,7 +633,7 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
 const parseKMLFile = (kml: File, map2styles: Map2Styles): Promise<ImportedFolder> => {
   const reader = new FileReader();
   return new Promise<string>((rs) => {
-    reader.onload = e => rs(e.target.result as string);
+    reader.onload = e => rs(e.target!.result as string);
     reader.readAsText(kml);
   }).then(content => parseKMLString(kml, content, map2styles));
 };
@@ -634,7 +647,7 @@ export const kmlParserFactory = (map2styles: Map2Styles): {
 
     const status: ParsingStatus = {
       rootFolder: newImportedFolder(0, null),
-      parsingFile: null as File,
+      parsingFile: null as File | null,
       queuedFiles: [] as File[],
     };
 

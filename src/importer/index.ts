@@ -15,24 +15,25 @@
  */
 
 import {Observable} from 'rxjs';
-import {FeatureProps} from '../catalog';
+import {FeatureProps, FeaturePropsWithStyleId} from '../catalog';
 import {RichText} from '../richtext';
 
 export interface ImportedFolder {
   id?: string;
-  features: FeatureProps[];
+  importedFeatures: Array<FeaturePropsWithStyleId>;
+  features: Array<FeatureProps>;
   folders: ImportedFolder[];
   name: string;
   description: RichText;
   open: boolean;
   visible: boolean;
-  parent: ImportedFolder;
+  parent: ImportedFolder | null;
   level: number;
 }
 
 export interface ParsingStatus {
   queuedFiles: File[];
-  parsingFile: File;
+  parsingFile: File | null;
   rootFolder: ImportedFolder;
 }
 

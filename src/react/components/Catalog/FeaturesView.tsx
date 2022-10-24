@@ -16,17 +16,18 @@
 
 import * as React from 'react';
 import {useCallback} from 'react';
-import {DragDropContext, Draggable, DraggingStyle, Droppable, NotDraggingStyle} from 'react-beautiful-dnd';
+import {DragDropContext, Draggable, DraggingStyle, DropResult, Droppable, NotDraggingStyle} from 'react-beautiful-dnd';
 import log from '../../../log';
 import {getCatalogUI, getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import FeatureView from './FeatureView';
-import {FeatureProps, Route, isPoint} from '../../../catalog';
+import {FeatureProps, Features, Route, isPoint} from '../../../catalog';
 import FeatureEdit from './FeatureEdit';
 import ConfirmDialog from '../Confirm';
 import T from '../../../l10n';
 import {filter, map} from 'rxjs/operators';
 import {makeEmptyRichText} from '../../../richtext';
+import {ID_NULL} from '../../../lib/id';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -59,15 +60,19 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
   const features = useObservable(
     route.features.observable().pipe(
       filter(f => Boolean(f)),
-      map(f => Array.from(f)),
+      map(f => Array.from(f as Features)),
     ),
     Array.from(route.features),
   );
   const featureEdit = useObservable(catalogUI.featureEditObservable(), catalogUI.featureEdit);
   const featureDelete = useObservable(catalogUI.featureDeleteObservable(), catalogUI.featureDelete);
   const handleDragEnd = useCallback(
-    ({source: {index: indexS}, destination: {index: indexD}}): void => {
-      route.features.reorder(indexS, indexD);
+    (result: DropResult): void => {
+      const indexS = result.source.index;
+      const indexD = result.destination?.index;
+      if (indexD !== undefined) {
+        route.features.reorder(indexS, indexD);
+      }
     },
     [route.features],
   );
@@ -78,7 +83,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
       geometry: tools.isPoint
         ? {coordinate: {lat: 0, lon: 0, alt: 0}}
         : {coordinates: [{lat: 0, lon: 0, alt: 0}, {lat: 0, lon: 0, alt: 0}]},
-      id: null,
+      id: ID_NULL,
       summary: '',
       title: '',
       visible: true,
@@ -102,7 +107,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
                 {...provided.dragHandleProps}
                 style={getDraggingStyle(
                   snapshot.isDragging,
-                  provided.draggableProps.style,
+                  provided.draggableProps.style || {},
                 )}
               >
                 <FeatureView feature={item} index={index} route={route} />
@@ -116,9 +121,9 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
       {T`Add`}
     </button >
 
-    {featureEdit && <FeatureEdit feature={featureEdit} />}
+    {featureEdit ? <FeatureEdit feature={featureEdit} /> : null}
 
-    {featureDelete && <ConfirmDialog
+    {featureDelete ? <ConfirmDialog
       confirm={T`Yes, delete the feature`}
       message={T`The feature will be deleted, are you sure?`}
       onCancel={catalogUI.endDeleteFeature}
@@ -128,7 +133,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
         route.features.remove(c.feature);
       }}
       title={isPoint(featureDelete.feature.geometry) ? T`Delete point` : T`Delete line`}
-    />}
+    /> : null}
   </div >;
 };
 

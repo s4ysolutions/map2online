@@ -24,9 +24,11 @@ import {coordinate2ol, coordinates2ol} from './coordinates';
 import {Coordinate as OlCoordinate} from 'ol/coordinate';
 import {Style as OlStyle} from 'ol/style';
 import {Geometry as OlGeometry} from 'ol/geom';
-import {IconStyle, Style} from '../../../../style';
+import {IconStyle, Style, StyleItem} from '../../../../style';
+import {getMap2Styles} from '../../../../di-default';
 
 const cache: Record<ID, OlFeature<OlGeometry>> = {};
+const {iconStyle: defaultIconStyle, lineStyle: defaultLineStyle} = getMap2Styles().defaultStyle;
 
 export const olGeometryFactory = (geometry: Point | LineString): OlPoint | OlLineString =>
   isPoint(geometry)
@@ -49,7 +51,10 @@ export const olFeatureFactory = (feature: Feature): OlFeature<OlGeometry> => {
   });
   cached.setId(feature.id);
   //cached.set('color', feature.color);
-  cached.setStyle(getOlStyle(isPoint(feature.geometry) ? feature.style.iconStyle : feature.style.lineStyle, feature.title));
+  const styleItem: StyleItem = isPoint(feature.geometry)
+    ?feature.style.iconStyle || defaultIconStyle
+    : feature.style.lineStyle || defaultLineStyle;
+  cached.setStyle(getOlStyle(styleItem, feature.title));
 
   cache[feature.id] = cached;
   return cached;
@@ -70,7 +75,7 @@ export const setOlFeatureCoordinates = (olFeature: OlFeature<OlGeometry>, featur
 const getOlFeatureStyle = (olFeature: OlFeature<OlGeometry>/*, styleLike?: Style | Style[]*/): OlStyle | void => {
   const slike = /* styleLike || */olFeature.getStyle();
   // if (Object.prototype.hasOwnProperty.call(slike, 'getText')) {
-  if ('getText' in slike) {
+  if (slike && 'getText' in slike) {
     return slike as OlStyle;
   }
   if (Array.isArray(slike)) {
@@ -106,9 +111,12 @@ export const setOlFeatureTitle = (olFeature: OlFeature<OlGeometry>, title: strin
 };
 
 export const setOlFeatureStyle = (olFeature: OlFeature<OlGeometry>, feature: Feature): void => {
+  const styleItem: StyleItem = isPoint(feature.geometry)
+    ?feature.style.iconStyle || defaultIconStyle
+    : feature.style.lineStyle || defaultLineStyle;
   olFeature.setStyle(
     createOlStyle(
-      isPoint(feature.geometry) ? feature.style.iconStyle : feature.style.lineStyle,
+      styleItem,
       feature.title
     )
   );

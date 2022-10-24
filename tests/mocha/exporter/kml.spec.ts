@@ -36,6 +36,7 @@ import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
 import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
 import {CatalogDefault} from '../../../src/catalog/default/catalog';
 import {makeEmptyRichText} from '../../../src/richtext';
+import {ID_NULL} from '../../../src/lib/id';
 
 const TEST_STYLE_NO = 2;
 
@@ -62,7 +63,7 @@ describe('KML Exporter', () => {
     const fid1 = 'fid1';
     const testStyle = map2styles.styles[TEST_STYLE_NO];
 
-    await catalog.categories.byPos(0).routes.byPos(0).features.add({
+    await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
       id: fid1,
       style: testStyle,
       description: makeEmptyRichText(),
@@ -72,9 +73,9 @@ describe('KML Exporter', () => {
       visible: true,
     });
 
-    const testf = catalog.featureById(fid1);
+    const testf = catalog.featureById(fid1)!;
     expect(testf.style.id).to.be.eq(testStyle.id);
-    expect(testf.style.iconStyle.icon.toString().indexOf('fill="%23f58231ff"')).to.be.greaterThan(0);
+    expect(testf.style.iconStyle!.icon.toString().indexOf('fill="%23f58231ff"')).to.be.greaterThan(0);
     const kml = getCategoriesKML(Array.from(catalog.categories));
     expect(kml.indexOf('fill="%23f58231ff"')).to.be.greaterThan(0);
     const root: ImportedFolder = await parseKMLString({name: 'testStyleFile'} as File, kml, map2styles);
@@ -87,9 +88,9 @@ describe('KML Exporter', () => {
     const {features} = routes[0];
     expect(features.length).to.be.eq(1);
     const feature = features[0];
-    expect(feature.id).to.be.null; // eq(fid1);
+    expect(feature.id).to.be.eq(ID_NULL); // eq(fid1);
     expect(feature.style.id).to.be.eq(testStyle.id);
-    expect(feature.style.iconStyle.icon.toString().indexOf('fill="%23f58231ff"')).to.be.greaterThan(0);
+    expect(feature.style.iconStyle!.icon.toString().indexOf('fill="%23f58231ff"')).to.be.greaterThan(0);
     const map2style = map2styles.findEq(feature.style);
     expect(map2style).to.be.not.null;
   });

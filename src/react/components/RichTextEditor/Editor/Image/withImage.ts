@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import {BaseElement} from 'slate';
 import {ReactEditor} from 'slate-react';
 import {insertImage, isImageUrl} from './lib';
+import {RichTextElement} from '../../../../../richtext';
 
 const withImages = (editor: ReactEditor): ReactEditor => {
   const {insertData, isVoid} = editor;
 
-  editor.isVoid = (element: BaseElement & { type: string }) =>
-    element.type === 'image' ? true : isVoid(element)
-  ;
+  editor.isVoid = (element): boolean =>
+    RichTextElement.isElement(element) && element.type === 'image' || isVoid(element);
 
   editor.insertData = (data: DataTransfer) => {
     const text = data.getData('text/plain');
@@ -38,7 +37,12 @@ const withImages = (editor: ReactEditor): ReactEditor => {
         if (mime === 'image') {
           reader.addEventListener('load', () => {
             const url = reader.result;
-            insertImage(editor, url.toString());
+            if (url === null) {
+              // eslint-disable-next-line no-alert
+              alert('Result is null');
+            } else {
+              insertImage(editor, url.toString());
+            }
           });
 
           reader.readAsDataURL(file);

@@ -17,7 +17,7 @@
 import * as React from 'react';
 import TileLayer from 'ol/layer/Tile';
 import log from '../../../log';
-import {getMapDefinition, isOlMapDefinition} from '../../../map-sources/definitions';
+import {getMapDefinition} from '../../../map-sources/definitions';
 import useObservable from '../../hooks/useObservable';
 import {getBaseLayer} from '../../../di-default';
 import olMapContext from './context/map';
@@ -39,14 +39,17 @@ const baseLayer = getBaseLayer();
  *  return md.olSourceFactory();
  *},
  */
-const BaseLayer: React.FunctionComponent = (): React.ReactElement => {
+const BaseLayer: React.FunctionComponent = (): React.ReactElement | null => {
   const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
   const map = React.useContext(olMapContext);
 
+  if (map === null) {
+    return null;
+  }
   // const layerRef = React.useRef<Layer>(null);
   const md = getMapDefinition(baseLayerName);
   let layer = null;
-  if (md !== null && isOlMapDefinition(md)) {
+  if (md && md.olSourceFactory) {
     // TODO: assuming TileSource
     layer = new TileLayer({source: md.olSourceFactory() as TileSource});
   }

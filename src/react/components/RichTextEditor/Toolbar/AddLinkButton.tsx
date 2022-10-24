@@ -15,7 +15,7 @@
  */
 
 import React, {MouseEvent, ReactElement} from 'react';
-import {useSelected, useSlate} from 'slate-react';
+import {useSlate} from 'slate-react';
 import Button from './Button';
 import log from '../../../../log';
 import Icon from '../Icon';
@@ -30,14 +30,18 @@ const AddLinkButton = (): ReactElement => {
       active={active}
       onMouseDown={(event: MouseEvent) => {
         event.preventDefault();
-        const url = window.prompt('Enter the URL of the link:').trim();
-        if (!url) return;
-        insertLink(editor, url)
+        // eslint-disable-next-line no-alert
+        const urlInput = window.prompt('Enter the URL of the link:');
+        if (!urlInput) {
+          return;
+        }
+        const url = urlInput.trim();
+        insertLink(editor, url);
       }}
     >
-      <Icon symbol="link"/>
+      <Icon symbol="link" />
     </Button>
-  )
+  );
 };
 
 export default AddLinkButton;

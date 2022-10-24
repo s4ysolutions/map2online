@@ -23,41 +23,43 @@ import {RichTextElement, RichTextElementType} from '../../../../richtext';
 import {RenderElementProps} from 'slate-react';
 import Link, {LinkProps} from './link';
 
-type ElementProps = RenderElementProps & { element: RichTextElement};
-const Element = (props: ElementProps): ReactElement => {
+const Element = (props: RenderElementProps): ReactElement | null => {
   const { attributes, children, element } = props;
   log.render('RichText Element', {attributes, children, element});
+  if (!RichTextElement.isElement(element)) {
+    return null;
+  }
   switch (element.type) {
     case RichTextElementType.BlockQuote:
       // eslint-disable-next-line react/react-in-jsx-scope
       return <blockquote {...attributes}>
         {children}
       </blockquote>;
-    case RichTextElementType.BulletedList: //'bulleted-list':
+    case RichTextElementType.BulletedList: // 'bulleted-list':
       return <ul {...attributes}>
         {children}
       </ul>;
-    case RichTextElementType.HeadingOne: //'heading-one':
+    case RichTextElementType.HeadingOne: // 'heading-one':
       return <h1 {...attributes}>
         {children}
       </h1>;
-    case RichTextElementType.HeadingTwo: //'heading-two':
+    case RichTextElementType.HeadingTwo: // 'heading-two':
       return <h2 {...attributes}>
         {children}
       </h2>;
-    case RichTextElementType.ListItem: //'list-item':
+    case RichTextElementType.ListItem: // 'list-item':
       return <li {...attributes}>
         {children}
       </li>;
-    case RichTextElementType.NumberedList: //'numbered-list':
+    case RichTextElementType.NumberedList: // 'numbered-list':
       return <ol {...attributes}>
         {children}
       </ol>;
-    case RichTextElementType.Image: { //'image': {
+    case RichTextElementType.Image: { // 'image': {
       const imageProps = props as ImageProps;
       return <Image {...imageProps} />;
     }
-    case RichTextElementType.Link: { //'link': {
+    case RichTextElementType.Link: { // 'link': {
       const linkProps = props as LinkProps;
       return <Link {...linkProps} />;
     }

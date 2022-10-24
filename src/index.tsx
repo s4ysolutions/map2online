@@ -15,8 +15,7 @@
  */
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-
+import {createRoot} from 'react-dom/client';
 import 'reset-css';
 import 'normalize.css';
 import 'styles.scss';
@@ -24,8 +23,6 @@ import 'modal.scss';
 import 'form.scss';
 import 'typo.scss';
 import 'theme-yellow-black.scss';
-
-import amplitude from 'amplitude-js';
 
 import './extensions/array+serializePlainText';
 import './extensions/array+serializeRichText';
@@ -43,10 +40,7 @@ window.addEventListener('drop', (e) => {
   e.preventDefault();
 }, false);
 
-amplitude.getInstance().init('c742fb5cda6af23078ebe5655712b658');
-amplitude.getInstance().logEvent('visit');
-
-ReactDOM.render(
-  <WaitInitialization />,
-  document.getElementById('reactMount'),
-);
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const container = document.getElementById('reactMount')!;
+const root = createRoot(container);
+root.render(<WaitInitialization />);

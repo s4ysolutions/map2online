@@ -30,7 +30,7 @@ const isBlockActive = (editor: BaseEditor, format: string) => {
 
   const [match] = Array.from(Editor.nodes(editor, {
     at: Editor.unhangRange(editor, selection),
-    match: (n: RichTextElement): boolean => !Editor.isEditor(n) && RichTextElement.isElement(n) && n.type === format,
+    match: (node: Node): boolean => !Editor.isEditor(node) && RichTextElement.isElement(node) && node.type === format,
   }));
   log.d('log toolbar isBlockActive', {match});
 
@@ -43,10 +43,10 @@ const toggleBlock = (editor: Editor, format: string) => {
   const isList = LIST_TYPES.includes(format);
 
   Transforms.unwrapNodes(editor, {
-    match: (n: RichTextElement): boolean =>
-      !Editor.isEditor(n) &&
-      SlateElement.isElement(n) &&
-      LIST_TYPES.includes(n.type) || n.type === RichTextElementType.BlockQuote,
+    match: (node: Node): boolean =>
+      !Editor.isEditor(node) &&
+      RichTextElement.isElement(node) &&
+      (LIST_TYPES.includes(node.type) || node.type === RichTextElementType.BlockQuote),
     split: true,
   });
 

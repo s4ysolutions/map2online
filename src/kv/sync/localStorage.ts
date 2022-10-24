@@ -15,29 +15,31 @@
  */
 
 import {KV} from './index';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import log from '../../log';
 
 interface LocalStorage {
   subject: Subject<{ key: string; value: unknown }>
+  subjectDelete: Subject<{ key: string; value: unknown }>
 }
 
 const localStorageFactory = (): KV & LocalStorage => ({
-  get <T>(key: string, defaultValue?: T, forcedJSON?: string) {
+  get<T>(key: string, defaultValue: T, forcedJSON?: string): T {
     if (forcedJSON) {
       return JSON.parse(forcedJSON);
     }
     const serialized = window.localStorage.getItem(key);
-    return serialized ? JSON.parse(serialized) : defaultValue;
+    return serialized ? JSON.parse(serialized) as T : defaultValue;
   },
   subject: new Subject<{ key: string, value: unknown }>(),
-  set <T>(key: string, value: T) {
+  subjectDelete: new Subject<{ key: string, value: unknown }>(),
+  set<T>(key: string, value: T) {
     log.debug(`localStorage set ${key}`, value);
     if (value === undefined) {
       window.localStorage.removeItem(key);
     } else {
-      const valueToStore = value instanceof Function ? value(this.get(key)) : value;
+      const valueToStore = value instanceof Function ? value(this.get(key, null)) : value;
       const json = JSON.stringify(valueToStore);
       try {
         window.localStorage.setItem(
@@ -50,18 +52,28 @@ const localStorageFactory = (): KV & LocalStorage => ({
     }
     this.subject.next({key, value});
   },
-  delete <T>(key: string) {
+  delete<T>(key: string): T | null {
     log.debug(`localStorage remove ${key}`);
+    const deleted = this.get<T | undefined>(key, undefined);
     window.localStorage.removeItem(key);
-    this.subject.next({key, value: null});
+    if (deleted === undefined) {
+      this.subjectDelete.next({key, value: null});
+      return null;
+    }
+    this.subjectDelete.next({key, value: deleted});
+    return deleted;
   },
-  observable <T>(key?: string) {
-    return key
-      ? this.subject.pipe(
-        filter<{ key: string; value: unknown }>((r): boolean => r.key === key),
-        map<{ key: string; value: unknown }, unknown>((r) => r.value),
-      )
-      : this.subject;
+  observable<T>(key: string): Observable<T> {
+    return this.subject.pipe(
+      filter<{ key: string; value: unknown }>((r): boolean => r.key === key),
+      map<{ key: string; value: unknown }, T>((r) => r.value as T),
+    );
+  },
+  observableDelete<T>(key: string): Observable<T | null> {
+    return this.subjectDelete.pipe(
+      filter<{ key: string; value: unknown }>((r): boolean => r.key === key),
+      map<{ key: string; value: unknown }, T>((r) => r.value as T),
+    );
   },
   hasKey: (key: string): boolean => window.localStorage.getItem(key) !== null,
 });

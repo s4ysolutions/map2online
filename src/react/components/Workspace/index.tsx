@@ -39,9 +39,8 @@ const wording = getWording();
 const workspace = getWorkspace();
 
 const Workspace = (): React.ReactElement => {
-  // const ref = React.useRef<HTMLDivElement | null>(null);
   const [el, setEl] = useState<HTMLDivElement | null>(null);
-  const onRefSet = useCallback(ref => {
+  const onRefSet = useCallback((ref: HTMLDivElement) => {
     setEl(ref);
   }, [setEl]);
   const {height, width} = useComponentSize(el);
@@ -70,13 +69,13 @@ const Workspace = (): React.ReactElement => {
         <FloatPanel parentHeight={height} parentWidth={width} />
       </div >
 
-      {importUIVisible && <Import />}
+      {importUIVisible ? <Import /> : null}
 
-      {personalizationVisible && <Wording />}
+      {personalizationVisible ? <Wording /> : null}
 
-      {aboutVisible && <About />}
+      {aboutVisible ? <About /> : null}
 
-      {spinner && <Spinner />}
+      {spinner ? <Spinner /> : null}
     </React.Fragment >
     : <Wording />;
 };

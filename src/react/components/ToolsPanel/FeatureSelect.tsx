@@ -17,13 +17,15 @@
 import * as React from 'react';
 import Line from 'react/components/Svg/Line';
 import Pin from 'react/components/Svg/Pin';
-import {getTools} from '../../../di-default';
+import {getMap2Styles, getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {SelectedTool} from '../../../ui/tools';
 import log from '../../../log';
 import {Style} from '../../../style';
 
 const tools = getTools();
+const map2styles = getMap2Styles();
+const defaultStyles = map2styles.defaultStyle;
 
 interface Props {
   style: Style;
@@ -39,7 +41,9 @@ const FeatureSelect: React.FunctionComponent<Props> = ({style}): React.ReactElem
     className={`select ${on ? 'on' : 'off'}`}
     onClick={(): void => tools.selectStyle(style)}
   >
-    {tool === SelectedTool.Point ? <Pin color={style.iconStyle.color} /> : <Line color={style.lineStyle.color} />}
+    {tool === SelectedTool.Point
+      ? <Pin color={style.iconStyle?.color || defaultStyles.iconStyle.color} />
+      : <Line color={style.lineStyle?.color || defaultStyles.lineStyle.color} />}
   </div >;
 };
 

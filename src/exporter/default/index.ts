@@ -18,6 +18,8 @@ import {Exporter} from '../index';
 import {Category, Route} from '../../catalog';
 import {getCategoriesKML, getRoutesKML} from '../lib/kml';
 import {KV} from '../../kv/sync';
+import {merge} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 const MIME_KML = 'application/vnd.GoogleMap-earth.kml+xml';
 
@@ -36,7 +38,10 @@ export const exporterFactory = (storage: KV): Exporter => ({
   set onlyVisible(value) {
     storage.set('expov', value);
   },
-  onlyVisibleObservable: () => storage.observable<boolean>('expov'),
+  onlyVisibleObservable: () => merge(
+    storage.observable<boolean>('expov'),
+    storage.observableDelete('expov').pipe(map(() => false)),
+  ),
   exportRoutesKML: (routes: Route[], category?: Category): void => {
     download((category ? `${category.title}-` : '') + (routes.length === 1 ? `${routes[0].title}.kml` : category ? `${category.title}.kml` : `map2online-${Date.now()}.kml`), getRoutesKML(routes, category), MIME_KML);
   },

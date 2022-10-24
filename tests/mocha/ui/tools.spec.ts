@@ -22,7 +22,7 @@ import {map2StylesFactory} from '../../../src/style/default/styles';
 import {Map2Styles, Style} from '../../../src/style';
 import {SelectedTool, Tools} from '../../../src/ui/tools';
 import toolsFactory from '../../../src/ui/tools/default';
-import {Subscription} from 'rxjs';
+import {first} from 'rxjs/operators';
 
 
 describe('Default map2 styles', () => {
@@ -32,9 +32,6 @@ describe('Default map2 styles', () => {
   let map2DefaultStyle: Style;
   let map2TestStyle: Style;
   let tools: Tools;
-  let subscription1: Subscription;
-  let subscription2: Subscription;
-  let subscription3: Subscription;
 
   beforeEach(() => {
     memoryStorage = memoryStorageFactory();
@@ -43,21 +40,6 @@ describe('Default map2 styles', () => {
     map2DefaultStyle = map2styles.defaultStyle;
     map2TestStyle = map2styles.styles[2];
     tools = toolsFactory(storage, map2styles);
-  });
-
-  afterEach(() => {
-    if (subscription1) {
-      subscription1.unsubscribe();
-      subscription1 = null;
-    }
-    if (subscription2) {
-      subscription2.unsubscribe();
-      subscription2 = null;
-    }
-    if (subscription3) {
-      subscription3.unsubscribe();
-      subscription3 = null;
-    }
   });
 
   it('default tools', () => {
@@ -78,75 +60,76 @@ describe('Default map2 styles', () => {
     expect(tools.selectedTool).to.be.eq(SelectedTool.Point);
   });
 
-  it('observable tools switch to line', () => {
+  it('observable tools switch to line', async () => {
     expect(tools.selectedTool).to.be.eq(SelectedTool.Point);
-    let selectedTool: SelectedTool = null;
-    subscription1 = tools.selectedToolObservable().subscribe((t) => {
-      expect(t).to.be.eq(SelectedTool.Line);
-      selectedTool = t;
+    const promise = new Promise<SelectedTool>(rs => {
+      tools.selectedToolObservable().pipe(first())
+        .subscribe((selectedTool) => {
+          expect(selectedTool).to.be.eq(SelectedTool.Line);
+          expect(selectedTool).to.be.eq(SelectedTool.Line);
+          rs(selectedTool);
+        });
     });
     expect(tools.selectedTool).to.be.eq(SelectedTool.Point);
     tools.selectLine();
-    expect(selectedTool).to.be.eq(SelectedTool.Line);
+    await promise;
     expect(tools.selectedTool).to.be.eq(SelectedTool.Line);
   });
 
-  it('observable tools switch to point', () => {
+  it('observable tools switch to point', (done) => {
     expect(tools.selectedTool).to.be.eq(SelectedTool.Point);
     tools.selectLine();
-    let selectedTool: SelectedTool = null;
-    subscription1 = tools.selectedToolObservable().subscribe((t) => {
-      expect(t).to.be.eq(SelectedTool.Point);
-      selectedTool = t;
-    });
+    tools.selectedToolObservable().pipe(first())
+      .subscribe((selectedTool) => {
+        expect(selectedTool).to.be.eq(SelectedTool.Point);
+        expect(selectedTool).to.be.eq(SelectedTool.Point);
+        expect(tools.selectedTool).to.be.eq(SelectedTool.Point);
+        done();
+      });
+
     expect(tools.selectedTool).to.be.eq(SelectedTool.Line);
     tools.selectPoint();
-    expect(selectedTool).to.be.eq(SelectedTool.Point);
-    expect(tools.selectedTool).to.be.eq(SelectedTool.Point);
   });
 
-  it('switch point style', () => {
-    let style: Style = null;
-    subscription1 = tools.pointStyleObservable().subscribe((t) => {
-      expect(t.id).to.be.eq(map2TestStyle.id);
-      style = t;
-    });
+  it('switch point style', (done) => {
+    tools.pointStyleObservable().pipe(first())
+      .subscribe((style) => {
+        expect(style.id).to.be.eq(map2TestStyle.id);
+        expect(tools.selectedTool).to.be.eq(SelectedTool.Point);
+        expect(memoryStorage.mem.tsp).to.be.eq(JSON.stringify(map2TestStyle.iconStyle!.color));
+        expect(map2styles.byColorId(JSON.parse(memoryStorage.mem.tsp))!.id).to.be.eq(map2TestStyle.id);
+        expect(tools.pointStyle.id).to.be.eq(map2TestStyle.id);
+        expect(tools.lineStyle.id).to.be.eq(map2DefaultStyle.id);
+        done();
+      });
 
     expect(tools.selectedTool).to.be.eq(SelectedTool.Point);
     expect(tools.pointStyle.id).to.be.eq(map2DefaultStyle.id);
     expect(tools.lineStyle.id).to.be.eq(map2DefaultStyle.id);
 
     tools.selectStyle(map2TestStyle);
-
-    expect(tools.selectedTool).to.be.eq(SelectedTool.Point);
-    expect(style.id).to.be.eq(map2TestStyle.id);
-    expect(memoryStorage.mem.tsp).to.be.eq(JSON.stringify(map2TestStyle.iconStyle.color));
-    expect(map2styles.byColor(JSON.parse(memoryStorage.mem.tsp)).id).to.be.eq(map2TestStyle.id);
-    expect(tools.pointStyle.id).to.be.eq(map2TestStyle.id);
-    expect(tools.lineStyle.id).to.be.eq(map2DefaultStyle.id);
   });
 
-  it('switch line style', () => {
+  it('switch line style', (done) => {
     tools.selectLine();
 
-    let style: Style = null;
-    subscription1 = tools.lineStyleObservable().subscribe((t) => {
-      expect(t.id).to.be.eq(map2TestStyle.id);
-      style = t;
-    });
+    tools.lineStyleObservable().pipe(first())
+      .subscribe((style) => {
+        expect(style.id).to.be.eq(map2TestStyle.id);
+        expect(tools.selectedTool).to.be.eq(SelectedTool.Line);
+        expect(style.id).to.be.eq(map2TestStyle.id);
+        expect(memoryStorage.mem.tsl).to.be.eq(JSON.stringify(map2TestStyle.lineStyle!.color));
+        expect(map2styles.byColorId(JSON.parse(memoryStorage.mem.tsl))!.id).to.be.eq(map2TestStyle.id);
+        expect(tools.pointStyle.id).to.be.eq(map2DefaultStyle.id);
+        expect(tools.lineStyle.id).to.be.eq(map2TestStyle.id);
+        done();
+      });
 
     expect(tools.selectedTool).to.be.eq(SelectedTool.Line);
     expect(tools.pointStyle.id).to.be.eq(map2DefaultStyle.id);
     expect(tools.lineStyle.id).to.be.eq(map2DefaultStyle.id);
 
     tools.selectStyle(map2TestStyle);
-
-    expect(tools.selectedTool).to.be.eq(SelectedTool.Line);
-    expect(style.id).to.be.eq(map2TestStyle.id);
-    expect(memoryStorage.mem.tsl).to.be.eq(JSON.stringify(map2TestStyle.lineStyle.color));
-    expect(map2styles.byColor(JSON.parse(memoryStorage.mem.tsl)).id).to.be.eq(map2TestStyle.id);
-    expect(tools.pointStyle.id).to.be.eq(map2DefaultStyle.id);
-    expect(tools.lineStyle.id).to.be.eq(map2TestStyle.id);
   });
 
 });

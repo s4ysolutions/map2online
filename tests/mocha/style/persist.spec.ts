@@ -30,10 +30,11 @@ describe('Built in map2 styles', () => {
   });
   it.skip('style is not supposed to be stored as object. At least built in style', () => {
     storage.set('s', map2DefaultStyle);
-    const s: Style = storage.get('s', null);
-    expect(s.lineStyle.color).to.be.eq(map2DefaultStyle.lineStyle.color);
-    expect(s.iconStyle.color).to.be.eq(map2DefaultStyle.iconStyle.color);
-    expect(s.iconStyle.icon.href).to.be.eq(map2DefaultStyle.iconStyle.icon.href);
-    expect(s.iconStyle.icon).to.be.eq(map2DefaultStyle.iconStyle.icon);
+    const s: Style | null = storage.get('s', null);
+    expect(s).to.be.not.null;
+    expect(s!.lineStyle!.color).to.be.eq(map2DefaultStyle.lineStyle!.color);
+    expect(s!.iconStyle!.color).to.be.eq(map2DefaultStyle.iconStyle!.color);
+    expect(s!.iconStyle!.icon.href).to.be.eq(map2DefaultStyle.iconStyle!.icon.href);
+    expect(s!.iconStyle!.icon).to.be.eq(map2DefaultStyle.iconStyle!.icon);
   });
 });

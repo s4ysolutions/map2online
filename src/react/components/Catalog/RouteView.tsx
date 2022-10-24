@@ -41,8 +41,8 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
   );
 
   const isActive = useObservable(
-    catalogUI.activeRouteObservable().pipe(map(active => active.id === route.id)),
-    catalogUI.activeRoute && catalogUI.activeRoute.id === route.id,
+    catalogUI.activeRouteObservable().pipe(map(active => active?.id === route?.id)),
+    catalogUI.activeRoute && catalogUI.activeRoute.id === route?.id,
   );
 
   const isVisible = useObservable(routeView.observable().pipe(map(r => r && r.visible)), routeView.visible);
@@ -85,7 +85,7 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
       onClick={handleSelect}
       title={wording.R('Open route hint')}
     >
-      {route.title + (routeView.features.length > 0 && ` (${routeView.features.length})` || ' (0)')}
+      {(route?.title || '') + (routeView.features.length > 0 && ` (${routeView.features.length})` || ' (0)')}
     </div >
 
     <div

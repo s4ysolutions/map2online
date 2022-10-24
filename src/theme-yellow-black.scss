@@ -165,7 +165,7 @@ button {
 
   .sub-menu:hover,
   .menu-item {
-    .title:hover {
+    .title:hover, .sub-menu:hover {
       background-color: $button-color;
       color: $white;
     }

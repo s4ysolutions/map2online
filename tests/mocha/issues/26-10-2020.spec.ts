@@ -23,7 +23,7 @@ import {Wording} from '../../../src/personalization/wording';
 import {Map2Styles} from '../../../src/style';
 import {wordingFactory} from '../../../src/personalization/wording/default';
 import {map2StylesFactory} from '../../../src/style/default/styles';
-import {map} from 'rxjs/operators';
+import {first, map} from 'rxjs/operators';
 import {createOlStyle} from '../../../src/react/components/Ol/lib/styles';
 import {KvPromise} from '../../../src/kv/promise';
 import {CatalogStorage} from '../../../src/catalog/storage';
@@ -53,7 +53,7 @@ describe.skip('26-10-2020 issues', () => {
       kvPromise = memoryStoragePromiseFactory();
       catalogStorage = new CatalogStorageIndexedDb(kvPromise, map2styles);
       catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
-      await catalog.categories.byPos(0).routes.byPos(0).features.add({
+      await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
         id: fid1,
         style: map2styles.defaultStyle,
         description: makeEmptyRichText(),
@@ -78,7 +78,7 @@ describe.skip('26-10-2020 issues', () => {
     });
 
     it('feature is stored with style id', async () => {
-      const props: FeatureProps = await kvPromise.get(`f@${fid1}`, null);
+      const props: FeatureProps | null = await kvPromise.get(`f@${fid1}`, null);
       expect(props).to.be.not.null;
       expect(props).to.has.property('style', null);
       expect(props).to.has.property('styleId', map2styles.defaultStyle.id);
@@ -90,24 +90,23 @@ describe.skip('26-10-2020 issues', () => {
       expect(vis[0].style).to.be.not.null;
     });
 
-    it('fix "argument is not a function. Are you looking for `mapTo()`?"', () => {
+    it('fix "argument is not a function. Are you looking for `mapTo()`?"', async () => {
       expect(catalog.visibleFeatures.length).to.be.eq(1);
-      const fe = catalog.featureById(fid1);
+      const fe = catalog.featureById(fid1)!;
       fe.visible = false;
       expect(catalog.visibleFeatures.length).to.be.eq(0);
 
-      let f: Feature[] = null;
-      const subscription = catalog
-        .visibleFeaturesObservable(false)
-        .pipe(map(fef => fef))
-        .subscribe(fef => {
-          f = fef;
-        });
+      const f: Feature[] = await new Promise<Feature[]>(rs => {
+        catalog
+          .visibleFeaturesObservable(false)
+          .pipe(first())
+          .pipe(map(fef => fef))
+          .subscribe(fef => rs(fef));
+      });
       fe.visible = true;
       expect(f).to.be.not.null;
       expect(f.length).to.be.eq(1);
       expect(f[0].visible).to.be.true;
-      subscription.unsubscribe();
     });
   });
   /* disabled because of dependency on DOM */
@@ -119,7 +118,7 @@ describe.skip('26-10-2020 issues', () => {
     });
     it('Create ol style from default style', () => {
       const style = map2styles.defaultStyle;
-      createOlStyle(style.iconStyle, 'some label');
+      createOlStyle(style.iconStyle!, 'some label');
     });
   });
 });

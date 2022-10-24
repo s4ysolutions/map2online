@@ -15,10 +15,12 @@
  */
 
 import * as React from 'react';
+import {ReactNode} from 'react';
 
 interface Props {
   on: boolean;
   onClick: () => void;
+  children: ReactNode[] | ReactNode;
 }
 
 const Tab: React.FunctionComponent<Props> = ({on, children, onClick}): React.ReactElement =>

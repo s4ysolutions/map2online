@@ -27,10 +27,11 @@ const InsertImageButton = (): ReactElement => {
       onMouseDown={(event: MouseEvent) => {
         event.preventDefault();
         // eslint-disable-next-line no-alert
-        const url = window.prompt('Enter the URL of the image:').trim();
-        if (!url) {
+        const urlInput = window.prompt('Enter the URL of the image:');
+        if (!urlInput) {
           return;
         }
+        const url = urlInput.trim();
         if (url && !isImageUrl(url)) {
           // eslint-disable-next-line no-alert
           alert('URL is not an image');

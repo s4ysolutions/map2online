@@ -15,15 +15,16 @@
  */
 
 import * as React from 'react';
-import {FormEvent} from 'react';
+import {FormEvent, useCallback} from 'react';
 import Modal from '../Modal';
 import {getCatalogUI, getWording} from '../../../di-default';
 import {Route} from '../../../catalog';
 import useObservable from '../../hooks/useObservable';
 import T from '../../../l10n';
 import log from '../../../log';
-import {map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import RichTextEditor from '../RichTextEditor';
+import {Descendant} from 'slate';
 
 const catalogUI = getCatalogUI();
 const wording = getWording();
@@ -38,10 +39,14 @@ const handleClose = () => catalogUI.cancelEditRoute();
 
 const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}): React.ReactElement => {
 
-  const route = useObservable(
+  const route = useObservable<{title: string, description: RichText}>(
     routeEdit
       .observable()
-      .pipe(map(r => ({title: r.title, description: r.description})))
+      .pipe(
+        filter(r => Boolean(r)),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        map(r => ({title: r!.title, description: r!.description})),
+      )
     , routeEdit,
   );
 
@@ -50,9 +55,15 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
   const titleRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect((): void => {
-    titleRef.current.focus();
-    titleRef.current.select();
+    if (titleRef.current !== null) {
+      titleRef.current.focus();
+      titleRef.current.select();
+    }
   }, []);
+
+  const handleChange = useCallback((content: Descendant[]) => {
+    routeEdit.description = content as RichText;
+  }, [routeEdit]);
 
   return <Modal className="edit-dialog" closeOnEnter onClose={handleClose} >
     <form onSubmit={handleSubmit} >
@@ -81,9 +92,7 @@ const RouteEdit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}
 
         <RichTextEditor
           content={route.description}
-          onChange={content => {
-            routeEdit.description = content;
-          }} />
+          onChange={handleChange} />
       </div >
 
       <div className="buttons-row" >

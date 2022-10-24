@@ -78,19 +78,19 @@ describe('01-11-2020 issues', () => {
 
   it('features imported and converted to OL ', () => {
     expect(catalog.categories.length).to.be.eq(1);
-    expect(catalog.categories.byPos(0).routes.length).to.be.eq(1);
-    const features = catalog.categories.byPos(0).routes.byPos(0).features;
+    expect(catalog.categories.byPos(0)!.routes.length).to.be.eq(1);
+    const features = catalog.categories.byPos(0)!.routes.byPos(0)!.features;
     expect(features.length).to.be.eq(7);
-    expect(isPoint(features.byPos(0).geometry)).to.be.true;
-    expect(isPoint(features.byPos(1).geometry)).to.be.true;
-    expect(isPoint(features.byPos(2).geometry)).to.be.true;
-    expect(isPoint(features.byPos(3).geometry)).to.be.true;
-    expect(isPoint(features.byPos(4).geometry)).to.be.true;
-    expect(isLineString(features.byPos(5).geometry)).to.be.true;
-    expect(isLineString(features.byPos(6).geometry)).to.be.true;
-    const l6g = features.byPos(5).geometry as LineString;
+    expect(isPoint(features.byPos(0)!.geometry)).to.be.true;
+    expect(isPoint(features.byPos(1)!.geometry)).to.be.true;
+    expect(isPoint(features.byPos(2)!.geometry)).to.be.true;
+    expect(isPoint(features.byPos(3)!.geometry)).to.be.true;
+    expect(isPoint(features.byPos(4)!.geometry)).to.be.true;
+    expect(isLineString(features.byPos(5)!.geometry)).to.be.true;
+    expect(isLineString(features.byPos(6)!.geometry)).to.be.true;
+    const l6g = features.byPos(5)!.geometry as LineString;
     expect(l6g.coordinates.length).to.be.eq(6);
-    const l7g = features.byPos(6).geometry as LineString;
+    const l7g = features.byPos(6)!.geometry as LineString;
     expect(l7g.coordinates.length).to.be.eq(6);
   });
 });

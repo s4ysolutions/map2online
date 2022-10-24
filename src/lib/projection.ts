@@ -19,7 +19,7 @@ import {Coordinate, isCoordinate} from '../catalog';
 
 export const metersToDegrees0 = (olX: number | Coordinate | number[], olY?: number, olAlt?: number): number[] => {
   if (olY !== undefined) {
-    return toLonLat([olX as number, olY, olAlt]);
+    return toLonLat([olX as number, olY, olAlt === undefined ? 0 : olAlt]);
   } else if (isCoordinate(olX)) {
     return toLonLat([olX.lon, olX.lat, olX.alt]);
   } else if ((olX as number[]).length !== undefined && (olX as number[]).length > 1) {
@@ -35,7 +35,7 @@ export const metersToDegrees = (olX: number | Coordinate | number[], olY?: numbe
 
 export const degreesToMeters0 = (olX: number | Coordinate | number[], olY?: number, alt?: number): number[] => {
   if (olY !== undefined) {
-    return fromLonLat([olX as number, olY, alt]);
+    return fromLonLat([olX as number, olY, alt === undefined ? 0 : alt]);
   } else if (isCoordinate(olX)) {
     return fromLonLat([olX.lon, olX.lat, olX.alt]);
   } else if ((olX as number[]).length !== undefined && (olX as number[]).length > 1) {

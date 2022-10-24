@@ -19,113 +19,129 @@ import {KV} from '../../kv/sync';
 import {Subject} from 'rxjs';
 
 const workspaceFactory = (persistanceStorage: KV): Workspace => {
-  const aboutObservable = new Subject<boolean>();
   const filesObservable = new Subject<boolean>();
   const exportObservable = new Subject<boolean>();
   const sourcesObservable = new Subject<boolean>();
   const settingsObservable = new Subject<boolean>();
   const personalizationObservable = new Subject<boolean>();
+  let exportOpen = false;
+  let fileOpen = false;
+  let sourcesOpen = false;
+  let settingsOpen = false;
+  let personalizationOpen = false;
 
   const th: Workspace & { closeAbout: () => void; closeExport: () => void; closeFile: () => void; closeSources: () => void; closeSettings: () => void } = {
     aboutObservable: () => persistanceStorage.observable('a'),
-    aboutOpen: false,
+    get aboutOpen() {
+      return persistanceStorage.get('a', false);
+    },
     catalogObservable: () => persistanceStorage.observable('cato'),
-    catalogOpen: persistanceStorage.get('cato', false),
+    get catalogOpen() {
+      return persistanceStorage.get('cato', false);
+    },
     toolsObservable: () => persistanceStorage.observable('feo'),
-    toolsOpen: persistanceStorage.get('feo', true),
+    get toolsOpen() {
+      return persistanceStorage.get('feo', true);
+    },
     fileObservable: () => filesObservable,
-    fileOpen: false,
+    get fileOpen() {
+      return fileOpen;
+    },
     exportObservable: () => exportObservable,
-    exportOpen: false,
+    get exportOpen() {
+      return exportOpen;
+    },
     sourcesObservable: () => sourcesObservable,
-    sourcesOpen: false,
+    get sourcesOpen() {
+      return sourcesOpen;
+    },
     settingsObservable: () => settingsObservable,
-    settingsOpen: false,
+    get settingsOpen() {
+      return settingsOpen;
+    },
     personalizationObservable: () => personalizationObservable,
-    personalizationOpen: false,
-    toggleAbout () {
+    get personalizationOpen() {
+      return personalizationOpen;
+    },
+    toggleAbout() {
       this.closeFile();
       this.closeExport();
       this.closeSources();
       this.closeSettings();
       const value = !this.aboutOpen;
       persistanceStorage.set('a', value);
-      this.aboutOpen = value;
     },
-    toggleCatalog () {
+    toggleCatalog() {
       const value = !this.catalogOpen;
       persistanceStorage.set('cato', value);
-      this.catalogOpen = value;
     },
-    toggleTools () {
+    toggleTools() {
       this.closeMenus();
       const value = !this.toolsOpen;
       persistanceStorage.set('feo', value);
-      this.toolsOpen = value;
     },
-    toggleExport () {
+    toggleExport() {
       this.closeAbout();
       this.closeFile();
       this.closeSources();
       this.closeSettings();
       const value = !this.exportOpen;
+      exportOpen = value;
       exportObservable.next(value);
-      this.exportOpen = value;
     },
-    toggleFile () {
+    toggleFile() {
       this.closeAbout();
       this.closeExport();
       this.closeSources();
       this.closeSettings();
       const value = !this.fileOpen;
+      fileOpen = value;
       filesObservable.next(value);
-      this.fileOpen = value;
     },
-    toggleSources () {
+    toggleSources() {
       this.closeAbout();
       this.closeFile();
       this.closeExport();
       this.closeSettings();
       const value = !this.sourcesOpen;
+      sourcesOpen = value;
       sourcesObservable.next(value);
-      this.sourcesOpen = value;
     },
-    toggleSettings () {
+    toggleSettings() {
       this.closeAbout();
       this.closeFile();
       this.closeExport();
       this.closeSources();
       const value = !this.settingsOpen;
+      settingsOpen = value;
       settingsObservable.next(value);
-      this.settingsOpen = value;
     },
-    togglePersonalization () {
+    togglePersonalization() {
       this.closeMenus();
       const value = !this.personalizationOpen;
+      personalizationOpen = value;
       personalizationObservable.next(value);
-      this.personalizationOpen = value;
     },
-    closeAbout () {
-      aboutObservable.next(false);
-      this.aboutOpen = false;
+    closeAbout() {
+      persistanceStorage.set('a', false);
     },
-    closeExport () {
+    closeExport() {
+      exportOpen = false;
       exportObservable.next(false);
-      this.exportOpen = false;
     },
-    closeFile () {
+    closeFile() {
+      fileOpen = false;
       filesObservable.next(false);
-      this.fileOpen = false;
     },
-    closeSources () {
+    closeSources() {
+      sourcesOpen = false;
       sourcesObservable.next(false);
-      this.sourcesOpen = false;
     },
-    closeSettings () {
+    closeSettings() {
+      settingsOpen = false;
       settingsObservable.next(false);
-      this.settingsOpen = false;
     },
-    closeMenus () {
+    closeMenus() {
       this.closeFile();
       this.closeExport();
       this.closeSources();

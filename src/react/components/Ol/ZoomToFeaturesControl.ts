@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright 2019 s4y.solutions
  *
@@ -14,15 +15,16 @@
  * limitations under the License.
  */
 
-/* eslint-disable */
-import {Control} from 'ol/control';
 import {visibleOlFeatures} from './ActiveFeatures';
 import log from '../../../log';
+import {Control} from 'ol/control';
+import {Options} from 'ol/control/Control';
+
 import OlFeature from 'ol/Feature';
 import {Geometry as OlGeometry} from 'ol/geom';
 
-const lastFeatures: OlFeature<OlGeometry>[] = null;
-let lastExtent: number[] = null;
+const lastFeatures: OlFeature<OlGeometry>[] | null = null;
+let lastExtent: number[] | null = null;
 
 const MIN_BOUNDS = 100000;
 const PADDING_DIV = 8;
@@ -95,9 +97,9 @@ const zoomToExtentInnerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="2
   <path fill="white" d="M10 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12-8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-4 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm4-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
 </svg >`;
 
-const ZoomToFeaturesControl = /* @__PURE__*/(function (Control) {
-
-  function ZoomToFeaturesControl() {
+class ZoomToFeaturesControl extends Control {
+  constructor(opt_options?: Options) {
+    const options = opt_options || {};
 
     const button = document.createElement('button');
     button.innerHTML = zoomToExtentInnerHTML;
@@ -106,26 +108,52 @@ const ZoomToFeaturesControl = /* @__PURE__*/(function (Control) {
     element.className = 'ol-zoom-extent ol-unselectable ol-control';
     element.appendChild(button);
 
-    Control.call(this, {
-      element,
-    });
+    super({...options, element});
 
     button.addEventListener('click', this.handleClick.bind(this), false);
   }
 
-  if (Control) {
-    ZoomToFeaturesControl.__proto__ = Control;
-  }
-  ZoomToFeaturesControl.prototype = Object.create(Control && Control.prototype);
-  ZoomToFeaturesControl.prototype.constructor = ZoomToFeaturesControl;
-
-  ZoomToFeaturesControl.prototype.handleClick = function handleClick() {
-    const ext = extentOfVisibleFeatures();
-    this.getMap().getView()
-      .fit(ext, this.getMap().getSize());
+  handleClick() {
+    const map = this.getMap();
+    if (map !== null ) {
+      const ext = extentOfVisibleFeatures();
+      map.getView().fit(ext, {});
+    }
   };
 
-  return ZoomToFeaturesControl;
-}(Control));
+}
+/*
+interface ZoomToFeaturesControl extends Control {
+  handleClick(): void
+}
+// constructor
+const ZoomToFeaturesControl = function () {
+
+  const button = document.createElement('button');
+  button.innerHTML = zoomToExtentInnerHTML;
+
+  const element = document.createElement('div');
+  element.className = 'ol-zoom-extent ol-unselectable ol-control';
+  element.appendChild(button);
+
+  // @ts-ignore
+  Control.call(this, {element});
+
+  // @ts-ignore
+  button.addEventListener('click', this.handleClick.bind(this), false);
+} // as any as {new (): ZoomToFeaturesControl}
+
+Object.setPrototypeOf(ZoomToFeaturesControl, Control)
+// ZoomToFeaturesControl.prototype = Object.create(Control.prototype);
+
+ZoomToFeaturesControl.prototype.handleClick = function handleClick() {
+  // eslint-disable-next-line prefer-rest-params
+  log.debug(arguments);
+  const ext = extentOfVisibleFeatures();
+  this.getMap().getView()
+    .fit(ext, this.getMap().getSize());
+};
+   */
+
 
 export default ZoomToFeaturesControl;

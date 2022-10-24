@@ -27,8 +27,14 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
   const routeDeleteSubject = new Subject<{ route: Route, category: Category } | null>();
   const featureEditSubject = new Subject<Feature | null>();
   const featureDeleteSubject = new Subject<{ feature: Feature, route: Route } | null>();
+  let categoryEdit: Category | null = null;
+  let categoryDelete: Category | null = null;
+  let routeEdit: Route | null = null;
+  let routeDelete: { route: Route; category: Category } | null = null;
+  let featureEdit: Feature | null = null;
+  let featureDelete: { feature: Feature; route: Route } | null = null;
   // noinspection UnnecessaryLocalVariableJS
-  const th: CatalogUI & { getStoredActiveRoute: () => Route } = {
+  const th: CatalogUI & { getStoredActiveRoute: () => Route | null } = {
     get selectedCategory() {
       const id = storage.get<ID | null>('sc', null);
       if (!id) {
@@ -39,19 +45,21 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     set selectedCategory(value) {
       storage.set('sc', value === null ? null : value.id);
     },
-    selectedCategoryObservable: () => storage.observable<ID | null>('sc').pipe(map(id => id === null ? null : catalog.categoryById(id))),
+    selectedCategoryObservable: () => merge(
+      storage.observable<ID | null>('sc').pipe(map(id => id === null ? null : catalog.categoryById(id))),
+      storage.observableDelete<null>('sc').pipe(map(() => null)),
+    ),
     get selectedRoute() {
       const id = storage.get<ID | null>('sr', null);
-      if (!id) {
-        return null;
-      }
-      return catalog.routeById(id);
+      return (id === null) ? null : catalog.routeById(id);
     },
     set selectedRoute(value) {
       storage.set('sr', value === null ? null : value.id);
     },
-    selectedRouteObservable: () => storage.observable<ID | null>('sr').pipe(map(id => id === null ? null : catalog.routeById(id))),
-
+    selectedRouteObservable: () => merge(
+      storage.observable<ID | null>('sr').pipe(map(id => id === null ? null : catalog.routeById(id))),
+      storage.observableDelete<null>('sr').pipe(map(() => null)),
+    ),
     get activeCategory() {
       const activeRoute = this.getStoredActiveRoute();
       if (activeRoute) {
@@ -69,8 +77,10 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     },
     set activeCategory(category) {
       const {activeRoute} = this;
-      if (!category.routes.has(activeRoute) && category.routes.length > 0) {
-        this.activeRoute = category.routes.byPos(0);
+      if (category !== null) {
+        if ((activeRoute === null || !category.routes.has(activeRoute)) && category.routes.length > 0) {
+          this.activeRoute = category.routes.byPos(0);
+        }
       }
     },
     activeCategoryObservable() {
@@ -125,90 +135,100 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
     openObservable: (id: ID) => storage.observable<boolean>(`op@${id}`)
       .pipe(map(v => Boolean(v))),
 
-    categoryEdit: null,
+    get categoryEdit(): Category | null {
+      return categoryEdit;
+    },
     categoryEditObservable: () => categoryEditSubject,
-    startEditCategory (category: Category | null) {
-      this.categoryEdit = category;
+    startEditCategory(category: Category): Category {
+      categoryEdit = category;
       categoryEditSubject.next(category);
       return category;
     },
-    commitEditCategory () {
-      const id = this.categoryEdit && this.categoryEdit.id;
-      this.categoryEdit = null;
+    commitEditCategory() {
+      const id = this.categoryEdit && this.categoryEdit.id || null;
+      categoryEdit = null;
       categoryEditSubject.next(null);
       return Promise.resolve(id === null ? null : catalog.categoryById(id));
     },
-    cancelEditCategory () {
-      this.categoryEdit = null;
+    cancelEditCategory() {
+      categoryEdit = null;
       categoryEditSubject.next(null);
     },
 
-    categoryDelete: null,
+    get categoryDelete() {
+      return categoryDelete;
+    },
     categoryDeleteObservable: () => categoryDeleteSubject,
-    requestDeleteCategory (category: Category) {
-      this.categoryDelete = category;
+    requestDeleteCategory(category: Category) {
+      categoryDelete = category;
       categoryDeleteSubject.next(category);
     },
-    endDeleteCategory () {
-      this.categoryDelete = null;
+    endDeleteCategory() {
+      categoryDelete = null;
       categoryDeleteSubject.next(null);
     },
 
-    routeEdit: null,
+    get routeEdit() {
+      return routeEdit;
+    },
     routeEditObservable: () => routeEditSubject,
-    startEditRoute (route: Route | null) {
-      this.routeEdit = route;
+    startEditRoute(route: Route) {
+      routeEdit = route;
       routeEditSubject.next(route);
       return route;
     },
-    commitEditRoute () {
-      const id = this.routeEdit && this.routeEdit.id;
-      this.routeEdit = null;
+    commitEditRoute() {
+      const id = this.routeEdit && this.routeEdit.id || null;
+      routeEdit = null;
       routeEditSubject.next(null);
       return Promise.resolve(id === null ? null : catalog.routeById(id));
     },
-    cancelEditRoute () {
-      this.routeEdit = null;
+    cancelEditRoute() {
+      routeEdit = null;
       routeEditSubject.next(null);
     },
-
-    routeDelete: null,
+    get routeDelete() {
+      return routeDelete;
+    },
     routeDeleteObservable: () => routeDeleteSubject,
-    requestDeleteRoute (route: Route, category: Category) {
-      this.routeDelete = {route, category};
+    requestDeleteRoute(route: Route, category: Category) {
+      routeDelete = {route, category};
       routeDeleteSubject.next({route, category});
     },
-    endDeleteRoute () {
-      this.routeDelete = null;
+    endDeleteRoute() {
+      routeDelete = null;
       routeDeleteSubject.next(null);
     },
-
-    featureEdit: null,
+    get featureEdit() {
+      return featureEdit;
+    },
     featureEditObservable: () => featureEditSubject,
-    startEditFeature (feature: Feature | null) {
-      this.featureEdit = feature;
+    startEditFeature(feature: Feature) {
+      featureEdit = feature;
       featureEditSubject.next(feature);
       return feature;
     },
-    commitEditFeature () {
-      const id = this.featureEdit && this.featureEdit.id;
-      this.featureEdit = null;
+    commitEditFeature() {
+      const id = this.featureEdit && this.featureEdit.id || null;
+      featureEdit = null;
       featureEditSubject.next(null);
       return Promise.resolve(id === null ? null : catalog.featureById(id));
     },
-    cancelEditFeature () {
-      this.featureEdit = null;
+    cancelEditFeature() {
+      featureEdit = null;
       featureEditSubject.next(null);
     },
 
-    featureDelete: null,
+    get featureDelete() {
+      return featureDelete;
+    },
     featureDeleteObservable: () => featureDeleteSubject,
-    requestDeleteFeature (feature: Feature, route: Route) {
-      this.featureDelete = {feature, route};
+    requestDeleteFeature(feature: Feature, route: Route) {
+      featureDelete = {feature, route};
       featureDeleteSubject.next({feature, route});
     },
-    endDeleteFeature () {
-      this.featureDelete = null;
+    endDeleteFeature() {
+      featureDelete = null;
       featureDeleteSubject.next(null);
     },
   };

@@ -14,53 +14,47 @@
  * limitations under the License.
  */
 
-export const map2colors: Record<string, string> = {
-  RED: '#e6194bff',
-  MAGENTA: '#f032e6ff',
-  ORANGE: '#f58231ff',
-  GREEN: '#3cb44bff',
-  BLUE: '#4363d8ff',
-  PINK: '#fabebeff',
-  CYAN: '#42d4f4ff',
-  BROWN: '#9A6324ff',
-  YELLOW: '#ffe119ff',
-  /*
-   * OLIVE: '#808000',
-   * LIME: '#bfef45',
-   * MAROON: '#800000',
-   * NAVY: '#000075',
-   */
+import {ColorId} from '../index';
+
+export enum Map2Color {
+  TRANSPARENT = '#00000000',
+  BLUE = '#4363d8ff',
+  BROWN = '#9A6324ff',
+  CYAN = '#42d4f4ff',
+  GREEN = '#3cb44bff',
+  LIME = '#bfef45ff',
+  MAGENTA = '#f032e6ff',
+  MAROON = '#800000ff',
+  NAVY = '#000075ff',
+  OLIVE = '#808000ff',
+  ORANGE = '#f58231ff',
+  PINK = '#fabebeff',
+  RED = '#e6194Bff',
+  YELLOW = '#ffe119ff',
+}
+
+export const map2colors: Record<string, Map2Color> = {
+  RED: Map2Color.RED, // default
+  MAGENTA: Map2Color.MAGENTA,
+  ORANGE: Map2Color.ORANGE,
+  GREEN: Map2Color.GREEN,
+  BLUE: Map2Color.BLUE,
+  PINK: Map2Color.PINK,
+  CYAN: Map2Color.CYAN,
+  BROWN: Map2Color.BROWN,
+  YELLOW: Map2Color.YELLOW,
 };
 
-/*
- *enum Color {
- *  BLUE = '#4363d8',
- *  BROWN = '#9A6324',
- *  CYAN = '#42d4f4',
- *  GREEN = '#3cb44b',
- *  LIME = '#bfef45',
- *  MAGENTA = '#f032e6',
- *  MAROON = '#800000',
- *  NAVY = '#000075',
- *  OLIVE = '#808000',
- *  ORANGE = '#f58231',
- *  PINK = '#fabebe',
- *  RED = '#e6194B',
- *  YELLOW = '#ffe119',
- *}
- *const hex2Color: Record<string, Color> = {
- *  '#000075': Color.NAVY,
- *  '#3cb44b': Color.GREEN,
- *  '#42d4f4': Color.CYAN,
- *  '#4363d8': Color.BLUE,
- *  '#800000': Color.MAROON,
- *  '#808000': Color.OLIVE,
- *  '#9A6324': Color.BROWN,
- *  '#bfef45': Color.LIME,
- *  '#e6194B': Color.RED,
- *  '#f032e6': Color.MAGENTA,
- *  '#f58231': Color.ORANGE,
- *  '#fabebe': Color.PINK,
- *  '#ffe119': Color.YELLOW,
- *};
- */
+
+export const idToMap2Color: Record<ColorId, Map2Color> = Object.keys(Map2Color).reduce((acc, name) => {
+  const key = name as keyof typeof Map2Color;
+  const color: Map2Color = Map2Color[key];
+  const hex = color.toString();
+  return {...acc, [hex]: color};
+}, {});
+
+export const map2ColorToName: Record<Map2Color, string> = Object.keys(Map2Color).reduce((acc, name) => {
+  const key = name as keyof typeof Map2Color;
+  const color: Map2Color = Map2Color[key];
+  return {...acc, [color]: name};
+}, {} as Record<Map2Color, string>);

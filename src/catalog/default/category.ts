@@ -1,7 +1,7 @@
 import {Categories, Category, CategoryProps, ID, Routes} from '../index';
 import {makeId} from '../../lib/id';
 import {RouteDefault, RoutesDefault} from './route';
-import {Observable} from 'rxjs';
+import {NEVER, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
@@ -111,7 +111,7 @@ export class CategoryDefault implements Category {
     return Promise.all([p1, p2]) as unknown as Promise<void>;
   }
 
-  observable(): Observable<Category> {
+  observable(): Observable<Category | null> {
     return this.catalog.storage.observableCategoryProps(this.p)
       .pipe(map(value => value === null ? null : this));
   }
@@ -203,7 +203,6 @@ export class CategoriesDefault implements Categories {
     }
     const category = new CategoryDefault(this.catalog, p);
     return this.addCategory(category, position);
-
   }
 
   has(category: Category): boolean {
@@ -231,8 +230,9 @@ export class CategoriesDefault implements Categories {
     return this.guardedIds.length;
   }
 
-  observable(): Observable<Categories> {
-    return this.catalog.storage.observableCategoriesIds(this.catalogId).pipe(map((p) => p === null ? null : this));
+  observable(): Observable<Categories | null> {
+    return this.catalog.storage.observableCategoriesIds(this.catalogId)
+      .pipe(map((p) => p === null ? null : this as Categories));
   }
 
   remove(category: Category): Promise<number> {
@@ -256,13 +256,35 @@ export class CategoriesDefault implements Categories {
     return this.update();
   }
 
+  private static makeErrorCategory(): Category {
+    return <Category>{
+      observable(): Observable<Category | null> {
+        return NEVER;
+      },
+      routes: {},
+      id: makeId(),
+      description: makeEmptyRichText(),
+      summary: '',
+      title: 'ERRROR',
+      visible: true,
+      open: false,
+    };
+  }
+
   [Symbol.iterator](): Iterator<Category> {
     const _ids = this.guardedIds.slice(); // don't reflect modifications after the iterator has been created
     let _current = 0;
     return {
-      next: () => _current >= _ids.length
-        ? {done: true, value: null}
-        : {done: false, value: this.byPos(_current++)},
+      next: () => {
+        if (_current >= _ids.length) {
+          return {done: true, value: null};
+        }
+        const r = this.byPos(_current++);
+        if (r === null) {
+          return {done: false, value: CategoriesDefault.makeErrorCategory()};
+        }
+        return {done: false, value: r};
+      },
     };
   }
 }

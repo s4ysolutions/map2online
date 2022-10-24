@@ -23,6 +23,7 @@ describe('JS features', () => {
     expect(o).to.haveOwnProperty('a', 1);
     expect(o).to.has.property('a', 1);
     expect(o.a).to.be.eq(1);
+    // @ts-ignore
     delete o.a;
     expect(o).to.not.haveOwnProperty('a');
     expect(o).to.not.has.property('a');
@@ -33,6 +34,7 @@ describe('JS features', () => {
     expect(o).to.haveOwnProperty('a', 1);
     expect(o).to.has.property('a', 1);
     expect(o.a).to.be.eq(1);
+    // @ts-ignore
     o.a = undefined;
     expect(o).to.haveOwnProperty('a');
     expect(o).to.has.property('a');

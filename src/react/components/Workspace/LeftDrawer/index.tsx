@@ -16,45 +16,45 @@
 
 /* eslint-disable react/forbid-component-props */
 import React, {useEffect} from 'react';
-import posed from 'react-pose';
-import {tween} from 'popmotion';
+import {motion} from 'framer-motion';
+// import {tween} from 'popmotion';
 import log from '../../../../log';
 import useObservable from '../../../hooks/useObservable';
 import {getWorkspace} from '../../../../di-default';
 import Catalog from '../../Catalog';
 
-const ContentSmall = posed.div({
+const variantSmall = {
   hide: {
-    transition: tween,
+    // transition: tween,
     width: 0,
   },
   show: {
-    transition: tween,
+    // transition: tween,
     width: '100%',
   },
-});
+};
 
-const ContentMid = posed.div({
+const variantMid = {
   hide: {
-    transition: tween,
+    // transition: tween,
     width: 0,
   },
   show: {
-    transition: tween,
+    // transition: tween,
     width: '75%',
   },
-});
+};
 
-const ContentBig = posed.div({
+const variantBig = {
   hide: {
-    transition: tween,
+    // transition: tween,
     width: 0,
   },
   show: {
-    transition: tween,
+    // transition: tween,
     width: '50%',
   },
-});
+};
 
 const OL_ZOOM_OFFSET_PX = 8;
 
@@ -81,6 +81,8 @@ const SMALL = 512;
 const MID = 1024;
 
 const workspace = getWorkspace();
+// const transition = { type: 'tween', stiffness: 50 };
+const transition = { easy: 'tween', stiffness: 100 };
 
 const LeftDrawer: React.FunctionComponent = (): React.ReactElement => {
   const width = document.body.clientWidth;
@@ -89,30 +91,15 @@ const LeftDrawer: React.FunctionComponent = (): React.ReactElement => {
   }, []);
   const stateCatalog = useObservable(workspace.catalogObservable(), workspace.catalogOpen);
   log.render(`LeftDrawer catalog=${stateCatalog} width=${width}`);
-  return width < SMALL
-    ? <ContentSmall
-      className="left-drawer"
-      onValueChange={onValueChange}
-      pose={stateCatalog ? 'show' : 'hide'}
-    >
-      <Catalog />
-    </ContentSmall >
-    : width < MID
-      ? <ContentMid
-        className="left-drawer"
-        onValueChange={onValueChange}
-        pose={stateCatalog ? 'show' : 'hide'}
-      >
-        <Catalog />
-      </ContentMid >
-      : <ContentBig
-        className="left-drawer"
-        onValueChange={onValueChange}
-        pose={stateCatalog ? 'show' : 'hide'}
-      >
-        <Catalog />
-      </ContentBig >
-  ;
+  // onValueChange={onValueChange}
+  return <motion.div
+    animate={stateCatalog ? 'show' : 'hide'}
+    className="left-drawer"
+    initial={stateCatalog ? 'show' : 'hide'}
+    transition={transition}
+    variants={width < SMALL ? variantSmall : (width < MID ? variantMid : variantBig)} >
+    <Catalog />
+  </motion.div >;
 };
 
 export default LeftDrawer;

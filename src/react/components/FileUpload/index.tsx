@@ -17,18 +17,26 @@
 import React, {useCallback, useEffect} from 'react';
 import T from '../../../l10n';
 import './styles.scss';
+import log from '../../../log';
 
 const FileUpload: React.FunctionComponent<{ onUpload: (files: FileList) => void }> = ({onUpload}): React.ReactElement => {
-  const inputRef = React.useRef<HTMLInputElement>();
-  const dndRef = React.useRef<HTMLDivElement>();
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const dndRef = React.useRef<HTMLDivElement | null>(null);
   const [over, setOver] = React.useState(false);
 
-  const handleInput = useCallback((evt) => {
-    onUpload(evt.target.files);
+  const handleInput = useCallback((evt: Event) => {
+    if (evt.target) {
+      const files = (evt.target as HTMLInputElement).files;
+      if (files) {
+        onUpload(files);
+      }
+    }
   }, [onUpload]);
 
-  const doInput = useCallback((evt) => {
-    inputRef.current.click();
+  const doInput = useCallback((evt: React.MouseEvent<HTMLButtonElement>) => {
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
     evt.preventDefault();
   }, []);
 
@@ -40,23 +48,29 @@ const FileUpload: React.FunctionComponent<{ onUpload: (files: FileList) => void 
     setOver(false);
   }, []);
 
-  const handleDrop = useCallback((evt) => {
-    onUpload(evt.dataTransfer.files);
+  const handleDrop = useCallback((evt: DragEvent) => {
+    if (evt.dataTransfer) {
+      onUpload(evt.dataTransfer.files);
+    }
   }, [onUpload]);
 
   useEffect(() => {
-    const ir = inputRef.current;
-    const dr = dndRef.current;
-    ir.addEventListener('change', handleInput, false);
-    dr.addEventListener('dragover', handleDragOver, false);
-    dr.addEventListener('dragleave', handleDragLeave, false);
-    dr.addEventListener('drop', handleDrop, false);
-    return () => {
-      ir.removeEventListener('change', handleInput);
-      dr.removeEventListener('dragover', handleDragOver);
-      dr.removeEventListener('dragleave', handleDragLeave);
-      dr.removeEventListener('drop', handleDrop);
-    };
+    if (inputRef.current && dndRef.current) {
+      const ir = inputRef.current;
+      const dr = dndRef.current;
+      ir.addEventListener('change', handleInput, false);
+      dr.addEventListener('dragover', handleDragOver, false);
+      dr.addEventListener('dragleave', handleDragLeave, false);
+      dr.addEventListener('drop', handleDrop, false);
+      return () => {
+        ir.removeEventListener('change', handleInput);
+        dr.removeEventListener('dragover', handleDragOver);
+        dr.removeEventListener('dragleave', handleDragLeave);
+        dr.removeEventListener('drop', handleDrop);
+      };
+    }
+    log.warn('FileUpload useEffect with null references');
+    return () => null;
   }, [handleDragLeave, handleDragOver, handleDrop, handleInput]);
 
   return <div className="upload-control">

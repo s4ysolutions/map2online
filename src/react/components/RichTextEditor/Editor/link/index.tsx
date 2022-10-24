@@ -20,11 +20,15 @@ import log from '../../../../../log';
 import './style.scss';
 import {LinkElement} from '../../../../../richtext';
 
-export type LinkProps = RenderElementProps & { element: LinkElement };
+const NON_BREAKING_SPACE_CODE = 160;
+
+export type LinkProps =
+  Omit<RenderElementProps, 'children'> & { element: LinkElement, children? : React.ReactNode | React.ReactNode[]};
 
 const InlineChromiumBugfix = (): ReactElement =>
-  <span contentEditable={false} className="inline-chromium-bugfix">
-    ${String.fromCodePoint(160) /* Non-breaking space */}
+  <span className="inline-chromium-bugfix" contentEditable={false}>
+    $
+    {String.fromCodePoint(NON_BREAKING_SPACE_CODE) /* Non-breaking space */}
   </span>;
 
 const Link = (props: LinkProps): ReactElement => {
@@ -32,13 +36,15 @@ const Link = (props: LinkProps): ReactElement => {
   const selected = useSelected();
   log.render('RichText Link', {attributes, element, selected});
   return <a
-      {...attributes}
-      href={element.url}
-      className={`${selected ? 'selected' : ''}`}>
-      <InlineChromiumBugfix />
-      {children}
-      <InlineChromiumBugfix />
-    </a>
+    {...attributes}
+    className={`${selected ? 'selected' : ''}`}
+    href={element.url}>
+    {children ? <InlineChromiumBugfix /> : null}
+
+    {children}
+
+    {children ? <InlineChromiumBugfix /> : null}
+  </a>;
 };
 
 export default Link;

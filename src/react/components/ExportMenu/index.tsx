@@ -16,15 +16,13 @@
 
 import * as React from 'react';
 import MenuItem from '../Menu/MenuItem';
-import MenuSep from '../Menu/MenuSep';
 import T from 'l10n';
 import log from '../../../log';
-import {getCatalog, getCatalogUI, getExporter, getImportUI, getWording, getWorkspace} from '../../../di-default';
+import {getCatalog, getCatalogUI, getExporter, getWording, getWorkspace} from '../../../di-default';
 import Check from '../Svg/Check';
 import './style.scss';
 import useObservable from '../../hooks/useObservable';
 
-const importUI = getImportUI();
 const exporter = getExporter();
 const catalog = getCatalog();
 const workspace = getWorkspace();
@@ -51,7 +49,7 @@ const handleExportCategory: () => void = () => {
 const handleExportRoute: () => void = () => {
   workspace.closeMenus();
   const {activeRoute} = catalogUI;
-  if (activeRoute) {
+  if (activeRoute && catalogUI.activeCategory) {
     exporter.exportRoutesKML([activeRoute], catalogUI.activeCategory);
   }
 };

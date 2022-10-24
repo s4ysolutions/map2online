@@ -22,30 +22,37 @@ import useCurrentFeatureType from './hooks/useCurrentFeatureType';
 import {SelectedTool} from '../../../ui/tools';
 import {getOlStyle} from './lib/styles';
 import olMapContext from './context/map';
-import {getCatalogUI} from '../../../di-default';
+import {getCatalogUI, getMap2Styles} from '../../../di-default';
 import {FeatureProps} from '../../../catalog';
 import {ol2coordinate2, ol2coordinates2} from './lib/coordinates';
 import log from '../../../log';
 import {useCursorOver} from './hooks/useCursorOver';
 import {useModifying} from './hooks/useModifying';
-import GeometryType from 'ol/geom/GeometryType';
 import {Style} from '../../../style';
 import {makeEmptyRichText} from '../../../richtext';
+import {ID_NULL} from '../../../lib/id';
+import OlFeature from 'ol/Feature';
+import {DrawEvent} from 'ol/interaction/Draw';
+
+const map2styles = getMap2Styles();
+const defaultStyles = map2styles.defaultStyle;
 
 const newDrawInteraction = (type: SelectedTool, pointStyle: Style, lineStyle: Style) => new DrawInteraction({
-  style: getOlStyle(type === SelectedTool.Point ? pointStyle.iconStyle : lineStyle.lineStyle),
-  type: type === SelectedTool.Point ? GeometryType.POINT : GeometryType.LINE_STRING,
+  style: getOlStyle(type === SelectedTool.Point
+    ? (pointStyle.iconStyle || defaultStyles.iconStyle)
+    : (lineStyle.lineStyle || defaultStyles.lineStyle)),
+  type: type === SelectedTool.Point ? 'Point' : 'LineString',
 });
 
 const catalogUI = getCatalogUI();
 const OL_FLATCOORDINATE_LENGTH = 2;
 
-const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
+const DrawInteractions: React.FunctionComponent = (): React.ReactElement | null => {
   const map = React.useContext(olMapContext);
   const pointStyle = usePointStyle();
   const lineStyle = useLineStyle();
   const featureType = useCurrentFeatureType();
-  const drawInteractionRef = React.useRef(null);
+  const drawInteractionRef = React.useRef<DrawInteraction | null>(null);
 
   const cursorOver = useCursorOver();
   const isModifying = useModifying();
@@ -53,7 +60,7 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
 
 
   const handleDrawEnd = React.useCallback(
-    ({feature}) => {
+    ({feature}:DrawEvent) => {
       const geometry = feature.get('geometry');
       const coordinates: number[] = geometry.flatCoordinates;
       const isPoint = coordinates.length === OL_FLATCOORDINATE_LENGTH;
@@ -61,7 +68,7 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
         style: isPoint ? pointStyle : lineStyle,
         description: makeEmptyRichText(),
         geometry: isPoint ? {coordinate: ol2coordinate2(coordinates)} : {coordinates: ol2coordinates2(coordinates)},
-        id: null,
+        id: ID_NULL,
         summary: '',
         title: '',
         visible: true,
@@ -74,6 +81,9 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement => {
   );
 
   useEffect(() => {
+    if (!map) {
+      return () => null;
+    }
     if (drawInteractionRef.current) {
       map.removeInteraction(drawInteractionRef.current);
       drawInteractionRef.current = null;

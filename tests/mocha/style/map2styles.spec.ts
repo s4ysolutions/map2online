@@ -14,9 +14,9 @@ describe('Default map2 styles', () => {
     expect(map2styles.styles.length).to.be.eq(9);
   })
   it('default style should be red', () => {
-    expect(map2DefaultStyle.lineStyle.color).to.be.eq(map2colors.RED,'line style is ' + map2DefaultStyle.lineStyle.color);
-    expect(map2DefaultStyle.iconStyle.color).to.be.eq(map2colors.RED);
-    expect(map2DefaultStyle.iconStyle.icon).to.be.eq(makePinURL(map2colors.RED));
+    expect(map2DefaultStyle.lineStyle!.color).to.be.eq(map2colors.RED,'line style is ' + map2DefaultStyle.lineStyle!.color);
+    expect(map2DefaultStyle.iconStyle!.color).to.be.eq(map2colors.RED);
+    expect(map2DefaultStyle.iconStyle!.icon).to.be.eq(makePinURL(map2colors.RED));
   })
   it('style type guards', () => {
     expect(isIconStyle(map2DefaultStyle.iconStyle)).to.be.true
@@ -27,13 +27,16 @@ describe('Default map2 styles', () => {
   it('can find equal', () => {
     const s2 = map2styles.styles[2];
     const s = map2styles.findEq(s2);
-    expect(s.id).to.be.eq(s2.id);
+    expect(s).to.not.be.undefined;
+    expect(s).to.not.be.null;
+    expect(s!.id).to.be.eq(s2.id);
   })
   it('find Orange style', () => {
     const c = "#f58231ff";
-    const s = map2styles.byColor(c);
+    const s = map2styles.byColorId(c);
     expect(s).to.not.be.undefined;
-    expect(s.lineStyle.color).to.be.eq(c);
-    expect(s.iconStyle.color).to.be.eq(c);
+    expect(s).to.not.be.null;
+    expect(s!.lineStyle!.color).to.be.eq(c);
+    expect(s!.iconStyle!.color).to.be.eq(c);
   })
 });

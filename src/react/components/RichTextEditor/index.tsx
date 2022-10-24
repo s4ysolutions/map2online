@@ -17,8 +17,8 @@
 import * as React from 'react';
 import log from '../../../log';
 import './style.scss';
-import {memo, useCallback, useMemo, useState} from 'react';
-import {createEditor} from 'slate';
+import {memo, useCallback, useMemo} from 'react';
+import {Descendant, createEditor} from 'slate';
 import {Editable, ReactEditor, Slate, withReact} from 'slate-react';
 import {withHistory} from 'slate-history';
 import {Toolbar} from './Toolbar';
@@ -28,11 +28,11 @@ import Element from './Editor/Element';
 import BlockButton from './Toolbar/BlockButton';
 import InsertImageButton from './Toolbar/InsertImageButton';
 import withImages from './Editor/Image/withImage';
-import {RichTextElementType} from '../../../richtext';
 import AddLinkButton from './Toolbar/AddLinkButton';
 import RemoveLinkButton from './Toolbar/RemoveLinkButton';
 import withInlines from './Editor/Inlines/withInlines';
-import {RichText} from '../../../richtext';
+import {RichText, RichTextElementType} from '../../../richtext';
+import {RenderElementProps, RenderLeafProps} from 'slate-react/dist/components/editable';
 
 const emptyValue: RichText = [
   {
@@ -41,7 +41,7 @@ const emptyValue: RichText = [
   },
 ];
 
-const RichTextEditor: React.FunctionComponent<{ content: RichText, onChange?: (value: RichText) => void }> =
+const RichTextEditor: React.FunctionComponent<{ content: RichText, onChange?: (value: Descendant[]) => void }> =
   ({content, onChange: handleChange}): React.ReactElement => {
     log.render('RichText Editor');
 
@@ -49,8 +49,12 @@ const RichTextEditor: React.FunctionComponent<{ content: RichText, onChange?: (v
 
     // const [value, setValue] = useState<Descendant[]>(initialValue);
     const editor = useMemo(() => withInlines(withImages(withHistory(withReact(createEditor() as ReactEditor)))), []);
-    const renderElement = useCallback(props => <Element {...props} />, []);
-    const renderLeaf = useCallback(props => <Leaf {...props} />, []);
+    const renderElement = useCallback((props: RenderElementProps): JSX.Element => <Element {...props}>
+      {props.children}
+    </Element>, []);
+    const renderLeaf = useCallback((props: RenderLeafProps): JSX.Element => <Leaf {...props}>
+      {props.children}
+    </Leaf>, []);
     // const updateValue = useCallback(value => {/*setValue(value);*/onChange(value);}, [/*setValue*/]);
 
     return <div className="rich-text" >

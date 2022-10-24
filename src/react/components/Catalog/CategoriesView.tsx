@@ -16,7 +16,14 @@
 
 import * as React from 'react';
 import {useCallback} from 'react';
-import {DragDropContext, Draggable, DraggingStyle, Droppable, NotDraggingStyle} from 'react-beautiful-dnd';
+import {
+  DragDropContext,
+  Draggable,
+  DraggingStyle,
+  DropResult,
+  Droppable,
+  NotDraggingStyle,
+} from 'react-beautiful-dnd';
 import log from '../../../log';
 import {getCatalog, getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
@@ -58,14 +65,20 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
 
   const categories = useObservable(
     catalog.categories.observable()
-      .pipe(map(cc => Array.from(cc))),
+      .pipe(map(cc => cc === null ? [] : Array.from(cc))),
     Array.from(catalog.categories),
   );
 
   const categoryEdit = useObservable(catalogUI.categoryEditObservable(), catalogUI.categoryEdit);
   const categoryDelete = useObservable(catalogUI.categoryDeleteObservable(), catalogUI.categoryDelete);
   const handleDragEnd = useCallback(
-    ({source: {index: indexS}, destination: {index: indexD}}): void => catalog.categories.reorder(indexS, indexD),
+    (result: DropResult): void => {
+      const indexS = result.source.index;
+      const indexD = result.destination?.index;
+      if (indexD !== undefined) {
+        catalog.categories.reorder(indexS, indexD);
+      }
+    },
     [],
   );
   const handleAdd = useCallback(() => {
@@ -88,7 +101,7 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
                 {...provided.dragHandleProps}
                 style={getDraggingStyle(
                   snapshot.isDragging,
-                  provided.draggableProps.style,
+                  provided.draggableProps.style || {},
                 )}
               >
                 <CategoryView canDelete={categories.length > 1} category={item} />
@@ -102,9 +115,9 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
       {T`Add`}
     </button >
 
-    {categoryEdit && <CategoryEdit category={categoryEdit} />}
+    {categoryEdit ? <CategoryEdit category={categoryEdit} /> : null}
 
-    {categoryDelete && <ConfirmDialog
+    {categoryDelete ? <ConfirmDialog
       confirm={wording.C('Yes, delete the category')}
       message={wording.CR('Delete category warning')}
       onCancel={catalogUI.endDeleteCategory}
@@ -120,7 +133,7 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
         }, 1);
       }}
       title={wording.C('Delete category')}
-    />}
+    /> : null}
   </div >;
 };
 

@@ -16,19 +16,24 @@
 
 import {BaseEditor, Editor, Range, Transforms} from 'slate';
 import {LinkElement, RichTextElement, RichTextElementType} from '../../../../../richtext';
+import log from '../../../../../log';
 
 export const isLinkActive = (editor: BaseEditor): boolean => {
   const [link] = Editor.nodes(editor, {
-    match: (n: RichTextElement) =>
-      !Editor.isEditor(n) && RichTextElement.isElement(n) && n.type === 'link',
+    match: (node, path) => {
+      log.debug('isLinkActive', {node, path});
+      return !Editor.isEditor(node) && RichTextElement.isElement(node) && node.type === 'link';
+    },
   });
   return Boolean(link);
 };
 
 export const unwrapLink = (editor: BaseEditor):void => {
   Transforms.unwrapNodes(editor, {
-    match: (n: RichTextElement): boolean =>
-      !Editor.isEditor(n) && RichTextElement.isElement(n) && n.type === 'link',
+    match: (node, path): boolean => {
+      log.debug('unwrapNodes', {node, path});
+      return !Editor.isEditor(node) && RichTextElement.isElement(node) && node.type === 'link';
+    },
   });
 };
 
@@ -40,7 +45,7 @@ export const wrapLink = (editor: BaseEditor, url: string):void => {
   const { selection } = editor;
   const isCollapsed = selection && Range.isCollapsed(selection);
   const link: LinkElement = {
-    type: RichTextElementType.Link, //'link',
+    type: RichTextElementType.Link, // 'link',
     url,
     children: isCollapsed ? [{ text: url }] : [],
   };
@@ -55,6 +60,6 @@ export const wrapLink = (editor: BaseEditor, url: string):void => {
 
 export const insertLink = (editor: BaseEditor, url: string): void => {
   if (editor.selection) {
-    wrapLink(editor, url)
+    wrapLink(editor, url);
   }
 };

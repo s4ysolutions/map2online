@@ -17,39 +17,44 @@
 import ExportMenu from '../../ExportMenu';
 import MapSourcesMenu from '../../MapSourcesMenu';
 import React from 'react';
-import posed from 'react-pose';
-import {tween} from 'popmotion';
 import log from '../../../../log';
+import {motion} from 'framer-motion';
 import {getWorkspace} from '../../../../di-default';
 import useObservable from '../../../hooks/useObservable';
 import SettingsMenu from '../../SettingsMenu';
 import './style.scss';
 
-const PosedMenu = posed.div({
+const variantMenu = {
   hide: {
-    transition: tween,
     width: 0,
   },
   show: {
-    transition: tween,
     width: 'auto',
   },
-});
+};
 
 const workspace = getWorkspace();
+
+const transition = { easy: 'tween', stiffness: 100 };
 
 const RightDrawer: React.FunctionComponent = (): React.ReactElement => {
   const stateExport = useObservable(workspace.exportObservable(), workspace.exportOpen);
   const stateSources = useObservable(workspace.sourcesObservable(), workspace.sourcesOpen);
   const stateSettings = useObservable(workspace.settingsObservable(), workspace.settingsOpen);
   log.render(`RightDrawer exportMenu=${stateExport} sourceMenu=${stateSources} settings=${stateSettings}`);
-  return <PosedMenu className="right-drawer" pose={stateExport || stateSources || stateSettings ? 'show' : 'hide'} >
-    {stateSources && <MapSourcesMenu />}
+  return <motion.div
+    animate={stateExport || stateSources || stateSettings ? 'show' : 'hide'}
+    className="right-drawer"
+    initial={stateExport || stateSources || stateSettings ? 'show' : 'hide'}
+    transition={transition}
+    variants={variantMenu}
+  >
+    {stateSources ? <MapSourcesMenu /> : null}
 
-    {stateExport && <ExportMenu />}
+    {stateExport ? <ExportMenu /> : null}
 
-    {stateSettings && <SettingsMenu />}
-  </PosedMenu >;
+    {stateSettings ? <SettingsMenu /> : null}
+  </motion.div >;
 };
 
 export default RightDrawer;

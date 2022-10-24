@@ -29,8 +29,9 @@ export interface Coordinate {
 }
 
 export const isCoordinate = (coordinate: Coordinate | Coordinate[] | number | number[]): coordinate is Coordinate =>
+  (coordinate as Coordinate).lon !== undefined && (coordinate as Coordinate).lat !== undefined;
   // eslint-disable-next-line no-extra-parens
-  coordinate && ((coordinate as Coordinate).lon !== undefined && (coordinate as Coordinate).lat !== undefined);
+  // coordinate!! && ((coordinate as Coordinate).lon !== undefined && (coordinate as Coordinate).lat !== undefined);
 
 
 export const coordinateEq = (c1: Coordinate, c2: Coordinate): boolean => c1.lat === c2.lat && c1.lon === c2.lon;
@@ -55,18 +56,23 @@ export interface LineString {
   coordinates: Coordinate[];
 }
 
-export interface FeatureProps {
+export type Geometry= Point | LineString
+
+interface FeaturePropsWithoutStyle {
   description: RichText;
   id: ID;
   summary: string;
   title: string;
   visible: boolean;
+  geometry: Geometry;
+}
+
+export interface FeatureProps extends FeaturePropsWithoutStyle {
   style: Style;
-  geometry: Point | LineString;
 }
 
 // used for persisting
-export interface FeaturePropsWithStyleId extends FeatureProps {
+export interface FeaturePropsWithStyleId extends FeaturePropsWithoutStyle {
   styleId: ID
 }
 
@@ -76,7 +82,7 @@ export const isPoint = (geometry: Point | LineString): geometry is Point => geom
 export const isLineString = (geometry: Point | LineString): geometry is LineString => geometry && (geometry as LineString).coordinates !== undefined;
 
 export interface Feature extends FeatureProps {
-  observable: () => Observable<Feature>;
+  observable: () => Observable<Feature | null>;
   updateCoordinates: (coord: Coordinate | Coordinate[]) => void;
   eq: (anotherFeature: Feature) => boolean;
 }
@@ -87,7 +93,7 @@ export interface Features extends Iterable<Feature> {
   hasFeature: (feature: Feature) => boolean;
   readonly length: number;
   remove: (feauture: Feature) => Promise<number>;
-  observable: () => Observable<Features>;
+  observable: () => Observable<Features | null>;
   byPos: (index: number) => Feature | null;
   reorder: (from: number, to: number) => Promise<void>;
   delete: () => Promise<void>;
@@ -105,7 +111,7 @@ export interface RouteProps {
 export interface Route extends RouteProps {
   ts: ID;
   features: Features;
-  observable: () => Observable<Route>;
+  observable: () => Observable<Route | null>;
 }
 
 export interface Routes extends Iterable<Route> {
@@ -113,7 +119,7 @@ export interface Routes extends Iterable<Route> {
   has: (route: Route) => boolean;
   readonly length: number;
   remove: (route: Route) => Promise<number>;
-  observable: () => Observable<Routes>;
+  observable: () => Observable<Routes | null>;
   byPos: (index: number) => Route | null;
   reorder: (from: number, to: number) => Promise<void>;
   delete: () => Promise<void>;
@@ -130,7 +136,7 @@ export interface CategoryProps {
 
 export interface Category extends CategoryProps {
   routes: Routes;
-  observable: () => Observable<Category>;
+  observable: () => Observable<Category | null>;
 }
 
 export interface Categories extends Iterable<Category> {
@@ -138,7 +144,7 @@ export interface Categories extends Iterable<Category> {
   has: (category: Category) => boolean;
   readonly length: number;
   remove: (category: Category) => Promise<number>;
-  observable: () => Observable<Categories>;
+  observable: () => Observable<Categories | null>;
   byPos: (index: number) => Category | null;
   reorder: (from: number, to: number) => void;
 }

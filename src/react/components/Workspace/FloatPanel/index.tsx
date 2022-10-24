@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import {useCallback, useState} from 'react';
-import Draggable, {DraggableData} from 'react-draggable';
+import Draggable, {DraggableData, DraggableEvent} from 'react-draggable';
 import Handle from '../../Svg/Handle';
 import ToolsPanel from 'react/components/ToolsPanel';
 import usePosition from './usePosition';
@@ -33,24 +33,28 @@ interface Props {
 }
 
 const FloatPanel: React.FunctionComponent<Props> =
-  ({parentHeight, parentWidth}): React.ReactElement => {
+  ({parentHeight, parentWidth}): React.ReactElement | null => {
     const [el, setEl] = useState<HTMLDivElement | null>(null);
-    const onRefSet = useCallback(ref => {
+    const onRefSet = useCallback((ref: HTMLDivElement) => {
       setEl(ref);
     }, [setEl]);
     const {height, width} = useComponentSize(el);
     const [position, setPosition] = usePosition(width, height, parentWidth, parentHeight);
     const visible = useObservable(workspace.toolsObservable(), workspace.toolsOpen);
-
+    const handleStop = useCallback(
+      (_: DraggableEvent, d: DraggableData): void => setPosition(d.x || 0, d.y || 0),
+      [setPosition],
+    );
 
     if (parentHeight <= 0 || parentWidth <= 0) {
       log.warn('render Float Panel parent size is zero');
       return null;
     }
+
     return <Draggable
       bounds="parent"
       handle=".drag-handle"
-      onStop={(_: MouseEvent, d: DraggableData): void => setPosition(d.x || 0, d.y || 0)}
+      onStop={handleStop}
       position={position}
     >
       <div

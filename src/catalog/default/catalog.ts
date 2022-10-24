@@ -94,23 +94,28 @@ export class CatalogDefault implements Catalog {
     const autoCreate = this.disableAutoCreateCategoryAndRoute();
 
     await this.storage.readCategoriesIds(this.id).then(ids => {
-      this.categoriesIds[this.id] = ids;
+      if (ids !== null) {
+        this.categoriesIds[this.id] = ids;
+      }
     });
     const categoriesIdsFlat = Object.values(this.categoriesIds).flat();
 
     await Promise.all(categoriesIdsFlat.map(categoryId => this.storage.readRoutesIds(categoryId).then(ids => {
-      this.routesIds[categoryId] = ids;
+      if (ids !== null) {
+        this.routesIds[categoryId] = ids;
+      }
     })));
     const routesIdsFlat: ID[] = Object.values(this.routesIds).flat();
 
     await Promise.all(routesIdsFlat.map(routeId => this.storage.readFeaturesIds(routeId).then(ids => {
-      this.featuresIds[routeId] = ids;
+      if (ids !== null) {
+        this.featuresIds[routeId] = ids;
+      }
     })));
     const featuresIdsFlat: ID[] = Object.values(this.featuresIds).flat();
 
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
     await Promise.all(featuresIdsFlat.map(id => this.storage.readFeatureProps(id)
-      .then((props: FeatureProps) => {
+      .then((props: FeatureProps | null) => {
         if (props !== null) {
           const feature = new FeatureDefault(this, props);
           this.featuresCache[feature.id] = feature;

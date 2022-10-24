@@ -17,9 +17,11 @@
 import * as React from 'react';
 import usePersistState from '../../hooks/usePersistState';
 import {getLocalStorage} from '../../../di-default';
+import {ReactNode} from 'react';
 
 interface Props {
-  id: string;
+  id: string
+  children: ReactNode[] | ReactNode
 }
 
 const localStorage = getLocalStorage();

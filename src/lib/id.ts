@@ -18,3 +18,4 @@ import {v4 as uuid} from 'uuid';
 import {ID} from '../catalog';
 
 export const makeId = (): ID => uuid();
+export const ID_NULL = '';

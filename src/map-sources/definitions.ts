@@ -254,9 +254,9 @@ const mapGroups: MapGroupDefinition[] = [
   maps: group.maps.map((map: MapDefinition): MapDefinition => addProjToMap(map)),
 }))*/;
 
-const memo: Record<string, MapDefinition> = {};
+const memo: Record<string, MapDefinition | null> = {};
 
-export const getMapDefinition = (sourceName: string): MapDefinition => {
+export const getMapDefinition = (sourceName: string): MapDefinition | null => {
   if (memo[sourceName]) {
     return memo[sourceName];
   }

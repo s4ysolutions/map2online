@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import {FormEvent} from 'react';
+import {FormEvent, useCallback} from 'react';
 import Modal from '../Modal';
 import {getCatalogUI, getWording} from '../../../di-default';
 import {Category} from '../../../catalog';
@@ -24,6 +24,8 @@ import T from '../../../l10n';
 import {map} from 'rxjs/operators';
 import RichTextEditor from '../RichTextEditor';
 import log from '../../../log';
+import {makeEmptyRichText} from '../../../richtext';
+import {Descendant} from 'slate';
 
 const wording = getWording();
 const catalogUI = getCatalogUI();
@@ -42,15 +44,21 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
 
   const category = useObservable(
     categoryEdit.observable()
-      .pipe(map(c => ({title: c.title, description: c.description}))),
+      .pipe(map(c => ({title: c === null ? '' : c.title, description: c === null ? makeEmptyRichText() : c.description}))),
     categoryEdit,
   );
   const titleRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect((): void => {
-    titleRef.current.focus();
-    titleRef.current.select();
+    if (titleRef.current !== null) {
+      titleRef.current.focus();
+      titleRef.current.select();
+    }
   }, []);
+
+  const handleChange = useCallback((content: Descendant[]) => {
+    categoryEdit.description = content as RichText;
+  }, [categoryEdit]);
 
   return <Modal className="edit-dialog" closeOnEnter onClose={handleClose} >
     <form onSubmit={handleSubmit} >
@@ -79,9 +87,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
 
         <RichTextEditor
           content={category.description}
-          onChange={content => {
-            categoryEdit.description = content;
-          }} />
+          onChange={handleChange} />
       </div >
 
       <div className="buttons-row" >

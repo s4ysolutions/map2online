@@ -12,12 +12,13 @@ import {
 } from '../index';
 import {makeId} from '../../lib/id';
 import {Style} from '../../style';
-import {Observable} from 'rxjs';
+import {NEVER, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import T from '../../l10n';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
 import {makeEmptyRichText} from '../../richtext';
+import log from '../../log';
 
 export class FeatureDefault implements Feature {
   private readonly p: FeatureProps;
@@ -172,7 +173,7 @@ export class FeatureDefault implements Feature {
 
   observable(): Observable<Feature | null> {
     return this.catalog.storage.observableFeatureProps(this.p)
-      .pipe(map(value => value === null ? null : this));
+      .pipe(map(value => value === null ? null : this as Feature));
   }
 
   update(): Promise<void> {
@@ -236,7 +237,7 @@ export class FeaturesDefault implements Features {
     return Promise.all([p1, p2]).then(() => feature);
   }
 
-  add(props: FeatureProps, position?: number): Promise<Feature> {
+  add(props: FeatureProps | null, position?: number): Promise<Feature> {
     if (props === null) {
       const feature = new FeatureDefault(this.catalog, null);
       return this.addFeature(feature, position);
@@ -254,7 +255,7 @@ export class FeaturesDefault implements Features {
     return this.addFeature(feature, position);
   }
 
-  hasFeature (feature: Feature): boolean {
+  hasFeature(feature: Feature): boolean {
     return this.guardedIds.indexOf(feature.id) >= 0;
   }
 
@@ -279,8 +280,9 @@ export class FeaturesDefault implements Features {
     return this.guardedIds.length;
   }
 
-  observable(): Observable<Features> {
-    return this.catalog.storage.observableFeaturesIds(this.routeId).pipe(map((p) => p === null ? null : this));
+  observable(): Observable<Features | null> {
+    return this.catalog.storage.observableFeaturesIds(this.routeId)
+      .pipe(map((p) => p === null ? null : this));
   }
 
   remove(feature: Feature): Promise<number> {
@@ -305,13 +307,44 @@ export class FeaturesDefault implements Features {
     return this.update();
   }
 
+  private makeFeatureError(): Feature {
+    return {
+      id: makeId(),
+      style: this.catalog.map2styles.defaultStyle,
+      description: makeEmptyRichText(),
+      geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
+      summary: '',
+      title: 'ERROR',
+      visible: true,
+      // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
+      eq(anotherFeature: Feature): boolean {
+        return false;
+      },
+      observable(): Observable<Feature | null> {
+        return NEVER;
+      },
+      // eslint-disable-next-line @typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars
+      updateCoordinates(coord: Coordinate | Coordinate[]): void {
+      },
+    };
+  }
+
   [Symbol.iterator](): Iterator<Feature> {
     const _ids = this.guardedIds.slice(); // don't reflect modifications after the iterator has been created
     let _current = 0;
     return {
-      next: () => _current >= _ids.length
-        ? {done: true, value: null}
-        : {done: false, value: this.byPos(_current++)},
+      next: () => {
+        if (_current >= _ids.length) {
+          return {done: true, value: null};
+        }
+        const f = this.byPos(_current++);
+        if (f === null) {
+          // NOTE: should never happen
+          log.error(`route ${this.routeId} has no feature in position ${_current - 1}`);
+          return {done: false, value: this.makeFeatureError()};
+        }
+        return {done: false, value: f};
+      },
     };
   }
 

@@ -30,6 +30,7 @@ import {map2StylesFactory} from '../../../src/style/default/styles';
 import {fileURLToPath} from 'url';
 import { dirname } from 'path';
 import log from '../../../src/log';
+import {ID_NULL} from '../../../src/lib/id';
 
 log.disableDebug();
 
@@ -100,14 +101,14 @@ describe('KML Importer', () => {
     expect(route12.features.length, '2nd route must have 3 features').to.be.eq(3);
     expect(route12.name).to.be.eq('Route 12');
     expect(route12.description.serializePlainText().trim()).to.be.eq('Desc r12');
-    expect(route12.features[0].id).to.be.null; // not.null;
+    expect(route12.features[0].id).to.be.eq(ID_NULL); // not.null;
     expect(route12.features[0].title).to.be.eq('121');
     expect(route12.features[0].description.serializePlainText().trim()).to.be.eq('Desc 121');
-    expect(route12.features[1].id).to.be.null; // not.null;
+    expect(route12.features[1].id).to.be.eq(ID_NULL); // not.null;
     expect(route12.features[1].title).to.be.eq('122');
     expect(route12.features[1].description.serializePlainText().trim()).to.be.eq('Desc 122');
     // expect(route12.features[2].id, 'Absent id must be left in anyway').to.be.not.null;
-    expect(route12.features[2].id).to.be.null; // not.null;
+    expect(route12.features[2].id).to.be.eq(ID_NULL); // not.null;
     expect(route12.features[2].title).to.be.eq('123');
     expect(route12.features[2].description.serializePlainText().trim(), 'Absent feature description must be empty string').to.be.eq('');
   });

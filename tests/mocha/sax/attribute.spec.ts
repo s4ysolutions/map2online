@@ -25,7 +25,7 @@ describe('SAX attribute', () => {
   });
 
   it('simple string', () => {
-    let id: string | QualifiedAttribute = null;
+    let id: string | QualifiedAttribute | null = null;
     parser.onopentag = tag => {
       if (tag.name === 'el') {
         id = tag.attributes.id;
@@ -41,7 +41,7 @@ describe('SAX attribute', () => {
   });
 
   it('uri like string', () => {
-    let id: string | QualifiedAttribute = null;
+    let id: string | QualifiedAttribute | null = null;
     parser.onopentag = tag => {
       if (tag.name === 'el') {
         id = tag.attributes.id;

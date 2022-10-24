@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import MapTypeId = google.maps.MapTypeId;
+// type MapTypeId = google.maps.MapTypeId;
 
 export const sourceNameToMapId = (name: string): google.maps.MapTypeId => {
   switch (name) {
     case 'GoogleLandscape':
-      return MapTypeId.TERRAIN;
-    case 'GoogleSattelite':
-      return MapTypeId.SATELLITE;
-    case 'GoogleTrasport':
-      return MapTypeId.HYBRID;
+      return google.maps.MapTypeId.TERRAIN;
+    case 'GoogleSatellite':
+      return google.maps.MapTypeId.SATELLITE;
+    case 'GoogleHybrid':
+      return google.maps.MapTypeId.HYBRID;
     default:
-      return MapTypeId.ROADMAP;
+      return google.maps.MapTypeId.ROADMAP;
   }
 };

@@ -1,5 +1,5 @@
-import {Features, ID, Route, RouteProps, Routes} from '../index';
-import {Observable} from 'rxjs';
+import {Feature, FeatureProps, Features, ID, Route, RouteProps, Routes} from '../index';
+import {NEVER, Observable} from 'rxjs';
 import {makeId} from '../../lib/id';
 import {FeatureDefault, FeaturesDefault} from './feature';
 import {map} from 'rxjs/operators';
@@ -102,7 +102,7 @@ export class RouteDefault implements Route {
     return Promise.all([p1, p2]) as unknown as Promise<void>;
   }
 
-  observable(): Observable<Route> {
+  observable(): Observable<Route | null> {
     return this.catalog.storage.observableRouter(this.p)
       .pipe(map(value => value === null ? null : this));
   }
@@ -179,7 +179,7 @@ export class RoutesDefault implements Routes {
     return Promise.all([p1, p2]).then(() => route);
   }
 
-  add(props: RouteProps, position?: number): Promise<Route> {
+  add(props: RouteProps | null, position?: number): Promise<Route> {
     if (props === null) {
       const route = new RouteDefault(this.catalog, null);
       return this.addRoute(route, position);
@@ -220,8 +220,9 @@ export class RoutesDefault implements Routes {
     return this.guardedIds.length;
   }
 
-  observable(): Observable<Routes> {
-    return this.catalog.storage.observableRoutesIds(this.categoryId).pipe(map(() => this));
+  observable(): Observable<Routes | null> {
+    return this.catalog.storage.observableRoutesIds(this.categoryId)
+      .pipe(map(value => value === null ? null : this as Routes));
   }
 
   remove(route: Route): Promise<number> {
@@ -244,13 +245,49 @@ export class RoutesDefault implements Routes {
     return this.update();
   }
 
+  private static makeRouteError(): Route {
+    return {
+      features: {
+        ts: makeId(),
+        add: (props: FeatureProps | null, position?: number) => Promise.resolve(null as unknown as Feature),
+        hasFeature: (feature: Feature) => false,
+        length: 0,
+        remove: (feauture: Feature) => Promise.resolve(0),
+        observable: () => NEVER,
+        byPos: (index: number) => null,
+        reorder: (from: number, to: number) => Promise.resolve(),
+        delete: () => Promise.resolve(),
+        [Symbol.iterator]: () => ({
+          next: () => ({done: true, value: null}),
+        }),
+      },
+      observable(): Observable<Route | null> {
+        return NEVER;
+      },
+      ts: '',
+      id: makeId(),
+      description: makeEmptyRichText(),
+      summary: '',
+      title: 'ERROR',
+      visible: true,
+      open: true,
+    };
+  }
+
   [Symbol.iterator](): Iterator<Route> {
     const _ids = this.guardedIds.slice(); // don't reflect modifications after the iterator has been created
     let _current = 0;
     return {
-      next: () => _current >= _ids.length
-        ? {done: true, value: null}
-        : {done: false, value: this.byPos(_current++)},
+      next: () => {
+        if (_current >= _ids.length) {
+          return {done: true, value: null};
+        }
+        const r = this.byPos(_current++);
+        if (r === null) {
+          return {done: false, value: RoutesDefault.makeRouteError()};
+        }
+        return {done: false, value: r};
+      },
     };
   }
 

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-const path = require('path');
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const {
   config: baseConfig,
-  PATH_DIST,
   PATH_CSS,
   PATH_SASS,
   cssLoader,
   cssModuleLoader,
-  ruleTypescript,
+  ruleTypescriptDev,
 } = require('./webpack.config-common.cjs');
 
 const ruleCssEmbed = {
@@ -56,14 +55,14 @@ const config = merge(baseConfig, {
     rules: [
       ruleCssEmbed,
       ruleSassEmbed,
-      ruleTypescript,
+      ruleTypescriptDev,
     ],
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development'),
     }),
-    new webpack.HotModuleReplacementPlugin(),
+    new ReactRefreshWebpackPlugin(),
   ],
   devServer: {
     //contentBase: path.resolve(__dirname, PATH_DIST),

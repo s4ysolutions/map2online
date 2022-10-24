@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import {useCallback} from 'react';
-import {DragDropContext, Draggable, DraggingStyle, Droppable, NotDraggingStyle} from 'react-beautiful-dnd';
+import {DragDropContext, Draggable, DraggingStyle, DropResult, Droppable, NotDraggingStyle} from 'react-beautiful-dnd';
 import log from '../../../log';
 import {getCatalogUI, getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
@@ -57,14 +57,18 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
 
   const routes = useObservable(
     category.routes.observable()
-      .pipe(map(r => Array.from(r))),
+      .pipe(map(r => r === null ? [] : Array.from(r))),
     Array.from(category.routes),
   );
   const routeEdit = useObservable(catalogUI.routeEditObservable(), catalogUI.routeEdit);
   const routeDelete = useObservable(catalogUI.routeDeleteObservable(), catalogUI.routeDelete);
   const handleDragEnd = useCallback(
-    ({source: {index: indexS}, destination: {index: indexD}}): void => {
-      category.routes.reorder(indexS, indexD);
+    (result: DropResult): void => {
+      const indexS = result.source.index;
+      const indexD = result.destination?.index;
+      if (indexD !== undefined) {
+        category.routes.reorder(indexS, indexD);
+      }
     },
     [category.routes],
   );
@@ -88,7 +92,7 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
                 {...provided.dragHandleProps}
                 style={getDraggingStyle(
                   snapshot.isDragging,
-                  provided.draggableProps.style,
+                  provided.draggableProps.style || {},
                 )}
               >
                 <RouteView canDelete={routes.length > 1} category={category} route={item} />
@@ -102,9 +106,9 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
       {T`Add`}
     </button >
 
-    {routeEdit && <RouteEdit route={routeEdit} />}
+    {routeEdit ? <RouteEdit route={routeEdit} /> : null}
 
-    {routeDelete && <ConfirmDialog
+    {routeDelete ? <ConfirmDialog
       confirm={wording.R('Yes, delete the route')}
       message={wording.R('Delete route warning')}
       onCancel={catalogUI.endDeleteRoute}
@@ -121,7 +125,7 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
         }, 1);
       }}
       title={wording.R('Delete route')}
-    />}
+    /> : null}
   </div >;
 };
 

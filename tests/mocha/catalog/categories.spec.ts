@@ -30,7 +30,6 @@ import {Wording} from '../../../src/personalization/wording';
 import {KV} from '../../../src/kv/sync';
 import {Map2Styles, Style} from '../../../src/style';
 import {map2StylesFactory} from '../../../src/style/default/styles';
-import {KvPromise} from '../../../src/kv/promise';
 import {CatalogStorage} from '../../../src/catalog/storage';
 import {CatalogDefault} from '../../../src/catalog/default/catalog';
 import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
@@ -65,10 +64,14 @@ describe('Catalog categories', () => {
     const catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
     expect(catalog).has.property('categories');
     expect(catalog.categories).has.property('length', 1);
-    const category = catalog.categories.byPos(0);
+    const categoryNull = catalog.categories.byPos(0);
+    expect(categoryNull).to.not.be.null;
+    const category = categoryNull!;
     expect(category).has.property('routes');
     expect(category.routes).has.property('length', 1);
-    const route = category.routes.byPos(0);
+    const routeNull = category.routes.byPos(0);
+    expect(routeNull).to.not.be.null;
+    const route = routeNull!;
     expect(route).has.property('features');
     expect(route.features).has.property('length', 0);
   });
@@ -76,9 +79,9 @@ describe('Catalog categories', () => {
   it('Make sure kvPromise reflects the updates', async () => {
     wording.currentRouteVariant = 'ru';
     wording.currentCategoryVariant = 'en';
-    const catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
+    const catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0')!;
 
-    await catalog.categories.byPos(0).routes.byPos(0).features.add({
+    await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
       id: fid1,
       style: testStyle,
       description: makeEmptyRichText(),
@@ -93,9 +96,9 @@ describe('Catalog categories', () => {
     });
     expect(Object.keys(kvPromise.mem).length).to.be.eq(6);
 
-    const r11 = catalog.categories.byPos(0).routes.byPos(0);
+    const r11 = catalog.categories.byPos(0)!.routes.byPos(0)!;
 
-    await catalog.categories.byPos(0).routes.byPos(0).features.add({
+    await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
       id: fid2,
       style: testStyle,
       description: makeEmptyRichText(),
@@ -106,7 +109,7 @@ describe('Catalog categories', () => {
     });
     expect(Object.keys(kvPromise.mem).length).to.be.eq(7);
 
-    const f3 = await catalog.categories.byPos(0).routes.byPos(0).features.add({
+    const f3 = await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
       id: fid3,
       style: testStyle,
       description: makeEmptyRichText(),
@@ -117,11 +120,11 @@ describe('Catalog categories', () => {
     });
     expect(Object.keys(kvPromise.mem).length).to.be.eq(8);
 
-    const removed1 = await catalog.categories.byPos(0).routes.byPos(0).features.remove(f3);
+    const removed1 = await catalog.categories.byPos(0)!.routes.byPos(0)!.features.remove(f3);
     expect(removed1).to.be.eq(1);
     expect(Object.keys(kvPromise.mem).length).to.be.eq(7);
 
-    const f4 = await catalog.categories.byPos(0).routes.byPos(0).features.add({
+    const f4 = await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
       id: fid4,
       style: testStyle,
       description: makeEmptyRichText(),
@@ -132,15 +135,15 @@ describe('Catalog categories', () => {
     });
     expect(Object.keys(kvPromise.mem).length).to.be.eq(8);
 
-    const removed2 = await catalog.categories.byPos(0).routes.byPos(0).features.remove(f3);
+    const removed2 = await catalog.categories.byPos(0)!.routes.byPos(0)!.features.remove(f3);
     expect(removed2).to.be.eq(0);
     expect(Object.keys(kvPromise.mem).length).to.be.eq(8);
 
-    const removed3 = await catalog.categories.byPos(0).routes.byPos(0).features.remove(f4);
+    const removed3 = await catalog.categories.byPos(0)!.routes.byPos(0)!.features.remove(f4);
     expect(removed3).to.be.eq(1);
     expect(Object.keys(kvPromise.mem).length).to.be.eq(7);
 
-    await catalog.categories.byPos(0).routes.remove(r11);
+    await catalog.categories.byPos(0)!.routes.remove(r11);
     await new Promise(rs => {
       setTimeout(rs, 500);
     });
@@ -152,7 +155,7 @@ describe('Catalog categories', () => {
     wording.currentCategoryVariant = 'en';
     const catalog = await CatalogDefault.getInstanceAsync(catalogStorage, wording, map2styles, 'test0');
 
-    await catalog.categories.byPos(0).routes.byPos(0).features.add({
+    await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
       id: fid1,
       style: testStyle,
       description: makeEmptyRichText(),
@@ -166,7 +169,7 @@ describe('Catalog categories', () => {
       setTimeout(rs, 500);
     });
 
-    await catalog.categories.byPos(0).routes.byPos(0).features.add({
+    await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
       id: fid2,
       style: testStyle,
       description: makeEmptyRichText(),
@@ -177,7 +180,7 @@ describe('Catalog categories', () => {
     });
     expect(Object.keys(kvPromise.mem).length).to.be.eq(7);
 
-    await catalog.categories.byPos(0).routes.byPos(0).features.add({
+    await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
       id: fid3,
       style: testStyle,
       description: makeEmptyRichText(),
@@ -188,7 +191,7 @@ describe('Catalog categories', () => {
     });
     expect(Object.keys(kvPromise.mem).length).to.be.eq(8);
 
-    await catalog.categories.byPos(0).routes.byPos(0).features.add({
+    await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
       id: fid4,
       style: testStyle,
       description: makeEmptyRichText(),
@@ -202,13 +205,13 @@ describe('Catalog categories', () => {
     const catalogStorage1 = new CatalogStorageIndexedDb(kvPromise, map2styles);
     const catalog1 = await CatalogDefault.getInstanceAsync(catalogStorage1, wording, map2styles, 'test0');
     expect(catalog1.categories.length).to.be.eq(1);
-    expect(catalog1.categories.byPos(0).routes.length).to.be.eq(1);
-    const features = catalog1.categories.byPos(0).routes.byPos(0).features;
+    expect(catalog1.categories.byPos(0)!.routes.length).to.be.eq(1);
+    const features = catalog1.categories.byPos(0)!.routes.byPos(0)!.features;
     expect(features.length).to.be.eq(4);
-    expect(features.byPos(0).id).to.be.eq(fid1);
-    expect(features.byPos(1).id).to.be.eq(fid2);
-    expect(features.byPos(2).id).to.be.eq(fid3);
-    expect(features.byPos(3).id).to.be.eq(fid4);
+    expect(features.byPos(0)!.id).to.be.eq(fid1);
+    expect(features.byPos(1)!.id).to.be.eq(fid2);
+    expect(features.byPos(2)!.id).to.be.eq(fid3);
+    expect(features.byPos(3)!.id).to.be.eq(fid4);
   });
 
 });

@@ -132,7 +132,7 @@ const FeatureView: React.FunctionComponent<FeatureMin> = ({
     {isOpen ? <div className="body" >
       <div >
         {
-          (`${feature.id} : ${isPoint(feature.geometry)
+          (`${isPoint(feature.geometry)
             ? formatCoordinate(feature.geometry.coordinate)
             : formatCoordinates((feature.geometry as LineString).coordinates)}`)
         }

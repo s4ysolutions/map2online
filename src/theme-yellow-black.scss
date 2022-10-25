@@ -115,6 +115,9 @@ button {
       border-top: $sepwidth solid $grey-darkest;
       border-bottom: 1px solid $grey-darkest;
       padding: $space;
+      .title {
+        color: #333333;
+      }
     }
 
     .folders.top {

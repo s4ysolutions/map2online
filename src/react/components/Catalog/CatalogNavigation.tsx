@@ -29,9 +29,13 @@ const deselectCategory: () => void = () => {
   deselectRoute();
 };
 
-const CatalogNavigation: React.FunctionComponent = (): React.ReactElement => {
+const CatalogNavigation: React.FunctionComponent = (): React.ReactElement | null => {
   const selectedCategory = useObservable(catalogUI.selectedCategoryObservable(), catalogUI.selectedCategory);
   const selectedRoute = useObservable(catalogUI.selectedRouteObservable(), catalogUI.selectedRoute);
+
+  if (!selectedCategory && !selectedRoute) {
+    return null;
+  }
 
   return <div className="catalog-navigation" >
     {selectedCategory ? <button onClick={deselectCategory} type="button" >
@@ -48,14 +52,7 @@ const CatalogNavigation: React.FunctionComponent = (): React.ReactElement => {
           strokeWidth="2.0366"
         />
       </svg >
-    </button > : null
-
-    /*
-    || <button type="button" >
-      <FolderClose />
-    </button >}
-    */
-    }
+    </button > : null}
 
     {!selectedCategory && !selectedRoute && <span className="title" >
       {wording.C('Catalog')}

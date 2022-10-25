@@ -53,7 +53,7 @@ export class CatalogStorageIndexedDb implements CatalogStorage {
     const key = `${FEATURE_ID_PREFIX}@${props.id}`;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {style, ...bean} = props;
-    const pp = {...bean, styleId: map2style.id};
+    const pp: FeaturePropsWithStyleId = {...bean, styleId: map2style.id};
     return this.kv.set<FeaturePropsWithStyleId>(key, pp);
   }
 

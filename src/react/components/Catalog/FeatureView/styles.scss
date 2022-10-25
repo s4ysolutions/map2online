@@ -1,0 +1,25 @@
+.catalog {
+  .feature-view {
+    .coordinates-block {
+      position: relative;
+      .coordinates {
+        max-height: 10ex;
+        overflow-y: scroll;
+      }
+      .coordinates.hidden {
+
+      }
+      .copied {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        padding: 1em;
+        border-radius: 3px;
+      }
+      svg {
+        display: block;
+        width: 2em;
+      }
+    }
+  }
+}

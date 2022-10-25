@@ -17,7 +17,6 @@
 /* eslint-disable react/forbid-component-props */
 import React, {useEffect} from 'react';
 import {motion} from 'framer-motion';
-// import {tween} from 'popmotion';
 import log from '../../../../log';
 import useObservable from '../../../hooks/useObservable';
 import {getWorkspace} from '../../../../di-default';
@@ -55,8 +54,6 @@ const variantBig = {
     width: '50%',
   },
 };
-
-const OL_ZOOM_OFFSET_PX = 8;
 
 const onValueChange = {
   width: (): boolean => {

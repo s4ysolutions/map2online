@@ -154,6 +154,21 @@ button {
       .draggable {
         background-color: $grey-darkest;
       }
+      .last {
+        border-bottom-color: $grey-darkest;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+      }
+
+      .coordinates-block{
+        .copied {
+          background: $button-color;
+          color: $white;
+        }
+        svg {
+          fill: $white;
+        }
+      }
     }
   }
 }

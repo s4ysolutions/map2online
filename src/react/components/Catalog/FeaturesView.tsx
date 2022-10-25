@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import {useCallback} from 'react';
-import {DragDropContext, Draggable, DraggingStyle, DropResult, Droppable, NotDraggingStyle} from 'react-beautiful-dnd';
+import {DragDropContext, DropResult, Droppable} from 'react-beautiful-dnd';
 import log from '../../../log';
 import {getCatalogUI, getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
@@ -30,26 +30,6 @@ import {makeEmptyRichText} from '../../../richtext';
 import {ID_NULL} from '../../../lib/id';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
-
-const getDraggingStyle = (isDragging: boolean, draggableStyle: DraggingStyle | NotDraggingStyle): DraggingStyle | NotDraggingStyle => ({
-  /*
-   * some basic styles to make the items look a bit nicer
-   * userSelect: 'none',
-   */
-
-  /*
-   *  padding: grid2,
-   * margin: `0 0 ${grid}px 0`,
-   */
-
-  /*
-   * change background colour if dragging
-   * background: isDragging ? 'lightgreen' : 'grey',
-   */
-
-  // styles we need to apply on draggables
-  ...draggableStyle,
-});
 
 const catalogUI = getCatalogUI();
 const tools = getTools();
@@ -99,20 +79,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
           ref={providedDroppable.innerRef}
         >
           {features.map((item, index): React.ReactElement =>
-            <Draggable draggableId={item.id} index={index} key={item.id} >
-              {(provided, snapshot): React.ReactElement => <div
-                className="draggable features"
-                ref={provided.innerRef}
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
-                style={getDraggingStyle(
-                  snapshot.isDragging,
-                  provided.draggableProps.style || {},
-                )}
-              >
-                <FeatureView feature={item} index={index} route={route} />
-              </div >}
-            </Draggable >)}
+            <FeatureView className={index === features.length - 1 ? 'last' : ''} feature={item} index={index} key={item.id} route={route} />)}
         </div >}
       </Droppable >
     </DragDropContext >

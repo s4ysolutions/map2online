@@ -59,7 +59,7 @@
   }
 
   .list {
-    direction: rtl;
+    // direction: rtl;
     flex-grow: 1;
     overflow-y: auto;
     padding-bottom: 72px; // place for "Add button"
@@ -160,6 +160,9 @@
           }
         }
       }
+    }
+    .body {
+      padding: 8px;
     }
   }
 }

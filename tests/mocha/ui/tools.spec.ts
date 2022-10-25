@@ -24,7 +24,6 @@ import {SelectedTool, Tools} from '../../../src/ui/tools';
 import toolsFactory from '../../../src/ui/tools/default';
 import {first} from 'rxjs/operators';
 
-
 describe('Default map2 styles', () => {
   let memoryStorage: MemoryStorage;
   let storage: KV;

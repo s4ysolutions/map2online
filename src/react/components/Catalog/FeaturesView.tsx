@@ -79,7 +79,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
           ref={providedDroppable.innerRef}
         >
           {features.map((item, index): React.ReactElement =>
-            <FeatureView className={index === features.length - 1 ? 'last' : ''} feature={item} index={index} key={item.id} route={route} />)}
+            <FeatureView feature={item} index={index} isLast={index === features.length - 1} key={item.id} route={route} />)}
         </div >}
       </Droppable >
     </DragDropContext >

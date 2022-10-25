@@ -57,9 +57,8 @@ const getDraggingStyle = (isDragging: boolean, draggableStyle: DraggingStyle | N
   ...draggableStyle,
 });
 
-type FeatureMin = {className: string; feature: Feature; route: Route; index: number };
-const FeatueView: React.FunctionComponent<FeatureMin> = ({
-  className,
+const FeatueView: React.FunctionComponent<{isLast: boolean; feature: Feature; route: Route; index: number }> = ({
+  isLast,
   index,
   feature: featureView,
   route,
@@ -96,7 +95,7 @@ const FeatueView: React.FunctionComponent<FeatureMin> = ({
   }, [featureView]);
   const handleEdit = React.useCallback(() => catalogUI.startEditFeature(featureView), [featureView]);
 
-  return <div className={`accordion-item feature-view ${className}`} >
+  return <div className={`accordion-item feature-view ${isLast && isOpen ? 'last' : ''}`} >
 
     <Draggable draggableId={feature.id} index={index} >
       {(provided, snapshot): React.ReactElement => <div

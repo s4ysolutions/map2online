@@ -155,7 +155,8 @@ button {
       .draggable {
         background-color: $grey-darkest;
       }
-      .last {
+
+      .feature-view.last {
         border-bottom-color: $grey-darkest;
         border-bottom-width: 1px;
         border-bottom-style: solid;

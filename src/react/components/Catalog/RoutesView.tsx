@@ -95,7 +95,7 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
                   provided.draggableProps.style || {},
                 )}
               >
-                <RouteView canDelete={routes.length > 1} category={category} route={item} />
+                <RouteView canDelete={routes.length > 1} category={category} isOnly={routes.length === 1} route={item} />
               </div >}
             </Draggable >)}
         </div >}

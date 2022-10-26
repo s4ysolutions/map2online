@@ -104,7 +104,7 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
                   provided.draggableProps.style || {},
                 )}
               >
-                <CategoryView canDelete={categories.length > 1} category={item} />
+                <CategoryView canDelete={categories.length > 1} category={item} isOnly={categories.length === 1} />
               </div >}
             </Draggable >)}
         </div >}

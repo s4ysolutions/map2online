@@ -29,6 +29,7 @@ import {skipConfirmDialog} from '../../../lib/confirmation';
 import Active from '../Svg/Active';
 
 interface Props {
+  isOnly: boolean;
   canDelete: boolean;
   category: Category;
 }
@@ -38,102 +39,103 @@ const catalog = getCatalog();
 const catalogUI = getCatalogUI();
 const wording = getWording();
 
-const CategoryView: React.FunctionComponent<Props> = ({canDelete, category: categoryView}): React.ReactElement => {
+const CategoryView: React.FunctionComponent<Props> =
+  ({isOnly, canDelete, category: categoryView}): React.ReactElement => {
 
-  const category = useObservable(
-    categoryView.observable().pipe(filter(v => Boolean(v))), // don't rerender on deleteted category
-    categoryView,
-  );
+    const category = useObservable(
+      categoryView.observable().pipe(filter(v => Boolean(v))), // don't rerender on deleteted category
+      categoryView,
+    );
 
-  const isActive: boolean = useObservable(
-    catalogUI.activeCategoryObservable().pipe(map(active => active?.id === category?.id)),
-    catalogUI.activeCategory?.id === category?.id,
-  );
-  const isVisible = useObservable(categoryView.observable().pipe(map((c: Category | null) => c && c.visible)), categoryView.visible);
+    const isActive: boolean = useObservable(
+      catalogUI.activeCategoryObservable().pipe(map(active => active?.id === category?.id)),
+      catalogUI.activeCategory?.id === category?.id,
+    );
+    const isVisible = useObservable(categoryView.observable().pipe(map((c: Category | null) => c && c.visible)), categoryView.visible);
 
-  log.render('CategoryView', {title: category?.title, canDelete, category, categoryView, isVisible});
+    log.render('CategoryView', {title: category?.title, canDelete, category, categoryView, isVisible});
 
-  const handleDelete = React.useCallback(
-    () => {
-      if (category !== null && skipConfirmDialog()) {
+    const handleDelete = React.useCallback(
+      () => {
+        if (category !== null && skipConfirmDialog()) {
         // noinspection JSIgnoredPromiseFromCall
-        catalog.categories.remove(category);
-      } else {
-        catalogUI.requestDeleteCategory(categoryView);
-      }
-    },
-    [category, categoryView],
-  );
-
-  const handleActive = React.useCallback(
-    () => {
-      if (category?.routes) {
-        if (!isActive && category.routes.length > 0) {
-          catalogUI.activeRoute = category.routes.byPos(0);
+          catalog.categories.remove(category);
+        } else {
+          catalogUI.requestDeleteCategory(categoryView);
         }
-      }
-    },
-    [isActive, category?.routes],
-  );
+      },
+      [category, categoryView],
+    );
 
-  const handleSelect = React.useCallback(() => {
-    catalogUI.selectedCategory = category;
-    handleActive();
-  }, [category, handleActive]);
-  const handleVisible = React.useCallback(() => {
-    categoryView.visible = !categoryView.visible;
-  }, [categoryView]);
-  const handleEdit = React.useCallback(
-    () => category !== null && catalogUI.startEditCategory(category),
-    [category],
-  );
+    const handleActive = React.useCallback(
+      () => {
+        if (category?.routes) {
+          if (!isActive && category.routes.length > 0) {
+            catalogUI.activeRoute = category.routes.byPos(0);
+          }
+        }
+      },
+      [isActive, category?.routes],
+    );
 
-  return <div className={isActive ? 'item current' : 'item'} >
-    <div
-      className="delete"
-      key="delete"
-      onClick={canDelete ? handleDelete : noOp}
-      title={wording.C('Delete category hint')}
-    >
-      {canDelete ? <Delete /> : <Empty />}
-    </div >
+    const handleSelect = React.useCallback(() => {
+      catalogUI.selectedCategory = category;
+      handleActive();
+    }, [category, handleActive]);
+    const handleVisible = React.useCallback(() => {
+      categoryView.visible = !categoryView.visible;
+    }, [categoryView]);
+    const handleEdit = React.useCallback(
+      () => category !== null && catalogUI.startEditCategory(category),
+      [category],
+    );
 
-    <div
-      className="title"
-      key="title"
-      onClick={handleSelect}
-      title={wording.CR('Open category hint')}
-    >
-      {(category?.title || '') + (categoryView.routes.length > 0 && ` (${categoryView.routes.length})` || ' (0)')}
-    </div >
+    return <div className={isActive ? 'item current' : 'item'} >
+      <div
+        className="delete"
+        key="delete"
+        onClick={canDelete ? handleDelete : noOp}
+        title={wording.C('Delete category hint')}
+      >
+        {canDelete ? <Delete /> : <Empty />}
+      </div >
 
-    <div
-      className="edit"
-      key="edit"
-      onClick={handleEdit}
-      title={wording.C('Modify category hint')}
-    >
-      <Edit />
-    </div >
+      <div
+        className="title"
+        key="title"
+        onClick={handleSelect}
+        title={wording.CR('Open category hint')}
+      >
+        {(category?.title || '') + (categoryView.routes.length > 0 && ` (${categoryView.routes.length})` || ' (0)')}
+      </div >
 
-    <div
-      className="active"
-      key="active"
-      onClick={handleActive}
-      title={wording.C('Activate category hint')}
-    >
-      <Active />
-    </div >
+      <div
+        className="edit"
+        key="edit"
+        onClick={handleEdit}
+        title={wording.C('Modify category hint')}
+      >
+        <Edit />
+      </div >
 
-    <div
-      className="visibility"
-      key="visibility"
-      onClick={handleVisible}
-      title={wording.C(isVisible ? 'Visibility off category hint' : 'Visibility on category hint')}
-    >
-      {isVisible ? <Visible /> : <Hidden />}
-    </div >
-  </div >;
-};
+      {isOnly ? null : <div
+        className="active"
+        key="active"
+        onClick={handleActive}
+        title={wording.C('Activate category hint')}
+      >
+        <Active />
+      </div > }
+
+      <div
+        className="visibility"
+        key="visibility"
+        onClick={handleVisible}
+        title={wording.C(isVisible ? 'Visibility off category hint' : 'Visibility on category hint')}
+      >
+        {isVisible ? <Visible /> : <Hidden />}
+      </div >
+    </div >;
+  };
 
 export default CategoryView;

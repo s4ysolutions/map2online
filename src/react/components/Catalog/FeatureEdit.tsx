@@ -27,7 +27,7 @@ import {map} from 'rxjs/operators';
 import {degreesToMeters} from '../../../lib/projection';
 import ColorSelect from '../ColorSelect';
 import RichTextEditor from '../RichTextEditor';
-import {makeEmptyRichText} from '../../../richtext';
+import {RichText} from '../../../richtext';
 import {Descendant} from 'slate';
 
 const catalogUI = getCatalogUI();
@@ -90,7 +90,7 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
     featureEdit.observable()
       .pipe(map(f => ({
         title: f?.title || '',
-        description: f?.description || makeEmptyRichText(),
+        description: f?.description || RichText.makeEmpty(),
         /*
          * pointCoordinates: isPoint(feature.geometry) ? formatCoordinate(feature.geometry.coordinate) : null,
          * lineCoordinates: isLineString(feature.geometry) ? formatCoordinates(feature.geometry.coordinates).split(' ') : null,
@@ -119,6 +119,11 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
 
   const handleChange = useCallback((content: Descendant[]) => {
     featureEdit.description = content as RichText;
+  }, [featureEdit]);
+
+  const handleCoordinatesChange = useCallback((ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+    setCoordinates(ev.target.value);
+    featureEdit.geometry = makeGeometry(ev.target.value);
   }, [featureEdit]);
 
   return <Modal className="edit-dialog" closeOnEnter onClose={handleClose} >
@@ -157,21 +162,8 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
         </label >
 
         {isPoint(featureEdit.geometry)
-          ? <input
-            name="coordinates"
-            onChange={(ev): void => {
-              setCoordinates(ev.target.value);
-              featureEdit.geometry = makeGeometry(ev.target.value);
-            }}
-            value={coordinates} />
-          : <textarea
-            name="coordinates"
-            onChange={(ev): void => {
-              setCoordinates(ev.target.value);
-              featureEdit.geometry = makeGeometry(ev.target.value);
-            }}
-            rows={Math.max(Math.min(MIN_COORDINATES_ROWS, coordinates.length), MAX_COORDINATES_ROWS)}
-            value={coordinates} />}
+          ? <input name="coordinates" onChange={handleCoordinatesChange} value={coordinates} />
+          : <textarea name="coordinates" onChange={handleCoordinatesChange} rows={Math.max(Math.min(MIN_COORDINATES_ROWS, coordinates.length), MAX_COORDINATES_ROWS)} value={coordinates} />}
       </div >
 
       <div className="buttons-row" >

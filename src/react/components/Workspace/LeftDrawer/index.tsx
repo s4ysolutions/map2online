@@ -74,7 +74,7 @@ const onValueChange = {
   },
 };
 
-const SMALL = 512;
+const SMALL = 720;
 const MID = 1024;
 
 const workspace = getWorkspace();

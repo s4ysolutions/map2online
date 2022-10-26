@@ -17,7 +17,7 @@ import {map} from 'rxjs/operators';
 import T from '../../l10n';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
-import {makeEmptyRichText} from '../../richtext';
+import {RichText} from '../../richtext';
 import log from '../../log';
 
 export class FeatureDefault implements Feature {
@@ -31,7 +31,7 @@ export class FeatureDefault implements Feature {
     return {
       id: makeId(),
       style: this.catalog.map2styles.defaultStyle,
-      description: makeEmptyRichText(),
+      description: RichText.makeEmpty(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: '',
@@ -308,10 +308,11 @@ export class FeaturesDefault implements Features {
   }
 
   private makeFeatureError(): Feature {
+    // noinspection JSUnusedLocalSymbols
     return {
       id: makeId(),
       style: this.catalog.map2styles.defaultStyle,
-      description: makeEmptyRichText(),
+      description: RichText.makeEmpty(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: 'ERROR',

@@ -90,7 +90,7 @@ const CategoryView: React.FunctionComponent<Props> =
       [category],
     );
 
-    return <div className={isActive ? 'item current' : 'item'} >
+    return <div className={`folder-level-1 ${isActive ? 'item current' : 'item'}`} >
       <div
         className="delete"
         key="delete"

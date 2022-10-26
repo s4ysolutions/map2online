@@ -29,9 +29,8 @@ import log from '../../../log';
 import {useCursorOver} from './hooks/useCursorOver';
 import {useModifying} from './hooks/useModifying';
 import {Style} from '../../../style';
-import {makeEmptyRichText} from '../../../richtext';
+import {RichText} from '../../../richtext';
 import {ID_NULL} from '../../../lib/id';
-import OlFeature from 'ol/Feature';
 import {DrawEvent} from 'ol/interaction/Draw';
 
 const map2styles = getMap2Styles();
@@ -66,7 +65,7 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement | null 
       const isPoint = coordinates.length === OL_FLATCOORDINATE_LENGTH;
       const featureProps: FeatureProps = {
         style: isPoint ? pointStyle : lineStyle,
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         geometry: isPoint ? {coordinate: ol2coordinate2(coordinates)} : {coordinates: ol2coordinates2(coordinates)},
         id: ID_NULL,
         summary: '',

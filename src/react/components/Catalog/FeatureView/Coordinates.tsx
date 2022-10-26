@@ -11,7 +11,9 @@ const DELAY_HIDE_HINT = 1000;
 
 const Coordinates: React.FunctionComponent<{geometry: Geometry}> =
   ({geometry}): React.ReactElement => {
-    const coordinates = isPoint(geometry)
+
+    const point = isPoint(geometry);
+    const coordinates = point
       ? formatCoordinate(geometry.coordinate)
       : formatCoordinates((geometry as LineString).coordinates);
 
@@ -36,7 +38,7 @@ const Coordinates: React.FunctionComponent<{geometry: Geometry}> =
     };
 
     return <div className="coordinates-block">
-      <div className={`coordinates ${hintVisible ? 'hidden' : ''}`} onClick={handleCopyToClipboard}>
+      <div className={`coordinates ${point ? 'point' : 'line'} ${hintVisible ? 'hidden' : ''}`} onClick={handleCopyToClipboard}>
         {coordinates}
       </div>
 

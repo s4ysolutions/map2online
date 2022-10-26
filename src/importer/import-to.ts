@@ -17,7 +17,7 @@
 import {Catalog, Category, CategoryProps, Feature, FeatureProps, Route, RouteProps} from '../catalog';
 import {isFlatRoot} from './post-process';
 import {ImportedFolder} from './index';
-import {makeEmptyRichText} from '../richtext';
+import {RichText} from '../richtext';
 import {ID_NULL} from '../lib/id';
 
 export enum ImportTo {
@@ -97,7 +97,7 @@ const foldersOfCategoriesRecursive = (folders: ImportedFolder[], categories: Imp
 const foldersOfCategories = (folders: ImportedFolder[]): ImportedFolder[] => foldersOfCategoriesRecursive(folders, []);
 
 const folderToCategory = (folder: ImportedFolder): CategoryProps => ({
-  description: folder.description ? folder.description : makeEmptyRichText(),
+  description: folder.description ? folder.description : RichText.makeEmpty(),
   id: ID_NULL,
   summary: '',
   title: folder.name,

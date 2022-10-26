@@ -26,7 +26,7 @@ import FeatureEdit from './FeatureEdit';
 import ConfirmDialog from '../Confirm';
 import T from '../../../l10n';
 import {filter, map} from 'rxjs/operators';
-import {makeEmptyRichText} from '../../../richtext';
+import {RichText} from '../../../richtext';
 import {ID_NULL} from '../../../lib/id';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
@@ -59,7 +59,7 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
   const handleAdd = useCallback(() => {
     const newFeature: FeatureProps = {
       style: tools.isPoint ? tools.pointStyle : tools.lineStyle,
-      description: makeEmptyRichText(),
+      description: RichText.makeEmpty(),
       geometry: tools.isPoint
         ? {coordinate: {lat: 0, lon: 0, alt: 0}}
         : {coordinates: [{lat: 0, lon: 0, alt: 0}, {lat: 0, lon: 0, alt: 0}]},

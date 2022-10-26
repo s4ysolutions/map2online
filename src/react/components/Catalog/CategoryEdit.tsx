@@ -24,7 +24,7 @@ import T from '../../../l10n';
 import {map} from 'rxjs/operators';
 import RichTextEditor from '../RichTextEditor';
 import log from '../../../log';
-import {makeEmptyRichText} from '../../../richtext';
+import {RichText} from '../../../richtext';
 import {Descendant} from 'slate';
 
 const wording = getWording();
@@ -44,7 +44,7 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
 
   const category = useObservable(
     categoryEdit.observable()
-      .pipe(map(c => ({title: c === null ? '' : c.title, description: c === null ? makeEmptyRichText() : c.description}))),
+      .pipe(map(c => ({title: c === null ? '' : c.title, description: c === null ? RichText.makeEmpty() : c.description}))),
     categoryEdit,
   );
   const titleRef = React.useRef<HTMLInputElement>(null);

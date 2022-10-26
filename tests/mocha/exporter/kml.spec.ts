@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions,no-magic-numbers */
+/* eslint-disable no-unused-expressions,no-magic-numbers,@typescript-eslint/no-non-null-assertion */
 /*
  * Copyright 2019 s4y.solutions
  *
@@ -35,7 +35,7 @@ import {CatalogStorage} from '../../../src/catalog/storage';
 import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';
 import {CatalogStorageIndexedDb} from '../../../src/catalog/storage/indexeddb';
 import {CatalogDefault} from '../../../src/catalog/default/catalog';
-import {makeEmptyRichText} from '../../../src/richtext';
+import {RichText} from '../../../src/richtext';
 import {ID_NULL} from '../../../src/lib/id';
 
 const TEST_STYLE_NO = 2;
@@ -66,7 +66,7 @@ describe('KML Exporter', () => {
     await catalog.categories.byPos(0)!.routes.byPos(0)!.features.add({
       id: fid1,
       style: testStyle,
-      description: makeEmptyRichText(),
+      description: RichText.makeEmpty(),
       geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
       summary: '',
       title: 't1',

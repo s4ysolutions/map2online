@@ -36,7 +36,7 @@ import {
   PolyStyle,
   Style,
 } from '../../style';
-import {makeEmptyRichText} from '../../richtext';
+import {RichText} from '../../richtext';
 
 enum ParseState {
   NONE,
@@ -170,7 +170,7 @@ export const parseKMLString = (file: File, kml: string, map2styles: Map2Styles):
           log.debug('parseStateStack.push(ParseState.FEATURE)', parseStateStack);
           const initFeature : FeaturePropsWithStyleId = {
             styleId: makeId(),
-            description: makeEmptyRichText(),
+            description: RichText.makeEmpty(),
             geometry: {coordinate: {alt: 0, lat: 0, lon: 0}},
             id: ID_NULL, // TODO: handle duplicate parseId(node),
             summary: '',

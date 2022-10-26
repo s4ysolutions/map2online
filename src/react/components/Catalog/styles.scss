@@ -58,15 +58,17 @@
   .folders.top, .folders.level-1, .features {
   }
 
+  .folder-level-1, .folder-level-2, .feature {
+    direction: ltr; //restore
+  }
+
   .list {
-    // direction: rtl;
+    direction: rtl; //for sake of scrollbar
     flex-grow: 1;
     overflow-y: auto;
     padding-bottom: 72px; // place for "Add button"
     .draggable {
       margin-bottom: 2px;
-      direction: ltr;
-
       .open {
         cursor: default;
       }
@@ -76,6 +78,7 @@
         align-items: center;
         align-content: stretch;
         height: 2em;
+        padding: 8px; //scrollbar
 
         .complex-title {
           .title {
@@ -83,7 +86,7 @@
           }
 
           .index {
-            min-width: 2em;
+            // min-width: 2em; space for 3digits? ugly?
 
             svg {
               margin-right: 0;
@@ -163,6 +166,8 @@
     }
     .body {
       padding: 8px;
+      padding-left: 16px;
+      padding-right: 16px;
     }
   }
 }

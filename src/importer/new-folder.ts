@@ -15,14 +15,14 @@
  */
 
 import {ImportedFolder} from './index';
-import {makeEmptyRichText} from '../richtext';
+import {RichText} from '../richtext';
 
 export const newImportedFolder = (level: number, parent: ImportedFolder | null): ImportedFolder => ({
   importedFeatures: [],
   features: [],
   folders: [],
   name: '',
-  description: makeEmptyRichText(),
+  description: RichText.makeEmpty(),
   visible: true,
   open: false,
   level,

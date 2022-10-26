@@ -55,10 +55,17 @@ export type RichTextElement =
 
 export interface RichTextElementInterface {
   isElement: (value: unknown) => value is RichTextElement;
+  isStyledText: (value: unknown) => value is StyledText;
 }
 
 export const RichTextElement: RichTextElementInterface = {
-  isElement: (value: unknown): value is RichTextElement => (value as RichTextElement).children !== undefined && (value as RichTextElement).type !== undefined,
+  isElement: (value: unknown): value is RichTextElement =>
+    (value as RichTextElement).children !== undefined &&
+    (value as RichTextElement).type !== undefined,
+  isStyledText: (value: unknown): value is StyledText =>
+    (value as StyledText).text !== undefined &&
+    (value as RichTextElement).children === undefined &&
+    (value as RichTextElement).type === undefined,
 };
 
 
@@ -66,17 +73,36 @@ export type RichText = RichTextDescendant[];
 
 export interface RichTextInterface {
   stringify: () => string;
+  isEmpty: (richText: RichText) => boolean;
+  makeEmpty: () => RichText;
 }
 
 export const RichText: RichTextInterface = {
-  stringify () {
+  stringify() {
     return JSON.stringify(this);
   },
-};
-
-export const makeEmptyRichText: () => RichText = () => [
-  {
-    type: RichTextElementType.Paragraph,
-    children: [{text: ''}],
+  isEmpty(richText: RichText): boolean {
+    if (richText.length > 1) {
+      return false;
+    }
+    if (richText.length === 1) {
+      const element = richText[0];
+      if (RichTextElement.isElement(element)) {
+        return RichText.isEmpty(element.children);
+      } else if (RichTextElement.isStyledText(element)) {
+        if (element.text.trim().length === 0) {
+          return true;
+        }
+      }
+    }
+    return false;
   },
-];
+  makeEmpty(): RichText {
+    return [
+      {
+        type: RichTextElementType.Paragraph,
+        children: [{text: ''}],
+      },
+    ];
+  },
+};

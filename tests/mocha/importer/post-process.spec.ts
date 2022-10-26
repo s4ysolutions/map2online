@@ -33,7 +33,7 @@ import path, {dirname} from 'path';
 import {parseKMLString} from '../../../src/importer/default/kml-parser';
 import {map2StylesFactory} from '../../../src/style/default/styles';
 import {fileURLToPath} from 'url';
-import {makeEmptyRichText} from '../../../src/richtext';
+import {RichText} from '../../../src/richtext';
 import log from '../../../src/log';
 
 log.disableDebug();
@@ -111,17 +111,19 @@ describe('Import post-processing', () => {
     f.folders = [fo11_with_features(f)];
     return f;
   };
-  const makeFolder = (description: RichText, folders: ImportedFolder[], features: FeatureProps[], parent: ImportedFolder | null): ImportedFolder => ({
-    description,
-    importedFeatures: [],
-    features,
-    folders,
-    level: 0,
-    name: '',
-    open: false,
-    visible: true,
-    parent,
-  });
+  const makeFolder =
+    (description: string, folders: ImportedFolder[], features: FeatureProps[], parent: ImportedFolder | null): ImportedFolder =>
+      ({
+        description: description.convertToRichText(),
+        importedFeatures: [],
+        features,
+        folders,
+        level: 0,
+        name: '',
+        open: false,
+        visible: true,
+        parent,
+      });
   const fo12_fo12_with_features = (parent: ImportedFolder): ImportedFolder => {
     const f: ImportedFolder = {
       description: 'cat 12 with route 12 with feature'.convertToRichText(),
@@ -182,7 +184,7 @@ describe('Import post-processing', () => {
     r.folders = [fo11_fo11_with_features(r)];
     return r;
   };
-
+  /*
   const doc_with_2_categories = (): ImportedFolder => {
     const r: ImportedFolder = {
       description: 'document with 2 categories'.convertToRichText(),
@@ -198,7 +200,7 @@ describe('Import post-processing', () => {
     r.folders = [fo11_fo11_with_features(r), fo12_fo12_with_features(r)];
     return r;
   };
-
+*/
   const doc_with_empty_and_non_empty_routes = (): ImportedFolder => {
     const r: ImportedFolder = {
       description: 'document to skip'.convertToRichText(),
@@ -234,7 +236,7 @@ describe('Import post-processing', () => {
   describe('Filter out empty folders', () => {
     it('empty', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [],
         folders: [],
@@ -250,7 +252,7 @@ describe('Import post-processing', () => {
     });
     it('document with empty folder', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [],
         folders: [doc_with_empty_route()],
@@ -310,7 +312,7 @@ describe('Import post-processing', () => {
     });
     it('remove empty folder', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [fe1()],
         folders: [],
@@ -332,7 +334,7 @@ describe('Import post-processing', () => {
   describe('Get statistics', () => {
     it('empty', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [],
         folders: [],
@@ -351,7 +353,7 @@ describe('Import post-processing', () => {
     });
     it('features only', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [fe1()],
         folders: [],
@@ -370,7 +372,7 @@ describe('Import post-processing', () => {
     });
     it('features & empty category', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [fe1()],
         folders: [],
@@ -391,7 +393,7 @@ describe('Import post-processing', () => {
     });
     it('features & non empty category', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [fe1()],
         folders: [],
@@ -411,7 +413,7 @@ describe('Import post-processing', () => {
     });
     it('doc with routes', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [],
         folders: [],
@@ -431,7 +433,7 @@ describe('Import post-processing', () => {
     });
     it('doc with categories', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [],
         folders: [],
@@ -472,7 +474,7 @@ describe('Import post-processing', () => {
   describe('Remove mixed folders', () => {
     it('empty root', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [],
         folders: [],
@@ -489,7 +491,7 @@ describe('Import post-processing', () => {
     });
     it('only features', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [fe1()],
         folders: [],
@@ -506,7 +508,7 @@ describe('Import post-processing', () => {
     });
     it('only folders', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [],
         folders: [],
@@ -524,7 +526,7 @@ describe('Import post-processing', () => {
     });
     it('mixed', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [fe1()],
         folders: [],
@@ -547,7 +549,7 @@ describe('Import post-processing', () => {
   describe.skip('Flat folders (obsolete)', () => {
     it('empty root', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [],
         folders: [],
@@ -563,7 +565,7 @@ describe('Import post-processing', () => {
     });
     it('root with features', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [fe1()],
         folders: [],
@@ -580,7 +582,7 @@ describe('Import post-processing', () => {
     });
     it('root with doc with folder with feature', () => {
       const root: ImportedFolder = {
-        description: makeEmptyRichText(),
+        description: RichText.makeEmpty(),
         importedFeatures: [],
         features: [],
         folders: [doc_with_empty_and_non_empty_routes()],

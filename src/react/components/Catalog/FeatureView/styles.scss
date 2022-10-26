@@ -1,13 +1,14 @@
 .catalog {
-  .feature-view {
+  .feature {
     .coordinates-block {
       position: relative;
       .coordinates {
+        font-family: monospace;
+        font-size: 105%;
+      }
+      .coordinates.line {
         max-height: 10ex;
         overflow-y: scroll;
-      }
-      .coordinates.hidden {
-
       }
       .copied {
         position: absolute;

@@ -43,6 +43,9 @@ $button-font-size: 80%;
 $button-v-padding: 0.3em;
 $button-title-height: 1.9em;
 
+$features-color: $white;
+$features-draggable-background-color: $grey-darkest;
+
 body {
   background-color: $black;
   color: $white;
@@ -146,6 +149,7 @@ button {
     }
 
     .features {
+      color: $white;
       background-color: $grey-dark;
 
       .title {
@@ -153,16 +157,31 @@ button {
       }
 
       .draggable {
-        background-color: $grey-darkest;
+        background-color: $features-draggable-background-color;
       }
 
-      .feature-view.last {
-        border-bottom-color: $grey-darkest;
-        border-bottom-width: 1px;
+      .feature.last {
+        border-bottom-color: $features-draggable-background-color;
+        border-bottom-width: $sepwidth;
         border-bottom-style: solid;
       }
 
-      .coordinates-block{
+      .coordinates-separator {
+        border-color: $features-color;
+        border-style: solid;
+        border-width: 1px;
+        margin-top: 4px;
+        margin-bottom: 4px;
+      }
+      .coordinates-block {
+        .coordinates {
+          font-family: monospace;
+          font-size: 105%;
+        }
+        .coordinates.point {
+        }
+        .coordinates.line {
+        }
         .copied {
           background: $button-color;
           color: $white;

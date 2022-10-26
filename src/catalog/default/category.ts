@@ -6,7 +6,7 @@ import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
 import {FeatureDefault} from './feature';
-import {makeEmptyRichText} from '../../richtext';
+import {RichText} from '../../richtext';
 
 export class CategoryDefault implements Category {
 
@@ -19,7 +19,7 @@ export class CategoryDefault implements Category {
   private makeDefs(): CategoryProps {
     return {
       id: makeId(),
-      description: makeEmptyRichText(),
+      description: RichText.makeEmpty(),
       summary: '',
       title: this.catalog.wording.C('New category'),
       visible: true,
@@ -263,7 +263,7 @@ export class CategoriesDefault implements Categories {
       },
       routes: {},
       id: makeId(),
-      description: makeEmptyRichText(),
+      description: RichText.makeEmpty(),
       summary: '',
       title: 'ERRROR',
       visible: true,

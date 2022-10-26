@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /*
  * Copyright 2019 s4y.solutions
  *
@@ -18,7 +19,7 @@ import * as React from 'react';
 import Delete from '../../Svg/Delete';
 import Hidden from '../../Svg/Hidden';
 import Visible from '../../Svg/Visible';
-import {Feature, Geometry, ID, LineString, Route, isPoint} from '../../../../catalog';
+import {Feature, Geometry, ID, LineString, Route, isLineString, isPoint} from '../../../../catalog';
 import {getCatalogUI, getMap2Styles} from '../../../../di-default';
 import useObservable from '../../../hooks/useObservable';
 import {filter, map} from 'rxjs/operators';
@@ -33,6 +34,8 @@ import {Style} from '../../../../style';
 import {Draggable, DraggingStyle, NotDraggingStyle} from 'react-beautiful-dnd';
 import Coordinates from './Coordinates';
 import './styles.scss';
+import RichTextView from '../../RichTextView';
+import {RichText} from '../../../../richtext';
 
 const catalogUI = getCatalogUI();
 const map2styles = getMap2Styles();
@@ -63,17 +66,19 @@ const FeatueView: React.FunctionComponent<{isLast: boolean; feature: Feature; ro
   feature: featureView,
   route,
 }): React.ReactElement => {
-  const feature = useObservable<{id: ID, title: string, geometry: Geometry, style: Style}>(
+  const feature = useObservable<{id: ID, title: string, geometry: Geometry, style: Style, description: RichText}>(
     featureView.observable()
       .pipe(
         filter(f => Boolean(f)),
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        map((f) => ({id: f!.id, title: f!.title, geometry: f!.geometry, style: f!.style})),
+        map((f) =>
+          ({id: f!.id, title: f!.title, geometry: f!.geometry, style: f!.style, description: f!.description})),
       ),
     featureView,
   );
   log.render('FeatureView', {featureView, feature});
 
+  const hasDescription = !RichText.isEmpty(feature.description);
   const isVisible = useObservable(featureView.observable().pipe(map(f => f && f.visible)), featureView.visible);
   const isOpen = useObservable(catalogUI.openObservable(feature.id), catalogUI.isOpen(feature.id));
 
@@ -95,7 +100,7 @@ const FeatueView: React.FunctionComponent<{isLast: boolean; feature: Feature; ro
   }, [featureView]);
   const handleEdit = React.useCallback(() => catalogUI.startEditFeature(featureView), [featureView]);
 
-  return <div className={`accordion-item feature-view ${isLast && isOpen ? 'last' : ''}`} >
+  return <div className={`accordion-item feature ${isLast && isOpen ? 'last' : ''}`} >
 
     <Draggable draggableId={feature.id} index={index} >
       {(provided, snapshot): React.ReactElement => <div
@@ -168,7 +173,23 @@ const FeatueView: React.FunctionComponent<{isLast: boolean; feature: Feature; ro
     </Draggable >
 
     {isOpen ? <div className="body">
-      <Coordinates geometry={feature.geometry} />
+      {isPoint(feature.geometry)
+        ? <React.Fragment>
+          <Coordinates geometry={feature.geometry} />
+
+          {hasDescription ? <hr className="coordinates-separator" /> : null}
+        </React.Fragment>
+        : null }
+
+      {hasDescription ? <RichTextView content={feature.description} /> : null}
+
+      {isLineString(feature.geometry)
+        ? <React.Fragment>
+          {hasDescription ? <hr className="coordinates-separator" /> : null}
+
+          <Coordinates geometry={feature.geometry} />
+        </React.Fragment>
+        : null }
     </div > : null}
   </div >;
 };

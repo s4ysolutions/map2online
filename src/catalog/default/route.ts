@@ -5,7 +5,7 @@ import {FeatureDefault, FeaturesDefault} from './feature';
 import {map} from 'rxjs/operators';
 import reorder from '../../lib/reorder';
 import {CatalogDefault} from './catalog';
-import {makeEmptyRichText} from '../../richtext';
+import {RichText} from '../../richtext';
 
 export class RouteDefault implements Route {
   private readonly p: RouteProps;
@@ -17,7 +17,7 @@ export class RouteDefault implements Route {
   private makeDefs(): RouteProps {
     return {
       id: makeId(),
-      description: makeEmptyRichText(),
+      description: RichText.makeEmpty(),
       summary: '',
       title: this.catalog.wording.R('New route'),
       visible: true,
@@ -246,15 +246,21 @@ export class RoutesDefault implements Routes {
   }
 
   private static makeRouteError(): Route {
+    // noinspection JSUnusedLocalSymbols
     return {
       features: {
         ts: makeId(),
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         add: (props: FeatureProps | null, position?: number) => Promise.resolve(null as unknown as Feature),
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         hasFeature: (feature: Feature) => false,
         length: 0,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         remove: (feauture: Feature) => Promise.resolve(0),
         observable: () => NEVER,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         byPos: (index: number) => null,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         reorder: (from: number, to: number) => Promise.resolve(),
         delete: () => Promise.resolve(),
         [Symbol.iterator]: () => ({
@@ -266,7 +272,7 @@ export class RoutesDefault implements Routes {
       },
       ts: '',
       id: makeId(),
-      description: makeEmptyRichText(),
+      description: RichText.makeEmpty(),
       summary: '',
       title: 'ERROR',
       visible: true,

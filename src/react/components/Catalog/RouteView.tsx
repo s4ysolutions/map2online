@@ -70,7 +70,7 @@ const RouteView: React.FunctionComponent<{ route: Route, category: Category, can
     }, [routeView]);
     const handleEdit = React.useCallback(() => catalogUI.startEditRoute(routeView), [routeView]);
 
-    return <div className={isActive ? 'item current' : 'item'} >
+    return <div className={`folder-level-2 ${isActive ? 'item current' : 'item'}`} >
       <div
         className="delete"
         key="delete"

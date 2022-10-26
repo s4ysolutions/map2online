@@ -58,6 +58,7 @@ const About: React.FunctionComponent = () => <Modal className="about" onClose={(
       </a >
     </p >
 
+    {/*
     <p >
       {T`About Tulupov`}
 
@@ -77,6 +78,7 @@ const About: React.FunctionComponent = () => <Modal className="about" onClose={(
         Кирилл Невинский.
       </a >
     </p >
+*/}
 
     <br />
 
@@ -95,7 +97,7 @@ const About: React.FunctionComponent = () => <Modal className="about" onClose={(
     <hr />
 
     <h4 >
-      &copy;S4Y.Solutions, 2020&nbsp;v1.2.0
+      &copy;S4Y.Solutions, 2022&nbsp;v1.2.4
     </h4 >
   </form >
 </Modal >;

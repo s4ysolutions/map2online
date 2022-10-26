@@ -15,9 +15,9 @@
  */
 
 import * as React from 'react';
+import {memo, useCallback, useMemo} from 'react';
 import log from '../../../log';
 import './style.scss';
-import {memo, useCallback, useMemo} from 'react';
 import {Descendant, createEditor} from 'slate';
 import {Editable, ReactEditor, Slate, withReact} from 'slate-react';
 import {withHistory} from 'slate-history';
@@ -68,9 +68,9 @@ const RichTextEditor: React.FunctionComponent<{ content: RichText, onChange?: (v
 
           <MarkButton format="code" icon="code" />
 
-          <BlockButton format="heading-one" icon="looks_one" />
+          <BlockButton format={RichTextElementType.HeadingOne} icon="looks_one" />
 
-          <BlockButton format="heading-two" icon="looks_two" />
+          <BlockButton format={RichTextElementType.HeadingTwo} icon="looks_two" />
 
           {
             /* TODO: wraps every P in its own quote
@@ -78,9 +78,9 @@ const RichTextEditor: React.FunctionComponent<{ content: RichText, onChange?: (v
       */
           }
 
-          <BlockButton format="numbered-list" icon="format_list_numbered" />
+          <BlockButton format={RichTextElementType.NumberedList} icon="format_list_numbered" />
 
-          <BlockButton format="bulleted-list" icon="format_list_bulleted" />
+          <BlockButton format={RichTextElementType.BulletedList} icon="format_list_bulleted" />
 
           <InsertImageButton />
 

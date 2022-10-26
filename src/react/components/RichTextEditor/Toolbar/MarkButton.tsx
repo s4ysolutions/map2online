@@ -24,6 +24,7 @@ import { Editor } from 'slate';
 
 const isMarkActive = (editor: Editor, format: string): boolean => {
   const marks = Editor.marks(editor);
+  log.slate('MarkButton.isMarkActive', {format, marks});
   // TODO: investigate marks
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -32,6 +33,7 @@ const isMarkActive = (editor: Editor, format: string): boolean => {
 
 const toggleMark = (editor: Editor, format: string) => {
   const isActive = isMarkActive(editor, format);
+  log.slate('MarkButton.toggleMark', {format, isActive});
   if (isActive) {
     Editor.removeMark(editor, format);
   } else {

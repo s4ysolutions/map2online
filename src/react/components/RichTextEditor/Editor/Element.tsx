@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import React from 'react';
 import {ReactElement} from 'react';
 import log from '../../../../log';

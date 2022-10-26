@@ -18,12 +18,13 @@ import React, {MouseEvent, ReactElement} from 'react';
 import {useSlate} from 'slate-react';
 import Button from './Button';
 import log from '../../../../log';
-import {BaseEditor, Editor, Node, Element as SlateElement, Transforms} from 'slate';
+import {BaseEditor, Editor, Node, Transforms} from 'slate';
 import Icon from '../Icon';
 import {RichTextElement, RichTextElementType} from '../../../../richtext';
 
-const isBlockActive = (editor: BaseEditor, format: string) => {
+const isBlockActive = (editor: BaseEditor, format: RichTextElementType) => {
   const { selection } = editor;
+  log.slate('BlockButton.isBlockActive', {format, editor, selection});
   if (!selection) {
     return false;
   }
@@ -32,15 +33,16 @@ const isBlockActive = (editor: BaseEditor, format: string) => {
     at: Editor.unhangRange(editor, selection),
     match: (node: Node): boolean => !Editor.isEditor(node) && RichTextElement.isElement(node) && node.type === format,
   }));
-  log.d('log toolbar isBlockActive', {match});
 
   return Boolean(match);
 };
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
-const toggleBlock = (editor: Editor, format: string) => {
+const toggleBlock = (editor: Editor, format: RichTextElementType) => {
   const isActive = isBlockActive(editor, format);
   const isList = LIST_TYPES.includes(format);
+
+  log.slate('BlockButton.toogleBlock', {format, isActive, isList});
 
   Transforms.unwrapNodes(editor, {
     match: (node: Node): boolean =>
@@ -51,9 +53,7 @@ const toggleBlock = (editor: Editor, format: string) => {
   });
 
   const newProperties: Partial<RichTextElement> = {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    type: isActive ? 'paragraph' : isList ? 'list-item' : format,
+    type: isActive ? RichTextElementType.Paragraph : isList ? RichTextElementType.ListItem : format,
   };
 
   Transforms.setNodes<Node>(editor, newProperties);
@@ -64,7 +64,7 @@ const toggleBlock = (editor: Editor, format: string) => {
   }
 };
 
-const BlockButton = ({ format, icon }: {format: string, icon: string }): ReactElement => {
+const BlockButton = ({ format, icon }: {format: RichTextElementType, icon: string }): ReactElement => {
   log.render('RichText Toolbar BlockButton');
 
   const editor = useSlate();

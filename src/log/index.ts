@@ -59,12 +59,11 @@ const log = {
     }
     prevTS = ts;
   },
-  render(component: string, params?: unknown): void {
-    if (params) {
-      this.debug(`render: ${component}`, params);
-    } else {
-      this.debug(`render: ${component}`);
-    }
+  slate(message: string, ...rest: unknown[]): void {
+    this.debug(`slate: ${message}`, ...rest);
+  },
+  render(component: string, ...rest: unknown[]): void {
+    this.debug(`render: ${component}`, ...rest);
   },
   rxUse(id: string): void {
     this.debug(`rx: use ${id}`);

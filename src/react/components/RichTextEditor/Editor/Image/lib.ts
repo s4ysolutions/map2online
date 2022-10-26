@@ -26,7 +26,7 @@ type ImageElement = {
 }
 
 export const insertImage = (editor: BaseEditor, url: string): void => {
-  const image: ImageElement = { type: 'image', url, children: [] };
+  const image: ImageElement = { type: 'image', url, children: [{text: ''}] };
   const trailingPara = {type: 'paragraph', children: [{text: ''}]} as unknown as Node;
   Transforms.insertNodes(editor, image);
   Transforms.insertNodes(editor, trailingPara);

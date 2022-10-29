@@ -40,6 +40,11 @@ import {KvPromise} from '../kv/promise';
 import {CatalogDefault} from '../catalog/default/catalog';
 import {CatalogStorageIndexedDb} from '../catalog/storage/indexeddb';
 import log from '../log';
+import DefaultSearchUI from '../ui/search/default';
+import {SearchUI} from '../ui/search';
+import MemSearchCache from '../search/mem-search-cache';
+import NominatimSearch from '../search/nominatim';
+import {Search} from '../search';
 
 const localStorageSingleton = localStorageFactory();
 export const getLocalStorage = (): KV => localStorageSingleton;
@@ -66,6 +71,9 @@ export const getWording = (): Wording => wordingSingleton;
 const importUISingleton = importUIFactory(localStorageSingleton);
 export const getImportUI = (): ImportUI => importUISingleton;
 
+const searchUISingleton = new DefaultSearchUI();
+export const getSearchUI = (): SearchUI => searchUISingleton;
+
 const parserSingleton = parserFactory(map2StylesSingleton);
 export const getParser = (): Parser => parserSingleton;
 
@@ -79,6 +87,10 @@ export const getCatalog = (): Catalog => catalogSingleton;
 
 const catalogUISingleton = catalogUIFactory(localStorageSingleton, catalogSingleton);
 export const getCatalogUI = (): CatalogUI => catalogUISingleton;
+
+const searchCacheSingleton = new MemSearchCache();
+const searchSingleton = new NominatimSearch(searchCacheSingleton);
+export const getSearch = (): Search => searchSingleton;
 
 export const initDI = async (): Promise<void> => {
   log.d('initDI start');

@@ -33,7 +33,7 @@ export const metersToDegrees = (olX: number | Coordinate | number[], olY?: numbe
   return {lon, lat, alt};
 };
 
-export const degreesToMeters0 = (olX: number | Coordinate | number[], olY?: number, alt?: number): number[] => {
+const degreesToMeters0 = (olX: number | Coordinate | number[], olY?: number, alt?: number): number[] => {
   if (olY !== undefined) {
     return fromLonLat([olX as number, olY, alt === undefined ? 0 : alt]);
   } else if (isCoordinate(olX)) {

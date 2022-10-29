@@ -24,7 +24,7 @@ import OlMap from '../Ol/OlMap';
 import FloatPanel from './FloatPanel';
 import LeftDrawer from './LeftDrawer';
 import RightDrawer from './RightDrawer';
-import {getImportUI, getWording, getWorkspace} from '../../../di-default';
+import {getImportUI, getSearchUI, getWording, getWorkspace} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import Import from '../Import';
 import GoogleMap from '../GoogleMap/GoogleMap';
@@ -37,6 +37,9 @@ import useSpinner from '../Spinner/hooks/useSpinner';
 const importUI = getImportUI();
 const wording = getWording();
 const workspace = getWorkspace();
+const searchUI = getSearchUI();
+
+searchUI.observable().subscribe(responses => log.debug('Search results', responses));
 
 const Workspace = (): React.ReactElement => {
   const [el, setEl] = useState<HTMLDivElement | null>(null);

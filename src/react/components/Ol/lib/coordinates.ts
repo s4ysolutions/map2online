@@ -16,6 +16,7 @@
 
 import {Coordinate} from '../../../../catalog';
 import {Coordinate as OlCoordinate} from 'ol/coordinate';
+import {degreesToMeters} from '../../../../lib/projection';
 
 const COORD_LENGTH = 3;
 const LAT = 1;
@@ -60,3 +61,7 @@ export const ol2coordinates2 = (flatCoordinates: OlCoordinate): Coordinate[] => 
 
 export const coordinate2ol = (coordinate: Coordinate): OlCoordinate => [coordinate.lon, coordinate.lat, coordinate.alt || 0];
 export const coordinates2ol = (coordinates: Coordinate[]): OlCoordinate[] => coordinates.map(coordinate2ol);
+export const geoLocationPosition2ol = (coordinates: GeolocationCoordinates): OlCoordinate => {
+  const meters = degreesToMeters(coordinates.longitude, coordinates.latitude, coordinates.altitude || 0);
+  return [meters.lon, meters.lat, meters.alt];
+};

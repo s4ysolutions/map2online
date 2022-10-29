@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import ZoomToFeaturesControl from '../ZoomToFeaturesControl';
+import ZoomToFeaturesControl from '../controls/ZoomToFeaturesControl';
 
 describe('ZoomToFeaturesControl', () => {
 

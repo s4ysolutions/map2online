@@ -36,7 +36,6 @@ import MapBrowserEvent from 'ol/MapBrowserEvent';
 import Timeout = NodeJS.Timeout;
 import ZoomToFeaturesControl from './controls/ZoomToFeaturesControl';
 import MyGPSLocationControl from './controls/MyGPSLocationControl';
-import SearchControl from './controls/SearchControl';
 
 let resizeTimer: Timeout | null = null;
 
@@ -60,7 +59,7 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
         zoomInTipLabel: T`Zoom in`,
         zoomOutTipLabel: T`Zoom out`,
       },
-    }).extend([new ZoomToFeaturesControl(), new SearchControl()]);
+    }).extend([new ZoomToFeaturesControl()]);
 
     if (navigator.geolocation) {
       controls.extend([new MyGPSLocationControl()]);

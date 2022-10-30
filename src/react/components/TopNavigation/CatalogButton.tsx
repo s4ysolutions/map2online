@@ -15,12 +15,12 @@
  */
 
 import * as React from 'react';
-import {getWording, getWorkspace} from '../../../../di-default';
-import useObservable from '../../../hooks/useObservable';
-import log from '../../../../log';
+import {getWording, getWorkspace} from '../../../di-default';
+import useObservable from '../../hooks/useObservable';
+import log from '../../../log';
 import MenuButton from './MenuButton';
-import FolderOpen from '../../Svg/FolderOpen';
-import FolderClose from '../../Svg/FolderClose';
+import FolderOpen from '../Svg/FolderOpen';
+import FolderClose from '../Svg/FolderClose';
 
 const workspace = getWorkspace();
 const wording = getWording();

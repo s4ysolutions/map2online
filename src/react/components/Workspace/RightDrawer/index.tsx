@@ -23,6 +23,7 @@ import {getWorkspace} from '../../../../di-default';
 import useObservable from '../../../hooks/useObservable';
 import SettingsMenu from '../../SettingsMenu';
 import './style.scss';
+import {panelTransition} from '../constants';
 
 const variantMenu = {
   hide: {
@@ -35,8 +36,6 @@ const variantMenu = {
 
 const workspace = getWorkspace();
 
-const transition = { easy: 'tween', stiffness: 100 };
-
 const RightDrawer: React.FunctionComponent = (): React.ReactElement => {
   const stateExport = useObservable(workspace.exportObservable(), workspace.exportOpen);
   const stateSources = useObservable(workspace.sourcesObservable(), workspace.sourcesOpen);
@@ -46,7 +45,7 @@ const RightDrawer: React.FunctionComponent = (): React.ReactElement => {
     animate={stateExport || stateSources || stateSettings ? 'show' : 'hide'}
     className="right-drawer"
     initial={stateExport || stateSources || stateSettings ? 'show' : 'hide'}
-    transition={transition}
+    transition={panelTransition}
     variants={variantMenu}
   >
     {stateSources ? <MapSourcesMenu /> : null}

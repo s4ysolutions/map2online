@@ -46,20 +46,36 @@ class SearchControl extends Control {
     this.form.addEventListener('submit', this.handleSubmit.bind(this));
   }
 
+  inactivate() {
+    this.root.style.opacity='0.5';
+  }
+
+  activate() {
+    this.root.style.opacity='0.85';
+  }
+
   handleInput() {
-    if (this.search.value === '') {
-      this.root.style.opacity='0.5';
+    if (this.search.value && this.search.value.length > 2) {
+      this.activate();
     } else {
-      this.root.style.opacity='0.9';
+      this.inactivate()
     }
   }
 
   handleSubmit(ev: Event) {
     if (this.search.value && this.search.value.length > 2) {
+      this.root.style.opacity='0.2';
+      this.search.disabled = true;
       search.search(this.search.value)
-        .then(results => searchUI.setResponse(this.search.value, results ))
+        .then(results => {
+          searchUI.setResponse(this.search.value, results )
+          this.activate();
+          this.search.disabled = false;
+        })
         .catch((err) => {
           searchUI.setResponse(this.search.value, []);
+          this.activate();
+          this.search.disabled = false;
           alert(err.message);
         });
     }

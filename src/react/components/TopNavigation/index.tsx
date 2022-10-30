@@ -19,9 +19,9 @@ import * as React from 'react';
 import CatalogButton from './CatalogButton';
 import MenuButton from './MenuButton';
 import T from 'l10n';
-import {getCatalogUI, getImportUI, getWorkspace} from '../../../../di-default';
-import log from '../../../../log';
-import useObservable from '../../../hooks/useObservable';
+import {getCatalogUI, getImportUI, getWorkspace} from '../../../di-default';
+import log from '../../../log';
+import useObservable from '../../hooks/useObservable';
 
 const importUI = getImportUI();
 const workspace = getWorkspace();

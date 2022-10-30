@@ -24,6 +24,7 @@ import useComponentSize from '../../../hooks/useComponentSize';
 import {getWorkspace} from '../../../../di-default';
 import useObservable from '../../../hooks/useObservable';
 import log from '../../../../log';
+import './styles.scss';
 
 const workspace = getWorkspace();
 

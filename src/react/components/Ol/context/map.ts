@@ -17,5 +17,5 @@
 import * as React from 'react';
 import Map from 'ol/Map';
 
-const olMapContext = React.createContext<Map | null>(null);
+const olMapContext = React.createContext<Map>(null as unknown as Map);
 export default olMapContext;

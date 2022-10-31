@@ -16,24 +16,28 @@
 
 @import "../../../../src/dims";
 
-.search-results {
-  height: 100%;
-  padding-top: 1px; // TODO: i do not know how to handle collaps
-  padding-bottom: 1px;
-  overflow-y: auto;
-
-  .item {
-    min-height: 2em;
-    margin: 4px;
-
-    .colors {
+.tools {
+  .tabs {
+    display: flex;
+    padding-left: $menu-item-dim + 8px;
+    button {
+      height: $menu-item-dim;
+      width: $menu-item-dim;
+      svg {
+        height: 70%;
+        width: 70%
+      }
+    }
+  }
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    .row {
       display: flex;
-      flex-direction: row;
-      justify-content: right;
-
-      .selector {
-        height: $menu-item-dim;
+      justify-content: space-between;
+      .select {
         width: $menu-item-dim;
+        height: $menu-item-dim;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -41,15 +45,10 @@
           display: block;
           width: 80%;
           height: 80%;
-          padding: 2px;
-          border-radius: 2px;
-        }
-
-        &.selected svg{
-          background-color: #0000FF40;
-          // background-color: white;
         }
       }
     }
   }
 }
+
+

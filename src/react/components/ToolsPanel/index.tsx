@@ -24,6 +24,7 @@ import {getMap2Styles, getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import log from '../../../log';
 import {SelectedTool} from '../../../ui/tools';
+import './styles.scss';
 
 const tools = getTools();
 const map2styles = getMap2Styles();

@@ -46,6 +46,8 @@ $button-title-height: 1.9em;
 $features-color: $white;
 $features-draggable-background-color: $grey-darkest;
 
+$search-opacity: 0.85;
+
 body {
   background-color: $black;
   color: $white;
@@ -100,7 +102,7 @@ button {
 
 .left-drawer {
   .catalog {
-    background-color: red;
+    background-color: black;
 
     .title {
       font-size: 105%;
@@ -327,6 +329,34 @@ form {
         box-shadow: 0 0 0 3px #ddd;
       }
     }
+  }
+}
+
+.search-results {
+  background-color: white;
+  opacity: $search-opacity;
+  border-radius: 2px;
+  color: black;
+
+  .item {
+    border: #3498db 1px solid;
+  }
+}
+
+.search-control {
+  border-radius: 2px;
+  background-color: white;
+  opacity: 0.5;
+
+  &.searchable {
+    opacity: $search-opacity;
+  }
+
+  &.searching {
+    opacity: 0.2;
+  }
+  input {
+    color: black;
   }
 }
 

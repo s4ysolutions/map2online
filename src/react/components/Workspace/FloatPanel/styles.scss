@@ -1,10 +1,13 @@
-@import "../dims";
+@import "../../../../../src/dims";
 
 .float-panel {
 	position: absolute;
 	bottom: 0;
 	right: 0;
 	z-index: 2000;
+	&.react-draggable-dragging .drag-handle {
+		cursor: grabbing;
+	}
 
 	.visible {
 		visibility: visible
@@ -25,6 +28,7 @@
 		position: absolute;
 		top: 0;
 		left: 0;
+		cursor: grab;
 	}
 }
 

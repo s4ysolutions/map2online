@@ -15,6 +15,7 @@
  */
 
 import {Search, SearchCache, SearchError, SearchErrorCode, SearchResponse} from './index';
+import {makeId} from '../lib/id';
 
 export interface NominatimGeocodeAddress {
   'county': string;
@@ -100,7 +101,13 @@ class NominatimSearch implements Search {
     })
       .then(response => {
         if (Array.isArray(response)) {
-          const nominatimResponses = response.filter(r => isNominatimResponse(r)) as NominatimResponse[];
+          const nominatimResponses = response
+            .filter(r => isNominatimResponse(r))// as NominatimResponse[]
+            .map(r => {
+              r.id = (r.osm_id) ? r.osm_id : makeId();
+              return r as SearchResponse;
+            })
+          ;
           this.cache.add(cacheKey, nominatimResponses);
           return nominatimResponses;
         }

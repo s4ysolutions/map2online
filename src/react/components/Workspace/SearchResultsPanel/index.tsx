@@ -58,6 +58,11 @@ const SearchResultsPanel: React.FunctionComponent<{searchResults: SearchResponse
       animate="show"
       className="search-results-panel"
       variants={width < SMALL ? variantSmall : (width < MID ? variantMid : variantBig)} >
+
+      <div className="button-close" >
+x
+      </div>
+
       <SearchResults searchResults={searchResults} />
     </motion.div>;
   };

@@ -115,4 +115,4 @@ const GoogleMap: React.FunctionComponent = (): React.ReactElement | null => {
   return null;
 };
 
-export default React.memo(GoogleMap);
+export default GoogleMap;

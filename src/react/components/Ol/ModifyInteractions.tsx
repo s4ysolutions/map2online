@@ -16,26 +16,18 @@
 
 import React, {useEffect} from 'react';
 import {Modify as ModifyInteraction} from 'ol/interaction';
-import Collection from 'ol/Collection';
 import olMapContext from './context/map';
-import OlFeature from 'ol/Feature';
-import {merge} from 'rxjs';
-import {Coordinate, Feature, ID, coordinateEq, isPoint} from '../../../catalog';
+import {Coordinate, Feature, coordinateEq, isPoint} from '../../../catalog';
 import {getCatalog} from '../../../di-default';
-import {setOlFeatureCoordinates} from './lib/feature';
-import {useVisibleFeatures} from './hooks/useVisibleFeatures';
-import {Geometry as OlGeometry} from 'ol/geom';
 import {ModifyEvent} from 'ol/interaction/Modify';
 import log from '../../../log';
 import {setModifying} from './hooks/useModifying';
 import {ol2coordinate, ol2coordinates} from './lib/coordinates';
+import activeFeaturesContext from './context/active-features-source';
 
 const catalog = getCatalog();
 
 const ModifyInteractions: React.FunctionComponent = (): React.ReactElement | null => {
-  const map = React.useContext(olMapContext);
-  const olFeatures: OlFeature<OlGeometry>[] = useVisibleFeatures();
-  const modifyInteractionRef = React.useRef<ModifyInteraction | null>(null);
 
   const handleModifyStart = React.useCallback(() => {
     setModifying(true);
@@ -66,66 +58,27 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement | nul
           }
         }
       }
-      ev.preventDefault();
       setModifying(false);
     },
     [],
   );
 
+  const map = React.useContext(olMapContext);
+  const source = React.useContext(activeFeaturesContext);
+  const modifyInteractionRef = React.useRef<ModifyInteraction | null>(null);
+
   useEffect(() => {
     if (modifyInteractionRef.current) {
       modifyInteractionRef.current.un('modifyend', handleModifyEnd);
       modifyInteractionRef.current.un('modifystart', handleModifyStart);
-      if (map) {
-        map.removeInteraction(modifyInteractionRef.current);
-      }
+      map.removeInteraction(modifyInteractionRef.current);
     }
-    if (!map) {
-      return () => null;
-    }
-    modifyInteractionRef.current = new ModifyInteraction({features: new Collection(olFeatures)});
+
+    modifyInteractionRef.current = new ModifyInteraction({source});
     modifyInteractionRef.current.on('modifyend', handleModifyEnd);
     modifyInteractionRef.current.on('modifystart', handleModifyStart);
     map.addInteraction(modifyInteractionRef.current);
-
-    const featuresObservables =
-      olFeatures.map(olFeature => olFeature.getId())
-        .filter(id => Boolean(id))
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .map(id => catalog.featureById(id!.toString()))
-        .filter(feature => Boolean(feature))
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .map(feature => feature!.observable());
-
-    const olFeaturesById: Record<ID, OlFeature<OlGeometry>> = {};
-
-    olFeatures.forEach(olFeature => {
-      const id = olFeature.getId();
-      if (id) {
-        olFeaturesById[id.toString()] = olFeature;
-      }
-    });
-
-    const featuresObservable = merge(...featuresObservables).subscribe((feature: Feature | null) => {
-      if (!feature) {
-        return;
-      } // feature deletion is handled in the other useEffect
-      const olFeature = olFeaturesById[feature.id];
-      if (olFeature) {
-        setOlFeatureCoordinates(olFeature, feature);
-      }
-    });
-
-    return () => {
-      featuresObservable.unsubscribe();
-      if (modifyInteractionRef.current) {
-        modifyInteractionRef.current.un('modifyend', handleModifyEnd);
-        modifyInteractionRef.current.un('modifystart', handleModifyStart);
-        map.removeInteraction(modifyInteractionRef.current);
-        modifyInteractionRef.current = null;
-      }
-    };
-  }, [map, handleModifyEnd, handleModifyStart, olFeatures]);
+  }, [map, handleModifyEnd, handleModifyStart, source]);
 
   return null;
 };

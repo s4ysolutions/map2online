@@ -44,46 +44,6 @@
 	z-index: 30;
 }
 
-
-.tools .tabs {
-	display: flex;
-	padding-left: $menu-item-dim + 8px;
-}
-
-.tools .tabs button {
-	height: $menu-item-dim;
-	width: $menu-item-dim;
-}
-
-.tools .tabs button svg {
-	height: 70%;
-	width: 70%
-}
-
-.tools .buttons {
-	display: flex;
-	flex-direction: column;
-}
-
-.tools .row {
-	display: flex;
-	justify-content: space-between;
-}
-
-.tools .select {
-	width: $menu-item-dim;
-	height: $menu-item-dim;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.tools .select svg {
-	display: block;
-	width: 80%;
-	height: 80%;
-}
-
 .right-drawer {
 	position: absolute;
 	overflow: hidden;

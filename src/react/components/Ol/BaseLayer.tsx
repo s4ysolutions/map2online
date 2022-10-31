@@ -14,59 +14,34 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import TileLayer from 'ol/layer/Tile';
-import log from '../../../log';
-import {getMapDefinition} from '../../../map-sources/definitions';
-import useObservable from '../../hooks/useObservable';
-import {getBaseLayer} from '../../../di-default';
+import React, {useEffect} from 'react';
 import olMapContext from './context/map';
-import TileSource from 'ol/source/Tile';
+import useMapDefinition from './hooks/useMapDefinition';
+import getSource from './lib/getSource';
+import getLayer from './lib/getLayer';
 
-const baseLayer = getBaseLayer();
-/*
- *getOlSource: function () {
- *  if (!this.sourceName) {
- *    return null;
- *  }
- *  const md = getMapDefinition(this.sourceName);
- *  if (!md) {
- *    return null;
- *  }
- *  if (!md.olSourceFactory) {
- *    return null;
- *  }
- *  return md.olSourceFactory();
- *},
- */
-const BaseLayer: React.FunctionComponent = (): React.ReactElement | null => {
-  const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
+const BaseLayer: React.FunctionComponent = (): null => {
   const map = React.useContext(olMapContext);
+  const mapDefinition = useMapDefinition();
+  const source = getSource(mapDefinition); // null if Google
+  const layer = source === null ? null : getLayer(source);
 
-  if (map === null) {
-    return null;
-  }
-  // const layerRef = React.useRef<Layer>(null);
-  const md = getMapDefinition(baseLayerName);
-  let layer = null;
-  if (md && md.olSourceFactory) {
-    // TODO: assuming TileSource
-    layer = new TileLayer({source: md.olSourceFactory() as TileSource});
-  }
-
-  const layers = map.getLayers();
-  log.render(`BaseLayer sourceName=${baseLayerName} layersLength=${layers.getLength()} layer is null=${!layer}`);
-  if (layer) {
-    if (layers.getLength() === 0) {
-      map.addLayer(layer);
-    } else {
-      layers.setAt(0, layer);
+  useEffect(() => {
+    const layers = map.getLayers();
+    if (layer) {
+      if (layers.getLength() === 0) {
+        map.addLayer(layer);
+      } else {
+        layers.setAt(0, layer);
+      }
+    } else if (layers.getLength() > 0) {
+      // hide base level if google
+      layers.item(0).setVisible(false);
     }
-    //  layerRef.current = layer
-  } else if (layers.getLength() > 0) {
-    layers.item(0).setVisible(false);
-  }
+  }, [layer, map]);
+
   return null;
 };
 
-export default React.memo(BaseLayer);
+export default BaseLayer;
+

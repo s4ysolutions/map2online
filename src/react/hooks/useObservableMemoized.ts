@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright 2019 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-$buttonHeight: 56px;
-$buttonWight: 56px;
+import {Observable} from 'rxjs';
+import useObservable from './useObservable';
+import {useMemo} from 'react';
 
-$menu-item-dim: 40px;
+const useObservableMemoized = <T>(observale: Observable<T>, initialValue: T, id: unknown, key?: string): T => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const memoizedObservable:Observable<T> = useMemo(() => observale, [id]);
+  return useObservable(memoizedObservable, initialValue, key);
+};
 
-$plannerIconHeight: 56px;
-$plannerIconWidth: 56px;
-
-$controlOffset: 0.5em;
+export default useObservableMemoized;
 

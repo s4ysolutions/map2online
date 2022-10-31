@@ -25,7 +25,6 @@ import olMapContext from './context/map';
 import {getCatalogUI, getMap2Styles} from '../../../di-default';
 import {FeatureProps} from '../../../catalog';
 import {ol2coordinate2, ol2coordinates2} from './lib/coordinates';
-import log from '../../../log';
 import {useCursorOver} from './hooks/useCursorOver';
 import {useModifying} from './hooks/useModifying';
 import {Style} from '../../../style';
@@ -55,8 +54,6 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement | null 
 
   const cursorOver = useCursorOver();
   const isModifying = useModifying();
-  log.render('DrawInteraction', {cursorOver, isModifying});
-
 
   const handleDrawEnd = React.useCallback(
     ({feature}:DrawEvent) => {
@@ -89,7 +86,6 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement | null 
     }
     drawInteractionRef.current = newDrawInteraction(featureType, pointStyle, lineStyle);
     drawInteractionRef.current.on('drawend', handleDrawEnd);
-    drawInteractionRef.current.setActive(cursorOver && !isModifying);
     map.addInteraction(drawInteractionRef.current);
     return () => {
       if (drawInteractionRef.current) {
@@ -97,7 +93,7 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement | null 
         drawInteractionRef.current = null;
       }
     };
-  }, [pointStyle, lineStyle, featureType, cursorOver, handleDrawEnd, map, isModifying]);
+  }, [pointStyle, lineStyle, featureType, handleDrawEnd, map]);
 
   useEffect(() => {
     if (drawInteractionRef.current) {

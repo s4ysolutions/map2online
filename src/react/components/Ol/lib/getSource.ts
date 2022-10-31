@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright 2022 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,3 +14,14 @@
  * limitations under the License.
  */
 
+import { MapDefinition} from '../../../../map-sources/definitions';
+import {Source} from 'ol/source';
+
+const getSource = (mapDefinition: MapDefinition): Source | null => {
+  if (mapDefinition.olSourceFactory) {
+    return mapDefinition.olSourceFactory();
+  }
+  return null;
+};
+
+export default getSource;

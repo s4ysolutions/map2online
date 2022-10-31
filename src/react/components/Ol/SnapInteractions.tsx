@@ -16,70 +16,24 @@
 
 import React, {useEffect} from 'react';
 import {Snap as SnapInteraction} from 'ol/interaction';
-import Collection from 'ol/Collection';
 import olMapContext from './context/map';
-import OlFeature from 'ol/Feature';
-import {merge} from 'rxjs';
-import {Feature} from '../../../catalog';
-import {getCatalog} from '../../../di-default';
-import {setOlFeatureCoordinates} from './lib/feature';
-import {useVisibleFeatures} from './hooks/useVisibleFeatures';
-import {Geometry as OlGeometry} from 'ol/geom';
+import activeFeaturesContext from './context/active-features-source';
 
-const catalog = getCatalog();
-
-const SnapInteractions: React.FunctionComponent = (): React.ReactElement | null => {
+const SnapInteractions: React.FunctionComponent = (): null => {
   const map = React.useContext(olMapContext);
-  const olFeatures: OlFeature<OlGeometry>[] = useVisibleFeatures();
+  const source = React.useContext(activeFeaturesContext);
+
   const snapInteractionRef = React.useRef<SnapInteraction | null>(null);
 
   useEffect(() => {
-    if (map === null) {
-      return () => null;
-    }
-    if (snapInteractionRef.current) {
-      map.removeInteraction(snapInteractionRef.current);
-    }
-    snapInteractionRef.current = new SnapInteraction({features: new Collection(olFeatures)});
-    map.addInteraction(snapInteractionRef.current);
-
-    const featuresObservables = olFeatures
-      .map(olFeature => olFeature.getId())
-      .filter(id => Boolean(id))
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .map(id => catalog.featureById(id!.toString()))
-      .filter(feature => Boolean(feature))
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .map(feature => feature!.observable());
-
-    const olFeaturesById: Record<string, OlFeature<OlGeometry>> = {};
-
-    olFeatures.forEach(olFeature => {
-      const id = olFeature.getId()?.toString();
-      if (id) {
-        olFeaturesById[id] = olFeature;
-      }
-    });
-
-    const featuresObservable = merge(...featuresObservables)
-      .subscribe((feature: Feature | null) => {
-        if (!feature) {
-          return;
-        } // feature deletion is handled in the other useEffect
-        const olFeature = olFeaturesById[feature.id];
-        if (olFeature) {
-          setOlFeatureCoordinates(olFeature, feature);
-        }
-      });
-
-    return () => {
-      featuresObservable.unsubscribe();
+    if (map !== null) {
       if (snapInteractionRef.current) {
         map.removeInteraction(snapInteractionRef.current);
-        snapInteractionRef.current = null;
       }
-    };
-  }, [olFeatures, map]);
+      snapInteractionRef.current = new SnapInteraction({source});
+      map.addInteraction(snapInteractionRef.current);
+    }
+  }, [map, source]);
 
   return null;
 };

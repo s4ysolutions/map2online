@@ -20,7 +20,6 @@ import {useCallback, useState} from 'react';
 import log from '../../../log';
 import useComponentSize from '../../hooks/useComponentSize';
 import TopNavigationPanel from './TopNavigationPanel';
-import OlMap from '../Ol/OlMap';
 import FloatPanel from './FloatPanel';
 import LeftDrawer from './LeftDrawer';
 import RightDrawer from './RightDrawer';
@@ -34,6 +33,7 @@ import Spinner from '../Spinner';
 import useSpinner from '../Spinner/hooks/useSpinner';
 import SearchResults from './SearchResultsPanel';
 import SearchPanel from './SearchPanel';
+import OlMap from '../Ol/OlMap';
 
 
 const importUI = getImportUI();

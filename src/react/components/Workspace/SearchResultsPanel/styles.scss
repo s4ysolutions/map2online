@@ -19,7 +19,8 @@
 .search-results-panel {
   position: absolute;
   top: 3em;
+  bottom: $controlOffset;
   right: $controlOffset;
   z-index: 1000;
-  max-height: 80%;
+  border-radius: 2px;
 }

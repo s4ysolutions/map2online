@@ -19,23 +19,22 @@ import './styles.scss';
 import * as React from 'react';
 import Map from 'ol/Map';
 import MapEvent from 'ol/MapEvent';
-import BaseLayer from './BaseLayer';
 import View from 'ol/View';
-import log from '../../../log';
-import ActiveFeatures from './ActiveFeatures';
-import olMapContext from './context/map';
-import DrawInteractions from './DrawInteractions';
-import ModifyInteractions from './ModifyInteractions';
 import ResizeObserver from 'resize-observer-polyfill';
 import {defaults as defaultControls} from 'ol/control';
 import {getBaseLayer} from '../../../di-default';
-import SnapInteractions from './SnapInteractions';
 import {setCursorOver} from './hooks/useCursorOver';
 import T from 'l10n';
 import MapBrowserEvent from 'ol/MapBrowserEvent';
 import Timeout = NodeJS.Timeout;
 import ZoomToFeaturesControl from './controls/ZoomToFeaturesControl';
 import MyGPSLocationControl from './controls/MyGPSLocationControl';
+import olMapContext from './context/map';
+import BaseLayer from './BaseLayer';
+import DrawInteractions from './DrawInteractions';
+import ActiveFeatures from './ActiveFeatures';
+import ModifyInteractions from './ModifyInteractions';
+import SnapInteractions from './SnapInteractions';
 
 let resizeTimer: Timeout | null = null;
 
@@ -45,14 +44,11 @@ const SKIP_RESIZE_TIME_MS = 100;
 
 const OlMap: React.FunctionComponent = (): React.ReactElement => {
   const [map, setMap] = React.useState<Map | null>(null);
-  log.render(`OlMap map is ${map ? 'set' : 'not set'}`);
 
   const mapAttach = React.useCallback((el: HTMLDivElement): void => {
-    log.render('OLMap mapAttach', el);
     if (!el) {
       return;
     }
-
     const controls = defaultControls({
       zoomOptions: {
         delta: 0.25,
@@ -82,7 +78,6 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
       if (e.frameState) {
         const {viewState} = e.frameState;
         baseLayer.state = {x: viewState.center[0], y: viewState.center[1], zoom: viewState.zoom};
-        log.d('OlMap moveend', baseLayer.state);
       }
     });
     m.on('pointerdrag', (e: MapBrowserEvent<UIEvent>) => {
@@ -97,6 +92,7 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
     el.addEventListener('mouseleave', () => {
       setCursorOver(false);
     });
+
     setMap(m);
   }, []);
 
@@ -126,15 +122,16 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
     {map ? <olMapContext.Provider value={map} >
       <BaseLayer />
 
-      <ActiveFeatures />
-
       <DrawInteractions />
 
-      <ModifyInteractions />
+      <ActiveFeatures >
 
-      <SnapInteractions />
-    </olMapContext.Provider > : null}
-  </div >;
+        <ModifyInteractions />
+
+        <SnapInteractions />
+      </ActiveFeatures>
+    </olMapContext.Provider> : null}
+  </div>;
 };
 
-export default React.memo(OlMap);
+export default OlMap;

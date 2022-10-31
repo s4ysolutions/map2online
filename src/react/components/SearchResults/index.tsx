@@ -18,14 +18,14 @@ import React from 'react';
 import {SearchResponse} from '../../../search';
 import log from '../../../log';
 import './styles.scss';
+import Index from './SearchResult';
 
 const SearchResults: React.FunctionComponent<{searchResults: SearchResponse[]}> =
   ({searchResults}): React.ReactElement => {
     log.debug('SearchResults', searchResults);
 
-    return <div className="search-results">
-
-      Search ... results
+    return <div className="search-results" >
+      {searchResults.map(searchResult => <Index key={searchResult.id} searchResponse={searchResult} />)}
     </div>;
   };
 

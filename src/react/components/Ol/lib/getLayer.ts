@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright 2022 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,3 +14,18 @@
  * limitations under the License.
  */
 
+import {Source} from 'ol/source';
+import TileLayer from 'ol/layer/Tile';
+import TileSource from 'ol/source/Tile';
+import {Layer} from 'ol/layer';
+
+const isTileSource = (source: Source): source is TileSource => (source as TileSource).getTile !== undefined;
+
+const getLayer = (source: Source): Layer => {
+  if (isTileSource(source)) {
+    return new TileLayer({source});
+  }
+  throw Error('Only tile sources supported');
+};
+
+export default getLayer;

@@ -17,20 +17,17 @@
 import React, {useEffect} from 'react';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import log from '../../../log';
 import olMapContext from './context/map';
 import OlFeature from 'ol/Feature';
-import {getCatalog} from '../../../di-default';
-import {merge} from 'rxjs';
 import {Feature} from '../../../catalog';
 import {setOlFeatureCoordinates, setOlFeatureStyle} from './lib/feature';
-import {useVisibleFeatures} from './hooks/useVisibleFeatures';
 import {Geometry as OlGeometry} from 'ol/geom';
 import {debounceTime} from 'rxjs/operators';
+import getFeatureObservableForOlFeatures from './lib/getFeatureObservableForOlFeatures';
+import activeFeaturesContext from './context/active-features-source';
+import {useVisibleFeatures} from './hooks/useVisibleFeatures';
 
 const DEBOUNCE_DELAY = 50;
-
-const catalog = getCatalog();
 
 const source = new VectorSource({wrapX: false});
 const layer = new VectorLayer({source});
@@ -40,57 +37,52 @@ let olFeaturesById: Record<string, OlFeature<OlGeometry>> = {};
 // used by zoom 2 extent control
 export const visibleOlFeatures = (): OlFeature<OlGeometry>[] => Object.values(olFeaturesById);
 
-const ActiveFeatures: React.FunctionComponent = (): React.ReactElement | null => {
-  const olFeatures: OlFeature<OlGeometry>[] = useVisibleFeatures();
-  const map = React.useContext(olMapContext);
+const ActiveFeatures: React.FunctionComponent<{children: React.ReactNode[]}> =
+  ({children}): React.ReactElement => {
 
-  useEffect(() => {
-    if (map) {
-      map.addLayer(layer);
-      return () => {
-        map.removeLayer(layer);
-      };
-    }
-    return () => null;
-  }, [map]);
-
-  useEffect(() => {
-    source.clear();
-    source.addFeatures(olFeatures);
-
-    const featuresObservables = olFeatures
-      .map(olFeature => olFeature.getId())
-      .filter(id => Boolean(id))
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .map(id => catalog.featureById(id!.toString()))
-      .filter(feature => Boolean(feature))
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .map(feature => feature!.observable());
-    olFeaturesById = {};
-    olFeatures.forEach(olFeature => {
-      const id = olFeature.getId()?.toString();
-      if (id) {
-        olFeaturesById[id] = olFeature;
+    // add layer
+    const map = React.useContext(olMapContext);
+    useEffect(() => {
+      if (map) {
+        map.addLayer(layer);
+        return () => {
+          map.removeLayer(layer);
+        };
       }
-    });
-    // subsribe to feature modifications
-    const featuresObservable = merge(...featuresObservables).pipe(debounceTime(DEBOUNCE_DELAY))
-      .subscribe((feature: Feature | null) => {
-        if (!feature) {
-          // feature deletion is handled in the outer useEffect
-          return;
+      return () => null;
+    }, [map]);
+
+    const olFeatures = useVisibleFeatures();
+    useEffect(() => {
+      source.clear();
+      source.addFeatures(olFeatures);
+
+      olFeaturesById = {};
+      olFeatures.forEach(olFeature => {
+        const id = olFeature.getId()?.toString();
+        if (id) {
+          olFeaturesById[id] = olFeature;
         }
-        const olFeature = olFeaturesById[feature.id];
-        setOlFeatureCoordinates(olFeature, feature);
-        // setOlFeatureTitle(olFeature, feature.title);
-        setOlFeatureStyle(olFeature, feature);
       });
-    return () => featuresObservable.unsubscribe();
-  }, [map, olFeatures]);
 
-  log.render('ActiveFeatures');
+      const featuresObservable = getFeatureObservableForOlFeatures(olFeatures)
+        .pipe(debounceTime(DEBOUNCE_DELAY))
+        .subscribe((feature: Feature | null) => {
+          if (!feature) {
+          // feature deletion is handled in the outer useEffect
+            return;
+          }
+          const olFeature = olFeaturesById[feature.id];
+          setOlFeatureCoordinates(olFeature, feature);
+          // setOlFeatureTitle(olFeature, feature.title);
+          setOlFeatureStyle(olFeature, feature);
+        });
+      return () => featuresObservable.unsubscribe();
+    }, [map, olFeatures]);
 
-  return null;
-};
+    return <activeFeaturesContext.Provider value={source} >
+      {children}
+    </activeFeaturesContext.Provider>;
+  };
 
 export default ActiveFeatures;

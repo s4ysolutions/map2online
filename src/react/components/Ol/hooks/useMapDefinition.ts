@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright 2022 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,3 +14,13 @@
  * limitations under the License.
  */
 
+import {getBaseLayer} from '../../../../di-default';
+import {getMapDefinition} from '../../../../map-sources/definitions';
+import {map} from 'rxjs/operators';
+import useObservable from '../../../hooks/useObservable';
+
+const baseLayer = getBaseLayer();
+const observable = baseLayer.sourceNameObservable().pipe(map(name => getMapDefinition(name)));
+
+const useMapDefinition = () => useObservable(observable, getMapDefinition(baseLayer.sourceName));
+export default useMapDefinition;

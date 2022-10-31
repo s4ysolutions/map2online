@@ -20,7 +20,6 @@ import Pin from 'react/components/Svg/Pin';
 import {getMap2Styles, getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {SelectedTool} from '../../../ui/tools';
-import log from '../../../log';
 import {Style} from '../../../style';
 
 const tools = getTools();
@@ -36,7 +35,6 @@ const FeatureSelect: React.FunctionComponent<Props> = ({style}): React.ReactElem
   const lineStyle = useObservable(tools.lineStyleObservable(), tools.lineStyle);
   const pointStyle = useObservable(tools.pointStyleObservable(), tools.pointStyle);
   const on = tool === SelectedTool.Line && lineStyle.id === style.id || tool === SelectedTool.Point && pointStyle.id === style.id;
-  log.render(`FeatureSelect style=${style.id} selected=${on}`);
   return <div
     className={`select ${on ? 'on' : 'off'}`}
     onClick={(): void => tools.selectStyle(style)}

@@ -29,12 +29,11 @@ import MapBrowserEvent from 'ol/MapBrowserEvent';
 import Timeout = NodeJS.Timeout;
 import ZoomToFeaturesControl from './controls/ZoomToFeaturesControl';
 import MyGPSLocationControl from './controls/MyGPSLocationControl';
-import olMapContext from './context/map';
 import BaseLayer from './BaseLayer';
 import DrawInteractions from './DrawInteractions';
 import ActiveFeatures from './ActiveFeatures';
 import ModifyInteractions from './ModifyInteractions';
-import SnapInteractions from './SnapInteractions';
+// import SnapInteractions from './SnapInteractions';
 
 let resizeTimer: Timeout | null = null;
 
@@ -118,19 +117,21 @@ const OlMap: React.FunctionComponent = (): React.ReactElement => {
   }, [map]);
 
 
-  return <div className="ol-container" ref={mapAttach} >
-    {map ? <olMapContext.Provider value={map} >
-      <BaseLayer />
+  return <div className="ol-container" ref={mapAttach} tabIndex={0} >
+    {map ? <React.Fragment>
+      <BaseLayer map={map} />
 
-      <DrawInteractions />
+      <DrawInteractions map={map} />
 
-      <ActiveFeatures >
+      <ActiveFeatures map={map} >
 
-        <ModifyInteractions />
+        <ModifyInteractions map={map} />
 
-        <SnapInteractions />
       </ActiveFeatures>
-    </olMapContext.Provider> : null}
+
+    </React.Fragment>
+
+      : null}
   </div>;
 };
 

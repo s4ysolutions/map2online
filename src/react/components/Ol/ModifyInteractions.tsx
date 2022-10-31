@@ -16,8 +16,8 @@
 
 import React, {useEffect} from 'react';
 import {Modify as ModifyInteraction} from 'ol/interaction';
-import olMapContext from './context/map';
-import {Coordinate, Feature, coordinateEq, isPoint} from '../../../catalog';
+import Map from 'ol/Map';
+import {Coordinate, Feature, coordinateEq, coordinatesEq, isPoint} from '../../../catalog';
 import {getCatalog} from '../../../di-default';
 import {ModifyEvent} from 'ol/interaction/Modify';
 import log from '../../../log';
@@ -27,7 +27,7 @@ import activeFeaturesContext from './context/active-features-source';
 
 const catalog = getCatalog();
 
-const ModifyInteractions: React.FunctionComponent = (): React.ReactElement | null => {
+const ModifyInteractions: React.FunctionComponent<{map: Map}> = ({map}): React.ReactElement | null => {
 
   const handleModifyStart = React.useCallback(() => {
     setModifying(true);
@@ -46,12 +46,14 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement | nul
               const coordinate: Coordinate = ol2coordinate(flatCoordinates);
               if (!coordinateEq(coordinate, featureToModify.geometry.coordinate)) {
                 featureToModify.updateCoordinates(coordinate);
-                break;
+                break; // to let move the top feature if overlaps
               }
             } else {
               const coordinates: Coordinate[] = ol2coordinates(flatCoordinates);
-              featureToModify.updateCoordinates(coordinates);
-              break;
+              if (!coordinatesEq(coordinates, featureToModify.geometry.coordinates)) {
+                featureToModify.updateCoordinates(coordinates);
+                break;
+              }
             }
           } else {
             log.error(`No features to modify id=${olId}`);
@@ -63,7 +65,6 @@ const ModifyInteractions: React.FunctionComponent = (): React.ReactElement | nul
     [],
   );
 
-  const map = React.useContext(olMapContext);
   const source = React.useContext(activeFeaturesContext);
   const modifyInteractionRef = React.useRef<ModifyInteraction | null>(null);
 

@@ -15,24 +15,21 @@
  */
 
 import React, {useEffect} from 'react';
+import Map from 'ol/Map';
 import {Snap as SnapInteraction} from 'ol/interaction';
-import olMapContext from './context/map';
 import activeFeaturesContext from './context/active-features-source';
 
-const SnapInteractions: React.FunctionComponent = (): null => {
-  const map = React.useContext(olMapContext);
+const SnapInteractions: React.FunctionComponent<{ map: Map }> = ({map}): null => {
   const source = React.useContext(activeFeaturesContext);
 
   const snapInteractionRef = React.useRef<SnapInteraction | null>(null);
 
   useEffect(() => {
-    if (map !== null) {
-      if (snapInteractionRef.current) {
-        map.removeInteraction(snapInteractionRef.current);
-      }
-      snapInteractionRef.current = new SnapInteraction({source});
-      map.addInteraction(snapInteractionRef.current);
+    if (snapInteractionRef.current) {
+      map.removeInteraction(snapInteractionRef.current);
     }
+    snapInteractionRef.current = new SnapInteraction({source});
+    map.addInteraction(snapInteractionRef.current);
   }, [map, source]);
 
   return null;

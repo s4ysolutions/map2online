@@ -15,12 +15,12 @@
  */
 
 import * as React from 'react';
-import {getMap2Styles} from '../../../di-default';
-import {Style} from '../../../style';
-import Pin from '../Svg/Pin';
-import Line from '../Svg/Line';
+import {getMap2Styles} from '../../../../../di-default';
+import {Style} from '../../../../../style';
+import Pin from '../../../Svg/Pin';
+import Line from '../../../Svg/Line';
 import './style.scss';
-import log from '../../../log';
+import log from '../../../../../log';
 
 const map2styles = getMap2Styles();
 const styles = map2styles.styles;

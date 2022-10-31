@@ -4,7 +4,7 @@
   "description": "Map2Online is online service intended to be used for planning trips and travels",
   "main": "src/index.tsx",
   "type": "module",
-  "packageManager": "pnpm@7.14.0",
+  "packageManager": "pnpm@7.14.1",
   "scripts": {
     "dev": "webpack serve --color --progress --config webpack.config-dev.cjs",
     "build": "webpack --config webpack.config-prod.cjs",
@@ -96,6 +96,7 @@
     "node-sass": "^7.0.3",
     "normalize.css": "^8.0.1",
     "ol": "^7.1.0",
+    "ol-contextmenu": "^5.1.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",

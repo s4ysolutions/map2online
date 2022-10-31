@@ -1,33 +1,33 @@
 /*
- * Copyright 2019 s4y.solutions
+ * Copyright 2022 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
 import * as React from 'react';
 import {FormEvent, useCallback, useState} from 'react';
-import Modal from '../Modal';
-import {getCatalogUI} from '../../../di-default';
-import {Coordinate, Feature, LineString, Point, isPoint} from '../../../catalog';
-import useObservable from '../../hooks/useObservable';
-import T from '../../../l10n';
-import {formatCoordinate, formatCoordinates} from '../../../lib/format';
-import log from '../../../log';
+import Modal from '../../Modal';
+import {getCatalogUI} from '../../../../di-default';
+import {Coordinate, Feature, LineString, Point, isPoint} from '../../../../catalog';
+import useObservable from '../../../hooks/useObservable';
+import T from '../../../../l10n';
+import {formatCoordinate, formatCoordinates} from '../../../../lib/format';
+import log from '../../../../log';
 import {map} from 'rxjs/operators';
-import {degreesToMeters} from '../../../lib/projection';
-import ColorSelect from '../ColorSelect';
-import RichTextEditor from '../RichTextEditor';
-import {RichText} from '../../../richtext';
+import {degreesToMeters} from '../../../../lib/projection';
+import ColorSelect from './ColorSelect';
+import RichTextEditor from '../../RichTextEditor';
+import {RichText} from '../../../../richtext';
 import {Descendant} from 'slate';
 
 const catalogUI = getCatalogUI();

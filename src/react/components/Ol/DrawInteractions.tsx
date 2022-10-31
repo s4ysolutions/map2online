@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
+import Map from 'ol/Map';
 import {Draw as DrawInteraction} from 'ol/interaction';
 import usePointStyle from './hooks/usePointStyle';
 import useLineStyle from './hooks/useLineStyle';
 import useCurrentFeatureType from './hooks/useCurrentFeatureType';
 import {SelectedTool} from '../../../ui/tools';
 import {getOlStyle} from './lib/styles';
-import olMapContext from './context/map';
 import {getCatalogUI, getMap2Styles} from '../../../di-default';
 import {FeatureProps} from '../../../catalog';
 import {ol2coordinate2, ol2coordinates2} from './lib/coordinates';
@@ -31,11 +31,13 @@ import {Style} from '../../../style';
 import {RichText} from '../../../richtext';
 import {ID_NULL} from '../../../lib/id';
 import {DrawEvent} from 'ol/interaction/Draw';
+import MapBrowserEvent from 'ol/MapBrowserEvent';
 
 const map2styles = getMap2Styles();
 const defaultStyles = map2styles.defaultStyle;
 
 const newDrawInteraction = (type: SelectedTool, pointStyle: Style, lineStyle: Style) => new DrawInteraction({
+  condition: (event: MapBrowserEvent<PointerEvent>) => event.type === 'pointerdown' && event.originalEvent.button === 0,
   style: getOlStyle(type === SelectedTool.Point
     ? (pointStyle.iconStyle || defaultStyles.iconStyle)
     : (lineStyle.lineStyle || defaultStyles.lineStyle)),
@@ -44,9 +46,9 @@ const newDrawInteraction = (type: SelectedTool, pointStyle: Style, lineStyle: St
 
 const catalogUI = getCatalogUI();
 const OL_FLATCOORDINATE_LENGTH = 2;
+const RIGHT_BUTTON = 2;
 
-const DrawInteractions: React.FunctionComponent = (): React.ReactElement | null => {
-  const map = React.useContext(olMapContext);
+const DrawInteractions: React.FunctionComponent<{ map: Map }> = ({map}): React.ReactElement | null => {
   const pointStyle = usePointStyle();
   const lineStyle = useLineStyle();
   const featureType = useCurrentFeatureType();
@@ -55,8 +57,61 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement | null 
   const cursorOver = useCursorOver();
   const isModifying = useModifying();
 
+  const handleContextMenu = useCallback((event: MouseEvent) => {
+    const pixel = map.getEventPixel(event);
+    const features = map.getFeaturesAtPixel(pixel);
+    console.log('=====> handleContextMenu while not drawing', features);
+  }, [map]);
+
+  const handleKeyEventDuringDrawing = useCallback((keyEvent: KeyboardEvent) => {
+    if (drawInteractionRef.current) {
+      let stopEvent = false;
+      const code = keyEvent.code?.toLowerCase();
+      if (code === 'escape' || code === 'backspace') {
+        drawInteractionRef.current.abortDrawing();
+        stopEvent = true;
+      }
+      if (stopEvent) {
+        keyEvent.preventDefault();
+        keyEvent.stopPropagation();
+      }
+    }
+  }, []);
+
+  const handleRightButtonDuringDrawing = useCallback((mouseEvent: MouseEvent) => {
+    if (mouseEvent.button === RIGHT_BUTTON && drawInteractionRef.current) {
+      drawInteractionRef.current.abortDrawing();
+      mouseEvent.preventDefault();
+      mouseEvent.stopPropagation();
+    }
+  }, []);
+
+  const handleDrawStart = React.useCallback(
+    () => {
+      map.getTargetElement()?.addEventListener('keydown', handleKeyEventDuringDrawing);
+      map.getTargetElement()?.addEventListener('mouseup', handleRightButtonDuringDrawing);
+      map.getTargetElement()?.addEventListener('mousedown', handleRightButtonDuringDrawing);
+      map.getTargetElement()?.removeEventListener('contextmenu', handleContextMenu);
+    },
+    [map, handleKeyEventDuringDrawing, handleRightButtonDuringDrawing, handleContextMenu],
+  );
+
+  const handleDrawAbort = React.useCallback(
+    () => {
+      map.getTargetElement()?.removeEventListener('keydown', handleKeyEventDuringDrawing);
+      map.getTargetElement()?.removeEventListener('mouseup', handleRightButtonDuringDrawing);
+      map.getTargetElement()?.removeEventListener('mousedown', handleRightButtonDuringDrawing);
+      map.getTargetElement()?.addEventListener('contextmenu', handleContextMenu);
+    },
+    [map, handleKeyEventDuringDrawing, handleRightButtonDuringDrawing, handleContextMenu],
+  );
+
   const handleDrawEnd = React.useCallback(
-    ({feature}:DrawEvent) => {
+    ({feature}: DrawEvent) => {
+      map.getTargetElement()?.removeEventListener('keydown', handleKeyEventDuringDrawing);
+      map.getTargetElement()?.removeEventListener('mousedown', handleRightButtonDuringDrawing);
+      map.getTargetElement()?.removeEventListener('mouseup', handleRightButtonDuringDrawing);
+      map.getTargetElement()?.addEventListener('contextmenu', handleContextMenu);
       const geometry = feature.get('geometry');
       const coordinates: number[] = geometry.flatCoordinates;
       const isPoint = coordinates.length === OL_FLATCOORDINATE_LENGTH;
@@ -73,8 +128,9 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement | null 
         catalogUI.activeRoute.features.add(featureProps);
       }
     },
-    [pointStyle, lineStyle],
+    [map, handleKeyEventDuringDrawing, handleRightButtonDuringDrawing, handleContextMenu, pointStyle, lineStyle],
   );
+
 
   useEffect(() => {
     if (!map) {
@@ -85,7 +141,10 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement | null 
       drawInteractionRef.current = null;
     }
     drawInteractionRef.current = newDrawInteraction(featureType, pointStyle, lineStyle);
+    drawInteractionRef.current.on('drawstart', handleDrawStart);
     drawInteractionRef.current.on('drawend', handleDrawEnd);
+    drawInteractionRef.current.on('drawabort', handleDrawAbort);
+    map.getTargetElement()?.addEventListener('contextmenu', handleContextMenu);
     map.addInteraction(drawInteractionRef.current);
     return () => {
       if (drawInteractionRef.current) {
@@ -93,7 +152,7 @@ const DrawInteractions: React.FunctionComponent = (): React.ReactElement | null 
         drawInteractionRef.current = null;
       }
     };
-  }, [pointStyle, lineStyle, featureType, handleDrawEnd, map]);
+  }, [pointStyle, lineStyle, featureType, handleDrawEnd, map, handleDrawStart, handleDrawAbort, handleContextMenu]);
 
   useEffect(() => {
     if (drawInteractionRef.current) {

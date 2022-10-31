@@ -15,9 +15,9 @@
  */
 
 import React, {useEffect} from 'react';
+import Map from 'ol/Map';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import olMapContext from './context/map';
 import OlFeature from 'ol/Feature';
 import {Feature} from '../../../catalog';
 import {setOlFeatureCoordinates, setOlFeatureStyle} from './lib/feature';
@@ -37,19 +37,15 @@ let olFeaturesById: Record<string, OlFeature<OlGeometry>> = {};
 // used by zoom 2 extent control
 export const visibleOlFeatures = (): OlFeature<OlGeometry>[] => Object.values(olFeaturesById);
 
-const ActiveFeatures: React.FunctionComponent<{children: React.ReactNode[]}> =
-  ({children}): React.ReactElement => {
+const ActiveFeatures: React.FunctionComponent<{map: Map, children: React.ReactNode[] | React.ReactNode}> =
+  ({map, children}): React.ReactElement => {
 
     // add layer
-    const map = React.useContext(olMapContext);
     useEffect(() => {
-      if (map) {
-        map.addLayer(layer);
-        return () => {
-          map.removeLayer(layer);
-        };
-      }
-      return () => null;
+      map.addLayer(layer);
+      return () => {
+        map.removeLayer(layer);
+      };
     }, [map]);
 
     const olFeatures = useVisibleFeatures();

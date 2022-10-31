@@ -15,13 +15,12 @@
  */
 
 import React, {useEffect} from 'react';
-import olMapContext from './context/map';
+import Map from 'ol/Map';
 import useMapDefinition from './hooks/useMapDefinition';
 import getSource from './lib/getSource';
 import getLayer from './lib/getLayer';
 
-const BaseLayer: React.FunctionComponent = (): null => {
-  const map = React.useContext(olMapContext);
+const BaseLayer: React.FunctionComponent<{map: Map}> = ({map}): null => {
   const mapDefinition = useMapDefinition();
   const source = getSource(mapDefinition); // null if Google
   const layer = source === null ? null : getLayer(source);

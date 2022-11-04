@@ -47,7 +47,6 @@ const Modal: React.FunctionComponent<{ onClose: () => void, closeOnEnter?: boole
         className="modal"
         onClick={handleClose}
         onKeyDown={handleKeyPress}
-        tabIndex={0}
       >
         <div className={`modal-content ${className || ''}`} onClick={stopPropagation} >
           {children}
@@ -56,56 +55,5 @@ const Modal: React.FunctionComponent<{ onClose: () => void, closeOnEnter?: boole
       root,
     );
   };
-/*
- *class Modal extends React.PureComponent {
- *  constructor (props) {
- *    super(props);
- *    this.handleKeyPress = this.handleKeyPress.bind(this);
- *    this.setRef = this.setRef.bind(this);
- *  }
- *
- *  componentDidMount () {
- *    if (this.ref) {
- *      this.ref.focus();
- *    }
- *  }
- *
- *  handleKeyPress (ev) {
- *    if (ev.key === 'Escape' || ev.keyCode === KEY_ESC) {
- *      this.props.onClose();
- *    }
- *  }
- *
- *  setRef (el) {
- *    this.ref = el;
- *  }
- *
- *  render () {
- *    return (
- *      this.props.show &&
- *      ReactDOM.createPortal(
- *        <div
- *          className="modal"
- *          onClick={this.props.onClose}
- *          onKeyPress={this.handleKeyPress}
- *          ref={this.setRef}
- *          tabIndex="0"
- *        >
- *          <div className="modal-content" onClick={stopPropagation}>
- *            {this.props.children}
- *          </div>
- *        </div>,
- *        root
- *      )
- *    );
- *  }
- *}
- *
- *Modal.propTypes = {
- *  children: PropTypes.any,
- *  onClose: PropTypes.func.isRequired,
- *  show: PropTypes.bool.isRequired,
- *};
- */
 
 export default Modal;

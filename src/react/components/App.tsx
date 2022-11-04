@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import './styles.scss';
 import * as React from 'react';
 import {useEffect} from 'react';
 import Workspace from './Workspace';
 import useObservable from '../hooks/useObservable';
 import {getCatalogUI} from '../../di-default';
 import T from 'l10n';
+import useSpinner from './Spinner/hooks/useSpinner';
+import './styles.scss';
+import Spinner from './Spinner';
+import Modals from './Modals';
 
 const catalogUI = getCatalogUI();
 
@@ -38,9 +41,14 @@ const App: React.FunctionComponent = (): React.ReactElement => {
     }
   }, [selectedRoute, selectedCategory]);
 
+  const spinner = useSpinner();
 
   return <div className="application" >
     <Workspace />
+
+    <Modals />
+
+    {spinner ? <Spinner /> : null}
   </div >;
 };
 

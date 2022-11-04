@@ -1,4 +1,4 @@
-import {Feature, FeatureProps, Features, ID, Route, RouteProps, Routes} from '../index';
+import {Category, Feature, FeatureProps, Features, ID, Route, RouteProps, Routes} from '../index';
 import {NEVER, Observable} from 'rxjs';
 import {makeId} from '../../lib/id';
 import {FeatureDefault, FeaturesDefault} from './feature';
@@ -109,6 +109,13 @@ export class RouteDefault implements Route {
 
   update(): Promise<void> {
     return this.catalog.storage.updateRouteProps(this.p);
+  }
+
+  get categories(): Category[] {
+    return Object.entries(this.catalog.routesIds)
+      .filter(([, routeIDs]) => routeIDs.indexOf(this.id) >= 0)
+      .map(([categoryId]) => this.catalog.categoryById(categoryId))
+      .filter(category => Boolean(category)) as Category[];
   }
 
 }
@@ -277,6 +284,7 @@ export class RoutesDefault implements Routes {
       title: 'ERROR',
       visible: true,
       open: true,
+      categories: [],
     };
   }
 

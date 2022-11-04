@@ -23,7 +23,6 @@ import {Feature, Geometry, ID, LineString, Route, isLineString, isPoint} from '.
 import {getCatalogUI, getMap2Styles} from '../../../../di-default';
 import useObservable from '../../../hooks/useObservable';
 import {filter, map} from 'rxjs/operators';
-import log from '../../../../log';
 import Pin from '../../Svg/Pin';
 import Line from '../../Svg/Line';
 import {formatCoordinate, formatCoordinates} from '../../../../lib/format';
@@ -76,7 +75,6 @@ const FeatueView: React.FunctionComponent<{isLast: boolean; feature: Feature; ro
       ),
     featureView,
   );
-  log.render('FeatureView', {featureView, feature});
 
   const hasDescription = !RichText.isEmpty(feature.description);
   const isVisible = useObservable(featureView.observable().pipe(map(f => f && f.visible)), featureView.visible);

@@ -85,6 +85,7 @@ export interface Feature extends FeatureProps {
   observable: () => Observable<Feature | null>;
   updateCoordinates: (coord: Coordinate | Coordinate[]) => void;
   eq: (anotherFeature: Feature) => boolean;
+  routes: Route[];
 }
 
 export interface Features extends Iterable<Feature> {
@@ -112,6 +113,7 @@ export interface Route extends RouteProps {
   ts: ID;
   features: Features;
   observable: () => Observable<Route | null>;
+  categories: Category[];
 }
 
 export interface Routes extends Iterable<Route> {

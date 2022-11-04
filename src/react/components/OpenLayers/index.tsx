@@ -22,8 +22,6 @@ import DrawInteraction from './interactions/DrawInteraction';
 import ModifyInteraction from './interactions/ModifyInteraction';
 import ContextMenuInteraction from './interactions/ContextMenuInteraction';
 import './styles.scss';
-import Menu from '../Menu/Menu';
-import MenuItem from '../Menu/MenuItem';
 
 const OpenLayers: React.FunctionComponent = (): React.ReactElement => <Index>
   <BaseLayer />
@@ -36,16 +34,7 @@ const OpenLayers: React.FunctionComponent = (): React.ReactElement => <Index>
 
   <DrawInteraction />
 
-  <ContextMenuInteraction hitTolerance={5} >
-    <Menu>
-      <MenuItem onClick={() => console.log('aaaaa')} title="aaaaa" />
-
-      <MenuItem onClick={() => console.log('bbbbb')} title="bbbbb" />
-
-      <MenuItem onClick={() => console.log('ccccc')} title="ccccc" />
-
-    </Menu>
-  </ContextMenuInteraction>
+  <ContextMenuInteraction hitTolerance={5} />
 
 </Index>;
 

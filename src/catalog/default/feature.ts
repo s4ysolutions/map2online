@@ -6,9 +6,9 @@ import {
   ID,
   LineString,
   Point,
+  Route,
   isCoordinate,
-  isLineString,
-  isPoint,
+  isLineString, isPoint,
 } from '../index';
 import {makeId} from '../../lib/id';
 import {Style} from '../../style';
@@ -59,7 +59,7 @@ export class FeatureDefault implements Feature {
 
   set style(value: Style) {
     this.p.style = value;
-    this.update();
+    this.update().then();
   }
 
   get geometry(): Point | LineString {
@@ -68,7 +68,7 @@ export class FeatureDefault implements Feature {
 
   set geometry(value: Point | LineString) {
     this.p.geometry = value;
-    this.update();
+    this.update().then();
   }
 
   get description(): RichText {
@@ -77,7 +77,7 @@ export class FeatureDefault implements Feature {
 
   set description(value: RichText) {
     this.p.description = value;
-    this.update();
+    this.update().then();
   }
 
   readonly id: ID;
@@ -88,7 +88,7 @@ export class FeatureDefault implements Feature {
 
   set summary(value: string) {
     this.p.summary = value;
-    this.update();
+    this.update().then();
   }
 
   get title(): string {
@@ -97,7 +97,7 @@ export class FeatureDefault implements Feature {
 
   set title(value: string) {
     this.p.title = value;
-    this.update();
+    this.update().then();
   }
 
   get visible(): boolean {
@@ -107,7 +107,7 @@ export class FeatureDefault implements Feature {
   set visible(value: boolean) {
     const notify = value !== this.p.visible;
     this.p.visible = value;
-    this.update();
+    this.update().then();
     if (notify) {
       this.catalog.notifyVisisbleFeaturesChanged();
     }
@@ -178,6 +178,13 @@ export class FeatureDefault implements Feature {
 
   update(): Promise<void> {
     return this.catalog.storage.updateFeatureProps(this.p);
+  }
+
+  get routes(): Route[] {
+    return Object.entries(this.catalog.featuresIds)
+      .filter(([, featureIDs]) => featureIDs.indexOf(this.id) >= 0)
+      .map(([routeId]) => this.catalog.routeById(routeId))
+      .filter(route => Boolean(route)) as Route[];
   }
 }
 
@@ -317,6 +324,7 @@ export class FeaturesDefault implements Features {
       summary: '',
       title: 'ERROR',
       visible: true,
+      routes: [],
       // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
       eq(anotherFeature: Feature): boolean {
         return false;

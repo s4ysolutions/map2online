@@ -21,9 +21,8 @@ import log from '../../../log';
 import {getCatalogUI, getTools} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import FeatureView from './FeatureView';
-import {FeatureProps, Features, Route, isPoint} from '../../../catalog';
+import {FeatureProps, Features, Route} from '../../../catalog';
 import FeatureEdit from './FeatureEdit';
-import ConfirmDialog from '../Confirm';
 import T from '../../../l10n';
 import {filter, map} from 'rxjs/operators';
 import {RichText} from '../../../richtext';
@@ -45,7 +44,6 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
     Array.from(route.features),
   );
   const featureEdit = useObservable(catalogUI.featureEditObservable(), catalogUI.featureEdit);
-  const featureDelete = useObservable(catalogUI.featureDeleteObservable(), catalogUI.featureDelete);
   const handleDragEnd = useCallback(
     (result: DropResult): void => {
       const indexS = result.source.index;
@@ -90,17 +88,6 @@ const FeaturesView: React.FunctionComponent<{ route: Route; }> = ({route}): Reac
 
     {featureEdit ? <FeatureEdit feature={featureEdit} /> : null}
 
-    {featureDelete ? <ConfirmDialog
-      confirm={T`Yes, delete the feature`}
-      message={T`The feature will be deleted, are you sure?`}
-      onCancel={catalogUI.endDeleteFeature}
-      onConfirm={() => {
-        const c = featureDelete;
-        catalogUI.endDeleteFeature();
-        route.features.remove(c.feature);
-      }}
-      title={isPoint(featureDelete.feature.geometry) ? T`Delete point` : T`Delete line`}
-    /> : null}
   </div >;
 };
 

@@ -40,7 +40,8 @@ const deletePointOrLineString = (feature: Feature) => {
   let route: Route | null = null;
   if (catalogUi.activeRoute && catalogUi.activeRoute.features.hasFeature(feature)) {
     route = catalogUi.activeRoute;
-  } else {
+  }
+  if (!route) {
     const routes = feature.routes;
     if (routes.length > 0) {
       route = routes[0];
@@ -48,7 +49,7 @@ const deletePointOrLineString = (feature: Feature) => {
   }
   if (route) {
     if (skipConfirmDialog()) {
-      route.features.remove(feature);
+      route.features.remove(feature).then();
     } else {
       catalogUi.requestDeleteFeature(feature, route);
     }

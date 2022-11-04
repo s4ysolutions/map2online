@@ -24,10 +24,9 @@ import {
   StyleColorMode,
   StyleDisplayMode, StyleListItemType,
 } from '../index';
-import {Map2Color, idToMap2Color, map2colors} from './colors';
+import {Map2Color, idToMap2Color, map2colors} from '../colors';
 import {PIN_HOTSPOT_X, PIN_HOTSPOT_Y, PIN_SCALE, makePinURL} from './pin';
 import {ID} from '../../catalog';
-import {Debugger} from 'inspector';
 
 const makeBalloonStyle = (color: ColorId): BalloonStyle => ({
   bgColor: Map2Color.TRANSPARENT,

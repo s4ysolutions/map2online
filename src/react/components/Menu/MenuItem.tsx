@@ -16,14 +16,34 @@
 
 import * as React from 'react';
 import {ReactNode} from 'react';
+import './styles.scss';
 
-interface Props {
-  onClick: React.MouseEventHandler
-  children: ReactNode[] | ReactNode
-}
+const MenuItem: React.FunctionComponent<{
+  onClick: React.MouseEventHandler<HTMLDivElement>,
+  title: string,
+  children?: ReactNode[] | ReactNode,
+  className?: string,
+  pre?: ReactNode,
+  after?: ReactNode,
+}> =
+  ({onClick: handleClick, children, title, className, pre, after}): React.ReactElement =>
+    <div className={`item ${className || ''}`} onClick={handleClick}>
 
-const MenuItem: React.FunctionComponent<Props> =
-  ({onClick: handleClick, ...props}): React.ReactElement =>
-    <div className="menu-item" onClick={handleClick} {...props} />;
+      <div className="title">
+        {pre ? <div className="pre">
+          {pre}
+        </div> : null}
+
+        <div className="center">
+          {title}
+        </div>
+
+        {after ? <div className="after">
+          {after}
+        </div> : null}
+      </div>
+
+      {children}
+    </div>;
 
 export default MenuItem;

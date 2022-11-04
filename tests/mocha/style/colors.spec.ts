@@ -15,7 +15,7 @@
  */
 
 import {expect} from 'chai';
-import {Map2Color, idToMap2Color, map2ColorToName} from '../../../src/style/default/colors';
+import {Map2Color, idToMap2Color, map2ColorToName} from '../../../src/style/colors';
 
 describe('Built in map2 colors', () => {
   it('idToMap2Color', () => {

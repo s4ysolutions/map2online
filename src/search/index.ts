@@ -15,6 +15,8 @@
  */
 
 
+import {ID} from '../catalog';
+
 export enum SearchErrorCode {
   UNKNOWN,
   INVALID_RESPONSE,
@@ -46,6 +48,8 @@ export interface GeocodeAddress {
 }
 
 export interface SearchResponse {
+  id: ID;
+
   address: GeocodeAddress;
 
   boundingbox: string[];

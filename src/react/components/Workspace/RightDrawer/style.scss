@@ -16,18 +16,5 @@
 
 
 .right-drawer {
-  .title {
-    padding: 4px;
-  }
-
-  .menu-item {
-    margin: 0 0 1px;
-  }
-
-  .sub-menu {
-    padding-right: 16px;
-    padding-left: 32px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
+  z-index: 3000;
 }

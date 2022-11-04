@@ -17,40 +17,34 @@
 /* eslint-disable react/forbid-component-props */
 import React, {useEffect} from 'react';
 import {motion} from 'framer-motion';
-import log from '../../../../log';
 import useObservable from '../../../hooks/useObservable';
 import {getWorkspace} from '../../../../di-default';
 import Catalog from '../../Catalog';
+import {MID, SMALL, panelTransition} from '../constants';
 
 const variantSmall = {
   hide: {
-    // transition: tween,
     width: 0,
   },
   show: {
-    // transition: tween,
     width: '100%',
   },
 };
 
 const variantMid = {
   hide: {
-    // transition: tween,
     width: 0,
   },
   show: {
-    // transition: tween,
     width: '75%',
   },
 };
 
 const variantBig = {
   hide: {
-    // transition: tween,
     width: 0,
   },
   show: {
-    // transition: tween,
     width: '50%',
   },
 };
@@ -74,12 +68,7 @@ const onValueChange = {
   },
 };
 
-const SMALL = 720;
-const MID = 1024;
-
 const workspace = getWorkspace();
-// const transition = { type: 'tween', stiffness: 50 };
-const transition = { easy: 'tween', stiffness: 100 };
 
 const LeftDrawer: React.FunctionComponent = (): React.ReactElement => {
   const width = document.body.clientWidth;
@@ -87,13 +76,12 @@ const LeftDrawer: React.FunctionComponent = (): React.ReactElement => {
     onValueChange.width();
   }, []);
   const stateCatalog = useObservable(workspace.catalogObservable(), workspace.catalogOpen);
-  log.render(`LeftDrawer catalog=${stateCatalog} width=${width}`);
   // onValueChange={onValueChange}
   return <motion.div
     animate={stateCatalog ? 'show' : 'hide'}
     className="left-drawer"
     initial={stateCatalog ? 'show' : 'hide'}
-    transition={transition}
+    transition={panelTransition}
     variants={width < SMALL ? variantSmall : (width < MID ? variantMid : variantBig)} >
     <Catalog />
   </motion.div >;

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import {expect} from 'chai';
 import {makePinURL} from '../../../src/style/default/pin';
-import {map2colors} from '../../../src/style/default/colors';
+import {map2colors} from '../../../src/style/colors';
 import {map2StylesFactory} from '../../../src/style/default/styles';
 import {isIconStyle, isLineStyle} from '../../../src/style';
 

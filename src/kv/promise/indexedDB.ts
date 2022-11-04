@@ -35,8 +35,9 @@ const indexedDbFactory = (dbname: string, store = 'default'): KvPromise & Indexe
   subject: new Subject<{ key: string; value: unknown }>(),
   subjectDelete: new Subject<{ key: string; value: unknown }>(),
   get db(): Promise<IDBPDatabase> {
+    // noinspection JSUnusedLocalSymbols
     return this._db === null ? openDB(dbname, DB_VERSION, {
-      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
       upgrade(database: IDBPDatabase, oldVersion: number, newVersion: number | null, transaction) {
         log.debug('indexedDb upgrade');
         try {
@@ -67,7 +68,6 @@ const indexedDbFactory = (dbname: string, store = 'default'): KvPromise & Indexe
     }) : Promise.resolve(this._db);
   },
   get<T>(key: string, defaultValue: T, forcedJSON?: string): Promise<T> {
-    log.debug(`indexedDb get ${key}`);
     if (forcedJSON) {
       return Promise.resolve<T>(JSON.parse(forcedJSON));
     }

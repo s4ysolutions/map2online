@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import ExportMenu from '../../ExportMenu';
-import MapSourcesMenu from '../../MapSourcesMenu';
+import ExportMenu from '../../TopNavigation/ExportMenu';
+import MapSourcesMenu from '../../TopNavigation/MapSourcesMenu';
 import React from 'react';
-import log from '../../../../log';
 import {motion} from 'framer-motion';
 import {getWorkspace} from '../../../../di-default';
 import useObservable from '../../../hooks/useObservable';
-import SettingsMenu from '../../SettingsMenu';
+import SettingsMenu from '../../TopNavigation/SettingsMenu';
 import './style.scss';
+import {panelTransition} from '../constants';
 
 const variantMenu = {
   hide: {
@@ -35,18 +35,15 @@ const variantMenu = {
 
 const workspace = getWorkspace();
 
-const transition = { easy: 'tween', stiffness: 100 };
-
 const RightDrawer: React.FunctionComponent = (): React.ReactElement => {
   const stateExport = useObservable(workspace.exportObservable(), workspace.exportOpen);
   const stateSources = useObservable(workspace.sourcesObservable(), workspace.sourcesOpen);
   const stateSettings = useObservable(workspace.settingsObservable(), workspace.settingsOpen);
-  log.render(`RightDrawer exportMenu=${stateExport} sourceMenu=${stateSources} settings=${stateSettings}`);
   return <motion.div
     animate={stateExport || stateSources || stateSettings ? 'show' : 'hide'}
     className="right-drawer"
     initial={stateExport || stateSources || stateSettings ? 'show' : 'hide'}
-    transition={transition}
+    transition={panelTransition}
     variants={variantMenu}
   >
     {stateSources ? <MapSourcesMenu /> : null}

@@ -21,7 +21,7 @@ import './styles.scss';
 import {getBaseLayer} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import {getMapDefinition, isGoogleMapDefinition} from '../../../map-sources/definitions';
-import mapContext from './context/map';
+import googleMapContext from './context/map';
 import BaseLayer from './BaseLayer';
 import {sourceNameToMapId} from './lib/mapid';
 import {Subscription} from 'rxjs';
@@ -106,13 +106,13 @@ const GoogleMap: React.FunctionComponent = (): React.ReactElement | null => {
   const md = getMapDefinition(baseLayerName);
   if (md && isGoogleMapDefinition(md)) {
     return <div className="google-map-container" ref={mapAttach} >
-      {map ? <mapContext.Provider value={map} >
+      {map ? <googleMapContext.Provider value={map} >
         <BaseLayer />
-      </mapContext.Provider > : null}
+      </googleMapContext.Provider > : null}
     </div >;
   }
 
   return null;
 };
 
-export default React.memo(GoogleMap);
+export default GoogleMap;

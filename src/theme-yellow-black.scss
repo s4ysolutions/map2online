@@ -30,13 +30,17 @@ $white: #fff;
 $yellow: rgba(236, 181, 62, 0.95);
 $yellowdim: rgba(236, 181, 62, 0.5);
 
-$panel-color: $grey-lightest;
-$button-color: $yellow;
-
 $darktext: $grey-darkest;
 
 $form-bg: $yellow;
 $form-focused: $yellowdim;
+
+$panel-color: $grey-lightest;
+$menu-bg: $black;
+
+$button-color: $yellow;
+
+$menu-color: $panel-color;
 
 $button-font-size: 80%;
 
@@ -45,6 +49,8 @@ $button-title-height: 1.9em;
 
 $features-color: $white;
 $features-draggable-background-color: $grey-darkest;
+
+$search-opacity: 0.85;
 
 body {
   background-color: $black;
@@ -100,7 +106,7 @@ button {
 
 .left-drawer {
   .catalog {
-    background-color: red;
+    background-color: black;
 
     .title {
       font-size: 105%;
@@ -194,59 +200,51 @@ button {
   }
 }
 
-.right-drawer {
-  background-color: $panel-color; //rgba(0, 0, 0, 1);
-  .sub-items,
-  .title {
-    background-color: $black; //rgba(0, 0, 0, 1);
-    color: $grey-lighter;
-  }
+.menu {
+  background-color: $menu-bg; //rgba(0, 0, 0, 1);
+  color: $grey-lighter;
 
-  .sub-menu:hover,
-  .menu-item {
-    .title:hover, .sub-menu:hover {
+  .item {
+    .title:hover, &.active {
       background-color: $button-color;
       color: $white;
-    }
-
-    &.closed .sub-menu {
     }
   }
 }
 
 .float-panel {
-  background-color: $panel-color;
-
   .drag-handle {
     fill: $white;
   }
+}
 
-  .tools {
-    .buttons {
-      border-bottom: 1px solid $black;
-    }
+.tools {
+  background-color: $menu-bg;
+
+  .buttons {
+    border-bottom: 1px solid $black;
+    border-left: 4px solid $black;
+    border-right: 4px solid $black;
 
     .select.on {
       background-color: $grey;
     }
+  }
 
-    .tabs {
-      background-color: $black;
+  .tabs {
+    .menu-item {
+      background-color: $button-color;
 
-      .menu-item {
-        background-color: $button-color;
-
-        &.on {
-        }
-
-        &.off {
-          background-color: $yellowdim;
-        }
+      &.on {
       }
 
-      svg {
-        fill: $white;
+      &.off {
+        background-color: $yellowdim;
       }
+    }
+
+    svg {
+      fill: $white;
     }
   }
 }
@@ -327,6 +325,34 @@ form {
         box-shadow: 0 0 0 3px #ddd;
       }
     }
+  }
+}
+
+.search-results {
+  background-color: white;
+  opacity: $search-opacity;
+  border-radius: 2px;
+  color: black;
+
+  .item {
+    border: #3498db 1px solid;
+  }
+}
+
+.search-control {
+  border-radius: 2px;
+  background-color: white;
+  opacity: 0.5;
+
+  &.searchable {
+    opacity: $search-opacity;
+  }
+
+  &.searching {
+    opacity: 0.2;
+  }
+  input {
+    color: black;
   }
 }
 

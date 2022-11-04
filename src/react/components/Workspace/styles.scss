@@ -15,14 +15,13 @@
  */
 
 @import "../../../spaces";
-
-$menu-item-dim: 40px;
+@import "./dims";
 
 .workspace {
 	display: flex;
 	flex-grow: 1;
 	position: relative; // make inner absolute to work
-	z-index: 0;
+	z-index: 10;
 	overflow: hidden;
 }
 
@@ -45,76 +44,6 @@ $menu-item-dim: 40px;
 	z-index: 30;
 }
 
-.float-panel {
-	position: absolute;
-	bottom: 0;
-	right: 0;
-	z-index: 20;
-}
-
-.float-panel.visible {
-	visibility: visible
-}
-
-.float-panel.invisible {
-	visibility: hidden
-}
-
-
-.float-panel .drag-handle,
-.float-panel .tabs button {
-	margin: 4px;
-	padding: 0;
-}
-
-.float-panel .drag-handle {
-	// padding: $space;
-	height: $menu-item-dim;
-	width: $menu-item-dim;
-	position: absolute;
-	top: 0;
-	left: 0;
-}
-
-.tools .tabs {
-	display: flex;
-	padding-left: $menu-item-dim + 8px;
-}
-
-.tools .tabs button {
-	height: $menu-item-dim;
-	width: $menu-item-dim;
-}
-
-.tools .tabs button svg {
-	height: 70%;
-	width: 70%
-}
-
-.tools .buttons {
-	display: flex;
-	flex-direction: column;
-}
-
-.tools .row {
-	display: flex;
-	justify-content: space-between;
-}
-
-.tools .select {
-	width: $menu-item-dim;
-	height: $menu-item-dim;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.tools .select svg {
-	display: block;
-	width: 80%;
-	height: 80%;
-}
-
 .right-drawer {
 	position: absolute;
 	overflow: hidden;
@@ -123,20 +52,4 @@ $menu-item-dim: 40px;
 	overflow-y: auto;
 	max-height: 100%;
 	cursor: default;
-}
-
-.right-drawer .menu-item .sub-menu {
-}
-
-.right-drawer .menu-item .title {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.right-drawer .menu-item.closed .sub-menu {
-	height: 0;
-	padding-bottom: 0;
-	padding-top: 0;
-	overflow: hidden;
 }

@@ -19,8 +19,7 @@ import * as React from 'react';
 import {useCallback, useState} from 'react';
 import log from '../../../log';
 import useComponentSize from '../../hooks/useComponentSize';
-import TopNavigation from './TopNavigation';
-import OlMap from '../Ol/OlMap';
+import TopNavigationPanel from './TopNavigationPanel';
 import FloatPanel from './FloatPanel';
 import LeftDrawer from './LeftDrawer';
 import RightDrawer from './RightDrawer';
@@ -32,14 +31,23 @@ import Wording from '../Personalization/Wording';
 import About from '../About';
 import Spinner from '../Spinner';
 import useSpinner from '../Spinner/hooks/useSpinner';
+import SearchResults from './SearchResultsPanel';
+import SearchPanel from './SearchPanel';
+import OpenLayers from '../OpenLayers';
 
 
 const importUI = getImportUI();
-const wording = getWording();
-const workspace = getWorkspace();
-const searchUI = getSearchUI();
+const visibleObservable = importUI.visibleObservable();
 
-searchUI.observable().subscribe(responses => log.debug('Search results', responses));
+const wording = getWording();
+const isPersonalizedObservable = wording.observableIsPersonalized();
+
+const workspace = getWorkspace();
+const personalizationObservable = workspace.personalizationObservable();
+const aboutObservable = workspace.aboutObservable();
+
+const searchUI = getSearchUI();
+const searchObservable = searchUI.observable();
 
 const Workspace = (): React.ReactElement => {
   const [el, setEl] = useState<HTMLDivElement | null>(null);
@@ -47,36 +55,45 @@ const Workspace = (): React.ReactElement => {
     setEl(ref);
   }, [setEl]);
   const {height, width} = useComponentSize(el);
-  const importUIVisible = useObservable<boolean>(importUI.visibleObservable(), importUI.visible);
-  const isPersonalized = useObservable(wording.observableIsPersonalized(), wording.isPersonalized);
-  const personalizationVisible = useObservable<boolean>(workspace.personalizationObservable(), workspace.personalizationOpen);
-  const aboutVisible = useObservable<boolean>(workspace.aboutObservable(), workspace.aboutOpen);
+  const importUIVisible = useObservable<boolean>(visibleObservable, importUI.visible);
+  const isPersonalized = useObservable(isPersonalizedObservable, wording.isPersonalized);
+  const personalizationVisible = useObservable<boolean>(personalizationObservable, workspace.personalizationOpen);
+  const aboutVisible = useObservable<boolean>(aboutObservable, workspace.aboutOpen);
+  const searchResults = useObservable(searchObservable, []);
+
   const spinner = useSpinner();
   log.render(`Workspace spiner=${spinner}`);
 
   return isPersonalized
     ? <React.Fragment >
-      <TopNavigation key="topNavigation" />
+      <TopNavigationPanel key="topNavigationPanel" />
 
       <div className="workspace" key="workspace" ref={onRefSet} >
+        <SearchPanel />
+
+        {searchResults.length > 0 ? <SearchResults searchResults={searchResults} /> : null}
+
         <LeftDrawer />
 
         <div className="map-container" >
           <GoogleMap />
 
-          <OlMap />
+          <OpenLayers />
         </div >
 
         <RightDrawer />
 
         <FloatPanel parentHeight={height} parentWidth={width} />
+
       </div >
+
 
       {importUIVisible ? <Import /> : null}
 
       {personalizationVisible ? <Wording /> : null}
 
       {aboutVisible ? <About /> : null}
+
 
       {spinner ? <Spinner /> : null}
     </React.Fragment >

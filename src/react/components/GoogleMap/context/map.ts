@@ -16,5 +16,5 @@
 
 import * as React from 'react';
 
-const olMapContext = React.createContext<google.maps.Map | null>(null);
-export default olMapContext;
+const googleMapContext = React.createContext<google.maps.Map | null>(null);
+export default googleMapContext;

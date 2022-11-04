@@ -16,11 +16,11 @@
 
 
 import Nominatim from '../../../src/search/nominatim';
-import MemCache from '../../../src/search/default-cache';
+import MemSearchCache from '../../../src/search/mem-search-cache';
 
-describe('Nominatim', () => {
+describe.skip('Nominatim', () => {
   it('Search Beograd', (done) => {
-    const nominatim = new Nominatim(new MemCache());
+    const nominatim = new Nominatim(new MemSearchCache());
     nominatim.search('Beograd', 'en').then(done);
   });
 });

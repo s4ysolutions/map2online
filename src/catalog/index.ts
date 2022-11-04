@@ -35,7 +35,7 @@ export const isCoordinate = (coordinate: Coordinate | Coordinate[] | number | nu
 
 
 export const coordinateEq = (c1: Coordinate, c2: Coordinate): boolean => c1.lat === c2.lat && c1.lon === c2.lon;
-/*
+
 export const coordinatesEq = (c1: Coordinate[], c2: Coordinate[]): boolean => {
   if (c1.length !== c2.length) {
     return false;
@@ -47,7 +47,7 @@ export const coordinatesEq = (c1: Coordinate[], c2: Coordinate[]): boolean => {
   }
   return true;
 };
-*/
+
 export interface Point {
   coordinate: Coordinate;
 }
@@ -85,6 +85,7 @@ export interface Feature extends FeatureProps {
   observable: () => Observable<Feature | null>;
   updateCoordinates: (coord: Coordinate | Coordinate[]) => void;
   eq: (anotherFeature: Feature) => boolean;
+  routes: Route[];
 }
 
 export interface Features extends Iterable<Feature> {
@@ -112,6 +113,7 @@ export interface Route extends RouteProps {
   ts: ID;
   features: Features;
   observable: () => Observable<Route | null>;
+  categories: Category[];
 }
 
 export interface Routes extends Iterable<Route> {

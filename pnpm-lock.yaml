@@ -54,6 +54,7 @@ specifiers:
   normalize.css: ^8.0.1
   npm-watch: ^0.11.0
   ol: ^7.1.0
+  ol-contextmenu: ^5.1.0
   prop-types: ^15.8.1
   react: ^18.2.0
   react-beautiful-dnd: ^13.1.1
@@ -100,6 +101,7 @@ dependencies:
   node-sass: 7.0.3
   normalize.css: 8.0.1
   ol: 7.1.0
+  ol-contextmenu: 5.1.0_ol@7.1.0
   prop-types: 15.8.1
   react: 18.2.0
   react-beautiful-dnd: 13.1.1_biqbaboplfbrettd7655fr4n2y
@@ -2031,10 +2033,8 @@ packages:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  /ajv-formats/2.1.1_ajv@8.11.0:
+  /ajv-formats/2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
-    peerDependencies:
-      ajv: ^8.0.0
     peerDependenciesMeta:
       ajv:
         optional: true
@@ -4299,7 +4299,7 @@ packages:
     dependencies:
       '@apidevtools/json-schema-ref-parser': 9.0.9
       ajv: 8.11.0
-      ajv-formats: 2.1.1_ajv@8.11.0
+      ajv-formats: 2.1.1
       body-parser: 1.20.0
       content-type: 1.0.4
       deep-freeze: 0.0.1
@@ -7728,6 +7728,16 @@ packages:
     resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
     dev: true
 
+  /ol-contextmenu/5.1.0_ol@7.1.0:
+    resolution: {integrity: sha512-CjAnLOeXyaSXSQfi7wW3AY8RO9YZQzl9LGmBiVHukgboPS20FE9zZ/7acuckpRnOjoMS/as+q8tz42JRZW1lSw==}
+    engines: {node: ^16 || ^18, npm: '>=8'}
+    peerDependencies:
+      ol: ^7.1.0
+    dependencies:
+      ol: 7.1.0
+      tiny-emitter: 2.1.0
+    dev: false
+
   /ol-mapbox-style/9.1.0:
     resolution: {integrity: sha512-R/XE6FdviaXNdnSw6ItHSEreMtQU68cwQCGv4Kl8yG0V1dZhnI5JWr8IOphJwffPVxfWTCnJb5aALGSB89MvhA==}
     dependencies:
@@ -8924,7 +8934,7 @@ packages:
     dependencies:
       '@types/json-schema': 7.0.11
       ajv: 8.11.0
-      ajv-formats: 2.1.1_ajv@8.11.0
+      ajv-formats: 2.1.1
       ajv-keywords: 5.1.0_ajv@8.11.0
     dev: true
 
@@ -9665,6 +9675,10 @@ packages:
   /thunky/1.1.0:
     resolution: {integrity: sha512-eHY7nBftgThBqOyHGVN+l8gF0BucP09fMo0oO/Lb0w1OF80dJv+lDVpXG60WMQvkcxAkNybKsrEIE3ZtKGmPrA==}
     dev: true
+
+  /tiny-emitter/2.1.0:
+    resolution: {integrity: sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==}
+    dev: false
 
   /tiny-invariant/1.0.6:
     resolution: {integrity: sha512-FOyLWWVjG+aC0UqG76V53yAWdXfH8bO6FNmyZOuUrzDzK8DI3/JRY25UD7+g49JWM1LXwymsKERB+DzI0dTEQA==}

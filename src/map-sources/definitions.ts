@@ -254,22 +254,21 @@ const mapGroups: MapGroupDefinition[] = [
   maps: group.maps.map((map: MapDefinition): MapDefinition => addProjToMap(map)),
 }))*/;
 
-const memo: Record<string, MapDefinition | null> = {};
+const memo: Record<string, MapDefinition> = {};
 
-export const getMapDefinition = (sourceName: string): MapDefinition | null => {
-  if (memo[sourceName]) {
-    return memo[sourceName];
+export const getMapDefinition = (mapId: string): MapDefinition => {
+  if (memo[mapId]) {
+    return memo[mapId];
   }
   for (const mgd of mapGroups) {
     for (const md of mgd.maps) {
-      if (md.id === sourceName) {
-        memo[sourceName] = md;
+      if (md.id === mapId) {
+        memo[mapId] = md;
         return md;
       }
     }
   }
-  memo[sourceName] = null;
-  return null;
+  throw Error(`No map definition for id=${mapId}`);
 };
 
 export default mapGroups;

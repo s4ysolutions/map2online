@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import useObservable from '../../hooks/useObservable';
-import mapContext from './context/map';
+import googleMapContext from './context/map';
 import log from '../../../log';
 import {getBaseLayer} from '../../../di-default';
 import {sourceNameToMapId} from './lib/mapid';
@@ -27,7 +27,7 @@ const BaseLayer: React.FunctionComponent = (): React.ReactElement | null => {
   const baseLayerName = useObservable(baseLayer.sourceNameObservable(), baseLayer.sourceName);
   log.render(`GoogleBaseLayer sourceName=${baseLayerName}`);
 
-  const map = React.useContext(mapContext);
+  const map = React.useContext(googleMapContext);
   if (map) {
     const mapTypeId = sourceNameToMapId(baseLayerName);
     if (map.getMapTypeId() === mapTypeId) {

@@ -113,7 +113,7 @@ const Map: React.FunctionComponent<{children: React.ReactNode[]}> = ({children})
   }, [map]);
 
 
-  return <div className="ol-container" ref={mapAttach} tabIndex={0} >
+  return <div className="ol-container" ref={mapAttach} >
     {map ? <olMapContext.Provider value={map}>
       {children }
     </olMapContext.Provider> : null}

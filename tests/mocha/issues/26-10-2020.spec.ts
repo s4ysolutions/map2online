@@ -24,7 +24,7 @@ import {Map2Styles} from '../../../src/style';
 import {wordingFactory} from '../../../src/personalization/wording/default';
 import {map2StylesFactory} from '../../../src/style/default/styles';
 import {first, map} from 'rxjs/operators';
-import {createOlStyle} from '../../../src/react/components/Ol/lib/styles';
+import {createOlStyle} from '../../../src/react/components/OpenLayers/lib/styles';
 import {KvPromise} from '../../../src/kv/promise';
 import {CatalogStorage} from '../../../src/catalog/storage';
 import memoryStoragePromiseFactory from '../../mocks/kv-promice/memoryStorage';

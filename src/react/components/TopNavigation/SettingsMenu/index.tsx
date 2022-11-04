@@ -15,17 +15,21 @@
  */
 
 import * as React from 'react';
-import {ReactNode} from 'react';
+import T from 'l10n';
+import log from '../../../../log';
+import MenuItem from '../../Menu/MenuItem';
+import {getWorkspace} from '../../../../di-default';
+import Menu from '../../Menu/Menu';
 
-const MenuButton: React.FunctionComponent<{ title: string, onClick: React.MouseEventHandler, children?: ReactNode[] | ReactNode }> =
-  ({title, children, onClick}): React.ReactElement =>
-    <button className="menu-item" onClick={onClick} type="button" >
-      {children}
+const workspace = getWorkspace();
 
-      <div className="title" >
-        {title}
-      </div >
-    </button >
-;
+const SettingsMenu: React.FunctionComponent = (): React.ReactElement => {
+  log.render('SettingsMenu');
+  return <Menu>
+    <MenuItem onClick={workspace.toggleTools} title={T`Tools`} />
 
-export default MenuButton;
+    <MenuItem onClick={workspace.togglePersonalization} title={T`Personalization`} />
+  </Menu>;
+};
+
+export default SettingsMenu;

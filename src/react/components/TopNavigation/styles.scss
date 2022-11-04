@@ -35,23 +35,13 @@
     white-space: nowrap;
   }
 
-  .menu-item {
-
-  }
-
   @media screen and (max-width: 560px) {
     .menu-item {
       margin-bottom: 10px;
     }
   }
 
-  .menu-item-title {
-    display: flex;
-    flex-direction: column;
-    align-content: stretch;
-  }
-
-  .button-title {
+  button .title {
     padding-left: 0.2em;
     padding-right: 0.2em;
   }

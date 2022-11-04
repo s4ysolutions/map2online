@@ -18,22 +18,30 @@ import * as React from 'react';
 import usePersistState from '../../hooks/usePersistState';
 import {getLocalStorage} from '../../../di-default';
 import {ReactNode} from 'react';
-
-interface Props {
-  id: string
-  children: ReactNode[] | ReactNode
-}
+import SubMenu from './SubMenu';
+import MenuItem from './MenuItem';
+import './styles.scss';
 
 const localStorage = getLocalStorage();
 
-const MenuCollapsableItem: React.FunctionComponent<Props> = ({children, id}): React.ReactElement => {
-  const closed = usePersistState<boolean>(`menu_${id}`, false);
+const MenuCollapsableItem: React.FunctionComponent<{
+  id: string,
+  title: string, children: ReactNode[] | ReactNode
+}> =
+  ({
+    children,
+    id,
+    title,
+  }): React.ReactElement => {
 
-  return <div
-    className={closed ? 'menu-item closed' : 'menu-item'}
-    onClick={(): void => localStorage.set(`menu_${id}`, !closed)} >
-    {children}
-  </div >;
-};
+    const closed = usePersistState<boolean>(`menu_${id}`, false);
+    const handleClick = () => localStorage.set(`menu_${id}`, !closed);
+
+    return <MenuItem onClick={handleClick} title={title}>
+      {closed ? <SubMenu >
+        {children}
+      </SubMenu > : null }
+    </MenuItem>;
+  };
 
 export default MenuCollapsableItem;

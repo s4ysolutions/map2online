@@ -33,7 +33,7 @@ import Spinner from '../Spinner';
 import useSpinner from '../Spinner/hooks/useSpinner';
 import SearchResults from './SearchResultsPanel';
 import SearchPanel from './SearchPanel';
-import OlMap from '../Ol/OlMap';
+import OpenLayers from '../OpenLayers';
 
 
 const importUI = getImportUI();
@@ -78,7 +78,7 @@ const Workspace = (): React.ReactElement => {
         <div className="map-container" >
           <GoogleMap />
 
-          <OlMap />
+          <OpenLayers />
         </div >
 
         <RightDrawer />

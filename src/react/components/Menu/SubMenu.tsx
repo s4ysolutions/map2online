@@ -1,5 +1,5 @@
-/*!
- * Copyright 2021 s4y.solutions
+/*
+ * Copyright 2019 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
+import * as React from 'react';
+import {ReactNode} from 'react';
+import './styles.scss';
 
-.right-drawer {
-  z-index: 3000;
-}
+
+const SubMenu: React.FunctionComponent<{children: ReactNode[] | ReactNode}> =
+  ({ children}): React.ReactElement => <div className="sub-menu" >
+    {children}
+  </div >;
+
+export default SubMenu;

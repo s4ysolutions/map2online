@@ -53,19 +53,3 @@
 	max-height: 100%;
 	cursor: default;
 }
-
-.right-drawer .menu-item .sub-menu {
-}
-
-.right-drawer .menu-item .title {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.right-drawer .menu-item.closed .sub-menu {
-	height: 0;
-	padding-bottom: 0;
-	padding-top: 0;
-	overflow: hidden;
-}

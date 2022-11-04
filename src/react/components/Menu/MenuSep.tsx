@@ -15,7 +15,8 @@
  */
 
 import * as React from 'react';
+import './styles.scss';
 
 const MenuSep: React.FunctionComponent = () => <div className="menu-sep" />;
 
-export default React.memo(MenuSep);
+export default MenuSep;

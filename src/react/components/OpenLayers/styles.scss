@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 s4y.solutions
+ * Copyright 2019 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
+.ol-container {
+  width: 100%;
+  height: 100%;
+  cursor: none;
+  position: absolute;
+  top: 0;
+  left: 0;
 
-.right-drawer {
-  z-index: 3000;
+
+
 }

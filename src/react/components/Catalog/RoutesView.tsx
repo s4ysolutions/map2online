@@ -18,15 +18,13 @@ import * as React from 'react';
 import {useCallback} from 'react';
 import {DragDropContext, Draggable, DraggingStyle, DropResult, Droppable, NotDraggingStyle} from 'react-beautiful-dnd';
 import log from '../../../log';
-import {getCatalogUI, getWording} from '../../../di-default';
+import {getCatalogUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import RouteView from './RouteView';
 import {Category} from '../../../catalog';
 import RouteEdit from './RouteEdit';
-import ConfirmDialog from '../Confirm';
 import T from '../../../l10n';
 import {map} from 'rxjs/operators';
-import {setSpinnerActive} from '../Spinner/hooks/useSpinner';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -50,7 +48,6 @@ const getDraggingStyle = (isDragging: boolean, draggableStyle: DraggingStyle | N
 });
 
 const catalogUI = getCatalogUI();
-const wording = getWording();
 
 const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}): React.ReactElement => {
   log.render('Routes');
@@ -61,7 +58,6 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
     Array.from(category.routes),
   );
   const routeEdit = useObservable(catalogUI.routeEditObservable(), catalogUI.routeEdit);
-  const routeDelete = useObservable(catalogUI.routeDeleteObservable(), catalogUI.routeDelete);
   const handleDragEnd = useCallback(
     (result: DropResult): void => {
       const indexS = result.source.index;
@@ -108,24 +104,6 @@ const RoutesView: React.FunctionComponent<{ category: Category; }> = ({category}
 
     {routeEdit ? <RouteEdit route={routeEdit} /> : null}
 
-    {routeDelete ? <ConfirmDialog
-      confirm={wording.R('Yes, delete the route')}
-      message={wording.R('Delete route warning')}
-      onCancel={catalogUI.endDeleteRoute}
-      onConfirm={() => {
-        const c = routeDelete;
-        catalogUI.endDeleteRoute();
-        catalogUI.endDeleteCategory();
-        setSpinnerActive(true);
-        setTimeout(() => {
-          category.routes.remove(c.route).then(() => {
-            setSpinnerActive(false);
-          })
-            .catch(() => setSpinnerActive(false));
-        }, 1);
-      }}
-      title={wording.R('Delete route')}
-    /> : null}
   </div >;
 };
 

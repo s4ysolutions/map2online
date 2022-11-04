@@ -25,14 +25,12 @@ import {
   NotDraggingStyle,
 } from 'react-beautiful-dnd';
 import log from '../../../log';
-import {getCatalog, getCatalogUI, getWording} from '../../../di-default';
+import {getCatalog, getCatalogUI} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import CategoryView from './CategoryView';
 import CategoryEdit from './CategoryEdit';
-import ConfirmDialog from '../Confirm';
 import T from '../../../l10n';
 import {map} from 'rxjs/operators';
-import {setSpinnerActive} from '../Spinner/hooks/useSpinner';
 
 const getClassName = (isDraggingOver: boolean): string => `list${isDraggingOver ? ' dragging-over' : ''}`;
 
@@ -58,7 +56,6 @@ const getDraggingStyle = (isDragging: boolean, draggableStyle: DraggingStyle | N
 
 const catalog = getCatalog();
 const catalogUI = getCatalogUI();
-const wording = getWording();
 
 const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
   log.render('Categories');
@@ -70,7 +67,6 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
   );
 
   const categoryEdit = useObservable(catalogUI.categoryEditObservable(), catalogUI.categoryEdit);
-  const categoryDelete = useObservable(catalogUI.categoryDeleteObservable(), catalogUI.categoryDelete);
   const handleDragEnd = useCallback(
     (result: DropResult): void => {
       const indexS = result.source.index;
@@ -117,23 +113,6 @@ const CategoriesView: React.FunctionComponent = (): React.ReactElement => {
 
     {categoryEdit ? <CategoryEdit category={categoryEdit} /> : null}
 
-    {categoryDelete ? <ConfirmDialog
-      confirm={wording.C('Yes, delete the category')}
-      message={wording.CR('Delete category warning')}
-      onCancel={catalogUI.endDeleteCategory}
-      onConfirm={() => {
-        const c = categoryDelete;
-        catalogUI.endDeleteCategory();
-        setSpinnerActive(true);
-        setTimeout(() => {
-          catalog.categories.remove(c).then(() => {
-            setSpinnerActive(false);
-          })
-            .catch(() => setSpinnerActive(false));
-        }, 1);
-      }}
-      title={wording.C('Delete category')}
-    /> : null}
   </div >;
 };
 

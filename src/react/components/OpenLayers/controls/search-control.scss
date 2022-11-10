@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
+@import "../../../../dims";
 
-form.search-control {
-  padding: 0;
+form.ol-search {
+  padding: 0px;
 }
 
-.search-control {
+.ol-search {
+  position: absolute;
+  top: $controlOffset;
+  right: $controlOffset;
+
   input {
+    padding: 3px;
+    padding-bottom: 4px;
+    border: none;
     min-width: 5em;
     :after {
       // content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='100' cy='50' r='40' stroke='black' stroke-width='2' fill='red'/%3E%3Cpolyline points='20,20 40,25 60,40 80,120 120,140 200,180' style='fill:none;stroke:black;stroke-width:3'/%3E%3C/svg%3E ");

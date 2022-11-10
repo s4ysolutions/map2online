@@ -27,7 +27,11 @@ class DefaultSearchUI implements SearchUI {
 
   private _observableMapUpdate = new Subject<{searchResponse: SearchResponse, color: Map2Color | null}>();
 
+  private _observableShowResponse = new Subject<boolean>();
+
   private _onMap: Record<ID, Map2Color> = {};
+
+  private _showResponnse = false;
 
   observable(): Observable<SearchResponse[]> {
     return this._observable;
@@ -64,6 +68,19 @@ class DefaultSearchUI implements SearchUI {
       filter(r => r.searchResponse.id === searchResponse.id),
       map(r => r.color),
     );
+  }
+
+  get showResponse(): boolean {
+    return this._showResponnse;
+  }
+
+  set showResponse(show: boolean) {
+    this._showResponnse = show;
+    this._observableShowResponse.next(show);
+  }
+
+  observableShowResponse(): Observable<boolean> {
+    return this._observableShowResponse;
   }
 }
 

@@ -13,17 +13,19 @@
  *  See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, {FormEvent, useRef, useState} from 'react';
+/*
+import React, {FormEvent, useContext, useRef, useState} from 'react';
 import {getSearch, getSearchUI} from '../../../di-default';
 import './styles.scss';
+import olMapContext from '../OpenLayers/context/map';
 
 const searchUI = getSearchUI();
 const searchEngine = getSearch();
 
 const MIN_SEARCH_LENGTH = 3;
-
-const SearchControl = (): React.ReactElement => {
+// obsolete
+const SearchControl:React.FunctionComponent = (): React.ReactElement => {
+  const map = useContext(olMapContext);
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchable, setIsSearchable] = useState(false);
 
@@ -32,7 +34,9 @@ const SearchControl = (): React.ReactElement => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     if (isSearchable && search.current) {
       setIsSearching(true);
-      searchEngine.search(search.current)
+      const extent = map.getView().calculateExtent();
+      // eslint-disable-next-line no-magic-numbers
+      searchEngine.search(search.current, extent[0], extent[1], extent[2], extent[3])
         .then(results => {
           searchUI.setResponse(search.current || '', results).then(() => setIsSearching(false));
         })
@@ -65,4 +69,4 @@ const SearchControl = (): React.ReactElement => {
   </form>;
 };
 
-export default SearchControl;
+*/

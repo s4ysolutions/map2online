@@ -19,17 +19,16 @@ import {CacheKey, CacheObject, SearchCache} from './index';
 class MemSearchCache implements SearchCache {
   private mem: Record<CacheKey, CacheObject> = {};
 
-  add(key: CacheKey, object: CacheObject): Promise<void> {
+  add(key: CacheKey, object: CacheObject): void {
     this.mem[key] = object;
-    return Promise.resolve(undefined);
   }
 
-  has(key: CacheKey): Promise<boolean> {
-    return Promise.resolve(Boolean(this.mem[key]));
+  has(key: CacheKey): boolean {
+    return Boolean(this.mem[key]);
   }
 
-  get(key: CacheKey): Promise<CacheObject | null> {
-    return Promise.resolve(this.mem[key] || null);
+  get(key: CacheKey): CacheObject | null {
+    return this.mem[key] || null;
   }
 }
 

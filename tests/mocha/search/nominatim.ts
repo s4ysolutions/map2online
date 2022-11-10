@@ -21,6 +21,7 @@ import MemSearchCache from '../../../src/search/mem-search-cache';
 describe.skip('Nominatim', () => {
   it('Search Beograd', (done) => {
     const nominatim = new Nominatim(new MemSearchCache());
-    nominatim.search('Beograd', 'en').then(done);
+    // TODO: coordiantes fake
+    nominatim.search('EPSG:3857', 'Beograd', 0, 0, 0, 0, 'en').then(done);
   });
 });

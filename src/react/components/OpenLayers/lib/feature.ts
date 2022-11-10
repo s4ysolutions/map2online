@@ -24,7 +24,7 @@ import {coordinate2ol, coordinates2ol} from './coordinates';
 import {Coordinate as OlCoordinate} from 'ol/coordinate';
 import {Style as OlStyle} from 'ol/style';
 import {Geometry as OlGeometry} from 'ol/geom';
-import {IconStyle, Style, StyleItem} from '../../../../style';
+import {StyleItem} from '../../../../style';
 import {getMap2Styles} from '../../../../di-default';
 
 const cache: Record<ID, OlFeature<OlGeometry>> = {};

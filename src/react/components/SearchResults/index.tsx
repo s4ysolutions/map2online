@@ -18,15 +18,37 @@ import React from 'react';
 import {SearchResponse} from '../../../search';
 import log from '../../../log';
 import './styles.scss';
-import Index from './SearchResult';
+import SearchResultItem from './SearchResultItem';
+import CloseIcon from '../Svg/TriangleUp';
+import {getBaseLayer, getSearchUI} from '../../../di-default';
 
-const SearchResults: React.FunctionComponent<{searchResults: SearchResponse[]}> =
+const searchUi = getSearchUI();
+const handleClose = () => {
+  searchUi.showResponse = false;
+};
+
+const baseLayer = getBaseLayer();
+
+const handleMoveMapTo = (lon: number, lat: number) => {
+  const control = baseLayer.centerControl;
+  if (control) {
+    control.setCenter(lon, lat);
+  }
+};
+
+const SearchResults: React.FunctionComponent<{ searchResults: SearchResponse[] }> =
   ({searchResults}): React.ReactElement => {
     log.debug('SearchResults', searchResults);
 
-    return <div className="search-results" >
-      {searchResults.map(searchResult => <Index key={searchResult.id} searchResponse={searchResult} />)}
-    </div>;
+    return <div className="search-results-container" >
+      <div className="search-results" >
+        {searchResults.map(searchResult => <SearchResultItem key={searchResult.id} onMoveMapTo={handleMoveMapTo} searchResponse={searchResult} />)}
+      </div >
+
+      <div className="close" onClick={handleClose} >
+        <CloseIcon />
+      </div >
+    </div >;
   };
 
 export default SearchResults;

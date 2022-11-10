@@ -328,18 +328,22 @@ form {
   }
 }
 
-.search-results {
+.search-results-container {
   background-color: white;
   opacity: $search-opacity;
   border-radius: 2px;
-  color: black;
+  .search-results {
+    color: black;
+    border-top: #3498db 1px solid;
+    border-bottom: #3498db 1px solid;
 
-  .item {
-    border: #3498db 1px solid;
+    .item {
+      border: #3498db 1px solid;
+    }
   }
 }
 
-.search-control {
+.ol-search.ol-control {
   border-radius: 2px;
   background-color: white;
   opacity: 0.5;
@@ -352,6 +356,7 @@ form {
     opacity: 0.2;
   }
   input {
+    background-color: white;
     color: black;
   }
 }

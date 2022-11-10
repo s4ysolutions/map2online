@@ -20,14 +20,12 @@ import OlMap from 'ol/Map';
 import MapEvent from 'ol/MapEvent';
 import View from 'ol/View';
 import ResizeObserver from 'resize-observer-polyfill';
-import {defaults as defaultControls} from 'ol/control';
+import {Control, defaults as defaultControls} from 'ol/control';
 import {getBaseLayer} from '../../../../di-default';
 import {setCursorOver} from '../hooks/useCursorOver';
 import T from 'l10n';
 import MapBrowserEvent from 'ol/MapBrowserEvent';
 import Timeout = NodeJS.Timeout;
-import ZoomToFeaturesControl from '../controls/ZoomToFeaturesControl';
-import MyGPSLocationControl from '../controls/MyGPSLocationControl';
 import olMapContext from '../context/map';
 import './styles.scss';
 
@@ -37,87 +35,91 @@ const baseLayer = getBaseLayer();
 
 const SKIP_RESIZE_TIME_MS = 100;
 
-const Map: React.FunctionComponent<{children: React.ReactNode[]}> = ({children}): React.ReactElement => {
-  const [map, setMap] = React.useState<OlMap | null>(null);
+const Map: React.FunctionComponent<{ children: React.ReactNode[], controls: Control[] }> =
+  ({children, controls}): React.ReactElement => {
+    const [map, setMap] = React.useState<OlMap | null>(null);
 
-  const mapAttach = React.useCallback((el: HTMLDivElement): void => {
-    if (!el) {
-      return;
-    }
-    const controls = defaultControls({
-      zoomOptions: {
-        delta: 0.25,
-        zoomInTipLabel: T`Zoom in`,
-        zoomOutTipLabel: T`Zoom out`,
-      },
-    }).extend([new ZoomToFeaturesControl()]);
-
-    if (navigator.geolocation) {
-      controls.extend([new MyGPSLocationControl()]);
-    }
-
-    const {state} = baseLayer;
-    const m = new OlMap({
-      controls,
-
-      target: el,
-      view: new View({
-        center: [
-          state.x,
-          state.y,
-        ],
-        zoom: state.zoom,
-      }),
-    });
-    m.on('moveend', (e: MapEvent) => {
-      if (e.frameState) {
-        const {viewState} = e.frameState;
-        baseLayer.state = {x: viewState.center[0], y: viewState.center[1], zoom: viewState.zoom};
+    const mapAttach = React.useCallback((el: HTMLDivElement): void => {
+      if (!el) {
+        return;
       }
-    });
-    m.on('pointerdrag', (e: MapBrowserEvent<UIEvent>) => {
-      if (e.frameState) {
-        const pos = e.frameState.viewState.center;
-        baseLayer.setDragging({lat: pos[1], lon: pos[0], alt: 0});
-      }
-    });
-    el.addEventListener('mouseenter', () => {
-      setCursorOver(true);
-    });
-    el.addEventListener('mouseleave', () => {
-      setCursorOver(false);
-    });
+      const allControls = defaultControls({
+        zoomOptions: {
+          delta: 0.25,
+          zoomInTipLabel: T`Zoom in`,
+          zoomOutTipLabel: T`Zoom out`,
+        },
+      }).extend(controls);
 
-    setMap(m);
-  }, []);
+      const {state} = baseLayer;
+      const m = new OlMap({
+        controls: allControls,
 
-  React.useEffect(() => {
-    if (map) {
-      const el = map.getTargetElement();
-      const resizeObserver = new ResizeObserver(entries => {
-        if (entries.length > 0) {
-          if (resizeTimer) {
-            clearTimeout(resizeTimer);
-          }
-          resizeTimer = setTimeout(() => {
-            map.updateSize();
-            resizeTimer = null;
-          }, SKIP_RESIZE_TIME_MS);
+        target: el,
+        view: new View({
+          center: [
+            state.x,
+            state.y,
+          ],
+          zoom: state.zoom,
+        }),
+      });
+      m.on('moveend', (e: MapEvent) => {
+        if (e.frameState) {
+          const {viewState} = e.frameState;
+          baseLayer.state = {x: viewState.center[0], y: viewState.center[1], zoom: viewState.zoom};
         }
       });
-      resizeObserver.observe(el);
-      return () => resizeObserver.disconnect();
-    }
-    return () => 0;
+      m.on('pointerdrag', (e: MapBrowserEvent<UIEvent>) => {
+        if (e.frameState) {
+          const pos = e.frameState.viewState.center;
+          baseLayer.setDragging({lat: pos[1], lon: pos[0], alt: 0});
+        }
+      });
+      el.addEventListener('mouseenter', () => {
+        setCursorOver(true);
+      });
+      el.addEventListener('mouseleave', () => {
+        setCursorOver(false);
+      });
 
-  }, [map]);
+      setMap(m);
+
+      baseLayer.centerControl = {
+        setCenter(lat: number, lon: number) {
+          console.log('=========>', lat, lon);
+          m.getView().setCenter([lat, lon]);
+        },
+      };
+    }, [controls]);
+
+    React.useEffect(() => {
+      if (map) {
+        const el = map.getTargetElement();
+        const resizeObserver = new ResizeObserver(entries => {
+          if (entries.length > 0) {
+            if (resizeTimer) {
+              clearTimeout(resizeTimer);
+            }
+            resizeTimer = setTimeout(() => {
+              map.updateSize();
+              resizeTimer = null;
+            }, SKIP_RESIZE_TIME_MS);
+          }
+        });
+        resizeObserver.observe(el);
+        return () => resizeObserver.disconnect();
+      }
+      return () => 0;
+
+    }, [map]);
 
 
-  return <div className="ol-container" ref={mapAttach} >
-    {map ? <olMapContext.Provider value={map}>
-      {children }
-    </olMapContext.Provider> : null}
-  </div>;
-};
+    return <div className="ol-container" ref={mapAttach} >
+      {map ? <olMapContext.Provider value={map} >
+        {children}
+      </olMapContext.Provider > : null}
+    </div >;
+  };
 
 export default Map;

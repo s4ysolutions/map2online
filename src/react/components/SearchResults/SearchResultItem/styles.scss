@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright 2022 s4y.solutions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +14,37 @@
  * limitations under the License.
  */
 
-export enum LayerType {
-  BASE,
-  ACTIVE_FEATURES,
-  MODIFICATION,
-  DRAWING,
-  CONTEXT_MENU,
-  SEARCH_RESULTS,
+@import "../../../../../src/dims";
+
+.search-results .item .controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  padding-top: 4px;
+  padding-bottom: 4px;
+
+  .space {
+    flex-grow: 1;
+  }
+
+  .button {
+    height: $menu-item-dim;
+    width: $menu-item-dim;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2px;
+
+    svg {
+      display: block;
+      width: 80%;
+      height: 80%;
+      padding: 2px;
+      border-radius: 2px;
+    }
+
+    &.selected {
+      background-color: #0000FF40;
+    }
+  }
 }

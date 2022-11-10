@@ -13,13 +13,14 @@
  *  See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/*
 import React from 'react';
 import './styles.scss';
 import SearchControl from '../../SearchControl';
 
+// Obsolete, should be removed asap
+// MapControl is used instead
 const SearchPanel: React.FunctionComponent = (): React.ReactElement => <div className="search-panel">
   <SearchControl />
 </div>;
-
-export default SearchPanel;
+*/

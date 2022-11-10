@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {transform} from 'ol/proj';
 import {Search, SearchCache, SearchError, SearchErrorCode, SearchResponse} from './index';
 import {makeId} from '../lib/id';
 
@@ -65,6 +66,7 @@ export interface NominatimResponse {
 
 
 const isNominatimResponse = (obj: unknown): obj is NominatimResponse => (obj as NominatimResponse).osm_id !== undefined;
+const NOMINATIM_PROJECTION = 'EPSG:4326';
 
 class NominatimSearch implements Search {
   private cache: SearchCache;
@@ -73,17 +75,20 @@ class NominatimSearch implements Search {
     this.cache = cache;
   }
 
-  search(subject: string, lang: string): Promise<SearchResponse[]> {
+  projection = NOMINATIM_PROJECTION;
 
-    const cacheKey = `${subject}@${lang}`;
+  search(targetProjection: string, subject: string, x1: number, y1: number, x2: number, y2: number, lang: string): Promise<SearchResponse[]> {
+
+    const cacheKey = `${subject}@${lang}@${x1}@${y1}@${x2}@${y2}`;
     const cached = this.cache.get(cacheKey);
+    console.log('=====>', cached);
 
     if (cached !== null && Array.isArray(cached)) {
       return Promise.resolve(cached.filter(c => isNominatimResponse(c)));
     }
 
     const url =
-      `https://nominatim.openstreetmap.org/search.php?q=${subject}&polygon_geojson=1&format=jsonv2&accept_language=${lang}`;
+    `https://nominatim.openstreetmap.org/search.php?q=${encodeURI(subject)}&polygon_geojson=1&format=jsonv2&viewbox=${x1},${y1},${x2},${y2}&bounded=1${lang ? `&accept_language=${lang}` : ''}`;
 
     const headers = new Headers();
     if (lang) {
@@ -105,6 +110,11 @@ class NominatimSearch implements Search {
             .filter(r => isNominatimResponse(r))// as NominatimResponse[]
             .map(r => {
               r.id = (r.osm_id) ? r.osm_id : makeId();
+              r.projection = this.projection;
+              const [lon, lat] =
+                transform([parseFloat(r.lon), parseFloat(r.lat)], NOMINATIM_PROJECTION, targetProjection);
+              r.lon = lon;
+              r.lat = lat;
               return r as SearchResponse;
             })
           ;

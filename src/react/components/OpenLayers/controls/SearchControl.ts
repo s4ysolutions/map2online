@@ -17,15 +17,25 @@
 /* eslint-disable */
 import {Control} from 'ol/control';
 import {Options} from 'ol/control/Control';
+import {transformExtent} from 'ol/proj';
 import {getSearch, getSearchUI} from '../../../../di-default';
+import './search-control.scss';
+import {MID} from '../../Workspace/constants';
+import {currentLocale} from '../../../../l10n';
 
 const searchUI = getSearchUI();
 const search = getSearch();
+
+const hasOffsetWidth = (element: HTMLElement | string | undefined): element is HTMLElement =>
+  element !== undefined && (element as HTMLElement).offsetWidth !== undefined;
+
 
 class SearchControl extends Control {
   private search: HTMLInputElement;
   private form: HTMLFormElement;
   private root: HTMLElement;
+  private searchable = false;
+  private searching = false;
 
   constructor(opt_options?: Options) {
     const options = opt_options || {};
@@ -33,7 +43,6 @@ class SearchControl extends Control {
     const search = document.createElement('input');
 
     const element = document.createElement('form');
-    element.className = 'ol-search ol-unselectable ol-control';
     element.appendChild(search);
 
     super({...options, element});
@@ -42,39 +51,59 @@ class SearchControl extends Control {
     this.form = element;
     this.root = element;
 
+    this.form.className = 'ol-search ol-unselectable ol-control';
+
     this.search.addEventListener('input', this.handleInput.bind(this));
     this.form.addEventListener('submit', this.handleSubmit.bind(this));
   }
 
-  inactivate() {
-    this.root.style.opacity='0.5';
+  setSearchable() {
+    this.searchable = false;
+    this.root.classList.remove('searchable')
   }
 
-  activate() {
-    this.root.style.opacity='0.85';
+  unsetSearchable() {
+    this.searchable = true;
+    this.root.classList.add('searchable')
   }
 
   handleInput() {
     if (this.search.value && this.search.value.length > 2) {
-      this.activate();
+      this.unsetSearchable();
     } else {
-      this.inactivate()
+      this.setSearchable()
     }
   }
 
   handleSubmit(ev: Event) {
-    if (this.search.value && this.search.value.length > 2) {
-      this.root.style.opacity='0.2';
+    const map = this.getMap();
+    if (map !== null && this.searchable) {
+      this.root.classList.add('searching')
       this.search.disabled = true;
-      search.search(this.search.value)
+      const mapExtent = map.getView().calculateExtent();
+      const extent = transformExtent(mapExtent, map.getView().getProjection(), search.projection);
+
+      const mapElement = map.getTarget();
+      const width = (hasOffsetWidth(mapElement))
+        ? mapElement.offsetWidth
+        : 0;
+
+      const top = extent[3];
+      const bottom = extent[1];
+      const left = extent[0];
+      // left half to be covered by search result list on big screen
+      const right = width > MID ? left + (extent[2] - left) / 2 : extent[2];
+      search.search(
+          map.getView().getProjection().getCode(),
+          this.search.value, left, bottom, right, top, currentLocale())
         .then(results => {
-          searchUI.setResponse(this.search.value, results )
-          this.activate();
+          searchUI.setResponse(this.search.value, results).then(() => searchUI.showResponse = true);
+          this.root.classList.remove('searching')
           this.search.disabled = false;
         })
         .catch((err) => {
           searchUI.setResponse(this.search.value, []);
-          this.activate();
+          this.root.classList.remove('searching')
           this.search.disabled = false;
           alert(err.message);
         });

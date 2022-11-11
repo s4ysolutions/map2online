@@ -20,4 +20,5 @@ export enum LayerType {
   MODIFICATION,
   DRAWING,
   CONTEXT_MENU,
+  SEARCH_RESULTS,
 }

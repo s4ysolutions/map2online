@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import {BaseLayer, BaseLayerState} from './index';
+import {BaseLayer, BaseLayerState, CenterControl} from './index';
 import {KV} from '../../../kv/sync';
 import {Subject} from 'rxjs';
 import {Coordinate} from '../../../catalog';
 
 const baseLayerFactory = (persistentStorage: KV): BaseLayer => {
   const draggingSubject = new Subject<Coordinate>();
+  let centerControl: CenterControl | null = null;
   return {
     get sourceName() {
       return persistentStorage.get('blsn', 'Openstreet');
@@ -42,6 +43,12 @@ const baseLayerFactory = (persistentStorage: KV): BaseLayer => {
     draggingObservable: () => draggingSubject,
     setDragging(coordinate: Coordinate) {
       draggingSubject.next(coordinate);
+    },
+    get centerControl(): CenterControl | null {
+      return centerControl;
+    },
+    set centerControl(control: CenterControl | null) {
+      centerControl = control;
     },
   };
 };

@@ -14,27 +14,13 @@
  * limitations under the License.
  */
 
-import {Observable} from 'rxjs';
-import {Coordinate} from '../../../catalog';
 
-export interface BaseLayerState {
-  readonly x: number;
-  readonly y: number;
-  readonly zoom: number;
-}
+import React from 'react';
 
-export interface CenterControl {
-  setCenter(lat: number, lon: number): void;
-}
+const TriangleUp: React.FunctionComponent = (): React.ReactElement =>
+  <svg viewBox="0 0 320 512" >
+    <path
+      d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z" />
+  </svg >;
 
-export interface BaseLayer {
-  sourceName: string;
-  sourceNameObservable: () => Observable<string>;
-  state: BaseLayerState;
-  stateObservable: () => Observable<BaseLayerState>;
-  draggingObservable: () => Observable<Coordinate>;
-
-  setDragging: (coordinate: Coordinate) => void;
-
-  centerControl: CenterControl | null;
-}
+export default TriangleUp;

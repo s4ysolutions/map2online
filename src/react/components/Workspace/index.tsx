@@ -22,20 +22,15 @@ import TopNavigationPanel from './TopNavigationPanel';
 import FloatPanel from './FloatPanel';
 import LeftDrawer from './LeftDrawer';
 import RightDrawer from './RightDrawer';
-import {getSearchUI, getWording} from '../../../di-default';
+import {getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import GoogleMap from '../GoogleMap/GoogleMap';
 import Wording from '../Personalization/Wording';
-import SearchResults from './SearchResultsPanel';
-import SearchPanel from './SearchPanel';
+import SearchResultsPanel from './SearchResultsPanel';
 import OpenLayers from '../OpenLayers';
 
 const wording = getWording();
 const isPersonalizedObservable = wording.observableIsPersonalized();
-
-
-const searchUI = getSearchUI();
-const searchObservable = searchUI.observable();
 
 const Workspace = (): React.ReactElement => {
   const [el, setEl] = useState<HTMLDivElement | null>(null);
@@ -44,16 +39,14 @@ const Workspace = (): React.ReactElement => {
   }, [setEl]);
   const {height, width} = useComponentSize(el);
   const isPersonalized = useObservable(isPersonalizedObservable, wording.isPersonalized);
-  const searchResults = useObservable(searchObservable, []);
 
   return isPersonalized
     ? <React.Fragment >
       <TopNavigationPanel key="topNavigationPanel" />
 
       <div className="workspace" key="workspace" ref={onRefSet} >
-        <SearchPanel />
 
-        {searchResults.length > 0 ? <SearchResults searchResults={searchResults} /> : null}
+        <SearchResultsPanel />
 
         <LeftDrawer />
 
@@ -73,5 +66,5 @@ const Workspace = (): React.ReactElement => {
     : <Wording />;
 };
 
-export default React.memo(Workspace);
+export default Workspace;
 

@@ -15,15 +15,25 @@
  */
 
 import React from 'react';
-import Index from './Map';
+import Map from './Map';
 import BaseLayer from './layers/BaseLayer';
 import ActiveFeaturesLayer from './layers/ActiveFeaturesLayer';
 import DrawInteraction from './interactions/DrawInteraction';
 import ModifyInteraction from './interactions/ModifyInteraction';
 import ContextMenuInteraction from './interactions/ContextMenuInteraction';
 import './styles.scss';
+import SearchResultsLayer from './layers/SearchResultsLayer';
+import ZoomToFeaturesControl from './controls/ZoomToFeaturesControl';
+import MyGPSLocationControl from './controls/MyGPSLocationControl';
+import SearchControl from './controls/SearchControl';
 
-const OpenLayers: React.FunctionComponent = (): React.ReactElement => <Index>
+const controls = [new ZoomToFeaturesControl(), new SearchControl()];
+
+if (navigator.geolocation) {
+  controls.push(new MyGPSLocationControl());
+}
+
+const OpenLayers: React.FunctionComponent = (): React.ReactElement => <Map controls={controls}>
   <BaseLayer />
 
   <ActiveFeaturesLayer >
@@ -36,6 +46,8 @@ const OpenLayers: React.FunctionComponent = (): React.ReactElement => <Index>
 
   <ContextMenuInteraction hitTolerance={5} />
 
-</Index>;
+  <SearchResultsLayer />
 
-export default OpenLayers;
+</Map>;
+
+export default React.memo(OpenLayers);

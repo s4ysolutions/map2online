@@ -14,57 +14,71 @@
  * limitations under the License.
  */
 
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 import React from 'react';
-import {SearchResponse} from '../../../../search';
-import {MID, SMALL} from '../constants';
-import log from '../../../../log';
+// import {MID, SMALL} from '../constants';
 import SearchResults from '../../SearchResults';
 import './styles.scss';
-
+import {getSearchUI} from '../../../../di-default';
+import useObservable from '../../../hooks/useObservable';
+/*
 const variantSmall = {
   hide: {
-    width: 0,
+    left: '100%',
+    bottom: 0,
   },
   show: {
-    width: '100%',
+    left: '8px',
+    bottom: '50%',
   },
 };
 
 const variantMid = {
   hide: {
-    width: 0,
+    left: '16px',
+    bottom: 0,
   },
   show: {
-    width: '75%',
+    left: '25%',
+    bottom: '50%',
   },
 };
 
 const variantBig = {
   hide: {
-    width: 0,
+    left: '100%',
+    bottom: 0,
   },
   show: {
-    width: '50%',
+    left: '50%',
+    bottom: '8px',
   },
 };
+*/
+const searchUI = getSearchUI();
+const searchObservable = searchUI.observable();
+const showObservable = searchUI.observableShowResponse();
 
-const SearchResultsPanel: React.FunctionComponent<{searchResults: SearchResponse[]}> =
-  ({searchResults}): React.ReactElement => {
-    const width = document.body.clientWidth;
-    log.debug('SearchPanel', searchResults);
+const SearchResultsPanel: React.FunctionComponent = (): React.ReactElement | null => {
+  //    const width = document.body.clientWidth;
 
-    return <motion.div
-      animate="show"
-      className="search-results-panel"
-      variants={width < SMALL ? variantSmall : (width < MID ? variantMid : variantBig)} >
+  const searchResults = useObservable(searchObservable, []);
+  const show = useObservable(showObservable, searchUI.showResponse);
 
-      <div className="button-close" >
-x
-      </div>
-
-      <SearchResults searchResults={searchResults} />
-    </motion.div>;
-  };
+  if (!(searchResults && show)) {
+    return null;
+  }
+  /*
+  return <motion.div
+    animate="show"
+    className="search-results-panel"
+    variants={width < SMALL ? variantSmall : (width < MID ? variantMid : variantBig)} >
+    <SearchResults searchResults={searchResults} />
+  </motion.div>;
+  */
+  return <div className="search-results-panel" >
+    <SearchResults searchResults={searchResults} />
+  </div >;
+};
 
 export default SearchResultsPanel;

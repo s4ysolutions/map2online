@@ -21,13 +21,24 @@ import {SearchResponse} from '../../search';
 import {Map2Color} from '../../style/colors';
 import {ID} from '../../catalog';
 import {filter, map} from 'rxjs/operators';
+import {KV} from '../../kv/sync';
 
 class DefaultSearchUI implements SearchUI {
   private _observable = new Subject<SearchResponse[]>();
 
   private _observableMapUpdate = new Subject<{searchResponse: SearchResponse, color: Map2Color | null}>();
 
+  private _observableShowResponse = new Subject<boolean>();
+
   private _onMap: Record<ID, Map2Color> = {};
+
+  private kv: KV;
+
+  constructor(kv: KV) {
+    this.kv = kv;
+  }
+
+  private _showResponnse = false;
 
   observable(): Observable<SearchResponse[]> {
     return this._observable;
@@ -64,6 +75,27 @@ class DefaultSearchUI implements SearchUI {
       filter(r => r.searchResponse.id === searchResponse.id),
       map(r => r.color),
     );
+  }
+
+  get showResponse(): boolean {
+    return this._showResponnse;
+  }
+
+  set showResponse(show: boolean) {
+    this._showResponnse = show;
+    this._observableShowResponse.next(show);
+  }
+
+  observableShowResponse(): Observable<boolean> {
+    return this._observableShowResponse;
+  }
+
+  get limitSearchToVisibleArea(): boolean {
+    return this.kv.get<boolean>('suilsva', false);
+  }
+
+  set limitSearchToVisibleArea(limit: boolean) {
+    this.kv.set<boolean>('suilsva', limit);
   }
 }
 

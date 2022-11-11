@@ -57,17 +57,9 @@ const deletePointOrLineString = (feature: Feature) => {
 };
 
 const showFeature = (feature: Feature) => {
-  const routes = feature.routes;
-  if (routes.length > 0) {
-    const route = routes[0];
-    const categories = route.categories;
-    if (categories.length > 0) {
-      catalogUi.selectedCategory = categories[0];
-      catalogUi.selectedRoute = route;
-      if (!workspace.catalogOpen) {
-        workspace.toggleCatalog();
-      }
-    }
+  catalogUi.showFeature(feature);
+  if (!workspace.catalogOpen) {
+    workspace.toggleCatalog();
   }
 };
 
@@ -141,7 +133,7 @@ class OlContextMenuInteraction extends Interaction {
         if (menuRect) {
           // close menu on click outside it
           if (event.clientX < menuRect.left ||
-              event.clientX > menuRect.right ||
+            event.clientX > menuRect.right ||
             event.clientY < menuRect.top ||
             event.clientY > menuRect.bottom) {
             this.close();
@@ -242,7 +234,7 @@ const ContextMenuInteraction: React.FunctionComponent<{ hitTolerance: number, ch
       onClick={() => setOpen(false)}
       ref={elRef}
     >
-      {contextFeature ? <Menu>
+      {contextFeature ? <Menu >
         <MenuItem
           onClick={() => deletePointOrLineString(contextFeature)}
           title={isPoint(contextFeature.geometry) ? T`Delete point` : T`Delete line`} />
@@ -250,7 +242,7 @@ const ContextMenuInteraction: React.FunctionComponent<{ hitTolerance: number, ch
         <MenuItem
           onClick={() => showFeature(contextFeature)}
           title={wording.R('Find in catalog')} />
-      </Menu> : null}
+      </Menu > : null}
 
       {children}
     </div >;

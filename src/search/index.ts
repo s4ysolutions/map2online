@@ -47,6 +47,11 @@ export interface GeocodeAddress {
   'suburb': string;
 }
 
+export interface SearchGeoJSON {
+  type: string;
+  coordinates: number[] | number[][] | number[][][];
+}
+
 export interface SearchResponse {
   id: ID;
 
@@ -60,11 +65,11 @@ export interface SearchResponse {
 
   importance: number;
 
-  lat: string;
+  lat: number;
 
   licence: string;
 
-  lon: string;
+  lon: number;
 
   osm_id?: string;
 
@@ -76,18 +81,26 @@ export interface SearchResponse {
 
   type: string;
 
+  category : string;
+
   extratags: unknown;
+
+  projection: string;
+
+  geojson: SearchGeoJSON;
 }
 
 export type CacheKey = string;
 export type CacheObject = SearchResponse[];
 
 export interface SearchCache {
-  add(key: CacheKey, object: CacheObject): Promise<void>;
-  has(key: CacheKey): Promise<boolean>;
-  get(key: CacheKey): Promise<CacheObject | null>;
+  add(key: CacheKey, object: CacheObject): void;
+  has(key: CacheKey): boolean;
+  get(key: CacheKey): CacheObject | null;
 }
 
 export interface Search {
-  search(subject: string, lang?: string): Promise<SearchResponse[]>;
+  readonly projection: string;
+  search(targetProjection: string, subject: string, lang?: string): Promise<SearchResponse[]>;
+  searchWithinArea(targetProjection: string, subject: string, x1: number, y1: number, x2: number, y2: number, lang?: string): Promise<SearchResponse[]>;
 }

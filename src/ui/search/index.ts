@@ -19,11 +19,14 @@ import {Observable} from 'rxjs';
 import {Map2Color} from '../../style/colors';
 
 export interface SearchUI {
-  observable(): Observable<SearchResponse[]>;
+  observable(): Observable<SearchResponse[]>; // new search results arrived
   observableMapUpdate():Observable<{searchResponse: SearchResponse, color: Map2Color | null}>;
   observableMapUpdateForResponse(searchResponse: SearchResponse):Observable<Map2Color | null>;
   setResponse(subject: string, results: SearchResponse[]): Promise<void>;
   addToMap(searchResponse: SearchResponse, color: Map2Color): Promise<void>;
   removeFromMap(searchResponse: SearchResponse): Promise<void>;
   isOnMap(searchResponse: SearchResponse): Promise<Map2Color | null>;
+  observableShowResponse(): Observable<boolean>; // new search results arrived
+  showResponse: boolean;
+  limitSearchToVisibleArea: boolean;
 }

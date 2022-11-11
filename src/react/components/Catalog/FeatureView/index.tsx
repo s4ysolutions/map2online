@@ -102,7 +102,7 @@ const FeatueView: React.FunctionComponent<{isLast: boolean; feature: Feature; ro
 
     <Draggable draggableId={feature.id} index={index} >
       {(provided, snapshot): React.ReactElement => <div
-        className="draggable features"
+        className="draggable xfeatures"
         ref={provided.innerRef}
         {...provided.draggableProps}
         {...provided.dragHandleProps}

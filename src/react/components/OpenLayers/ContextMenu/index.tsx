@@ -21,7 +21,7 @@ import olMapContext from '../context/map';
 import {LayerType} from '../lib/types';
 import './styles.scss';
 import {Pixel} from 'ol/pixel';
-
+// TODO: obsolete - remove asap, use interaciton instead
 const ContextMenu: React.FunctionComponent<{ hitTolerance: number, children: React.ReactNode | React.ReactNode[] }> =
   ({hitTolerance, children}): React.ReactElement | null => {
     const map = React.useContext(olMapContext);

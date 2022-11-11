@@ -71,4 +71,4 @@ const FloatPanel: React.FunctionComponent<Props> =
     </Draggable >;
   };
 
-export default React.memo(FloatPanel);
+export default FloatPanel;

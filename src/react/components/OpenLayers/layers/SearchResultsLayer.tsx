@@ -25,7 +25,7 @@ import {SearchResponse} from '../../../../search';
 import {GeoJSON} from 'ol/format';
 import {Feature, Map} from 'ol';
 import {Map2Color} from '../../../../style/colors';
-import {Icon as OlIconStyle, Stroke, Style} from 'ol/style';
+import {Fill, Icon as OlIconStyle, Stroke, Style} from 'ol/style';
 import {FeatureLike} from 'ol/Feature';
 
 const searchUI = getSearchUI();
@@ -61,6 +61,12 @@ export const PIN_SCALE = ICON_HEIGHT / SVG_HEIGHT;
 export const PIN_HOTSPOT_X = 0.5;
 export const PIN_HOTSPOT_Y = 1;
 
+const COLOR_LENGTH = 6;
+const COLOR_HEX_LENGTH = 1 + COLOR_LENGTH;
+
+const color2transparent = (color: Map2Color, transparency: string): string =>
+  `${color.toString().slice(0, COLOR_HEX_LENGTH)}${transparency}`;
+
 const color2style = (response: SearchResponse, color: Map2Color) => new Style(response.geojson.type === 'Point'
   ? {
     image: new OlIconStyle({
@@ -72,8 +78,11 @@ const color2style = (response: SearchResponse, color: Map2Color) => new Style(re
   }
   : {
     stroke: new Stroke({
-      color,
+      color: color2transparent(color, 'c0'),
       width: 3,
+    }),
+    fill: new Fill({
+      color: color2transparent(color, '20'),
     }),
   });
 

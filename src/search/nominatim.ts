@@ -81,7 +81,6 @@ class NominatimSearch implements Search {
 
     const cacheKey = `${subject}@${lang}@${x1}@${y1}@${x2}@${y2}`;
     const cached = this.cache.get(cacheKey);
-    console.log('=====>', cached);
 
     if (cached !== null && Array.isArray(cached)) {
       return Promise.resolve(cached.filter(c => isNominatimResponse(c)));

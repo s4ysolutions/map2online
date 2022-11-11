@@ -99,5 +99,6 @@ export interface SearchCache {
 
 export interface Search {
   readonly projection: string;
-  search(targetProjection: string, subject: string, x1: number, y1: number, x2: number, y2: number, lang?: string): Promise<SearchResponse[]>;
+  search(targetProjection: string, subject: string, lang?: string): Promise<SearchResponse[]>;
+  searchWithinArea(targetProjection: string, subject: string, x1: number, y1: number, x2: number, y2: number, lang?: string): Promise<SearchResponse[]>;
 }

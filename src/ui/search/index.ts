@@ -28,4 +28,5 @@ export interface SearchUI {
   isOnMap(searchResponse: SearchResponse): Promise<Map2Color | null>;
   observableShowResponse(): Observable<boolean>; // new search results arrived
   showResponse: boolean;
+  limitSearchToVisibleArea: boolean;
 }

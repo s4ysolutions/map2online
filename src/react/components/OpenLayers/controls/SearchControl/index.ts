@@ -18,10 +18,11 @@
 import {Control} from 'ol/control';
 import {Options} from 'ol/control/Control';
 import {transformExtent} from 'ol/proj';
-import {getSearch, getSearchUI} from '../../../../di-default';
+import {getSearch, getSearchUI} from '../../../../../di-default';
 import './search-control.scss';
-import {MID} from '../../Workspace/constants';
-import {currentLocale} from '../../../../l10n';
+import {MID} from '../../../Workspace/constants';
+import {currentLocale} from '../../../../../l10n';
+import {SearchResponse} from '../../../../../search';
 
 const searchUI = getSearchUI();
 const search = getSearch();
@@ -41,20 +42,37 @@ class SearchControl extends Control {
     const options = opt_options || {};
 
     const search = document.createElement('input');
+    const run = document.createElement('div')
+    run.className = 'run-search';
 
-    const element = document.createElement('form');
-    element.appendChild(search);
+    const searchArea = document.createElement('div')
+    searchArea.className = 'search-area-switch';
+    searchArea.classList.add(searchUI.limitSearchToVisibleArea ? 'limit' : 'no-limit')
 
-    super({...options, element});
+    const form = document.createElement('form');
+    form.appendChild(run);
+    form.appendChild(search);
+    form.appendChild(searchArea);
+
+    super({...options, element: form});
 
     this.search = search;
-    this.form = element;
-    this.root = element;
+    this.form = form;
+    this.root = form;
 
     this.form.className = 'ol-search ol-unselectable ol-control';
 
     this.search.addEventListener('input', this.handleInput.bind(this));
     this.form.addEventListener('submit', this.handleSubmit.bind(this));
+    run.addEventListener('click',() => {
+      this.form.dispatchEvent(new CustomEvent('submit', {cancelable: true}));
+    });
+    searchArea.addEventListener('click', () => {
+      searchUI.limitSearchToVisibleArea = !searchUI.limitSearchToVisibleArea;
+      searchArea.classList.remove('no-limit')
+      searchArea.classList.remove('limit')
+      searchArea.classList.add(searchUI.limitSearchToVisibleArea ? 'limit' : 'no-limit')
+    })
   }
 
   setSearchable() {
@@ -80,23 +98,31 @@ class SearchControl extends Control {
     if (map !== null && this.searchable) {
       this.root.classList.add('searching')
       this.search.disabled = true;
-      const mapExtent = map.getView().calculateExtent();
-      const extent = transformExtent(mapExtent, map.getView().getProjection(), search.projection);
 
-      const mapElement = map.getTarget();
-      const width = (hasOffsetWidth(mapElement))
-        ? mapElement.offsetWidth
-        : 0;
+      let searchPromise: Promise<SearchResponse[]>
 
-      const top = extent[3];
-      const bottom = extent[1];
-      const left = extent[0];
-      // left half to be covered by search result list on big screen
-      const right = width > MID ? left + (extent[2] - left) / 2 : extent[2];
-      search.search(
+      if (searchUI.limitSearchToVisibleArea) {
+        const mapExtent = map.getView().calculateExtent();
+        const extent = transformExtent(mapExtent, map.getView().getProjection(), search.projection);
+
+        const mapElement = map.getTarget();
+        const width = (hasOffsetWidth(mapElement))
+          ? mapElement.offsetWidth
+          : 0;
+
+        const top = extent[3];
+        const bottom = extent[1];
+        const left = extent[0];
+        // left half to be covered by search result list on big screen
+        const right = width > MID ? left + (extent[2] - left) / 2 : extent[2];
+        searchPromise = search.searchWithinArea(
           map.getView().getProjection().getCode(),
           this.search.value, left, bottom, right, top, currentLocale())
-        .then(results => {
+      } else {
+        searchPromise = search.search(map.getView().getProjection().getCode(), this.search.value, currentLocale())
+      }
+
+      searchPromise.then(results => {
           searchUI.setResponse(this.search.value, results).then(() => searchUI.showResponse = true);
           this.root.classList.remove('searching')
           this.search.disabled = false;

@@ -77,17 +77,14 @@ class NominatimSearch implements Search {
 
   projection = NOMINATIM_PROJECTION;
 
-  search(targetProjection: string, subject: string, x1: number, y1: number, x2: number, y2: number, lang: string): Promise<SearchResponse[]> {
+  private searchURL(targetProjection: string, url: string, lang: string): Promise<SearchResponse[]> {
 
-    const cacheKey = `${subject}@${lang}@${x1}@${y1}@${x2}@${y2}`;
+    const cacheKey = url;
     const cached = this.cache.get(cacheKey);
 
     if (cached !== null && Array.isArray(cached)) {
       return Promise.resolve(cached.filter(c => isNominatimResponse(c)));
     }
-
-    const url =
-    `https://nominatim.openstreetmap.org/search.php?q=${encodeURI(subject)}&polygon_geojson=1&format=jsonv2&viewbox=${x1},${y1},${x2},${y2}&bounded=1${lang ? `&accept_language=${lang}` : ''}`;
 
     const headers = new Headers();
     if (lang) {
@@ -126,6 +123,18 @@ class NominatimSearch implements Search {
           JSON.stringify(response),
         ));
       });
+  }
+
+  searchWithinArea(targetProjection: string, subject: string, x1: number, y1: number, x2: number, y2: number, lang: string): Promise<SearchResponse[]> {
+    const url =
+      `https://nominatim.openstreetmap.org/search.php?q=${encodeURI(subject)}&polygon_geojson=1&format=jsonv2&viewbox=${x1},${y1},${x2},${y2}&bounded=1${lang ? `&accept_language=${lang}` : ''}`;
+    return this.searchURL(targetProjection, url, lang);
+  }
+
+  search(targetProjection: string, subject: string, lang: string): Promise<SearchResponse[]> {
+    const url =
+      `https://nominatim.openstreetmap.org/search.php?q=${encodeURI(subject)}&polygon_geojson=1&format=jsonv2${lang ? `&accept_language=${lang}` : ''}`;
+    return this.searchURL(targetProjection, url, lang);
   }
 }
 

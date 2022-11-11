@@ -71,7 +71,7 @@ export const getWording = (): Wording => wordingSingleton;
 const importUISingleton = importUIFactory(localStorageSingleton);
 export const getImportUI = (): ImportUI => importUISingleton;
 
-const searchUISingleton = new DefaultSearchUI();
+const searchUISingleton = new DefaultSearchUI(localStorageSingleton);
 export const getSearchUI = (): SearchUI => searchUISingleton;
 
 const parserSingleton = parserFactory(map2StylesSingleton);

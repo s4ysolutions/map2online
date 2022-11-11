@@ -65,4 +65,6 @@ export interface CatalogUI {
   featureDeleteObservable: () => Observable<{ feature: Feature; route: Route } | null>;
   requestDeleteFeature: (feature: Feature, route: Route) => void;
   endDeleteFeature: () => void;
+
+  showFeature: (feature: Feature) => void;
 }

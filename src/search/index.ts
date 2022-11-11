@@ -81,6 +81,8 @@ export interface SearchResponse {
 
   type: string;
 
+  category : string;
+
   extratags: unknown;
 
   projection: string;

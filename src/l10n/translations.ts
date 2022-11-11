@@ -203,6 +203,25 @@ const translation = {
     'Visibility off feature line hint': 'Не отображать трек на карте',
     'Visibility on feature point hint': 'Отображать точку на карте',
     'Visibility on feature line hint': 'Отображать трек на карте',
+
+    'amenity': 'удобства',
+    'boundary': 'границы',
+    'highway': 'шоссе',
+    'place': 'н.п.',
+    'railway': 'жд',
+    'tourism': 'туризм',
+    'waterway': 'водные пути',
+
+    'administrative': 'административные',
+    'apartment': 'аппартаменты',
+    'city': 'город',
+    'hotel': 'гостиница',
+    'motorway_junction': 'развязка',
+    'restaurant': 'ресторан',
+    'residential': 'жилой район',
+    'river': 'река',
+    'station': 'станция',
+    'village': 'село',
   },
 };
 

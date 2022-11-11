@@ -21,7 +21,7 @@ export const metersToDegrees0 = (olX: number | Coordinate | number[], olY?: numb
   if (olY !== undefined) {
     return toLonLat([olX as number, olY, olAlt === undefined ? 0 : olAlt]);
   } else if (isCoordinate(olX)) {
-    return toLonLat([olX.lon, olX.lat, olX.alt]);
+    return toLonLat([olX.lon, olX.lat, olX.alt || 0]);
   } else if ((olX as number[]).length !== undefined && (olX as number[]).length > 1) {
     return toLonLat(olX as number[]);
   }
@@ -37,7 +37,7 @@ const degreesToMeters0 = (olX: number | Coordinate | number[], olY?: number, alt
   if (olY !== undefined) {
     return fromLonLat([olX as number, olY, alt === undefined ? 0 : alt]);
   } else if (isCoordinate(olX)) {
-    return fromLonLat([olX.lon, olX.lat, olX.alt]);
+    return fromLonLat([olX.lon, olX.lat, olX.alt || 0]);
   } else if ((olX as number[]).length !== undefined && (olX as number[]).length > 1) {
     return fromLonLat(olX as number[]);
   }

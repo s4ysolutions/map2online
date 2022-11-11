@@ -87,7 +87,6 @@ const Map: React.FunctionComponent<{ children: React.ReactNode[], controls: Cont
 
       baseLayer.centerControl = {
         setCenter(lat: number, lon: number) {
-          console.log('=========>', lat, lon);
           m.getView().setCenter([lat, lon]);
         },
       };

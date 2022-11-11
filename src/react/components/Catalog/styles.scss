@@ -94,14 +94,14 @@
           }
         }
 
-        .complex-title,
-        .title {
-          flex-grow: 1;
+        .complex-title {
           display: flex;
+          flex-grow: 1;
           height: 100%;
           align-items: center;
           padding-left: 4px;
           padding-right: 4px;
+          min-width: 0;
         }
 
         &.current {

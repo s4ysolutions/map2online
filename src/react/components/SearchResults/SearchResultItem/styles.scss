@@ -16,35 +16,55 @@
 
 @import "../../../../../src/dims";
 
-.search-results .item .controls {
-  display: flex;
-  flex-direction: row;
-  justify-content: right;
-  padding-top: 4px;
-  padding-bottom: 4px;
+.search-results .item {
+  .info{
+    padding: 4px;
+    .data {
+      margin-top: 8px;
 
-  .space {
-    flex-grow: 1;
+      .type {
+        font-style: italic;
+      }
+      .coordinate {
+        font-family: monospace;
+      }
+    }
   }
-
-  .button {
-    height: $menu-item-dim;
-    width: $menu-item-dim;
+  .controls {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 2px;
+    flex-direction: row;
+    justify-content: right;
+    padding-top: 4px;
+    padding-bottom: 2px;
 
-    svg {
-      display: block;
-      width: 80%;
-      height: 80%;
-      padding: 2px;
+    .space {
+      flex-grow: 1;
+    }
+
+    .button {
+      height: $menu-item-dim;
+      width: $menu-item-dim;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       border-radius: 2px;
-    }
 
-    &.selected {
-      background-color: #0000FF40;
+      svg {
+        display: block;
+        width: 80%;
+        height: 80%;
+        padding: 2px;
+        border-radius: 2px;
+      }
+
+      &.selected {
+        background-color: #0000FF40;
+      }
     }
+  }
+  .license {
+    font-size: 30%;
+    text-align: right;
+    padding: 1px;
   }
 }

@@ -63,5 +63,5 @@ export const coordinate2ol = (coordinate: Coordinate): OlCoordinate => [coordina
 export const coordinates2ol = (coordinates: Coordinate[]): OlCoordinate[] => coordinates.map(coordinate2ol);
 export const geoLocationPosition2ol = (coordinates: GeolocationCoordinates): OlCoordinate => {
   const meters = degreesToMeters(coordinates.longitude, coordinates.latitude, coordinates.altitude || 0);
-  return [meters.lon, meters.lat, meters.alt];
+  return [meters.lon, meters.lat, meters.alt || 0];
 };

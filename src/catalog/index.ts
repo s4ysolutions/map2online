@@ -23,7 +23,7 @@ import {RichText} from '../richtext';
 export type ID = string;
 
 export interface Coordinate {
-  alt: number;
+  alt?: number;
   lat: number;
   lon: number;
 }

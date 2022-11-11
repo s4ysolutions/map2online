@@ -231,6 +231,17 @@ const catalogUIFactory = (storage: KV, catalog: Catalog): CatalogUI => {
       featureDelete = null;
       featureDeleteSubject.next(null);
     },
+    showFeature(feature: Feature): void {
+      const routes = feature.routes;
+      if (routes.length > 0) {
+        const route = routes[0];
+        const categories = route.categories;
+        if (categories.length > 0) {
+          this.selectedCategory = categories[0];
+          this.selectedRoute = route;
+        }
+      }
+    },
   };
   th.endDeleteCategory = th.endDeleteCategory.bind(th);
   th.endDeleteRoute = th.endDeleteRoute.bind(th);

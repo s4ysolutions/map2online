@@ -18,12 +18,15 @@ import * as React from 'react';
 import T from '../../l10n';
 import {getCatalog, getCatalogUI, getImportUI, getWording, getWorkspace} from '../../di-default';
 import useObservable from '../hooks/useObservable';
-import ConfirmDialog from './ConfirmDialog';
-import {setSpinnerActive} from './Spinner/hooks/useSpinner';
+import ConfirmDialog from './ModalForms/ConfirmDialog';
+import {setSpinnerActive} from './UIElements/Spinner/hooks/useSpinner';
 import {isPoint} from '../../catalog';
-import Import from './Import';
-import About from './About';
-import Wording from './Personalization/Wording';
+import Import from './ModalForms/Import';
+import About from './ModalForms/About';
+import Wording from './ModalForms/Personalization/Wording';
+import CategoryEdit from './ModalForms/CategoryEdit';
+import RouteEdit from './ModalForms/RouteEdit';
+import FeatureEdit from './ModalForms/FeatureEdit';
 
 
 const catalogUI = getCatalogUI();
@@ -33,9 +36,15 @@ const importUI = getImportUI();
 const workspace = getWorkspace();
 
 const Modals: React.FunctionComponent = (): React.ReactElement => {
-  const featureDelete = useObservable(catalogUI.featureDeleteObservable(), catalogUI.featureDelete);
-  const routeDelete = useObservable(catalogUI.routeDeleteObservable(), catalogUI.routeDelete);
+  const categoryEdit = useObservable(catalogUI.categoryEditObservable(), catalogUI.categoryEdit);
   const categoryDelete = useObservable(catalogUI.categoryDeleteObservable(), catalogUI.categoryDelete);
+
+  const routeEdit = useObservable(catalogUI.routeEditObservable(), catalogUI.routeEdit);
+  const routeDelete = useObservable(catalogUI.routeDeleteObservable(), catalogUI.routeDelete);
+
+  const featureEdit = useObservable(catalogUI.featureEditObservable(), catalogUI.featureEdit);
+  const featureDelete = useObservable(catalogUI.featureDeleteObservable(), catalogUI.featureDelete);
+
   const visibleObservable = importUI.visibleObservable();
   const personalizationObservable = workspace.personalizationObservable();
   const aboutObservable = workspace.aboutObservable();
@@ -109,6 +118,11 @@ const Modals: React.FunctionComponent = (): React.ReactElement => {
       title={wording.C('Delete category')}
     /> : null}
 
+    {categoryEdit ? <CategoryEdit category={categoryEdit} /> : null}
+
+    {routeEdit ? <RouteEdit route={routeEdit} /> : null}
+
+    {featureEdit ? <FeatureEdit feature={featureEdit} /> : null}
 
   </React.Fragment>;
 

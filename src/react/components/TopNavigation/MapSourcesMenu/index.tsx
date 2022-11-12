@@ -16,10 +16,10 @@
 
 import * as React from 'react';
 import MapSourceItem from './MapSourceItem';
-import MenuCollapsableItem from '../../Menu/MenuCollapsableItem';
+import MenuCollapsableItem from '../../UIElements/Menu/MenuCollapsableItem';
 import T from 'l10n';
 import mapGroups, {MapGroupDefinition} from '../../../../map-sources/definitions';
-import Menu from '../../Menu/Menu';
+import Menu from '../../UIElements/Menu/Menu';
 
 const MapSourcesMenu: React.FunctionComponent = (): React.ReactElement => <Menu >
   {mapGroups.map((group: MapGroupDefinition): React.ReactElement =>

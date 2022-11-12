@@ -14,160 +14,25 @@
  * limitations under the License.
  */
 
-@import "../../../dims";
+@import "../../../theme";
 
 .catalog {
+  background-color: $panels-bg;
   height: 100%;
   display: flex;
   flex-direction: column;
 
-  button.add {
+  .catalog-content {
+    flex-grow: 1;
+    min-height: 0;
+  }
+  .copied {
     position: absolute;
-    bottom: 8px;
-    right: 8px;
-    border-radius: 50%;
-    height: $buttonHeight;
-    width: $buttonWight;
-  }
-
-  button, .void-button {
-    max-width: 30%;
-  }
-
-  .catalog-navigation {
-    align-items: center;
-    display: flex;
-    flex-shrink: 0;
-    min-height: 32px;
-
-    .title {
-      flex-grow: 1;
-      text-align: right;
-      padding-right: 8px;
-    }
-  }
-
-  .folders, .features {
-    flex-grow: 1;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    overflow-y: hidden;
-  }
-
-  .folders.top, .folders.level-1, .features {
-  }
-
-  .folder-level-1, .folder-level-2, .feature {
-    direction: ltr; //restore
-  }
-
-  .list {
-    direction: rtl; //for sake of scrollbar
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-bottom: 72px; // place for "Add button"
-    .draggable {
-      margin-bottom: 2px;
-      .open {
-        cursor: default;
-      }
-
-      .item {
-        display: flex;
-        align-items: center;
-        align-content: stretch;
-        height: 2em;
-        padding: 8px; //scrollbar
-
-        .complex-title {
-          .title {
-            padding-left: 2px;
-          }
-
-          .index {
-            // min-width: 2em; space for 3digits? ugly?
-
-            svg {
-              margin-right: 0;
-            }
-          }
-        }
-
-        .complex-title {
-          display: flex;
-          flex-grow: 1;
-          height: 100%;
-          align-items: center;
-          padding-left: 4px;
-          padding-right: 4px;
-          min-width: 0;
-        }
-
-        &.current {
-          .active {
-            svg {
-              display: block;
-            }
-          }
-        }
-
-        .delete {
-          margin-right: 0;
-          visibility: hidden;
-        }
-
-        .active,
-        .edit {
-          svg {
-            display: none;
-          }
-        }
-
-        .active,
-        .delete,
-        .edit {
-          height: 60%;
-        }
-
-        .active,
-        .delete,
-        .edit,
-        .type,
-        .visibility {
-          height: 100%;
-          width: auto;
-          display: flex;
-          align-items: center;
-          cursor: default;
-        }
-
-        svg {
-          margin-right: 0.25em;
-          margin-left: 0.25em;
-          height: 60%;
-          width: auto;
-        }
-
-        &:hover {
-          .active,
-          .edit {
-            svg {
-              display: block;
-            }
-          }
-          .delete {
-            svg {
-              visibility: visible;
-            }
-          }
-        }
-      }
-    }
-    .body {
-      padding: 8px;
-      padding-left: 16px;
-      padding-right: 16px;
-    }
+    bottom: 0;
+    right: 0;
+    padding: 1em;
+    border-radius: 3px;
+    background-color: $copied-popup-bg;
+    color: $copied-popup-color;
   }
 }

@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+$sepwidth: 2px;
+$min-dim: 8px;
+$space: $min-dim;
+$margin: $space / 2;
+$padding: $space / 2;
+
+$catalog-button-add-height: 56px;
+$catalog-button-add-width: 56px;
+
+
 $buttonHeight: 56px;
 $buttonWight: 56px;
 
@@ -23,4 +33,6 @@ $plannerIconHeight: 56px;
 $plannerIconWidth: 56px;
 
 $controlOffset: 0.5em;
+// ========
+$catalog-title-font-size: 105%;
 

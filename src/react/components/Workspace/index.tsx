@@ -25,7 +25,7 @@ import RightDrawer from './RightDrawer';
 import {getWording} from '../../../di-default';
 import useObservable from '../../hooks/useObservable';
 import GoogleMap from '../GoogleMap/GoogleMap';
-import Wording from '../Personalization/Wording';
+import Wording from '../ModalForms/Personalization/Wording';
 import SearchResultsPanel from './SearchResultsPanel';
 import OpenLayers from '../OpenLayers';
 

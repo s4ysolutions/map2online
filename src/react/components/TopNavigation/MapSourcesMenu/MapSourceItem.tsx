@@ -18,7 +18,7 @@ import * as React from 'react';
 import {MapDefinition} from '../../../../map-sources/definitions';
 import {getBaseLayer, getWorkspace} from '../../../../di-default';
 import T from '../../../../l10n';
-import MenuItem from '../../Menu/MenuItem';
+import MenuItem from '../../UIElements/Menu/MenuItem';
 
 const baseLayer = getBaseLayer();
 const workspace = getWorkspace();

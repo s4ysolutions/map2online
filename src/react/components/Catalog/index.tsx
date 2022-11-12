@@ -16,35 +16,14 @@
 
 import './styles.scss';
 import * as React from 'react';
-import CatalogNavigation from './CatalogNavigation';
-import FeaturesView from './FeaturesView';
-import {getCatalogUI, getWorkspace} from '../../../di-default';
-import useObservable from '../../hooks/useObservable';
-import log from '../../../log';
-import CategoriesView from './CategoriesView';
-import RoutesView from './RoutesView';
+import CatalogNavigator from './CatalogNavigator';
+import CatalogContent from './CatalogContent';
 
-const catalog = getCatalogUI();
-const workspace = getWorkspace();
 
-const Catalog: React.FunctionComponent = (): React.ReactElement => {
-  const openCatalog = useObservable(workspace.catalogObservable(), workspace.catalogOpen);
-  const selectedCategory = useObservable(catalog.selectedCategoryObservable(), catalog.selectedCategory);
-  const selectedRoute = useObservable(catalog.selectedRouteObservable(), catalog.selectedRoute);
-  log.render(`Catalog open=${openCatalog} category=${selectedCategory} route=${selectedRoute}`);
+const Catalog: React.FunctionComponent = (): React.ReactElement => <div className="catalog" >
+  <CatalogContent />
 
-  if (openCatalog) {
-    return <div className="catalog" >
-      {(selectedCategory && selectedRoute)
-        ? <FeaturesView route={selectedRoute} />
-        : selectedCategory
-          ? <RoutesView category={selectedCategory} />
-          : <CategoriesView />}
-
-      <CatalogNavigation />
-    </div >;
-  }
-  return null as unknown as React.ReactElement;
-};
+  <CatalogNavigator />
+</div >;
 
 export default Catalog;

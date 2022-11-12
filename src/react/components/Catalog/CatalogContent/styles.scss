@@ -1,0 +1,202 @@
+/*!
+ * Copyright 2019 s4y.solutions
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import "../../../../theme";
+
+.catalog-content {
+  position: relative; // for sake of absolute button.add
+
+  .drag-drop-list {
+    height: 100%;
+
+    .item:last-child {
+      margin-bottom: $catalog-button-add-height + $margin * 2;
+    }
+
+    .folder, .feature {
+      display: flex;
+      align-items: center;
+      align-content: stretch;
+      height: 2em;
+      padding: 8px; //scrollbar
+
+      .open {
+        cursor: default;
+      }
+
+      &.current {
+        .active {
+          svg {
+            display: block;
+          }
+        }
+      }
+
+      .delete {
+        margin-right: 0;
+        visibility: hidden;
+      }
+
+      .active,
+      .edit {
+        svg {
+          display: none;
+        }
+      }
+
+      .active,
+      .delete,
+      .edit {
+        height: 60%;
+      }
+
+      .active,
+      .delete,
+      .edit,
+      .type,
+      .visibility {
+        height: 100%;
+        width: auto;
+        display: flex;
+        align-items: center;
+        cursor: default;
+      }
+
+      svg {
+        margin-right: 0.25em;
+        margin-left: 0.25em;
+        height: 60%;
+        width: auto;
+      }
+
+      &:hover {
+        .active,
+        .edit {
+          svg {
+            display: block;
+          }
+        }
+
+        .delete {
+          svg {
+            visibility: visible;
+          }
+        }
+      }
+    }
+
+    .folder {
+      .title {
+        flex-grow: 1;
+      }
+    }
+
+    .feature {
+      .complex-title {
+        display: flex;
+        flex-grow: 1;
+        height: 100%;
+        align-items: center;
+        padding-left: 4px;
+        padding-right: 4px;
+        min-width: 0;
+
+        .title {
+          padding-left: 2px;
+        }
+      }
+    }
+
+    .accordion .accordion-part {
+      padding: $padding * 2 $padding * 2;
+
+      .coordinates-block {
+        position: relative;
+        .coordinates {
+          font-family: monospace;
+          font-size: 105%;
+        }
+        .coordinates.line {
+          max-height: 10ex;
+          overflow-y: scroll;
+        }
+        svg {
+          display: block;
+          width: 2em;
+        }
+      }
+
+      .coordinates-separator {
+        border-color: $features-color;
+        border-style: solid;
+        border-width: 1px;
+        margin-top: $padding;
+        margin-bottom: $padding;
+      }
+    }
+
+    .accordion.last {
+      border-bottom-width: $sepwidth;
+      border-bottom-style: solid;
+    }
+  }
+
+  button.add {
+    position: absolute;
+    bottom: $margin;
+    right: $margin;
+  }
+
+  .title {
+    font-size: $catalog-title-font-size;
+  }
+}
+
+.obsolete-catalog {
+
+  button, .void-button {
+    max-width: 30%;
+  }
+
+  .folder .feature {
+    .index {
+      // min-width: 2em; space for 3digits? ugly?
+      svg {
+        margin-right: 0;
+      }
+    }
+  }
+
+
+  .folders.top, .folders.level-1, .features {
+  }
+
+  .folder-level-1, .folder-level-2, .feature {
+  }
+
+  .list {
+    padding-bottom: 72px; // place for "Add button"
+    .draggable {
+      margin-bottom: 2px;
+
+
+    }
+  }
+
+  .body {
+    padding: 8px 16px;
+  }
+}

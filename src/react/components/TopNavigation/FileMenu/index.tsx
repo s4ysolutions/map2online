@@ -15,8 +15,8 @@
  */
 
 import * as React from 'react';
-import MenuItem from '../../Menu/MenuItem';
-import MenuSep from '../../Menu/MenuSep';
+import MenuItem from '../../UIElements/Menu/MenuItem';
+import MenuSep from '../../UIElements/Menu/MenuSep';
 import T from 'l10n';
 import log from '../../../../log';
 import {getCatalog, getCatalogUI, getExporter, getImportUI, getWording, getWorkspace} from '../../../../di-default';

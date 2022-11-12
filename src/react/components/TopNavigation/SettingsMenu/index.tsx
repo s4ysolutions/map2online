@@ -17,9 +17,9 @@
 import * as React from 'react';
 import T from 'l10n';
 import log from '../../../../log';
-import MenuItem from '../../Menu/MenuItem';
+import MenuItem from '../../UIElements/Menu/MenuItem';
 import {getWorkspace} from '../../../../di-default';
-import Menu from '../../Menu/Menu';
+import Menu from '../../UIElements/Menu/Menu';
 
 const workspace = getWorkspace();
 

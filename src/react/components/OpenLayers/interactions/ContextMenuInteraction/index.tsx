@@ -23,8 +23,8 @@ import {useDrawing} from '../../hooks/useDrawing';
 import {LayerType} from '../../lib/types';
 import {Feature, Route, isPoint} from '../../../../../catalog';
 import {getCatalog, getCatalogUI, getWording, getWorkspace} from '../../../../../di-default';
-import Menu from '../../../Menu/Menu';
-import MenuItem from '../../../Menu/MenuItem';
+import Menu from '../../../UIElements/Menu/Menu';
+import MenuItem from '../../../UIElements/Menu/MenuItem';
 import T from '../../../../../l10n';
 import {skipConfirmDialog} from '../../../../../lib/confirmation';
 

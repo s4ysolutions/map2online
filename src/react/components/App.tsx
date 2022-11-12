@@ -20,12 +20,15 @@ import Workspace from './Workspace';
 import useObservable from '../hooks/useObservable';
 import {getCatalogUI} from '../../di-default';
 import T from 'l10n';
-import useSpinner from './Spinner/hooks/useSpinner';
+import useSpinner from './UIElements/Spinner/hooks/useSpinner';
 import './styles.scss';
-import Spinner from './Spinner';
+import Spinner from './UIElements/Spinner';
 import Modals from './Modals';
 
 const catalogUI = getCatalogUI();
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const callback = () => {};
 
 const App: React.FunctionComponent = (): React.ReactElement => {
   const selectedCategory = useObservable(catalogUI.selectedCategoryObservable(), catalogUI.selectedCategory);
@@ -43,13 +46,15 @@ const App: React.FunctionComponent = (): React.ReactElement => {
 
   const spinner = useSpinner();
 
-  return <div className="application" >
-    <Workspace />
+  return <React.Profiler id="App" onRender={callback} >
+    <div className="application" >
+      <Workspace />
 
-    <Modals />
+      <Modals />
 
-    {spinner ? <Spinner /> : null}
-  </div >;
+      {spinner ? <Spinner /> : null}
+    </div >
+  </React.Profiler >;
 };
 
 export default App;

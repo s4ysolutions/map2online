@@ -70,21 +70,21 @@ const onValueChange = {
 
 const workspace = getWorkspace();
 
-const LeftDrawer: React.FunctionComponent = (): React.ReactElement => {
+const LeftDrawer: React.FunctionComponent = (): React.ReactElement | null => {
   const width = document.body.clientWidth;
   useEffect((): void => {
     onValueChange.width();
   }, []);
   const stateCatalog = useObservable(workspace.catalogObservable(), workspace.catalogOpen);
   // onValueChange={onValueChange}
-  return <motion.div
-    animate={stateCatalog ? 'show' : 'hide'}
+  return stateCatalog ? <motion.div
+    animate="show"
     className="left-drawer"
-    initial={stateCatalog ? 'show' : 'hide'}
+    initial="hide"
     transition={panelTransition}
     variants={width < SMALL ? variantSmall : (width < MID ? variantMid : variantBig)} >
     <Catalog />
-  </motion.div >;
+  </motion.div > : null;
 };
 
 export default LeftDrawer;

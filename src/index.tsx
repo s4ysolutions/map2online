@@ -22,7 +22,6 @@ import 'styles.scss';
 import 'modal.scss';
 import 'form.scss';
 import 'typo.scss';
-import 'theme-yellow-black.scss';
 
 import './extensions/array+serializePlainText';
 import './extensions/array+serializeRichText';

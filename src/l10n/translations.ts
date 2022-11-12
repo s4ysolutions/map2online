@@ -124,6 +124,7 @@ const translation = {
     'Click fix the file automatically': 'Исправить файл автоматически',
     'Click to upload': 'Загрузить файлы',
     'Close': 'Закрыть',
+    'Copied to clipboard': 'Скопировано',
     'Cosmos': 'Космоснимки',
     'Credentials': 'Благодарности',
     'Delete line': 'Удалить трек',

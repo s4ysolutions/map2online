@@ -15,14 +15,14 @@
  */
 
 import * as React from 'react';
-import MenuItem from '../../Menu/MenuItem';
+import MenuItem from '../../UIElements/Menu/MenuItem';
 import T from 'l10n';
 import log from '../../../../log';
 import {getCatalog, getCatalogUI, getExporter, getWording, getWorkspace} from '../../../../di-default';
 import Check from '../../Svg/Check';
 import './style.scss';
 import useObservable from '../../../hooks/useObservable';
-import Menu from '../../Menu/Menu';
+import Menu from '../../UIElements/Menu/Menu';
 
 const exporter = getExporter();
 const catalog = getCatalog();

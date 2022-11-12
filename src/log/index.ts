@@ -68,12 +68,8 @@ const log = {
   rxUse(id: string): void {
     this.debug(`rx: use ${id}`);
   },
-  rxSetState(id: string, value?: unknown): void {
-    if (value === undefined) {
-      this.debug(`rx: ${id} setState`);
-    } else {
-      this.debug(`rx: ${id} setState(${value})`);
-    }
+  rxSetState(id: string, ...rest: unknown[]): void {
+    this.debug(`rx: ${id} setState`, ...rest);
   },
   rxAdd(id: string): void {
     if (!this.rxCounters[id]) {

@@ -111,16 +111,20 @@ const transp = 'ffffffff';
 const COLOR8_LEN = 8;
 const COLOR6_LEN = 6;
 
+const stripc = (color: string): string => color.indexOf('#') === 0 ? color.slice(1) : color;
+// eslint-disable-next-line no-magic-numbers
+const rgb2kml = (color: string): string => color.slice(0, 2) + color.slice(6, 8) + color.slice(4, 6) + color.slice(2, 4);
+
 export const nc = (color: string): string => {
-  const c0 = color.indexOf('#') === 0 ? color.slice(1) : color;
+  const c0 = stripc(color);
   const l = COLOR8_LEN - c0.length;
   if (l > 0) {
-    return `${transp.slice(0, l)}${c0}`;
+    return rgb2kml(`${transp.slice(0, l)}${c0}`);
   } else if (l < 0) {
     const c1 = c0.slice(0, COLOR8_LEN);
-    return `${c1.slice(COLOR6_LEN, COLOR8_LEN)}${c1.slice(0, COLOR6_LEN)}`;
+    return rgb2kml(`${c1.slice(COLOR6_LEN, COLOR8_LEN)}${c1.slice(0, COLOR6_LEN)}`);
   }
-  return `${c0.slice(COLOR6_LEN, COLOR8_LEN)}${c0.slice(0, COLOR6_LEN)}`;
+  return rgb2kml(`${c0.slice(COLOR6_LEN, COLOR8_LEN)}${c0.slice(0, COLOR6_LEN)}`);
 };
 
 // <scale>${style.scale}</scale>
@@ -130,7 +134,7 @@ const getIconStyleKML = (style: IconStyle): string =>
       <color>${nc(style.color)}</color>
       <colorMode>${style.colorMode}</colorMode>
       <scale>1</scale>
-      <Icon><href>https://map2.online/images/pin.svg</href></Icon>
+      <Icon><href>https://map2.online/images/pin-${stripc(style.color)}.png</href></Icon>
       <hotSpot x="${style.hotspot.x}" y="${style.hotspot.y}" xunits="fraction" yunits="fraction" />
     </IconStyle>
 `;
@@ -140,17 +144,20 @@ const getLineStyleKML = (style: LineStyle): string => {
       <color>${nc(style.color)}</color>
       <colorMode>${style.colorMode}</colorMode>
       <width>${style.width}</width>
-      <labelVisibility>${style.labelVisibility}</labelVisibility>
 `;
-  if (style.outerColor !== null) {
+  if (style.labelVisibility) {
+    s += `     <outerColor>${style.labelVisibility}</outerColor>
+`;
+  }
+  if (style.outerColor) {
     s += `     <outerColor>${style.outerColor}</outerColor>
 `;
   }
-  if (style.outerWidth !== null) {
+  if (style.outerWidth) {
     s += `     <outerWidth>${style.outerWidth}</outerWidth>
 `;
   }
-  if (style.metersWidth !== null) {
+  if (style.metersWidth) {
     s += `     <physicalWidth>${style.outerWidth}</physicalWidth>
 `;
   }
@@ -159,8 +166,21 @@ const getLineStyleKML = (style: LineStyle): string => {
 };
 
 const getStyleKML = (style: Style): string =>
-  `  <Style id="${style.id}">
-${style.iconStyle && getIconStyleKML(style.iconStyle) || ''}${style.lineStyle && getLineStyleKML(style.lineStyle) || ''}  </Style>`;
+  ` <StyleMap id="${style.id}">
+    <Pair>
+      <key>normal</key>
+      <styleUrl>#${style.id}-normal</styleUrl>
+    </Pair>
+    <Pair>
+       <key>highlight</key>
+       <styleUrl>#${style.id}-highlight</styleUrl>
+    </Pair>
+  </StyleMap> 
+  <Style id="${style.id}-normal">
+${style.iconStyle && getIconStyleKML(style.iconStyle) || ''}${style.lineStyle && getLineStyleKML(style.lineStyle) || ''}  </Style>
+  <Style id="${style.id}-highlight">
+${style.iconStyle && getIconStyleKML(style.iconStyle) || ''}${style.lineStyle && getLineStyleKML(style.lineStyle) || ''}  </Style>
+`;
 
 const getStylesKML = (styles: Style[]): string =>
   styles.map(style => getStyleKML(style)).join('');

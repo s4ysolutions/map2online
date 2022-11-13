@@ -54,7 +54,6 @@ specifiers:
   normalize.css: ^8.0.1
   npm-watch: ^0.11.0
   ol: ^7.1.0
-  process: ^0.11.10
   proj4: ^2.8.0
   prop-types: ^15.8.1
   react: ^18.2.0
@@ -102,7 +101,6 @@ dependencies:
   node-sass: 7.0.3
   normalize.css: 8.0.1
   ol: 7.1.0
-  process: 0.11.10
   proj4: 2.8.0
   prop-types: 15.8.1
   react: 18.2.0
@@ -8099,11 +8097,6 @@ packages:
 
   /process-nextick-args/2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
-
-  /process/0.11.10:
-    resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
-    engines: {node: '>= 0.6.0'}
-    dev: false
 
   /progress/2.0.3:
     resolution: {integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==}

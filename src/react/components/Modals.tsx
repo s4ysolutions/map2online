@@ -24,8 +24,8 @@ import {isPoint} from '../../catalog';
 import Import from './ModalForms/Import';
 import About from './ModalForms/About';
 import Wording from './ModalForms/Personalization/Wording';
-import CategoryEdit from './ModalForms/CategoryEdit';
-import RouteEdit from './ModalForms/RouteEdit';
+import FolderLevel1Edit from './ModalForms/FolderLevel1Edit';
+import FolderLevel2Edit from './ModalForms/FolderLevel2Edit';
 import FeatureEdit from './ModalForms/FeatureEdit';
 
 
@@ -118,9 +118,9 @@ const Modals: React.FunctionComponent = (): React.ReactElement => {
       title={wording.C('Delete category')}
     /> : null}
 
-    {categoryEdit ? <CategoryEdit category={categoryEdit} /> : null}
+    {categoryEdit ? <FolderLevel1Edit category={categoryEdit} /> : null}
 
-    {routeEdit ? <RouteEdit route={routeEdit} /> : null}
+    {routeEdit ? <FolderLevel2Edit route={routeEdit} /> : null}
 
     {featureEdit ? <FeatureEdit feature={featureEdit} /> : null}
 

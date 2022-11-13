@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import {FormEvent, useCallback, useState} from 'react';
+import {ChangeEvent, FormEvent, useCallback, useState} from 'react';
 import Modal from '../../UIElements/Modal';
 import {getCatalogUI} from '../../../../di-default';
 import {Coordinate, Feature, LineString, Point, isPoint} from '../../../../catalog';
@@ -117,7 +117,11 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
     }
   }, []);
 
-  const handleChange = useCallback((content: Descendant[]) => {
+  const handleChangeTitle = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    featureEdit.title = event.target.value;
+  }, [featureEdit]);
+
+  const handleChangeDescription = useCallback((content: Descendant[]) => {
     featureEdit.description = content as RichText;
   }, [featureEdit]);
 
@@ -138,12 +142,10 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
         </label >
 
         <input
+          defaultValue={featureEdit.title}
           name="title"
-          onChange={(ev): void => {
-            featureEdit.title = ev.target.value;
-          }}
-          ref={titleRef}
-          value={featureEdit.title} />
+          onChange={handleChangeTitle}
+          ref={titleRef} />
       </div >
 
       <div className="field-row" >
@@ -153,7 +155,7 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
 
         <RichTextEditor
           content={feature.description}
-          onChange={handleChange} />
+          onChange={handleChangeDescription} />
       </div >
 
       <div className="field-row" >
@@ -163,7 +165,11 @@ const FeatureEdit: React.FunctionComponent<{ feature: Feature }> = ({feature: fe
 
         {isPoint(featureEdit.geometry)
           ? <input name="coordinates" onChange={handleCoordinatesChange} value={coordinates} />
-          : <textarea name="coordinates" onChange={handleCoordinatesChange} rows={Math.max(Math.min(MIN_COORDINATES_ROWS, coordinates.length), MAX_COORDINATES_ROWS)} value={coordinates} />}
+          : <textarea
+              defaultValue={coordinates}
+              name="coordinates"
+              onChange={handleCoordinatesChange}
+              rows={Math.max(Math.min(MIN_COORDINATES_ROWS, coordinates.length), MAX_COORDINATES_ROWS)} />}
       </div >
 
       <div className="buttons-row" >

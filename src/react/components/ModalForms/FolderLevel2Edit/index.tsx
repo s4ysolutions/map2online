@@ -18,35 +18,40 @@ import * as React from 'react';
 import {FormEvent, useCallback} from 'react';
 import Modal from '../../UIElements/Modal';
 import {getCatalogUI, getWording} from '../../../../di-default';
-import {Category} from '../../../../catalog';
+import {Route} from '../../../../catalog';
 import useObservable from '../../../hooks/useObservable';
 import T from '../../../../l10n';
-import {map} from 'rxjs/operators';
-import RichTextEditor from '../../UIElements/RichTextEditor';
 import log from '../../../../log';
-import {RichText} from '../../../../richtext';
+import {filter, map} from 'rxjs/operators';
+import RichTextEditor from '../../UIElements/RichTextEditor';
 import {Descendant} from 'slate';
 
-const wording = getWording();
 const catalogUI = getCatalogUI();
-// eslint-disable-next-line no-unused-vars
+const wording = getWording();
+
 const handleSubmit: (ev: FormEvent) => void = (ev: FormEvent) => {
   ev.preventDefault();
-  // noinspection JSIgnoredPromiseFromCall
-  catalogUI.commitEditCategory();
+  catalogUI.commitEditRoute().then(r => r);
   return null;
 };
 
-const handleClose = () => catalogUI.cancelEditCategory();
+const handleClose = () => catalogUI.cancelEditRoute();
 
-const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category: categoryEdit}): React.ReactElement => {
-  log.render('CategoryEdit', categoryEdit);
+const FolderLevel2Edit: React.FunctionComponent<{ route: Route }> = ({route: routeEdit}): React.ReactElement => {
 
-  const category = useObservable(
-    categoryEdit.observable()
-      .pipe(map(c => ({title: c === null ? '' : c.title, description: c === null ? RichText.makeEmpty() : c.description}))),
-    categoryEdit,
+  const route = useObservable<{title: string, description: RichText}>(
+    routeEdit
+      .observable()
+      .pipe(
+        filter(r => Boolean(r)),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        map(r => ({title: r!.title, description: r!.description})),
+      )
+    , routeEdit,
   );
+
+  log.render('RouteEdit debug', {route, routeEdit});
+
   const titleRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect((): void => {
@@ -57,13 +62,13 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
   }, []);
 
   const handleChange = useCallback((content: Descendant[]) => {
-    categoryEdit.description = content as RichText;
-  }, [categoryEdit]);
+    routeEdit.description = content as RichText;
+  }, [routeEdit]);
 
   return <Modal className="edit-dialog" closeOnEnter onClose={handleClose} >
     <form onSubmit={handleSubmit} >
       <h2 >
-        {wording.C('Modify category')}
+        {wording.R('Modify route')}
       </h2 >
 
       <div className="field-row" >
@@ -72,12 +77,12 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
         </label >
 
         <input
+          defaultValue={route.title}
           name="title"
           onChange={(ev): void => {
-            categoryEdit.title = ev.target.value;
+            routeEdit.title = ev.target.value;
           }}
-          ref={titleRef}
-          value={category.title} />
+          ref={titleRef} />
       </div >
 
       <div className="field-row" >
@@ -86,12 +91,12 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
         </label >
 
         <RichTextEditor
-          content={category.description}
+          content={route.description}
           onChange={handleChange} />
       </div >
 
       <div className="buttons-row" >
-        <button onClick={handleClose} type="button" >
+        <button onClick={handleClose} type="button">
           {T`Close`}
         </button >
       </div >
@@ -99,4 +104,4 @@ const CategoryEdit: React.FunctionComponent<{ category: Category }> = ({category
   </Modal >;
 };
 
-export default CategoryEdit;
+export default FolderLevel2Edit;

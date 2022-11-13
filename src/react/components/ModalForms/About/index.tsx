@@ -97,7 +97,7 @@ const About: React.FunctionComponent = () => <Modal className="about" onClose={(
     <hr />
 
     <h4 >
-      &copy;S4Y.Solutions, 2022&nbsp;v1.2.4
+      &copy;S4Y.Solutions, 2022&nbsp;v2.5.0
     </h4 >
   </form >
 </Modal >;

@@ -28,7 +28,8 @@ import Modals from './Modals';
 const catalogUI = getCatalogUI();
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-const callback = () => {};
+const callback = () => {
+};
 
 const App: React.FunctionComponent = (): React.ReactElement => {
   const selectedCategory = useObservable(catalogUI.selectedCategoryObservable(), catalogUI.selectedCategory);
@@ -47,13 +48,15 @@ const App: React.FunctionComponent = (): React.ReactElement => {
   const spinner = useSpinner();
 
   return <React.Profiler id="App" onRender={callback} >
-    <div className="application" >
-      <Workspace />
+    <React.StrictMode >
+      <div className="application" >
+        <Workspace />
 
-      <Modals />
+        <Modals />
 
-      {spinner ? <Spinner /> : null}
-    </div >
+        {spinner ? <Spinner /> : null}
+      </div >
+    </React.StrictMode >
   </React.Profiler >;
 };
 

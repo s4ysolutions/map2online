@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import {expect} from 'chai';
-import {Map2Color, idToMap2Color, map2ColorToName} from '../../../src/style/colors';
+import {Map2Color, idToMap2Color, map2ColorToName, map2colors} from '../../../src/style/colors';
+import {use as chaiUse, expect} from 'chai';
+import chaiArrays from 'chai-arrays';
+
+chaiUse(chaiArrays);
 
 describe('Built in map2 colors', () => {
   it('idToMap2Color', () => {
@@ -23,5 +26,11 @@ describe('Built in map2 colors', () => {
   });
   it('map2ColorToName', () => {
     expect(map2ColorToName[Map2Color.BLUE]).to.be.eq('BLUE');
+  });
+  it('map2colors array', () => {
+    expect(Object.values(map2colors)).to.be.array();
+    // eslint-disable-next-line no-magic-numbers
+    expect(Object.values(map2colors)).to.has.property('length', 9);
+    expect(Object.values(map2colors)[0]).to.be.eq('#e6194Bff');
   });
 });

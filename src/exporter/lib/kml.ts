@@ -18,6 +18,7 @@ import {Category, Coordinate, Feature, LineString, Point, Route, isPoint} from '
 import {metersToDegrees} from '../../lib/projection';
 import {henc} from '../../lib/entities';
 import {IconStyle, LineStyle, Style} from '../../style';
+import {map2colors} from '../../style/colors';
 
 const PREC = 6;
 export const formatCoordinate = (lonLat: Coordinate): string => {
@@ -28,7 +29,7 @@ export const formatCoordinate = (lonLat: Coordinate): string => {
 const begin = (styles: string): string =>
   `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
-  <Document name="map2online export - ${new Date()}">
+  <Document name="https://map2.online export - ${new Date()}">
 ${styles}
 `;
 const end = (): string =>
@@ -127,6 +128,10 @@ export const nc = (color: string): string => {
   return rgb2kml(`${c0.slice(COLOR6_LEN, COLOR8_LEN)}${c0.slice(0, COLOR6_LEN)}`);
 };
 
+const map2colorsArray = Object.values(map2colors).map(stripc);
+const map2colorOf = (color: string): string =>
+  map2colorsArray.indexOf(color) >= 0 ? color : map2colorsArray[0];
+
 // <scale>${style.scale}</scale>
 //  <Icon><href><![CDATA[${style.icon.toString()}]]></href>
 const getIconStyleKML = (style: IconStyle): string =>
@@ -134,7 +139,7 @@ const getIconStyleKML = (style: IconStyle): string =>
       <color>${nc(style.color)}</color>
       <colorMode>${style.colorMode}</colorMode>
       <scale>1</scale>
-      <Icon><href>https://map2.online/images/pin-${stripc(style.color)}.png</href></Icon>
+      <Icon><href>https://map2.online/images/pin-${map2colorOf(stripc(style.color))}.png</href></Icon>
       <hotSpot x="${style.hotspot.x}" y="${style.hotspot.y}" xunits="fraction" yunits="fraction" />
     </IconStyle>
 `;
@@ -165,7 +170,10 @@ const getLineStyleKML = (style: LineStyle): string => {
 `;
 };
 
-const getStyleKML = (style: Style): string =>
+/*
+  NOTE: drop-in replacement for getStyle in case of use Google earth KML
+
+const getStyleMapKML = (style: Style): string =>
   ` <StyleMap id="${style.id}">
     <Pair>
       <key>normal</key>
@@ -175,10 +183,16 @@ const getStyleKML = (style: Style): string =>
        <key>highlight</key>
        <styleUrl>#${style.id}-highlight</styleUrl>
     </Pair>
-  </StyleMap> 
+  </StyleMap>
   <Style id="${style.id}-normal">
 ${style.iconStyle && getIconStyleKML(style.iconStyle) || ''}${style.lineStyle && getLineStyleKML(style.lineStyle) || ''}  </Style>
   <Style id="${style.id}-highlight">
+${style.iconStyle && getIconStyleKML(style.iconStyle) || ''}${style.lineStyle && getLineStyleKML(style.lineStyle) || ''}  </Style>
+`;
+ */
+
+const getStyleKML = (style: Style): string =>
+  `<Style id="${style.id}">
 ${style.iconStyle && getIconStyleKML(style.iconStyle) || ''}${style.lineStyle && getLineStyleKML(style.lineStyle) || ''}  </Style>
 `;
 

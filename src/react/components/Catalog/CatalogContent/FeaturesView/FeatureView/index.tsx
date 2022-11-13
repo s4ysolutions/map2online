@@ -27,7 +27,7 @@ import Pin from '../../../../Svg/Pin';
 import Line from '../../../../Svg/Line';
 import {formatCoordinate, formatCoordinates} from '../../../../../../lib/format';
 import {skipConfirmDialog} from '../../../../../../lib/confirmation';
-import Edit from '../../../../Svg/Edit';
+import Edit from '../../../../Svg/Edit2';
 import T from '../../../../../../l10n';
 import {Style} from '../../../../../../style';
 import Coordinates from './Coordinates';
@@ -119,9 +119,9 @@ const FeatueView: React.FunctionComponent<{ isLast: boolean; feature: Feature; r
         title={isPoint(featureView.geometry) ? T`Open feature point hint` : T`Open feature line hint`}
       >
         {[
-          <span className="index" key="index" >
+          <div className="index" key="index" >
             {`${index + 1}.`}
-          </span >,
+          </div >,
           <div className="title" key="title" >
             {feature.title && feature.title.trim() ||
               `${feature.id} : ${isPoint(feature.geometry)

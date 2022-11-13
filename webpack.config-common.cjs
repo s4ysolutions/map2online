@@ -20,6 +20,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshTypeScript = require('react-refresh-typescript');
+const CopyPlugin = require('copy-webpack-plugin');
+
 
 const TARGET = process.env.npm_lifecycle_event;
 const PATH_SRC = path.resolve(__dirname, 'src');
@@ -38,6 +40,7 @@ const PATH_NPM_FONTS = [path.resolve(PATH_NODE_MODULES, 'typeface-roboto', 'file
 const PATH_FONTS = PATH_NPM_FONTS.concat(path.join(PATH_SRC, 'fonts'));
 const PATH_NPM_IMAGES = [];
 const PATH_IMAGES = PATH_NPM_IMAGES.concat(PATH_SRC);
+const PATH_STATIC_IMAGES = path.resolve(__dirname, 'images');
 
 const ruleBabelStatic = {
   test: /\.jsx?$/u,
@@ -188,6 +191,7 @@ const config = {
     fallback: { 'stream': require.resolve('stream-browserify'), 'buffer': require.resolve('buffer/') }, // required by saz
   },
   plugins: [
+    new CopyPlugin({patterns: [{ from: PATH_STATIC_IMAGES, to: `${PATH_DIST}/images` }]}),
     new ForkTsCheckerWebpackPlugin({ }),
     new HtmlWebpackPlugin({
       template: `${PATH_SRC}/index.ejs`,

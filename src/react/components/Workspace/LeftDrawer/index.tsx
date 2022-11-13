@@ -45,7 +45,7 @@ const variantBig = {
     width: 0,
   },
   show: {
-    width: '50%',
+    width: '40%',
   },
 };
 

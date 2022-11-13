@@ -59,8 +59,14 @@ const config = merge(baseConfig, {
     ],
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development'),
+      'process.env' :{
+        'NODE_ENV': JSON.stringify('development'),
+        'LOG_LEVEL': JSON.stringify('DEBUG'),
+      }
     }),
     new ReactRefreshWebpackPlugin(),
   ],

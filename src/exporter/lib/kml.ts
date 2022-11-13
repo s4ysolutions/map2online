@@ -28,8 +28,8 @@ export const formatCoordinate = (lonLat: Coordinate): string => {
 const begin = (styles: string): string =>
   `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
-${styles}
   <Document name="map2online export - ${new Date()}">
+${styles}
 `;
 const end = (): string =>
   `  </Document>
@@ -115,21 +115,22 @@ export const nc = (color: string): string => {
   const c0 = color.indexOf('#') === 0 ? color.slice(1) : color;
   const l = COLOR8_LEN - c0.length;
   if (l > 0) {
-    return `#${transp.slice(0, l)}${c0}`;
+    return `${transp.slice(0, l)}${c0}`;
   } else if (l < 0) {
     const c1 = c0.slice(0, COLOR8_LEN);
-    return `#${c1.slice(COLOR6_LEN, COLOR8_LEN)}${c1.slice(0, COLOR6_LEN)}`;
+    return `${c1.slice(COLOR6_LEN, COLOR8_LEN)}${c1.slice(0, COLOR6_LEN)}`;
   }
-  return `#${c0.slice(COLOR6_LEN, COLOR8_LEN)}${c0.slice(0, COLOR6_LEN)}`;
+  return `${c0.slice(COLOR6_LEN, COLOR8_LEN)}${c0.slice(0, COLOR6_LEN)}`;
 };
 
+// <scale>${style.scale}</scale>
+//  <Icon><href><![CDATA[${style.icon.toString()}]]></href>
 const getIconStyleKML = (style: IconStyle): string =>
   `    <IconStyle>
       <color>${nc(style.color)}</color>
       <colorMode>${style.colorMode}</colorMode>
-      <scale>${style.scale}</scale>
-      <Icon><href><![CDATA[${style.icon.toString()}]]></href>
-      </Icon>
+      <scale>1</scale>
+      <Icon><href>https://map2.online/images/pin.svg</href></Icon>
       <hotSpot x="${style.hotspot.x}" y="${style.hotspot.y}" xunits="fraction" yunits="fraction" />
     </IconStyle>
 `;

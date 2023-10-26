@@ -66,6 +66,8 @@ const siteAttribution =
  *});
  */
 
+// see https://nakarte.me for more sources
+
 const mapGroups: MapGroupDefinition[] = [
   {
     id: 'OSM',

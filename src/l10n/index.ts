@@ -69,4 +69,4 @@ import translations from './translations';
 
 // init(typeof navigator !== 'undefined' && navigator.language || 'en', translations);
 
-init('ru', translations);
+init('en', translations);

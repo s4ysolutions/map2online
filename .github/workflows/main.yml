@@ -36,10 +36,7 @@ jobs:
 
       - name: deploy
         env:
-          FIREBASE_SERVICE_PK: ${{ secrets.FIREBASE_SERVICE_PK }}
-          GOOGLE_APPLICATION_CREDENTIALS: service.json
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          echo $FIREBASE_SERVICE_PK > $GOOGLE_APPLICATION_CREDENTIALS
           ./node_modules/.bin/firebase projects:list
-          ./node_modules/.bin/firebase login
-          ./node_modules/.bin/firebase deploy --only hosting 
+          ./node_modules/.bin/firebase deploy --only hosting --token "$FIREBASE_TOKEN"

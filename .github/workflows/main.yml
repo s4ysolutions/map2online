@@ -41,4 +41,5 @@ jobs:
         run: |
           echo $FIREBASE_SERVICE_PK > $GOOGLE_APPLICATION_CREDENTIALS
           ./node_modules/.bin/firebase projects:list
+          ./node_modules/.bin/firebase login
           ./node_modules/.bin/firebase deploy --only hosting 

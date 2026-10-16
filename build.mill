@@ -36,6 +36,14 @@ trait BaseModule extends ScalaModule:
 
 trait BaseJvmModule extends BaseModule
 
+/** A source file pointing tests at a fixtures directory on disk. */
+def fixturesDirSource(dest: os.Path, dir: os.Path): PathRef =
+  os.write.over(
+    dest / "FixturesDir.scala",
+    s"package fixtures\n\nobject FixturesDir:\n  val path: String = \"$dir\"\n"
+  )
+  PathRef(dest)
+
 trait BaseJsModule extends BaseModule with ScalaJSModule:
   def scalaJSVersion = "1.22.0"
   override def moduleKind = ModuleKind.ESModule
@@ -58,6 +66,18 @@ object core extends Module:
       object mintingJs extends BaseJsModule:
         override def sources = Task { minting.sources() ++ super.sources() }
         override def moduleDeps = Seq(identity.identityJs)
+
+  // lenient XML/HTML parsing, HTML -> Markdown, Markdown -> safe HTML
+  object markup extends BaseModule:
+    object munits extends ScalaTests with TestModule.Munit:
+      override def mvnDeps = Seq(Deps.munit)
+
+    object markupJs extends BaseJsModule:
+      override def sources = Task { markup.sources() ++ super.sources() }
+
+      object munits extends ScalaJSTests with TestModule.Munit:
+        override def sources = Task { markup.munits.sources() ++ super.sources() }
+        override def mvnDeps = Seq(Deps.munit)
 
   object domain extends Module:
     // InfraFailure; no ZIO so pure domains may import it
@@ -108,6 +128,36 @@ object features extends Module:
         // the JVM suites again, run on Node: the browser is where this code runs
         object munits extends ScalaJSTests with TestModule.Munit:
           override def sources = Task { domain.munits.sources() ++ super.sources() }
+          override def moduleDeps = super.moduleDeps ++ Seq(core.identity.minting.mintingJs)
+          override def mvnDeps = Seq(Deps.munit)
+
+  // KML import/export: reader, writer, fitting KML trees into the catalog
+  object kml extends Module:
+    private def fixtures = moduleDir / "fixtures"
+
+    // pure: no ZIO; reuses the catalog VOs and core.markup
+    object domain extends BaseModule:
+      private def deps = Seq(Deps.prelude)
+      override def moduleDeps = Seq(features.catalog.domain, core.markup)
+      override def mvnDeps = deps
+
+      // fixtures are KML files from the old app's test data; the generated
+      // source tells the tests where they are on disk
+      object munits extends ScalaTests with TestModule.Munit:
+        override def sources = Task.Sources("src", "src-jvm")
+        override def generatedSources = Task { Seq(fixturesDirSource(Task.dest, fixtures)) }
+        override def moduleDeps = super.moduleDeps ++ Seq(core.identity.minting)
+        override def mvnDeps = Seq(Deps.munit)
+
+      object domainJs extends BaseJsModule:
+        override def sources = Task { domain.sources() ++ super.sources() }
+        override def moduleDeps = Seq(features.catalog.domain.domainJs, core.markup.markupJs)
+        override def mvnDeps = deps
+
+        object munits extends ScalaJSTests with TestModule.Munit:
+          override def sources =
+            Task.Sources(domain.munits.moduleDir / "src", domain.munits.moduleDir / "src-js")
+          override def generatedSources = Task { Seq(fixturesDirSource(Task.dest, fixtures)) }
           override def moduleDeps = super.moduleDeps ++ Seq(core.identity.minting.mintingJs)
           override def mvnDeps = Seq(Deps.munit)
 

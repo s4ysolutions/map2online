@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" >
+  <Style id="map2_style_#e6194bff" >
+    <IconStyle >
+      <color >#e6194bff</color >
+      <colorMode >normal</colorMode >
+      <scale >0.05859375</scale >
+      <Icon >
+        <href >
+          <![CDATA[data:image/svg+xml;utf8,<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"> <path d="m254.35 340.25v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" opacity=".3" stroke-width="2.302"/> <path d="m235.93 321.83v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" fill="%23e6194bff" stroke-width="2.302"/></svg>]]></href >
+      </Icon >
+      <hotSpot x="0.5" y="1" xunits="fraction" yunits="fraction" />
+    </IconStyle >
+    <LineStyle >
+      <color >#e6194bff</color >
+      <colorMode >normal</colorMode >
+      <width >1</width >
+      <labelVisibility >true</labelVisibility >
+    </LineStyle >
+  </Style >
+  <Style id="map2_style_#4363d8ff" >
+    <IconStyle >
+      <color >#4363d8ff</color >
+      <colorMode >normal</colorMode >
+      <scale >0.05859375</scale >
+      <Icon >
+        <href >
+          <![CDATA[data:image/svg+xml;utf8,<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"> <path d="m254.35 340.25v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" opacity=".3" stroke-width="2.302"/> <path d="m235.93 321.83v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" fill="%234363d8ff" stroke-width="2.302"/></svg>]]></href >
+      </Icon >
+      <hotSpot x="0.5" y="1" xunits="fraction" yunits="fraction" />
+    </IconStyle >
+    <LineStyle >
+      <color >#4363d8ff</color >
+      <colorMode >normal</colorMode >
+      <width >1</width >
+      <labelVisibility >true</labelVisibility >
+    </LineStyle >
+  </Style >
+  <Style id="map2_style_#ffe119ff" >
+    <IconStyle >
+      <color >#ffe119ff</color >
+      <colorMode >normal</colorMode >
+      <scale >0.05859375</scale >
+      <Icon >
+        <href >
+          <![CDATA[data:image/svg+xml;utf8,<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"> <path d="m254.35 340.25v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" opacity=".3" stroke-width="2.302"/> <path d="m235.93 321.83v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" fill="%23ffe119ff" stroke-width="2.302"/></svg>]]></href >
+      </Icon >
+      <hotSpot x="0.5" y="1" xunits="fraction" yunits="fraction" />
+    </IconStyle >
+    <LineStyle >
+      <color >#ffe119ff</color >
+      <colorMode >normal</colorMode >
+      <width >1</width >
+      <labelVisibility >true</labelVisibility >
+    </LineStyle >
+  </Style >
+  <Style id="map2_style_#fabebeff" >
+    <IconStyle >
+      <color >#fabebeff</color >
+      <colorMode >normal</colorMode >
+      <scale >0.05859375</scale >
+      <Icon >
+        <href >
+          <![CDATA[data:image/svg+xml;utf8,<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"> <path d="m254.35 340.25v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" opacity=".3" stroke-width="2.302"/> <path d="m235.93 321.83v171.75h22.549v-171.75c83.743-5.811 149.92-75.408 149.92-160.64 0-89.027-72.172-161.19-161.19-161.19-89.029 0-161.2 72.172-161.2 161.19 0 85.221 66.182 154.83 149.93 160.64zm11.275-275.66c63.434 0 115.03 51.607 115.03 115.02h-22.548c0-50.989-41.487-92.476-92.489-92.476z" fill="%23fabebeff" stroke-width="2.302"/></svg>]]></href >
+      </Icon >
+      <hotSpot x="0.5" y="1" xunits="fraction" yunits="fraction" />
+    </IconStyle >
+    <LineStyle >
+      <color >#fabebeff</color >
+      <colorMode >normal</colorMode >
+      <width >1</width >
+      <labelVisibility >true</labelVisibility >
+    </LineStyle >
+  </Style >
+  <Document name="map2online export - Sun Nov 01 2020 13:35:23 GMT+0500 (+05)" >
+    <Folder id="fcb6bdd7-be9d-4f16-9db3-410e4f814caa" >
+      <name >Новое путешествие</name >
+      <description ></description >
+      <Folder id="91657e25-fc7a-47fd-b630-67fd1631378b" >
+        <name >Новый день</name >
+        <description ></description >
+        <Placemark id="70026e63-4b73-4e3d-8254-beea813f35af" >
+          <name >Точка 1</name >
+          <description ></description >
+          <styleUrl >#map2_style_#e6194bff</styleUrl >
+          <Point >
+            <coordinates >22.039711,4.392128,0</coordinates >
+          </Point >
+        </Placemark >
+        <Placemark id="8d7d459c-3a77-4525-87a9-af4cafd5a4a0" >
+          <name >Точка 2</name >
+          <description ></description >
+          <styleUrl >#map2_style_#e6194bff</styleUrl >
+          <Point >
+            <coordinates >14.080100,-5.398752,0</coordinates >
+          </Point >
+        </Placemark >
+        <Placemark id="50fb69a0-47ea-4502-8061-a94c11480222" >
+          <name >Точка 3</name >
+          <description ></description >
+          <styleUrl >#map2_style_#e6194bff</styleUrl >
+          <Point >
+            <coordinates >32.102628,6.519055,0</coordinates >
+          </Point >
+        </Placemark >
+        <Placemark id="d4461ae5-c8d9-4acb-ad0f-05f1c7850d3c" >
+          <name >Точка 4</name >
+          <description ></description >
+          <styleUrl >#map2_style_#4363d8ff</styleUrl >
+          <Point >
+            <coordinates >30.750939,-11.523519,0</coordinates >
+          </Point >
+        </Placemark >
+        <Placemark id="b330db75-4de6-4398-8e5f-032535447f06" >
+          <name >Точка 5</name >
+          <description ></description >
+          <styleUrl >#map2_style_#ffe119ff</styleUrl >
+          <Point >
+            <coordinates >20.880746,-18.088364,0</coordinates >
+          </Point >
+        </Placemark >
+        <Placemark id="138e9932-bb9c-4206-9c61-8621574841b1" >
+          <name >Трек 6</name >
+          <description ></description >
+          <styleUrl >#map2_style_#fabebeff</styleUrl >
+          <LineString >
+            <coordinates >
+              23.067863,-0.690981,0 22.221832,-6.131461,0 22.973860,-8.322853,0 22.456841,-10.871545,0
+              19.636738,-11.563097,0 19.119719,-12.161068,0
+            </coordinates >
+          </LineString >
+        </Placemark >
+        <Placemark id="1a8e9932-bb9c-4206-9c61-8621574841b1" >
+          <name >Трек 7</name >
+          <description ></description >
+          <styleUrl >#map2_style_#fabebeff</styleUrl >
+          <LineString >
+            <coordinates >
+              23.067863,-0.690981,0
+              22.221832,-6.131461,0
+              22.973860,-8.322853,0
+              22.456841,-10.871545,0
+              19.636738,-11.563097,0
+              19.119719,-12.161068,0
+            </coordinates >
+          </LineString >
+        </Placemark >
+      </Folder >
+    </Folder >
+  </Document >
+</kml >

@@ -26,6 +26,7 @@ possible) and rebuilds the app phase by phase.
 core/
   i18n, identity, domain/errors, app (UseCase[C])        BaseModule + *Js twin
   identity/minting the only way to construct an Identifier (infra, presentation, tests)
+  markup           lenient XML/HTML parser, HTML → Markdown, Markdown → safe HTML  + *Js twin
   infra/idb        IndexedDB wrapper (ZIO)                 JS
   infra/kv         localStorage key-value store            JS
   facades/ol       OpenLayers facade (only what we use)    JS
@@ -38,8 +39,8 @@ features/
               reorder, visibility
               domain, workflows (CatalogRepository port), app, infra.idb, infra.memory,
               presentation.laminar
-  kml         KML ⇄ catalog; XmlParser port → infra.dom (DOMParser, JS) + infra.jvm (tests);
-              import post-processing (flatten, mixed folders → routes)
+  kml         KML ⇄ catalog as pure operations over core.markup's parser; import
+              fitting (any nesting → Category/Route/Feature), palette colour mapping
   basemap     enum MapSource { Tiles | Background(engine) }, groups, selected source,
               view state (lat/lon/zoom live + debounced save), background engines
   drawing     selected tool, current styles, draw/modify/select/snap, context menu
@@ -61,7 +62,7 @@ sync is added.
 | 0 | Clean start, CLAUDE.md, skills, cloud start-up hook, this plan | — | ✅ |
 | 1 | Mill skeleton (`core.app`, `core.domain.errors`, `core.presentation.laminar`, `products.web`), Vite, CI, scalafmt | `.github/workflows` | ✅ CI green |
 | 2 | Pure domain: `core.identity`, catalog value objects, the `Catalog` aggregate and its operations, colour palette, Markdown descriptions | `src/style`, `src/richtext`, `src/catalog`, `src/lib/reorder.ts` | ✅ MUnit tests on JVM and Node; the old equality bugs (`coordinatesEq` uses `===` where `!==` is needed; `Feature.eq` never compares `lon`) are gone by using derived equality |
-| 3 | KML import/export | `src/importer`, `src/exporter`, `tests/data/*.kml` | round-trip tests on the JVM with the old KML fixtures |
+| 3 | KML import/export | `src/importer`, `src/exporter`, `tests/data/*.kml` | ✅ fixture and round-trip tests on JVM and Node |
 | 4 | Storage: catalog repository on IndexedDB + in-memory; key-value store for UI state | `src/catalog/storage`, `src/kv` | workflow tests against the in-memory store |
 | 5 | Map: OL facade, basemap sources and background engines, view sync | `src/map-sources`, `src/react/components/GoogleMap`, `src/react/components/OpenLayers` | OSM, Google, Yandex and Genshtab switch correctly in the browser |
 | 6 | Drawing: tools, draw/modify/select/snap, active features layer, context menu | `OpenLayers/interactions`, `src/ui/tools` | draw and edit a route; it persists |
@@ -84,6 +85,20 @@ auth and sharing; offline region packages from own tile servers.
   palette `Color` (no separate `styles` feature). The full KML style model
   (icon, line width, balloon, list) belongs to the `kml` feature in phase 3,
   which maps imported styles onto the palette and writes palette styles back.
+- KML parsing is a pure function over a small lenient XML parser
+  (`core.markup`) rather than a port with DOM and JVM adapters: it is
+  always-local CPU work, and one implementation behaves the same in tests
+  and in the browser. It also tolerates the HTML found in descriptions
+  (unclosed `<br>`, mismatched tags).
+- KML colours are read as standard `aabbggrr` and snapped to the nearest
+  palette colour; the old app's `#rrggbbaa` values and `map2_style_…` ids
+  map exactly. Exports write standard colours, HTML descriptions and the
+  Markdown source in `ExtendedData` (`map2_markdown`) for lossless re-import.
+- Import fitting: a folder's own placemarks form one route; folders holding
+  only placemarks are routes of the folder above; every folder with
+  subfolders is a category of the routes directly in it; empty levels vanish;
+  unnamed folders borrow the nearest name above (finally the file name).
+  The old "(auto)" suffix for mixed folders is dropped.
 - The tree's expanded/collapsed (`open`) flag was stored on categories and
   routes; it is UI state and moves to the key-value store with the catalog UI.
 - Inserting at position 0 appended in the old code (`position || length`);

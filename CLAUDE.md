@@ -34,7 +34,9 @@ behind it are in `docs/rewrite-plan.md`.
 ./mill mill.scalalib.scalafmt/                     # reformat everything
 ./mill -w products.web.fastLinkJS                  # keep the JS bundle fresh while `pnpm dev` runs
 pnpm dev                                           # Vite dev server (after a fastLinkJS)
-pnpm build                                         # fullLinkJS + production bundle in dist/
+pnpm build                                         # fullLinkJS + production bundle in dist/ (PWA)
+pnpm preview                                       # serve dist/ (service worker active)
+pnpm cap:sync                                      # build + copy into Capacitor native projects
 ```
 
 ## Architecture
@@ -98,8 +100,9 @@ modules are added to `build.mill` only when they get real code.
 - Bing is dropped (service retired).
 - Feature/route/category descriptions are Markdown, not rich text.
 - No data migration from the old IndexedDB store; there is no existing data.
-- Offline: own tile servers provide region packages later; Google/Yandex are
-  online-only.
+- Offline: the service worker (`products/web/static/public/sw.js`) serves the
+  app shell and caches tiles from our own servers only; Google/Yandex/OSM are
+  never cached. Region packages from our tile servers are future work.
 
 ## Cloud sessions
 

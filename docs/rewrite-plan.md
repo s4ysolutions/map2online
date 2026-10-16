@@ -74,7 +74,11 @@ sync is added.
 | 6 | Drawing: tools, draw/modify/select/snap, active features layer, context menu | `OpenLayers/interactions`, `src/ui/tools` | ✅ browser test: draw point and coloured line (category and route auto-created), Esc cancels, drag a point, delete via context menu, all persisted across reload |
 | 7 | Catalog UI: tree, drag-and-drop reorder, edit/delete forms, Markdown editor, import/export dialogs | `src/react/components/Catalog`, `ModalForms`, `TopNavigation` | ✅ browser test: import a KML file, drill down, choose the drawing route, select, edit (title, colour), hide, drag to reorder, delete with confirmation, export, all persisted |
 | 8 | Search and wording | `src/search`, `src/personalization` | ✅ Nominatim gateway tests; browser test: search, result marker, add to catalog, search in view, wording settings persisted |
-| 9 | Mobile: responsive layout, touch, service worker, Capacitor shell | — | installable app on a phone |
+| 9 | Mobile: responsive layout, touch, service worker, Capacitor shell | — | ✅ browser tests on the production build: service worker installs, the app starts offline with its data, own-server tiles are cached and served without network; phone layout (drawer, "more" menu, bottom toolbar, 44px targets, no horizontal scroll). Native projects are generated with Capacitor on a machine with the Android/iOS SDKs |
+
+Known follow-ups: the production bundle is 2.15 MB (600 KB gzipped);
+code-splitting or trimming dependencies would help phones on slow
+connections. The UI is English only (the old app also had Russian).
 
 Later, outside this plan: `products.server` (zio-http, Postgres) with sync,
 auth and sharing; offline region packages from own tile servers.
@@ -119,6 +123,13 @@ auth and sharing; offline region packages from own tile servers.
   drop, so it works with touch as well as a mouse.
 - Scala.js output targets ES2018 (regex Unicode classes); every browser the
   app supports has it.
+- Offline: the service worker serves the app shell offline and keeps up to
+  5000 tiles from our own tile servers (`tiles-proxy-*.s4y.solutions`) in a
+  cache, so recently viewed areas work without a connection. Google, Yandex
+  and OpenStreetMap tiles are never cached (their terms). Region packages
+  from our own servers remain future work.
+- Tile sources load without CORS (`crossOrigin` unset), like the old app,
+  so a tile server without CORS headers still works.
 - Storage: the catalog is saved as one versioned JSON document. IndexedDB
   transactions close as soon as control returns to the event loop, so they
   cannot span ZIO steps; instead the transaction manager serialises

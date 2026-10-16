@@ -42,7 +42,10 @@ object App:
     val catalog = CatalogState(naming)
     val editing = MapEditing(map, catalog)
 
-    val catalogOpen = Var(true)
+    // phones start with the map; the catalog drawer covers it when open
+    def narrow: Boolean = org.scalajs.dom.window.innerWidth <= 700
+    val catalogOpen = Var(!narrow)
+    val moreOpen = Var(false)
     val importing = Var(false)
     val settings = Var(false)
     WordingSettings.load(wording)
@@ -58,12 +61,14 @@ object App:
           )(id => catalog.selectedFeature.set(Some(id)))
       )
 
-    def show(f: Feature): Unit = f.geometry match
-      case Geometry.Point(c)      => map.centerOn(c.lon, c.lat)
-      case l: Geometry.LineString =>
-        val lons = l.coordinates.map(_.lon: Double)
-        val lats = l.coordinates.map(_.lat: Double)
-        map.fit(lons.min, lats.min, lons.max, lats.max)
+    def show(f: Feature): Unit =
+      if narrow then catalogOpen.set(false) // on a phone the drawer covers the map
+      f.geometry match
+        case Geometry.Point(c)      => map.centerOn(c.lon, c.lat)
+        case l: Geometry.LineString =>
+          val lons = l.coordinates.map(_.lon: Double)
+          val lats = l.coordinates.map(_.lat: Double)
+          map.fit(lons.min, lats.min, lons.max, lats.max)
 
     div(
       cls := "app",
@@ -78,15 +83,38 @@ object App:
         ),
         span(cls := "brand", "Map2Online"),
         search,
-        button(cls := "bar-button", "Import", onClick --> (_ => importing.set(true))),
-        ExportMenu(catalog, wording.signal),
-        SourcePicker(map, keys),
+        // on narrow screens these fold into the "more" menu
         button(
-          cls := "bar-button",
-          aria.label := "Settings",
-          title := "Settings",
-          "⚙",
-          onClick --> (_ => settings.set(true))
+          cls := "bar-button more-button",
+          aria.label := "More",
+          aria.expanded <-- moreOpen.signal,
+          "⋯",
+          onClick --> (_ => moreOpen.update(!_))
+        ),
+        div(
+          cls := "bar-actions",
+          cls("open") <-- moreOpen.signal,
+          button(
+            cls := "bar-button",
+            "Import",
+            onClick --> { _ =>
+              moreOpen.set(false)
+              importing.set(true)
+            }
+          ),
+          ExportMenu(catalog, wording.signal),
+          SourcePicker(map, keys),
+          button(
+            cls := "bar-button",
+            aria.label := "Settings",
+            title := "Settings",
+            "⚙",
+            span(cls := "narrow-only", " Settings"),
+            onClick --> { _ =>
+              moreOpen.set(false)
+              settings.set(true)
+            }
+          )
         ),
         child.maybe <-- map.engineError.map(_.map(e => span(cls := "notice", e)))
       ),

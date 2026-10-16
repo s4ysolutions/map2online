@@ -6,13 +6,18 @@
   "scripts": {
     "dev": "vite",
     "build": "./mill products.web.fullLinkJS && vite build --mode production",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:sync": "pnpm build && cap sync"
   },
   "devDependencies": {
-    "vite": "8.3.3"
+    "vite": "8.3.3",
+    "@capacitor/cli": "8.5.2"
   },
   "dependencies": {
     "ol": "10.10.0",
-    "proj4": "2.22.0"
+    "proj4": "2.22.0",
+    "@capacitor/core": "8.5.2",
+    "@capacitor/android": "8.5.2",
+    "@capacitor/ios": "8.5.2"
   }
 }

@@ -145,8 +145,7 @@ final class MapWidget(initialSource: MapSource, initialView: MapView, keys: Engi
           url = t.urlTemplate
           attributions = t.attribution
           maxZoom = t.maxZoom
-          this.projection = t.projection.code
-          crossOrigin = "anonymous"))
+          this.projection = t.projection.code))
         baseLayer.setVisible(true)
         engineErrorVar.set(None)
       case b: BackgroundSource =>

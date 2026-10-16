@@ -74,6 +74,13 @@ modules are added to `build.mill` only when they get real code.
   `::` platform separator before the version (`mvn"dev.zio::zio::2.x"`), so
   the same `Deps.zio` resolves to the `_sjs1` artifact in a JS module. Twins
   still declare their own `mvnDeps`, reusing the parent's Seq.
+- **Domain tests run twice.** A domain module's MUnit suites also run on
+  Node through a nested `munits` test module in its `*Js` twin that reuses
+  the JVM test sources (see `features.catalog.domain.domainJs.munits`).
+- **IDs are minted only through `core.identity.minting`.** `Identifier[A]`
+  wraps a `String` (UUIDs today, KML ids on import). Domain modules depend on
+  `core.identity` only; infra, presentation and test modules add
+  `core.identity.minting`.
 - **Packages.** Core: `s4y.<module>` as in the skills (`s4y.app`,
   `s4y.domain.errors`, `s4y.presentation.laminar`). Features:
   `s4y.map2online.<feature>.<layer>`. Product: `s4y.map2online.web`.

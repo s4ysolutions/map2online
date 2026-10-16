@@ -25,6 +25,7 @@ possible) and rebuilds the app phase by phase.
 ```
 core/
   i18n, identity, domain/errors, app (UseCase[C])        BaseModule + *Js twin
+  identity/minting the only way to construct an Identifier (infra, presentation, tests)
   infra/idb        IndexedDB wrapper (ZIO)                 JS
   infra/kv         localStorage key-value store            JS
   facades/ol       OpenLayers facade (only what we use)    JS
@@ -33,8 +34,8 @@ core/
   presentation/laminar  ZioBridge, layout, modal, menu, drag-and-drop list, icons   JS
   tests
 features/
-  styles      KML-style model (line, icon, label, balloon, list) + defaults       domain only
-  catalog     Category→Route→Feature, geometry, Markdown descriptions, reorder, visibility
+  catalog     Category→Route→Feature, geometry, colour palette, Markdown descriptions,
+              reorder, visibility
               domain, workflows (CatalogRepository port), app, infra.idb, infra.memory,
               presentation.laminar
   kml         KML ⇄ catalog; XmlParser port → infra.dom (DOMParser, JS) + infra.jvm (tests);
@@ -59,7 +60,7 @@ sync is added.
 |---|-------|--------------------|-----------|
 | 0 | Clean start, CLAUDE.md, skills, cloud start-up hook, this plan | — | ✅ |
 | 1 | Mill skeleton (`core.app`, `core.domain.errors`, `core.presentation.laminar`, `products.web`), Vite, CI, scalafmt | `.github/workflows` | ✅ CI green |
-| 2 | Pure domain: styles, catalog value objects and operations, Markdown descriptions | `src/style`, `src/richtext`, `src/catalog/index.ts` | MUnit tests; the old equality bugs (`coordinatesEq` uses `===` where `!==` is needed; `Feature.eq` never compares `lon`) are gone by using derived equality |
+| 2 | Pure domain: `core.identity`, catalog value objects, the `Catalog` aggregate and its operations, colour palette, Markdown descriptions | `src/style`, `src/richtext`, `src/catalog`, `src/lib/reorder.ts` | ✅ MUnit tests on JVM and Node; the old equality bugs (`coordinatesEq` uses `===` where `!==` is needed; `Feature.eq` never compares `lon`) are gone by using derived equality |
 | 3 | KML import/export | `src/importer`, `src/exporter`, `tests/data/*.kml` | round-trip tests on the JVM with the old KML fixtures |
 | 4 | Storage: catalog repository on IndexedDB + in-memory; key-value store for UI state | `src/catalog/storage`, `src/kv` | workflow tests against the in-memory store |
 | 5 | Map: OL facade, basemap sources and background engines, view sync | `src/map-sources`, `src/react/components/GoogleMap`, `src/react/components/OpenLayers` | OSM, Google, Yandex and Genshtab switch correctly in the browser |
@@ -78,6 +79,15 @@ auth and sharing; offline region packages from own tile servers.
   Improvements: typed sources instead of the `Google` id prefix, lat/lon in
   the shared state, per-frame in-memory sync separated from the debounced
   save, no module-level mutable globals.
+- Styles: the old app persisted only a palette style id per feature and fell
+  back to the default for anything else, so a feature's style is just a
+  palette `Color` (no separate `styles` feature). The full KML style model
+  (icon, line width, balloon, list) belongs to the `kml` feature in phase 3,
+  which maps imported styles onto the palette and writes palette styles back.
+- The tree's expanded/collapsed (`open`) flag was stored on categories and
+  routes; it is UI state and moves to the key-value store with the catalog UI.
+- Inserting at position 0 appended in the old code (`position || length`);
+  the new `OrderingOperations.insert` takes `Option[Int]`.
 - Domain objects in the old code mutate themselves and persist with
   fire-and-forget `update().then()`. The rewrite uses immutable VOs,
   operations, and workflows that return effects with typed errors.

@@ -2,9 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Map2Online</title>
     <link rel="stylesheet" href="./styles.css" />
+    <script>
+      // API keys for background engines; Vite replaces %VITE_…% at build time
+      // (an unset variable stays as-is and is treated as "not configured").
+      window.MAP2_CONFIG = {
+        googleMapsKey: "%VITE_GOOGLE_MAPS_KEY%",
+        yandexMapsKey: "%VITE_YANDEX_MAPS_KEY%"
+      };
+    </script>
   </head>
   <body>
     <div id="app"></div>

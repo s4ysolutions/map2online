@@ -32,8 +32,7 @@ core/
   infra/memory     semaphore transactions, random UUIDs, map store                 + *Js twin
   infra/browser    IndexedDB and localStorage KeyValueStores                       JS
   facades/ol       OpenLayers facade (only what we use)    JS
-  facades/google   Google Maps JS API (view-follow only)   JS
-  facades/yandex   ymaps3 (view-follow only)               JS
+  facades/engines  Google Maps JS API and Yandex Maps 2.1 (load, follow a view)  JS
   presentation/laminar  ZioBridge, layout, modal, menu, drag-and-drop list, icons   JS
   tests
 features/
@@ -67,7 +66,7 @@ sync is added.
 | 2 | Pure domain: `core.identity`, catalog value objects, the `Catalog` aggregate and its operations, colour palette, Markdown descriptions | `src/style`, `src/richtext`, `src/catalog`, `src/lib/reorder.ts` | ✅ MUnit tests on JVM and Node; the old equality bugs (`coordinatesEq` uses `===` where `!==` is needed; `Feature.eq` never compares `lon`) are gone by using derived equality |
 | 3 | KML import/export | `src/importer`, `src/exporter`, `tests/data/*.kml` | ✅ fixture and round-trip tests on JVM and Node |
 | 4 | Storage: catalog repository over a key-value store (IndexedDB in the browser, memory in tests); localStorage for UI state; edit/import/export use cases | `src/catalog/storage`, `src/kv` | ✅ workflow, store and use-case tests against the memory store |
-| 5 | Map: OL facade, basemap sources and background engines, view sync | `src/map-sources`, `src/react/components/GoogleMap`, `src/react/components/OpenLayers` | OSM, Google, Yandex and Genshtab switch correctly in the browser |
+| 5 | Map: OL facade, basemap sources and background engines, view sync | `src/map-sources`, `src/react/components/GoogleMap`, `src/react/components/OpenLayers` | ✅ checked in headless Chromium: tile URLs per source, switching, saved map and view, Google engine under OL (Yandex and live tiles are blocked from the build container) |
 | 6 | Drawing: tools, draw/modify/select/snap, active features layer, context menu | `OpenLayers/interactions`, `src/ui/tools` | draw and edit a route; it persists |
 | 7 | Catalog UI: tree, drag-and-drop reorder, edit/delete forms, Markdown editor, import/export dialogs | `src/react/components/Catalog`, `ModalForms`, `TopNavigation` | everything the old app does |
 | 8 | Search and wording | `src/search`, `src/personalization` | everything the old app does |
@@ -102,6 +101,11 @@ auth and sharing; offline region packages from own tile servers.
   subfolders is a category of the routes directly in it; empty levels vanish;
   unnamed folders borrow the nearest name above (finally the file name).
   The old "(auto)" suffix for mixed folders is dropped.
+- Background engines need API keys at build time (`VITE_GOOGLE_MAPS_KEY`,
+  `VITE_YANDEX_MAPS_KEY`, see `.env.example`); without a key that engine's
+  maps are simply not offered. Yandex uses the 2.1 API (it has satellite and
+  hybrid types) and switches the OpenLayers view to EPSG:3395 while shown.
+  Engine maps only draw whole zoom levels, so the view snaps to them then.
 - Storage: the catalog is saved as one versioned JSON document. IndexedDB
   transactions close as soon as control returns to the event loop, so they
   cannot span ZIO steps; instead the transaction manager serialises

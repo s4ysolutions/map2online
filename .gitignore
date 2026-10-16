@@ -9,3 +9,6 @@ out/
 # frontend
 node_modules/
 dist/
+
+# local configuration
+.env.local

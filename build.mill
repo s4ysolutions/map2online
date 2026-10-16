@@ -49,6 +49,10 @@ trait BaseJsModule extends BaseModule with ScalaJSModule:
   def scalaJSVersion = "1.22.0"
   override def moduleKind = ModuleKind.ESModule
 
+/** Scala.js facades: native constructor parameters are never "used". */
+trait FacadeModule extends BaseJsModule:
+  override def scalacOptions = super.scalacOptions().filterNot(_ == "-Wunused:all")
+
 /*
  **************** core: feature-agnostic shared kernel *****************
  */
@@ -139,6 +143,15 @@ object core extends Module:
     object browser extends BaseJsModule:
       override def moduleDeps = Seq(core.kv.kvJs)
       override def mvnDeps = Seq(Deps.zio, Deps.scalajsDom)
+
+  object facades extends Module:
+    // hand-written OpenLayers 10 facade
+    object ol extends FacadeModule:
+      override def mvnDeps = Seq(Deps.scalajsDom)
+
+    // Google Maps / Yandex Maps loaders and view-following wrappers
+    object engines extends FacadeModule:
+      override def mvnDeps = Seq(Deps.scalajsDom)
 
   object presentation extends Module:
     // shared Laminar utilities: the ZIO -> Airstream bridge, layout pieces
@@ -254,6 +267,44 @@ object features extends Module:
           override def moduleDeps = super.moduleDeps ++ Seq(core.identity.minting.mintingJs)
           override def mvnDeps = Seq(Deps.munit)
 
+  // base maps: sources, engines, the chosen map and view
+  object basemap extends Module:
+
+    object domain extends BaseModule:
+      private def deps = Seq(Deps.prelude)
+      override def moduleDeps = Seq(features.catalog.domain)
+      override def mvnDeps = deps
+
+      object munits extends ScalaTests with TestModule.Munit:
+        override def mvnDeps = Seq(Deps.munit)
+
+      object domainJs extends BaseJsModule:
+        override def sources = Task { domain.sources() ++ super.sources() }
+        override def moduleDeps = Seq(features.catalog.domain.domainJs)
+        override def mvnDeps = deps
+
+    // load/save the chosen base map and view (a preference)
+    object app extends BaseModule:
+      private def deps = Seq(Deps.zio)
+      override def moduleDeps = Seq(core.app, core.kv, domain)
+      override def mvnDeps = deps
+
+      object tests extends ScalaTests with TestModule.ZioTest:
+        override def moduleDeps = super.moduleDeps ++ Seq(core.infra.memory)
+        override def mvnDeps = Seq(Deps.zioTest, Deps.zioTestSbt)
+
+      object appJs extends BaseJsModule:
+        override def sources = Task { app.sources() ++ super.sources() }
+        override def moduleDeps = Seq(core.app.appJs, core.kv.kvJs, domain.domainJs)
+        override def mvnDeps = deps
+
+    object presentation extends Module:
+      // the map widget (OpenLayers + background engines) and source picker
+      object laminar extends BaseJsModule:
+        override def moduleDeps =
+          Seq(domain.domainJs, core.facades.ol, core.facades.engines, core.presentation.laminar)
+        override def mvnDeps = Seq(Deps.laminar)
+
 /*
  **************** products: composition roots *****************
  */
@@ -265,7 +316,13 @@ object products extends Module:
     override def moduleDeps = Seq(
       core.app.appJs,
       core.domain.errors.errorsJs,
-      core.presentation.laminar
+      core.presentation.laminar,
+      core.infra.memory.memoryJs,
+      core.infra.browser,
+      features.basemap.app.appJs,
+      features.basemap.presentation.laminar,
+      features.catalog.app.appJs,
+      features.catalog.infra.store.storeJs
     )
     override def mvnDeps = Seq(Deps.zio, Deps.laminar, Deps.scalajsDom)
     override def mainClass = Some("s4y.map2online.web.Main")

@@ -1,0 +1,84 @@
+//| mill-version: 1.3.0
+//| mill-jvm-version: system
+package build
+
+import mill.*
+import mill.scalalib.*
+import mill.scalajslib.*
+import mill.scalajslib.api.*
+
+/*
+ * Dependencies use the `::` platform separator before the version, so one
+ * Dep resolves to the JVM artifact in a JVM module and to the `_sjs1`
+ * artifact in a Scala.js twin. Twins still declare their own mvnDeps
+ * (they do not inherit the parent's), reusing the same Seq.
+ */
+object Deps:
+  val zioVersion = "2.1.27"
+
+  val zio = mvn"dev.zio::zio::$zioVersion"
+  val zioTest = mvn"dev.zio::zio-test::$zioVersion"
+  val zioTestSbt = mvn"dev.zio::zio-test-sbt::$zioVersion"
+  val munit = mvn"org.scalameta::munit::1.3.6"
+
+  val laminar = mvn"com.raquo::laminar::17.2.1"
+  val scalajsDom = mvn"org.scala-js::scalajs-dom::2.8.1"
+
+trait BaseModule extends ScalaModule:
+  def scalaVersion = "3.9.0"
+  override def scalacOptions = super.scalacOptions() ++ Seq(
+    "-unchecked",
+    "-deprecation",
+    "-feature",
+    "-Wunused:all"
+  )
+
+trait BaseJvmModule extends BaseModule
+
+trait BaseJsModule extends BaseModule with ScalaJSModule:
+  def scalaJSVersion = "1.22.0"
+  override def moduleKind = ModuleKind.ESModule
+
+/*
+ **************** core: feature-agnostic shared kernel *****************
+ */
+object core extends Module:
+
+  object domain extends Module:
+    // InfraFailure; no ZIO so pure domains may import it
+    object errors extends BaseModule:
+      object errorsJs extends BaseJsModule:
+        override def sources = Task { errors.sources() ++ super.sources() }
+
+  // UseCaseCommand / UseCase[C] and the ZIO-pinned variant
+  object app extends BaseModule:
+    private def deps = Seq(Deps.zio)
+    override def mvnDeps = deps
+
+    object tests extends ScalaTests with TestModule.ZioTest:
+      override def mvnDeps = Seq(Deps.zioTest, Deps.zioTestSbt)
+
+    object appJs extends BaseJsModule:
+      override def sources = Task { app.sources() ++ super.sources() }
+      override def mvnDeps = deps
+
+  object presentation extends Module:
+    // shared Laminar utilities: the ZIO -> Airstream bridge, layout pieces
+    object laminar extends BaseJsModule:
+      override def mvnDeps = Seq(Deps.zio, Deps.laminar)
+
+/*
+ **************** products: composition roots *****************
+ */
+object products extends Module:
+
+  // The browser application. Bundled by Vite from fastLinkJS / fullLinkJS
+  // output (see vite.config.js).
+  object web extends BaseJsModule:
+    override def moduleDeps = Seq(
+      core.app.appJs,
+      core.domain.errors.errorsJs,
+      core.presentation.laminar
+    )
+    override def mvnDeps = Seq(Deps.zio, Deps.laminar, Deps.scalajsDom)
+    override def mainClass = Some("s4y.map2online.web.Main")

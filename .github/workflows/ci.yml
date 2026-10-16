@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ "refactor/scala" ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # build.mill sets `mill-jvm-version: system`, so Mill runs on this JDK
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: cache Mill and Coursier
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/mill
+            ~/.cache/coursier
+          key: mill-${{ hashFiles('build.mill') }}
+          restore-keys: mill-
+
+      - name: check formatting
+        run: ./mill mill.scalalib.scalafmt/checkFormatAll
+
+      - name: compile
+        run: ./mill __.compile
+
+      - name: test
+        run: ./mill __.testForked
+
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: build web bundle
+        run: pnpm build

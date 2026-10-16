@@ -153,10 +153,26 @@ object core extends Module:
     object engines extends FacadeModule:
       override def mvnDeps = Seq(Deps.scalajsDom)
 
+  // UI preferences by key over a KeyValueStore
+  object preferences extends BaseModule:
+    private def deps = Seq(Deps.zio)
+    override def moduleDeps = Seq(core.app, core.kv)
+    override def mvnDeps = deps
+
+    object preferencesJs extends BaseJsModule:
+      override def sources = Task { preferences.sources() ++ super.sources() }
+      override def moduleDeps = Seq(core.app.appJs, core.kv.kvJs)
+      override def mvnDeps = deps
+
   object presentation extends Module:
     // shared Laminar utilities: the ZIO -> Airstream bridge, layout pieces
     object laminar extends BaseJsModule:
       override def mvnDeps = Seq(Deps.zio, Deps.laminar)
+
+    // what features need from the map, independent of base maps
+    object map extends BaseJsModule:
+      override def moduleDeps = Seq(core.facades.ol)
+      override def mvnDeps = Seq(Deps.laminar)
 
 /*
  **************** features: one group per bounded context *****************
@@ -219,6 +235,18 @@ object features extends Module:
         override def moduleDeps =
           Seq(core.app.appJs, domain.workflows.workflowsJs, features.kml.domain.domainJs)
         override def mvnDeps = deps
+
+    object presentation extends Module:
+      // catalog UI state, the features layer and drawing tools, the tree
+      object laminar extends BaseJsModule:
+        override def moduleDeps = Seq(
+          app.appJs,
+          core.identity.minting.mintingJs,
+          core.preferences.preferencesJs,
+          core.presentation.laminar,
+          core.presentation.map
+        )
+        override def mvnDeps = Seq(Deps.laminar)
 
     object infra extends Module:
       // the catalog as one JSON document in a KeyValueStore
@@ -302,7 +330,12 @@ object features extends Module:
       // the map widget (OpenLayers + background engines) and source picker
       object laminar extends BaseJsModule:
         override def moduleDeps =
-          Seq(domain.domainJs, core.facades.ol, core.facades.engines, core.presentation.laminar)
+          Seq(
+            domain.domainJs,
+            core.facades.engines,
+            core.presentation.laminar,
+            core.presentation.map
+          )
         override def mvnDeps = Seq(Deps.laminar)
 
 /*
@@ -322,7 +355,9 @@ object products extends Module:
       features.basemap.app.appJs,
       features.basemap.presentation.laminar,
       features.catalog.app.appJs,
-      features.catalog.infra.store.storeJs
+      features.catalog.infra.store.storeJs,
+      features.catalog.presentation.laminar,
+      core.preferences.preferencesJs
     )
     override def mvnDeps = Seq(Deps.zio, Deps.laminar, Deps.scalajsDom)
     override def mainClass = Some("s4y.map2online.web.Main")

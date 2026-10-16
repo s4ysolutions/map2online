@@ -11,6 +11,8 @@ import s4y.map2online.basemap.app.{BaseMapUseCases, LoadBaseMapCommand, SaveBase
 import s4y.map2online.catalog.app.*
 import s4y.map2online.catalog.domain.workflows.CatalogWorkflows
 import s4y.map2online.catalog.infra.store.CatalogRepositoryStore
+import s4y.map2online.catalog.presentation.CatalogServices
+import s4y.preferences.PreferencesUseCases
 import zio.{Runtime, Scope, Unsafe, ZEnvironment, ZLayer}
 
 import scala.concurrent.ExecutionContext
@@ -23,14 +25,12 @@ object Main:
   /** Catalog writes are serialised in memory; IndexedDB holds the document. */
   type TX = TransactionContextMemory
 
-  type Services = UseCase[LoadBaseMapCommand] & UseCase[SaveBaseMapCommand] &
-    UseCase[LoadCatalogCommand] & UseCase[EditCatalogCommand] & UseCase[ImportKmlCommand] &
-    UseCase[ExportKmlCommand]
+  type Services = UseCase[LoadBaseMapCommand] & UseCase[SaveBaseMapCommand] & CatalogServices
 
   private val services: ZLayer[Any, InfraFailure, Services] =
     val preferences = KeyValueStoreLocalStorage.makeLayer("map2online.")
     val documents = KeyValueStoreIndexedDb.makeLayer("map2online", "documents")
-    val baseMap = preferences >>> BaseMapUseCases.layer
+    val baseMap = preferences >>> (BaseMapUseCases.layer ++ PreferencesUseCases.layer)
     val catalog =
       (TransactionManagerMemory.layer ++ IdGeneratorRandom.layer ++
         (documents >>> CatalogRepositoryStore.makeLayer[TX]())) >>>

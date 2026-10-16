@@ -70,3 +70,125 @@ body {
 .fatal {
   padding: 24px;
 }
+
+/* ---------------------------------------------------------- drawing tools */
+
+.tools-panel {
+  position: absolute;
+  z-index: 5;
+  top: 12px;
+  left: 50px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  flex-wrap: wrap;
+  max-width: calc(100% - 70px);
+}
+
+.tool {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--panel-fg);
+  cursor: pointer;
+}
+
+.tool:hover {
+  background: #eef2f6;
+}
+
+.tool.active {
+  background: var(--bar-bg);
+  color: var(--bar-fg);
+}
+
+.palette {
+  display: flex;
+  gap: 4px;
+  padding-left: 6px;
+  margin-left: 4px;
+  border-left: 1px solid var(--border);
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px var(--border);
+  cursor: pointer;
+  padding: 0;
+}
+
+.swatch.active {
+  box-shadow: 0 0 0 2px var(--bar-bg);
+}
+
+.hint {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 2px 6px;
+}
+
+.context-menu {
+  position: absolute;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.context-menu button {
+  border: 0;
+  background: transparent;
+  padding: 10px 14px;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.context-menu button:hover {
+  background: #eef2f6;
+}
+
+.danger {
+  color: #c81e1e;
+}
+
+.toast {
+  position: absolute;
+  z-index: 7;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--bar-bg);
+  color: var(--bar-fg);
+  border-radius: 6px;
+}
+
+.toast button {
+  border: 0;
+  background: transparent;
+  color: #ffd166;
+  cursor: pointer;
+  font: inherit;
+}

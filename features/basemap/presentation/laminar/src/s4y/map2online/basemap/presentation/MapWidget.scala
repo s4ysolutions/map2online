@@ -8,6 +8,7 @@ import s4y.facades.ol.{OlMap, TileLayer, TileLayerOptions, View, ViewOptions, XY
 import s4y.map2online.basemap.domain.operations.MapSources
 import s4y.map2online.basemap.domain.vo.*
 import s4y.map2online.catalog.domain.vo.Coordinate
+import s4y.presentation.map.MapSurface
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
@@ -62,17 +63,19 @@ object Projections:
   */
 final class MapWidget(initialSource: MapSource, initialView: MapView, keys: EngineKeys)(using
     ExecutionContext
-):
+) extends MapSurface:
   Projections.register()
 
   private val sourceVar = Var(initialSource)
   private val viewVar = Var(initialView)
   private val projectionVar = Var(initialSource.projection)
+  private val projectionCodeVar = Var(initialSource.projection.code)
   private val engineErrorVar = Var(Option.empty[String])
 
   val source: StrictSignal[MapSource] = sourceVar.signal
   val view: StrictSignal[MapView] = viewVar.signal
-  val projection: StrictSignal[MapProjection] = projectionVar.signal
+  val mapProjection: StrictSignal[MapProjection] = projectionVar.signal
+  val projection: StrictSignal[String] = projectionCodeVar.signal
   val engineError: StrictSignal[Option[String]] = engineErrorVar.signal
 
   private val baseLayer = TileLayer(new TileLayerOptions:
@@ -109,12 +112,16 @@ final class MapWidget(initialSource: MapSource, initialView: MapView, keys: Engi
   def addLayer(layer: ol.BaseLayer): Unit = olMap.addLayer(layer)
   def removeLayer(layer: ol.BaseLayer): Unit = olMap.removeLayer(layer)
 
-  def toMap(c: Coordinate): ol.Coordinate =
-    ol.proj.fromLonLat(js.Array(c.lon, c.lat), projectionVar.now().code)
+  def toMap(lon: Double, lat: Double): ol.Coordinate =
+    ol.proj.fromLonLat(js.Array(lon, lat), projectionVar.now().code)
 
-  def fromMap(c: ol.Coordinate): Option[Coordinate] =
+  def fromMap(c: ol.Coordinate): (Double, Double) =
     val lonLat = ol.proj.toLonLat(c, projectionVar.now().code)
-    Coordinate.from(lonLat(1), normalizeLon(lonLat(0))).toOption
+    (normalizeLon(lonLat(0)), lonLat(1))
+
+  private def coordinateOf(c: ol.Coordinate): Option[Coordinate] =
+    val (lon, lat) = fromMap(c)
+    Coordinate.from(lat, lon).toOption
 
   /** Longitudes OpenLayers produces past the antimeridian, wrapped back. */
   private def normalizeLon(lon: Double): Double = ((lon + 180) % 360 + 360) % 360 - 180
@@ -124,8 +131,10 @@ final class MapWidget(initialSource: MapSource, initialView: MapView, keys: Engi
     if source.projection != projectionVar
         .now() || olMap.getView().getProjection().getCode() != source.projection.code
     then
-      projectionVar.set(source.projection)
+      // the new view first: projection listeners rebuild geometries against it
       olMap.setView(makeView(source, current))
+      projectionVar.set(source.projection)
+      projectionCodeVar.set(source.projection.code)
     olMap.getView().setConstrainResolution(MapSources.integerZoom(source))
     sourceVar.set(source)
     source match
@@ -203,7 +212,7 @@ final class MapWidget(initialSource: MapSource, initialView: MapView, keys: Engi
     for
       c <- v.getCenter().toOption
       z <- v.getZoom().toOption
-      center <- fromMap(c)
+      center <- coordinateOf(c)
       zoom <- Zoom.make(z).toOption
     yield MapView(center, zoom)
 
@@ -217,10 +226,10 @@ final class MapWidget(initialSource: MapSource, initialView: MapView, keys: Engi
 
   olMap.on("moveend", _ => currentView().foreach(viewVar.set))
 
-  def fit(lonLatExtent: (Coordinate, Coordinate), maxZoomLevel: Double = 16): Unit =
-    val (a, b) = lonLatExtent
-    val p1 = toMap(a)
-    val p2 = toMap(b)
+  def fit(minLon: Double, minLat: Double, maxLon: Double, maxLat: Double): Unit =
+    val maxZoomLevel = 16.0
+    val p1 = toMap(minLon, minLat)
+    val p2 = toMap(maxLon, maxLat)
     olMap
       .getView()
       .fit(
@@ -234,11 +243,11 @@ final class MapWidget(initialSource: MapSource, initialView: MapView, keys: Engi
           padding = js.Array(40.0, 40.0, 40.0, 40.0); this.maxZoom = maxZoomLevel; duration = 300
       )
 
-  def centerOn(c: Coordinate, zoomLevel: Option[Double] = None): Unit =
+  def centerOn(lon: Double, lat: Double, zoomLevel: Option[Double] = None): Unit =
     olMap
       .getView()
       .animate(new ol.AnimationOptions:
-        center = toMap(c)
+        center = toMap(lon, lat)
         this.zoom = zoomLevel.fold[js.UndefOr[Double]](js.undefined)(z => z)
         duration = 300)
 end MapWidget

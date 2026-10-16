@@ -21,6 +21,7 @@ object Deps:
   val zioTestSbt = mvn"dev.zio::zio-test-sbt::$zioVersion"
   val munit = mvn"org.scalameta::munit::1.3.6"
   val prelude = mvn"dev.zio::zio-prelude::1.0.0-RC48"
+  val zioJson = mvn"dev.zio::zio-json::1.1.0"
 
   val laminar = mvn"com.raquo::laminar::17.2.1"
   val scalajsDom = mvn"org.scala-js::scalajs-dom::2.8.1"
@@ -97,6 +98,48 @@ object core extends Module:
       override def sources = Task { app.sources() ++ super.sources() }
       override def mvnDeps = deps
 
+  // ports every feature's workflows share: transactions and id generation
+  object tx extends BaseModule:
+    private def deps = Seq(Deps.zio)
+    override def moduleDeps = Seq(core.domain.errors, core.identity)
+    override def mvnDeps = deps
+
+    object txJs extends BaseJsModule:
+      override def sources = Task { tx.sources() ++ super.sources() }
+      override def moduleDeps = Seq(core.domain.errors.errorsJs, core.identity.identityJs)
+      override def mvnDeps = deps
+
+  // port: string documents by key (catalog, preferences)
+  object kv extends BaseModule:
+    private def deps = Seq(Deps.zio)
+    override def moduleDeps = Seq(core.domain.errors)
+    override def mvnDeps = deps
+
+    object kvJs extends BaseJsModule:
+      override def sources = Task { kv.sources() ++ super.sources() }
+      override def moduleDeps = Seq(core.domain.errors.errorsJs)
+      override def mvnDeps = deps
+
+  object infra extends Module:
+    // in-memory transactions, random ids, a map-backed store
+    object memory extends BaseModule:
+      private def deps = Seq(Deps.zio)
+      override def moduleDeps = Seq(core.tx, core.kv, core.identity.minting)
+      override def mvnDeps = deps
+
+      object tests extends ScalaTests with TestModule.ZioTest:
+        override def mvnDeps = Seq(Deps.zioTest, Deps.zioTestSbt)
+
+      object memoryJs extends BaseJsModule:
+        override def sources = Task { memory.sources() ++ super.sources() }
+        override def moduleDeps = Seq(core.tx.txJs, core.kv.kvJs, core.identity.minting.mintingJs)
+        override def mvnDeps = deps
+
+    // IndexedDB and localStorage stores
+    object browser extends BaseJsModule:
+      override def moduleDeps = Seq(core.kv.kvJs)
+      override def mvnDeps = Seq(Deps.zio, Deps.scalajsDom)
+
   object presentation extends Module:
     // shared Laminar utilities: the ZIO -> Airstream bridge, layout pieces
     object laminar extends BaseJsModule:
@@ -130,6 +173,56 @@ object features extends Module:
           override def sources = Task { domain.munits.sources() ++ super.sources() }
           override def moduleDeps = super.moduleDeps ++ Seq(core.identity.minting.mintingJs)
           override def mvnDeps = Seq(Deps.munit)
+
+      // ports (CatalogRepository) and workflows; ZIO
+      object workflows extends BaseModule:
+        private def deps = Seq(Deps.zio)
+        override def moduleDeps = Seq(domain, core.tx)
+        override def mvnDeps = deps
+
+        object tests extends ScalaTests with TestModule.ZioTest:
+          override def moduleDeps =
+            super.moduleDeps ++ Seq(core.infra.memory, features.catalog.infra.store)
+          override def mvnDeps = Seq(Deps.zioTest, Deps.zioTestSbt)
+
+        object workflowsJs extends BaseJsModule:
+          override def sources = Task { workflows.sources() ++ super.sources() }
+          override def moduleDeps = Seq(domain.domainJs, core.tx.txJs)
+          override def mvnDeps = deps
+
+    // use cases; KML import/export lives here because it writes the catalog
+    object app extends BaseModule:
+      private def deps = Seq(Deps.zio)
+      override def moduleDeps = Seq(core.app, domain.workflows, features.kml.domain)
+      override def mvnDeps = deps
+
+      object tests extends ScalaTests with TestModule.ZioTest:
+        override def moduleDeps =
+          super.moduleDeps ++ Seq(core.infra.memory, features.catalog.infra.store)
+        override def mvnDeps = Seq(Deps.zioTest, Deps.zioTestSbt)
+
+      object appJs extends BaseJsModule:
+        override def sources = Task { app.sources() ++ super.sources() }
+        override def moduleDeps =
+          Seq(core.app.appJs, domain.workflows.workflowsJs, features.kml.domain.domainJs)
+        override def mvnDeps = deps
+
+    object infra extends Module:
+      // the catalog as one JSON document in a KeyValueStore
+      object store extends BaseModule:
+        private def deps = Seq(Deps.zio, Deps.zioJson)
+        override def moduleDeps = Seq(domain.workflows, core.kv, core.identity.minting)
+        override def mvnDeps = deps
+
+        object tests extends ScalaTests with TestModule.ZioTest:
+          override def moduleDeps = super.moduleDeps ++ Seq(core.infra.memory)
+          override def mvnDeps = Seq(Deps.zioTest, Deps.zioTestSbt)
+
+        object storeJs extends BaseJsModule:
+          override def sources = Task { store.sources() ++ super.sources() }
+          override def moduleDeps =
+            Seq(domain.workflows.workflowsJs, core.kv.kvJs, core.identity.minting.mintingJs)
+          override def mvnDeps = deps
 
   // KML import/export: reader, writer, fitting KML trees into the catalog
   object kml extends Module:

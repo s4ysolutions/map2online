@@ -27,8 +27,10 @@ core/
   i18n, identity, domain/errors, app (UseCase[C])        BaseModule + *Js twin
   identity/minting the only way to construct an Identifier (infra, presentation, tests)
   markup           lenient XML/HTML parser, HTML → Markdown, Markdown → safe HTML  + *Js twin
-  infra/idb        IndexedDB wrapper (ZIO)                 JS
-  infra/kv         localStorage key-value store            JS
+  tx               TransactionManager[TX], IdGenerator ports                       + *Js twin
+  kv               KeyValueStore port (string documents by key)                    + *Js twin
+  infra/memory     semaphore transactions, random UUIDs, map store                 + *Js twin
+  infra/browser    IndexedDB and localStorage KeyValueStores                       JS
   facades/ol       OpenLayers facade (only what we use)    JS
   facades/google   Google Maps JS API (view-follow only)   JS
   facades/yandex   ymaps3 (view-follow only)               JS
@@ -37,7 +39,8 @@ core/
 features/
   catalog     Category→Route→Feature, geometry, colour palette, Markdown descriptions,
               reorder, visibility
-              domain, workflows (CatalogRepository port), app, infra.idb, infra.memory,
+              domain, workflows (CatalogRepository port, CatalogEdit), app (load, edit,
+              import/export KML), infra.store (one JSON document in a KeyValueStore),
               presentation.laminar
   kml         KML ⇄ catalog as pure operations over core.markup's parser; import
               fitting (any nesting → Category/Route/Feature), palette colour mapping
@@ -63,7 +66,7 @@ sync is added.
 | 1 | Mill skeleton (`core.app`, `core.domain.errors`, `core.presentation.laminar`, `products.web`), Vite, CI, scalafmt | `.github/workflows` | ✅ CI green |
 | 2 | Pure domain: `core.identity`, catalog value objects, the `Catalog` aggregate and its operations, colour palette, Markdown descriptions | `src/style`, `src/richtext`, `src/catalog`, `src/lib/reorder.ts` | ✅ MUnit tests on JVM and Node; the old equality bugs (`coordinatesEq` uses `===` where `!==` is needed; `Feature.eq` never compares `lon`) are gone by using derived equality |
 | 3 | KML import/export | `src/importer`, `src/exporter`, `tests/data/*.kml` | ✅ fixture and round-trip tests on JVM and Node |
-| 4 | Storage: catalog repository on IndexedDB + in-memory; key-value store for UI state | `src/catalog/storage`, `src/kv` | workflow tests against the in-memory store |
+| 4 | Storage: catalog repository over a key-value store (IndexedDB in the browser, memory in tests); localStorage for UI state; edit/import/export use cases | `src/catalog/storage`, `src/kv` | ✅ workflow, store and use-case tests against the memory store |
 | 5 | Map: OL facade, basemap sources and background engines, view sync | `src/map-sources`, `src/react/components/GoogleMap`, `src/react/components/OpenLayers` | OSM, Google, Yandex and Genshtab switch correctly in the browser |
 | 6 | Drawing: tools, draw/modify/select/snap, active features layer, context menu | `OpenLayers/interactions`, `src/ui/tools` | draw and edit a route; it persists |
 | 7 | Catalog UI: tree, drag-and-drop reorder, edit/delete forms, Markdown editor, import/export dialogs | `src/react/components/Catalog`, `ModalForms`, `TopNavigation` | everything the old app does |
@@ -99,6 +102,11 @@ auth and sharing; offline region packages from own tile servers.
   subfolders is a category of the routes directly in it; empty levels vanish;
   unnamed folders borrow the nearest name above (finally the file name).
   The old "(auto)" suffix for mixed folders is dropped.
+- Storage: the catalog is saved as one versioned JSON document. IndexedDB
+  transactions close as soon as control returns to the event loop, so they
+  cannot span ZIO steps; instead the transaction manager serialises
+  read-modify-write and each save is a single atomic `put`. The repository
+  keeps the loaded catalog in memory, so only writes touch IndexedDB.
 - The tree's expanded/collapsed (`open`) flag was stored on categories and
   routes; it is UI state and moves to the key-value store with the catalog UI.
 - Inserting at position 0 appended in the old code (`position || length`);

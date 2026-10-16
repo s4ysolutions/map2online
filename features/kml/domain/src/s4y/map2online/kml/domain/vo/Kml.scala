@@ -31,15 +31,3 @@ enum KmlWarning:
 
 enum KmlError:
   case Malformed(message: String, offset: Int)
-
-/** Catalog content built from a KML file, not yet given identifiers. */
-final case class ImportedRoute(route: Route, features: Vector[Feature])
-
-final case class ImportedCategory(category: Category, routes: Vector[ImportedRoute])
-
-/** Where imported content goes, matching the three import modes of the old app.
-  */
-enum ImportTarget:
-  case FeaturesToRoute(route: RouteId)
-  case RoutesToCategory(category: CategoryId)
-  case CategoriesToCatalog

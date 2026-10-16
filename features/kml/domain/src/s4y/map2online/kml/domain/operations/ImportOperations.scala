@@ -12,25 +12,25 @@ import s4y.map2online.kml.domain.vo.*
   */
 object ImportOperations:
 
-  def categories(root: KmlFolder): Vector[ImportedCategory] = walk(root, root.name)
+  def categories(root: KmlFolder): Vector[CategoryDraft] = walk(root, root.name)
 
-  def routes(root: KmlFolder): Vector[ImportedRoute] = categories(root).flatMap(_.routes)
+  def routes(root: KmlFolder): Vector[RouteDraft] = categories(root).flatMap(_.routes)
 
   def features(root: KmlFolder): Vector[Feature] = routes(root).flatMap(_.features)
 
-  private def walk(f: KmlFolder, inherited: String): Vector[ImportedCategory] =
+  private def walk(f: KmlFolder, inherited: String): Vector[CategoryDraft] =
     val title = nonEmpty(f.name, inherited)
     val leafRoutes = f.folders.filter(s => s.folders.isEmpty && s.placemarks.nonEmpty)
     val routes =
       Option.when(f.placemarks.nonEmpty)(route(f, title)).toVector ++
         leafRoutes.map(s => route(s, nonEmpty(s.name, title)))
     val own = Option.when(routes.nonEmpty)(
-      ImportedCategory(Category(Title(title), Summary.empty, f.description, f.visible), routes)
+      CategoryDraft(Category(Title(title), Summary.empty, f.description, f.visible), routes)
     )
     own.toVector ++ f.folders.filter(_.folders.nonEmpty).flatMap(walk(_, title))
 
-  private def route(f: KmlFolder, title: String): ImportedRoute =
-    ImportedRoute(
+  private def route(f: KmlFolder, title: String): RouteDraft =
+    RouteDraft(
       Route(Title(title), Summary.empty, f.description, f.visible),
       f.placemarks.map(p =>
         Feature(Title(p.name), Summary.empty, p.description, p.visible, p.geometry, p.color)

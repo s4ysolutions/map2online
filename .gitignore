@@ -1,0 +1,11 @@
+# build tools
+out/
+.bsp/
+.metals/
+.bloop/
+.idea/
+.vscode/
+
+# frontend
+node_modules/
+dist/

@@ -7,7 +7,7 @@ import s4y.map2online.catalog.domain.workflows.CatalogWorkflows
 import s4y.map2online.catalog.infra.store.CatalogRepositoryStore
 import s4y.map2online.kml.domain.vo.KmlWarning
 import zio.*
-import zio.test.{Summary as _, *}
+import zio.test.*
 
 object CatalogUseCasesSpec extends ZIOSpecDefault:
   type TX = TransactionContextMemory

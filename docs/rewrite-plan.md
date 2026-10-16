@@ -58,7 +58,7 @@ sync is added.
 | # | Phase | Source on `master` | Done when |
 |---|-------|--------------------|-----------|
 | 0 | Clean start, CLAUDE.md, skills, cloud start-up hook, this plan | — | ✅ |
-| 1 | Mill skeleton (`core.app`, `core.domain.errors`, `core.presentation.laminar`, `products.web`), Vite, CI, scalafmt | `.github/workflows` | CI green |
+| 1 | Mill skeleton (`core.app`, `core.domain.errors`, `core.presentation.laminar`, `products.web`), Vite, CI, scalafmt | `.github/workflows` | ✅ CI green |
 | 2 | Pure domain: styles, catalog value objects and operations, Markdown descriptions | `src/style`, `src/richtext`, `src/catalog/index.ts` | MUnit tests; the old equality bugs (`coordinatesEq` uses `===` where `!==` is needed; `Feature.eq` never compares `lon`) are gone by using derived equality |
 | 3 | KML import/export | `src/importer`, `src/exporter`, `tests/data/*.kml` | round-trip tests on the JVM with the old KML fixtures |
 | 4 | Storage: catalog repository on IndexedDB + in-memory; key-value store for UI state | `src/catalog/storage`, `src/kv` | workflow tests against the in-memory store |

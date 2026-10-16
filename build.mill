@@ -141,9 +141,9 @@ object core extends Module:
         override def moduleDeps = Seq(core.tx.txJs, core.kv.kvJs, core.identity.minting.mintingJs)
         override def mvnDeps = deps
 
-    // IndexedDB and localStorage stores
+    // IndexedDB and localStorage stores, fetch
     object browser extends BaseJsModule:
-      override def moduleDeps = Seq(core.kv.kvJs)
+      override def moduleDeps = Seq(core.kv.kvJs, core.http.httpJs)
       override def mvnDeps = Seq(Deps.zio, Deps.scalajsDom)
 
   object facades extends Module:
@@ -154,6 +154,17 @@ object core extends Module:
     // Google Maps / Yandex Maps loaders and view-following wrappers
     object engines extends FacadeModule:
       override def mvnDeps = Seq(Deps.scalajsDom)
+
+  // port: HTTP GET of text
+  object http extends BaseModule:
+    private def deps = Seq(Deps.zio)
+    override def moduleDeps = Seq(core.domain.errors)
+    override def mvnDeps = deps
+
+    object httpJs extends BaseJsModule:
+      override def sources = Task { http.sources() ++ super.sources() }
+      override def moduleDeps = Seq(core.domain.errors.errorsJs)
+      override def mvnDeps = deps
 
   // UI preferences by key over a KeyValueStore
   object preferences extends BaseModule:
@@ -340,6 +351,57 @@ object features extends Module:
           )
         override def mvnDeps = Seq(Deps.laminar)
 
+  // place search (geocoding)
+  object search extends Module:
+
+    object domain extends BaseModule:
+      override def moduleDeps = Seq(features.catalog.domain)
+
+      object domainJs extends BaseJsModule:
+        override def sources = Task { domain.sources() ++ super.sources() }
+        override def moduleDeps = Seq(features.catalog.domain.domainJs)
+
+      // GeocodingGateway port
+      object workflows extends BaseModule:
+        private def deps = Seq(Deps.zio)
+        override def moduleDeps = Seq(domain, core.domain.errors)
+        override def mvnDeps = deps
+
+        object workflowsJs extends BaseJsModule:
+          override def sources = Task { workflows.sources() ++ super.sources() }
+          override def moduleDeps = Seq(domain.domainJs, core.domain.errors.errorsJs)
+          override def mvnDeps = deps
+
+    object app extends BaseModule:
+      private def deps = Seq(Deps.zio)
+      override def moduleDeps = Seq(core.app, domain.workflows)
+      override def mvnDeps = deps
+
+      object appJs extends BaseJsModule:
+        override def sources = Task { app.sources() ++ super.sources() }
+        override def moduleDeps = Seq(core.app.appJs, domain.workflows.workflowsJs)
+        override def mvnDeps = deps
+
+    object infra extends Module:
+      // OpenStreetMap Nominatim over the HttpClient port
+      object nominatim extends BaseModule:
+        private def deps = Seq(Deps.zio, Deps.zioJson)
+        override def moduleDeps = Seq(domain.workflows, core.http)
+        override def mvnDeps = deps
+
+        object tests extends ScalaTests with TestModule.ZioTest:
+          override def mvnDeps = Seq(Deps.zioTest, Deps.zioTestSbt)
+
+        object nominatimJs extends BaseJsModule:
+          override def sources = Task { nominatim.sources() ++ super.sources() }
+          override def moduleDeps = Seq(domain.workflows.workflowsJs, core.http.httpJs)
+          override def mvnDeps = deps
+
+    object presentation extends Module:
+      object laminar extends BaseJsModule:
+        override def moduleDeps = Seq(app.appJs, core.presentation.laminar, core.presentation.map)
+        override def mvnDeps = Seq(Deps.laminar)
+
 /*
  **************** products: composition roots *****************
  */
@@ -359,6 +421,9 @@ object products extends Module:
       features.catalog.app.appJs,
       features.catalog.infra.store.storeJs,
       features.catalog.presentation.laminar,
+      features.search.app.appJs,
+      features.search.infra.nominatim.nominatimJs,
+      features.search.presentation.laminar,
       core.preferences.preferencesJs
     )
     override def mvnDeps = Seq(Deps.zio, Deps.laminar, Deps.scalajsDom)

@@ -5,13 +5,15 @@ import org.scalajs.dom
 import s4y.app.UseCase
 import s4y.app.zio.UseCase.useCase
 import s4y.domain.errors.InfraFailure
-import s4y.infra.browser.{KeyValueStoreIndexedDb, KeyValueStoreLocalStorage}
+import s4y.infra.browser.{HttpClientFetch, KeyValueStoreIndexedDb, KeyValueStoreLocalStorage}
 import s4y.infra.memory.{IdGeneratorRandom, TransactionContextMemory, TransactionManagerMemory}
 import s4y.map2online.basemap.app.{BaseMapUseCases, LoadBaseMapCommand, SaveBaseMapCommand}
 import s4y.map2online.catalog.app.*
 import s4y.map2online.catalog.domain.workflows.CatalogWorkflows
 import s4y.map2online.catalog.infra.store.CatalogRepositoryStore
 import s4y.map2online.catalog.presentation.CatalogServices
+import s4y.map2online.search.app.{SearchPlacesCommand, SearchUseCases}
+import s4y.map2online.search.infra.nominatim.NominatimGateway
 import s4y.preferences.PreferencesUseCases
 import zio.{Runtime, Scope, Unsafe, ZEnvironment, ZLayer}
 
@@ -25,7 +27,8 @@ object Main:
   /** Catalog writes are serialised in memory; IndexedDB holds the document. */
   type TX = TransactionContextMemory
 
-  type Services = UseCase[LoadBaseMapCommand] & UseCase[SaveBaseMapCommand] & CatalogServices
+  type Services = UseCase[LoadBaseMapCommand] & UseCase[SaveBaseMapCommand] & CatalogServices &
+    UseCase[SearchPlacesCommand]
 
   private val services: ZLayer[Any, InfraFailure, Services] =
     val preferences = KeyValueStoreLocalStorage.makeLayer("map2online.")
@@ -35,7 +38,8 @@ object Main:
       (TransactionManagerMemory.layer ++ IdGeneratorRandom.layer ++
         (documents >>> CatalogRepositoryStore.makeLayer[TX]())) >>>
         CatalogWorkflows.makeLayer[TX] >>> CatalogUseCases.makeLayer[TX]
-    baseMap ++ catalog
+    val search = HttpClientFetch.layer >>> NominatimGateway.layer >>> SearchUseCases.layer
+    baseMap ++ catalog ++ search
 
   def main(args: Array[String]): Unit =
     given ExecutionContext = JSExecutionContext.queue

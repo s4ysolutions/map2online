@@ -18,3 +18,6 @@ trait MapSurface:
 
   /** Fits `(minLon, minLat, maxLon, maxLat)`. */
   def fit(minLon: Double, minLat: Double, maxLon: Double, maxLat: Double): Unit
+
+  /** The visible area as `(minLon, minLat, maxLon, maxLat)`. */
+  def visibleBounds(): Option[(Double, Double, Double, Double)]

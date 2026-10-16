@@ -74,3 +74,23 @@ final class KeyValueStoreLocalStorage(prefix: String) extends KeyValueStore:
 object KeyValueStoreLocalStorage:
   def makeLayer(prefix: String): ULayer[KeyValueStore] =
     ZLayer.succeed(KeyValueStoreLocalStorage(prefix))
+
+/** [[s4y.http.HttpClient]] over the browser's `fetch`. */
+final class HttpClientFetch extends s4y.http.HttpClient:
+  def getText(url: String, headers: Map[String, String]): IO[InfraFailure, String] =
+    ZIO
+      .fromPromiseJS {
+        val init = new dom.RequestInit {}
+        val h = dom.Headers()
+        headers.foreach((k, v) => h.append(k, v))
+        init.headers = h
+        dom.fetch(url, init)
+      }
+      .mapError(e => InfraFailure(s"network error: ${e.getMessage}"))
+      .flatMap { response =>
+        if response.ok then ZIO.fromPromiseJS(response.text()).mapError(InfraFailure(_))
+        else ZIO.fail(InfraFailure(s"HTTP ${response.status} from $url"))
+      }
+
+object HttpClientFetch:
+  val layer: ULayer[s4y.http.HttpClient] = ZLayer.succeed(HttpClientFetch())

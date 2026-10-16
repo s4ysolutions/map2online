@@ -250,6 +250,12 @@ final class MapWidget(initialSource: MapSource, initialView: MapView, keys: Engi
         center = toMap(lon, lat)
         this.zoom = zoomLevel.fold[js.UndefOr[Double]](js.undefined)(z => z)
         duration = 300)
+  def visibleBounds(): Option[(Double, Double, Double, Double)] =
+    olMap.getSize().toOption.map { size =>
+      val (west, south) = fromMap(olMap.getCoordinateFromPixel(js.Array(0.0, size(1))))
+      val (east, north) = fromMap(olMap.getCoordinateFromPixel(js.Array(size(0), 0.0)))
+      (west, math.max(-90, south), east, math.min(90, north))
+    }
 end MapWidget
 
 /** Base map picker. */

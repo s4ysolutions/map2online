@@ -6,7 +6,11 @@ import s4y.map2online.basemap.app.SaveBaseMapCommand
 import s4y.map2online.basemap.domain.operations.MapSources
 import s4y.map2online.basemap.domain.vo.BaseMapSettings
 import s4y.map2online.basemap.presentation.{EngineKeys, MapWidget, SourcePicker}
-import s4y.map2online.catalog.domain.vo.Geometry
+import s4y.app.UseCase
+import s4y.map2online.catalog.domain.vo.{Feature, Geometry, Title}
+import s4y.map2online.catalog.presentation.ui.settings.WordingSettings
+import s4y.map2online.search.app.SearchPlacesCommand
+import s4y.map2online.search.presentation.SearchBox
 import s4y.map2online.catalog.presentation.ui.catalogpanel.CatalogPanel
 import s4y.map2online.catalog.presentation.ui.transfer.{ExportMenu, ImportDialog}
 import s4y.map2online.catalog.presentation.{
@@ -40,8 +44,21 @@ object App:
 
     val catalogOpen = Var(true)
     val importing = Var(false)
+    val settings = Var(false)
+    WordingSettings.load(wording)
 
-    def show(f: s4y.map2online.catalog.domain.vo.Feature): Unit = f.geometry match
+    val search =
+      given Runtime[UseCase[SearchPlacesCommand]] =
+        summon[Runtime[Main.Services]].narrow[UseCase[SearchPlacesCommand]]
+      SearchBox(
+        map,
+        place =>
+          catalog.addFeature(
+            Feature.create(Title(place.name), Geometry.Point(place.center), editing.paint.now())
+          )(id => catalog.selectedFeature.set(Some(id)))
+      )
+
+    def show(f: Feature): Unit = f.geometry match
       case Geometry.Point(c)      => map.centerOn(c.lon, c.lat)
       case l: Geometry.LineString =>
         val lons = l.coordinates.map(_.lon: Double)
@@ -60,9 +77,17 @@ object App:
           onClick --> (_ => catalogOpen.update(!_))
         ),
         span(cls := "brand", "Map2Online"),
+        search,
         button(cls := "bar-button", "Import", onClick --> (_ => importing.set(true))),
         ExportMenu(catalog, wording.signal),
         SourcePicker(map, keys),
+        button(
+          cls := "bar-button",
+          aria.label := "Settings",
+          title := "Settings",
+          "⚙",
+          onClick --> (_ => settings.set(true))
+        ),
         child.maybe <-- map.engineError.map(_.map(e => span(cls := "notice", e)))
       ),
       div(
@@ -95,6 +120,9 @@ object App:
       ),
       child.maybe <-- importing.signal.map(i =>
         Option.when(i)(ImportDialog(catalog, wording.signal, () => importing.set(false)))
+      ),
+      child.maybe <-- settings.signal.map(o =>
+        Option.when(o)(WordingSettings.dialog(wording, () => settings.set(false)))
       ),
       // the map needs to know when the drawer changes its size
       catalogOpen.signal.changes --> (_ =>

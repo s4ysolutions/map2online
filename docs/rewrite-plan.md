@@ -30,9 +30,10 @@ core/
   tx               TransactionManager[TX], IdGenerator ports                       + *Js twin
   kv               KeyValueStore port (string documents by key)                    + *Js twin
   infra/memory     semaphore transactions, random UUIDs, map store                 + *Js twin
-  infra/browser    IndexedDB and localStorage KeyValueStores                       JS
+  infra/browser    IndexedDB and localStorage KeyValueStores, fetch HttpClient       JS
   facades/ol       OpenLayers facade (only what we use)    JS
   facades/engines  Google Maps JS API and Yandex Maps 2.1 (load, follow a view)  JS
+  http             HttpClient port (GET text)                                       + *Js twin
   preferences      UI preferences by key (use cases over a KeyValueStore)          + *Js twin
   presentation/laminar  ZioBridge, runtime narrowing, shared UI pieces            JS
   presentation/map MapSurface: what features need from the map                    JS
@@ -48,11 +49,12 @@ features/
               fitting (any nesting → Category/Route/Feature), palette colour mapping
   basemap     enum MapSource { Tiles | Background(engine) }, groups, selected source,
               view state (lat/lon/zoom live + debounced save), background engines
-  search      Nominatim gateway port + adapter, results layer
-  wording     the category/route naming choices
-  shell       top navigation, side drawers, floating panel (presentation only)
+  search      domain (Place, SearchQuery), GeocodingGateway port, use case,
+              infra.nominatim (over HttpClient, cached), SearchBox with a result marker
 products/
-  web         Scala.js main: composition root, ZLayer graph, given Runtime, mounts Laminar
+  web         Scala.js main: composition root, ZLayer graph, given Runtime; the shell
+              (top bar, catalog drawer, map) — the planned `shell` feature lives here
+              and wording settings live in catalog.presentation
 ```
 
 Every domain/workflow/app module cross-compiles (JVM for tests and a future
@@ -71,7 +73,7 @@ sync is added.
 | 5 | Map: OL facade, basemap sources and background engines, view sync | `src/map-sources`, `src/react/components/GoogleMap`, `src/react/components/OpenLayers` | ✅ checked in headless Chromium: tile URLs per source, switching, saved map and view, Google engine under OL (Yandex and live tiles are blocked from the build container) |
 | 6 | Drawing: tools, draw/modify/select/snap, active features layer, context menu | `OpenLayers/interactions`, `src/ui/tools` | ✅ browser test: draw point and coloured line (category and route auto-created), Esc cancels, drag a point, delete via context menu, all persisted across reload |
 | 7 | Catalog UI: tree, drag-and-drop reorder, edit/delete forms, Markdown editor, import/export dialogs | `src/react/components/Catalog`, `ModalForms`, `TopNavigation` | ✅ browser test: import a KML file, drill down, choose the drawing route, select, edit (title, colour), hide, drag to reorder, delete with confirmation, export, all persisted |
-| 8 | Search and wording | `src/search`, `src/personalization` | everything the old app does |
+| 8 | Search and wording | `src/search`, `src/personalization` | ✅ Nominatim gateway tests; browser test: search, result marker, add to catalog, search in view, wording settings persisted |
 | 9 | Mobile: responsive layout, touch, service worker, Capacitor shell | — | installable app on a phone |
 
 Later, outside this plan: `products.server` (zio-http, Postgres) with sync,

@@ -70,7 +70,7 @@ sync is added.
 | 4 | Storage: catalog repository over a key-value store (IndexedDB in the browser, memory in tests); localStorage for UI state; edit/import/export use cases | `src/catalog/storage`, `src/kv` | ✅ workflow, store and use-case tests against the memory store |
 | 5 | Map: OL facade, basemap sources and background engines, view sync | `src/map-sources`, `src/react/components/GoogleMap`, `src/react/components/OpenLayers` | ✅ checked in headless Chromium: tile URLs per source, switching, saved map and view, Google engine under OL (Yandex and live tiles are blocked from the build container) |
 | 6 | Drawing: tools, draw/modify/select/snap, active features layer, context menu | `OpenLayers/interactions`, `src/ui/tools` | ✅ browser test: draw point and coloured line (category and route auto-created), Esc cancels, drag a point, delete via context menu, all persisted across reload |
-| 7 | Catalog UI: tree, drag-and-drop reorder, edit/delete forms, Markdown editor, import/export dialogs | `src/react/components/Catalog`, `ModalForms`, `TopNavigation` | everything the old app does |
+| 7 | Catalog UI: tree, drag-and-drop reorder, edit/delete forms, Markdown editor, import/export dialogs | `src/react/components/Catalog`, `ModalForms`, `TopNavigation` | ✅ browser test: import a KML file, drill down, choose the drawing route, select, edit (title, colour), hide, drag to reorder, delete with confirmation, export, all persisted |
 | 8 | Search and wording | `src/search`, `src/personalization` | everything the old app does |
 | 9 | Mobile: responsive layout, touch, service worker, Capacitor shell | — | installable app on a phone |
 
@@ -113,6 +113,10 @@ auth and sharing; offline region packages from own tile servers.
   through `core.presentation.map.MapSurface`, which the base map widget
   implements; the product wires the two together. A Browse tool (pan and
   select, no drawing) is added so taps on a phone do not create points.
+- Reordering uses pointer events with capture instead of HTML5 drag and
+  drop, so it works with touch as well as a mouse.
+- Scala.js output targets ES2018 (regex Unicode classes); every browser the
+  app supports has it.
 - Storage: the catalog is saved as one versioned JSON document. IndexedDB
   transactions close as soon as control returns to the event loop, so they
   cannot span ZIO steps; instead the transaction manager serialises

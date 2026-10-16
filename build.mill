@@ -48,6 +48,8 @@ def fixturesDirSource(dest: os.Path, dir: os.Path): PathRef =
 trait BaseJsModule extends BaseModule with ScalaJSModule:
   def scalaJSVersion = "1.22.0"
   override def moduleKind = ModuleKind.ESModule
+  // ES2018 for regex Unicode classes and lookbehind; all target browsers have it
+  override def esFeatures = Task { super.esFeatures().withESVersion(ESVersion.ES2018) }
 
 /** Scala.js facades: native constructor parameters are never "used". */
 trait FacadeModule extends BaseJsModule:

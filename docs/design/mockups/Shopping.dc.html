@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prepare — Shopping</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#FFC93C}a:hover{color:#FFE08A}
+button{font:inherit;cursor:pointer}
+input{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; display: flex; flex-direction: column; background: #0E1114; color: #E6E9EC; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 16px">
+
+  <header style="padding: 16px 16px 12px; border-bottom: 1px solid #2A323B; background: #161B21">
+    <div style="display: flex; justify-content: space-between; align-items: baseline">
+      <h1 style="margin: 0; font-size: 26px; font-weight: 700">Shopping</h1>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px"><span style="color: #FFC93C">18</span> / 31</span>
+    </div>
+    <div style="height: 4px; margin-top: 10px; background: #2A323B; border-radius: 2px"><div style="width: 58%; height: 4px; background: #FFC93C; border-radius: 2px"></div></div>
+    <div role="group" aria-label="Filter" style="display: flex; gap: 6px; margin-top: 12px">
+      <button type="button" style="min-height: 36px; padding: 0 14px; border-radius: 18px; border: 0; background: #E6E9EC; color: #0E1114; font-weight: 700">Mine · 5</button>
+      <button type="button" style="min-height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid #3A444F; background: transparent; color: #E6E9EC">Not taken · 7</button>
+      <button type="button" style="min-height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid #3A444F; background: transparent; color: #E6E9EC">All</button>
+    </div>
+  </header>
+
+  <div role="status" style="margin: 12px 16px 0; padding: 10px 12px; border-radius: 6px; background: #2A2312; border: 1px solid #FFC93C; font-size: 15px; display: flex; gap: 10px; align-items: center">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#FFC93C" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="9" r="7.5"></circle><path d="M9 5v4.5M9 12.5v.5"></path></svg>
+    <span>Anna took <b>Gas canister</b> first. You no longer have it.</span>
+  </div>
+
+  <div style="flex: 1; overflow: hidden; padding: 6px 16px 0">
+    <h2 style="margin: 14px 0 4px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #9AA4AE; font-weight: 600">Gear · shared</h2>
+    <label style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid #2A323B">
+      <input type="checkbox" checked style="width: 22px; height: 22px; accent-color: #FFC93C">
+      <span style="flex: 1; color: #6F7A85; text-decoration: line-through">First-aid kit</span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #6F7A85">×1 · ME</span>
+    </label>
+    <label style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid #2A323B">
+      <input type="checkbox" style="width: 22px; height: 22px; accent-color: #FFC93C">
+      <span style="flex: 1">Headlamps</span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #9AA4AE">×6 · ME</span>
+    </label>
+    <div style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid #2A323B">
+      <span style="width: 22px; height: 22px; border-radius: 4px; border: 2px dashed #3A444F; box-sizing: border-box"></span>
+      <span style="flex: 1">Power bank 20 Ah</span>
+      <button type="button" style="min-height: 36px; padding: 0 12px; border-radius: 6px; border: 1px solid #FFC93C; background: transparent; color: #FFC93C; font-weight: 700; font-size: 14px">I take it</button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid #2A323B">
+      <span style="width: 22px; height: 22px; border-radius: 4px; border: 2px solid #3A444F; box-sizing: border-box"></span>
+      <span style="flex: 1">Gas canister</span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #4FD1E8">×2 · ANNA</span>
+    </div>
+
+    <h2 style="margin: 18px 0 4px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #9AA4AE; font-weight: 600">Food · day 2 lunch</h2>
+    <label style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid #2A323B">
+      <input type="checkbox" style="width: 22px; height: 22px; accent-color: #FFC93C">
+      <span style="flex: 1">Bread</span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #9AA4AE">×3 · ME</span>
+    </label>
+    <label style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid #2A323B">
+      <input type="checkbox" style="width: 22px; height: 22px; accent-color: #FFC93C">
+      <span style="flex: 1">Cheese, 500 g</span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #9AA4AE">×2 · ME</span>
+    </label>
+
+    <h2 style="margin: 18px 0 4px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #9AA4AE; font-weight: 600">Personal · each</h2>
+    <label style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid #2A323B">
+      <input type="checkbox" style="width: 22px; height: 22px; accent-color: #FFC93C">
+      <span style="flex: 1">Rain jacket</span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #9AA4AE">4 / 6 HAVE</span>
+    </label>
+  </div>
+
+  <form style="display: flex; gap: 8px; padding: 10px 16px; border-top: 1px solid #2A323B; background: #161B21">
+    <label style="flex: 1; display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">New item</span>
+      <input type="text" placeholder="Add item, e.g. “sunscreen ×2”" style="flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #3A444F; background: #0E1114; color: #E6E9EC"></label>
+    <button type="submit" aria-label="Add item" style="width: 44px; height: 44px; border-radius: 6px; border: 0; background: #FFC93C; color: #0E1114; font-size: 22px; font-weight: 700">+</button>
+  </form>
+
+  <nav aria-label="Trip" style="height: 64px; flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: #0E1114; border-top: 1px solid #2A323B; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em">
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #9AA4AE">Route</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #FFC93C; font-weight: 700; border-top: 3px solid #FFC93C">Shop</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #9AA4AE">Go</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #9AA4AE">Chat</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

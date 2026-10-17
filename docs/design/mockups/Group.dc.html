@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Go — Group</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#FFC93C}a:hover{color:#FFE08A}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; display: flex; flex-direction: column; background: #0E1114; color: #E6E9EC; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 16px">
+
+  <div style="position: relative; height: 380px; flex: none">
+    <svg viewBox="300 100 420 410" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; width: 100%; height: 100%" aria-hidden="true">
+      <rect width="1000" height="800" fill="#0E1114"></rect>
+      <g fill="none" stroke="#1E262E" stroke-width="1.2">
+        <path d="M520,330 C520,250 600,220 650,240 C710,262 730,320 700,380 C670,440 560,430 530,380 Z"></path>
+        <path d="M470,330 C465,210 600,170 680,195 C770,225 790,330 750,410 C705,495 540,480 490,410 Z"></path>
+        <path d="M420,335 C410,170 600,120 710,150 C830,185 850,340 800,440 C745,545 520,535 450,450 Z"></path>
+      </g>
+      <g fill="none" stroke="#2C3540" stroke-width="3">
+        <path d="M330,400 C450,380 480,300 560,180 C600,120 700,90 1000,80"></path>
+      </g>
+      <path d="M500,225 C540,220 580,228 610,245" fill="none" stroke="#FFC93C" stroke-width="3" stroke-dasharray="8 6"></path>
+      <circle cx="610" cy="245" r="10" fill="#FFC93C"></circle>
+      <path d="M380,330 C410,300 440,260 470,240 C500,222 530,205 560,190" fill="none" stroke="#4FD1E8" stroke-width="3.5"></path>
+      <path d="M380,330 C420,320 450,300 470,300" fill="none" stroke="#4FD1E8" stroke-width="2" stroke-opacity="0.5"></path>
+      <circle cx="560" cy="190" r="20" fill="#4FD1E8" fill-opacity="0.18"></circle>
+      <circle cx="560" cy="190" r="9" fill="#0E1114" stroke="#4FD1E8" stroke-width="3"></circle>
+      <circle cx="470" cy="300" r="8" fill="#0E1114" stroke="#4FD1E8" stroke-width="2.5" stroke-opacity="0.7"></circle>
+      <path d="M500,213 L508,233 L500,228 L492,233 Z" fill="#E6E9EC"></path>
+      <g font-family="JetBrains Mono, monospace" font-size="13" fill="#C9D0D6">
+        <text x="574" y="186">ANNA</text>
+        <text x="482" y="304">PAVEL</text>
+        <text x="512" y="248">ME</text>
+      </g>
+    </svg>
+    <div style="position: absolute; top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between">
+      <span style="padding: 6px 12px; border-radius: 6px; background: rgba(14,17,20,0.9); border: 1px solid #2A323B; font-weight: 600">Car 2 · 3 people</span>
+      <span style="padding: 6px 10px; border-radius: 6px; background: rgba(14,17,20,0.9); border: 1px solid #2A323B; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7EE2A8">MESH 2</span>
+    </div>
+  </div>
+
+  <ul style="list-style: none; margin: 0; padding: 8px 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #2A323B; background: #161B21">
+    <li>
+      <button type="button" style="width: 100%; display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; padding: 12px; border-radius: 8px; border: 1px solid #4FD1E8; background: #1B2128; color: #E6E9EC; text-align: left">
+        <span style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #4FD1E8; font-weight: 700; display: flex; align-items: center; justify-content: center">AN</span>
+        <span><span style="display: block; font-weight: 600; font-size: 18px">Anna</span><span style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4AE">SEEN 2 MIN · VIA MESH</span></span>
+        <span style="text-align: right"><span style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 20px">1.2 km</span><span style="display: block; font-size: 13px; color: #9AA4AE">ahead, N</span></span>
+      </button>
+    </li>
+    <li>
+      <button type="button" style="width: 100%; display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; padding: 12px; border-radius: 8px; border: 1px solid #2A323B; background: #1B2128; color: #E6E9EC; text-align: left">
+        <span style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #3A444F; font-weight: 700; display: flex; align-items: center; justify-content: center">PA</span>
+        <span><span style="display: block; font-weight: 600; font-size: 18px">Pavel</span><span style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FF9E7A">SEEN 9 MIN · INTERNET</span></span>
+        <span style="text-align: right"><span style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 20px">0.9 km</span><span style="display: block; font-size: 13px; color: #9AA4AE">behind, SW</span></span>
+      </button>
+    </li>
+    <li style="display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: center; padding: 12px; border-radius: 8px; border: 1px dashed #2A323B">
+      <span style="width: 40px; height: 40px; border-radius: 50%; border: 1px dashed #6F7A85; color: #6F7A85; font-weight: 700; display: flex; align-items: center; justify-content: center">ME</span>
+      <span style="font-size: 15px; color: #9AA4AE">You share your position with Car 2 and the organisers.</span>
+    </li>
+    <li style="margin-top: auto; display: flex; gap: 8px; padding-bottom: 8px">
+      <a href="#" style="flex: 1; min-height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: 1px solid #3A444F; color: #E6E9EC; text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em">Message Anna</a>
+      <button type="button" style="flex: 1; min-height: 48px; border-radius: 6px; border: 0; background: #4FD1E8; color: #0E1114; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em">Show her track</button>
+    </li>
+  </ul>
+
+  <nav aria-label="Trip" style="height: 64px; flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: #0E1114; border-top: 1px solid #2A323B; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em">
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #9AA4AE">Route</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #9AA4AE">Shop</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #FFC93C; font-weight: 700; border-top: 3px solid #FFC93C">Go</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #9AA4AE">Chat</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

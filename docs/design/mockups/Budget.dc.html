@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Plan — Budget</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#FFC93C}a:hover{color:#FFE08A}
+button{font:inherit;cursor:pointer}
+input{font:inherit}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; display: flex; flex-direction: column; background: #0E1114; color: #E6E9EC; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 16px">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 0 20px; min-height: 56px; border-bottom: 1px solid #2A323B">
+    <span style="display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#FFC93C" stroke-width="2" aria-hidden="true"><path d="M11 2l8 18-8-5-8 5z"></path></svg>
+      Map2Online
+    </span>
+    <span style="color: #9AA4AE">Dolomites loop</span>
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4AE">12–16.07 · 6 PAX</span>
+    <nav aria-label="Stage" style="display: flex; margin-left: auto; border: 1px solid #2A323B; border-radius: 6px; overflow: hidden">
+      <a href="#" style="padding: 8px 18px; background: #FFC93C; color: #0E1114; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 14px">Plan</a>
+      <a href="#" style="padding: 8px 18px; color: #E6E9EC; text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; font-size: 14px">Prepare</a>
+      <a href="#" style="padding: 8px 18px; color: #E6E9EC; text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; font-size: 14px">Go</a>
+    </nav>
+    <span style="display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7EE2A8"><span style="width: 8px; height: 8px; border-radius: 50%; background: #7EE2A8"></span>SYNCED</span>
+  </header>
+
+  <nav aria-label="Plan sections" style="display: flex; padding: 0 12px; border-bottom: 1px solid #2A323B; background: #161B21">
+    <a href="#" style="padding: 14px 12px; text-decoration: none; color: #9AA4AE">Explore</a>
+    <a href="#" style="padding: 14px 12px; text-decoration: none; color: #9AA4AE">Days</a>
+    <a href="#" style="padding: 14px 12px 11px; text-decoration: none; color: #E6E9EC; font-weight: 700; border-bottom: 3px solid #FFC93C">Budget</a>
+    <a href="#" style="padding: 14px 12px; text-decoration: none; color: #9AA4AE">Advisor</a>
+  </nav>
+
+  <div style="width: 100%; max-width: 1320px; margin: 0 auto; padding: 24px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 24px">
+
+    <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+        <h1 style="margin: 0; font-size: 28px; font-weight: 700; margin-right: auto">Trip estimate</h1>
+        <div role="group" aria-label="Show amounts" style="display: flex; border: 1px solid #2A323B; border-radius: 6px; overflow: hidden">
+          <button type="button" style="min-height: 40px; padding: 0 16px; border: 0; background: #E6E9EC; color: #0E1114; font-weight: 700">Per person</button>
+          <button type="button" style="min-height: 40px; padding: 0 16px; border: 0; background: transparent; color: #E6E9EC">Group of 6</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+        <div style="padding: 16px; border-radius: 8px; background: #161B21; border: 1px solid #FFC93C">
+          <div style="font-size: 12px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Trip · per person</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 34px; font-weight: 600; color: #FFC93C">€585–660</div>
+          <div style="font-size: 14px; color: #9AA4AE">Range comes from plans B and C</div>
+        </div>
+        <div style="padding: 16px; border-radius: 8px; background: #161B21; border: 1px solid #2A323B">
+          <div style="font-size: 12px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Group total</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 34px; font-weight: 600">€3 510–3 960</div>
+          <div style="font-size: 14px; color: #9AA4AE">6 people · 5 days</div>
+        </div>
+        <div style="padding: 16px; border-radius: 8px; background: #161B21; border: 1px solid #2A323B">
+          <div style="font-size: 12px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Price unknown</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 34px; font-weight: 600; color: #FF9E7A">4</div>
+          <div style="font-size: 14px; color: #9AA4AE">Not in the totals</div>
+        </div>
+      </div>
+
+      <div style="overflow-x: auto; border: 1px solid #2A323B; border-radius: 8px">
+        <table style="width: 100%; border-collapse: collapse; font-size: 16px; min-width: 620px">
+          <thead>
+            <tr style="background: #161B21; text-align: right; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #9AA4AE">
+              <th scope="col" style="text-align: left; padding: 12px 16px; font-weight: 600">Day</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600">Sleep</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600">Food</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600">Transport</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600">Tickets</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #E6E9EC">Total</th>
+            </tr>
+          </thead>
+          <tbody style="font-family: 'JetBrains Mono', monospace; text-align: right">
+            <tr style="border-top: 1px solid #2A323B"><th scope="row" style="text-align: left; padding: 12px 16px; font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 600">D1 · Bolzano → Cortina</th><td style="padding: 12px 16px">60</td><td style="padding: 12px 16px">35</td><td style="padding: 12px 16px">18</td><td style="padding: 12px 16px">7–17</td><td style="padding: 12px 16px; font-weight: 600">120–130</td></tr>
+            <tr style="border-top: 1px solid #2A323B; background: #161B21"><th scope="row" style="text-align: left; padding: 12px 16px; font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 600">D2 · Sorapis, Tre Cime</th><td style="padding: 12px 16px">60</td><td style="padding: 12px 16px">35</td><td style="padding: 12px 16px">25</td><td style="padding: 12px 16px">20–55</td><td style="padding: 12px 16px; font-weight: 600; color: #FFC93C">140–175</td></tr>
+            <tr style="border-top: 1px solid #2A323B"><th scope="row" style="text-align: left; padding: 12px 16px; font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 600">D3 · Rest day</th><td style="padding: 12px 16px">60</td><td style="padding: 12px 16px">30</td><td style="padding: 12px 16px">5</td><td style="padding: 12px 16px">0–15</td><td style="padding: 12px 16px; font-weight: 600">95–110</td></tr>
+            <tr style="border-top: 1px solid #2A323B"><th scope="row" style="text-align: left; padding: 12px 16px; font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 600">D4 · Passo Giau, Lagazuoi</th><td style="padding: 12px 16px">60</td><td style="padding: 12px 16px">35</td><td style="padding: 12px 16px">30</td><td style="padding: 12px 16px">25</td><td style="padding: 12px 16px; font-weight: 600">150</td></tr>
+            <tr style="border-top: 1px solid #2A323B"><th scope="row" style="text-align: left; padding: 12px 16px; font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 600">D5 · Braies → home</th><td style="padding: 12px 16px">—</td><td style="padding: 12px 16px">35</td><td style="padding: 12px 16px">30</td><td style="padding: 12px 16px">15–30</td><td style="padding: 12px 16px; font-weight: 600">80–95</td></tr>
+            <tr style="border-top: 2px solid #3A444F; background: #161B21"><th scope="row" style="text-align: left; padding: 14px 16px; font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 14px">Trip</th><td style="padding: 14px 16px">240</td><td style="padding: 14px 16px">170</td><td style="padding: 14px 16px">108</td><td style="padding: 14px 16px">67–142</td><td style="padding: 14px 16px; font-weight: 600; color: #FFC93C">585–660</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #6F7A85">EUR · PER PERSON · CLICK A CELL TO SEE ITS LINES</div>
+    </div>
+
+    <aside style="flex: 1 1 320px; max-width: 400px; display: flex; flex-direction: column; gap: 16px">
+      <section aria-labelledby="h-def" style="padding: 16px; border-radius: 8px; background: #161B21; border: 1px solid #2A323B; display: flex; flex-direction: column; gap: 12px">
+        <h2 id="h-def" style="margin: 0; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: #9AA4AE; font-weight: 600">Every day, per person</h2>
+        <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px">Food
+          <input type="text" value="35" style="width: 90px; min-height: 40px; padding: 0 10px; border-radius: 6px; border: 1px solid #3A444F; background: #0E1114; color: #E6E9EC; font-family: 'JetBrains Mono', monospace; text-align: right"></label>
+        <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px">Sleep
+          <input type="text" value="60" style="width: 90px; min-height: 40px; padding: 0 10px; border-radius: 6px; border: 1px solid #3A444F; background: #0E1114; color: #E6E9EC; font-family: 'JetBrains Mono', monospace; text-align: right"></label>
+        <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px">Fuel per 100 km
+          <input type="text" value="14" style="width: 90px; min-height: 40px; padding: 0 10px; border-radius: 6px; border: 1px solid #3A444F; background: #0E1114; color: #E6E9EC; font-family: 'JetBrains Mono', monospace; text-align: right"></label>
+        <div style="font-size: 14px; color: #9AA4AE">A day can have its own value. Currency: EUR.</div>
+      </section>
+
+      <section aria-labelledby="h-unk" style="padding: 16px; border-radius: 8px; background: #161B21; border: 1px solid #FF9E7A; display: flex; flex-direction: column; gap: 4px">
+        <h2 id="h-unk" style="margin: 0 0 8px; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: #FF9E7A; font-weight: 600">Price unknown · 4</h2>
+        <button type="button" style="display: flex; justify-content: space-between; align-items: center; min-height: 44px; border: 0; border-bottom: 1px solid #2A323B; background: transparent; color: #E6E9EC; text-align: left; padding: 0">Tre Cime toll road <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #FFC93C">SET</span></button>
+        <button type="button" style="display: flex; justify-content: space-between; align-items: center; min-height: 44px; border: 0; border-bottom: 1px solid #2A323B; background: transparent; color: #E6E9EC; text-align: left; padding: 0">Lago di Braies parking <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #FFC93C">SET</span></button>
+        <button type="button" style="display: flex; justify-content: space-between; align-items: center; min-height: 44px; border: 0; border-bottom: 1px solid #2A323B; background: transparent; color: #E6E9EC; text-align: left; padding: 0">Lagazuoi cable car <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #FFC93C">SET</span></button>
+        <button type="button" style="display: flex; justify-content: space-between; align-items: center; min-height: 44px; border: 0; background: transparent; color: #E6E9EC; text-align: left; padding: 0">Dinner, Misurina <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #FFC93C">SET</span></button>
+      </section>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

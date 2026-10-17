@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My trips</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#FFC93C}a:hover{color:#FFE08A}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; display: flex; flex-direction: column; background: #0E1114; color: #E6E9EC; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 16px">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 0 24px; min-height: 56px; border-bottom: 1px solid #2A323B">
+    <span style="display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#FFC93C" stroke-width="2" aria-hidden="true"><path d="M11 2l8 18-8-5-8 5z"></path></svg>
+      Map2Online
+    </span>
+    <span style="margin-left: auto; display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7EE2A8"><span style="width: 8px; height: 8px; border-radius: 50%; background: #7EE2A8"></span>SYNCED</span>
+    <button type="button" style="min-height: 40px; padding: 0 18px; border-radius: 6px; border: 0; background: #FFC93C; color: #0E1114; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em">+ New trip</button>
+    <button type="button" aria-label="Account" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #3A444F; background: #161B21; color: #E6E9EC; font-weight: 600">SD</button>
+  </header>
+
+  <div style="width: 100%; max-width: 1240px; margin: 0 auto; padding: 28px 24px 40px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px">
+
+    <section aria-label="Invitation" style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 8px; background: #161B21; border: 1px solid #4FD1E8">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#4FD1E8" stroke-width="2" aria-hidden="true"><rect x="3" y="7" width="22" height="15" rx="2"></rect><path d="M3 9l11 7 11-7"></path></svg>
+      <div style="flex: 1 1 320px">
+        <div style="font-size: 12px; color: #4FD1E8; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700">Invitation</div>
+        <div style="font-size: 19px; font-weight: 600">Olga invites you to “Altai rafting”</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #9AA4AE">02–09.08 · 8 PAX · ROLE: PARTICIPANT · GROUP: RAFT 2</div>
+      </div>
+      <div style="display: flex; gap: 8px">
+        <button type="button" style="min-height: 44px; padding: 0 22px; border-radius: 6px; border: 0; background: #4FD1E8; color: #0E1114; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em">Join</button>
+        <button type="button" style="min-height: 44px; padding: 0 18px; border-radius: 6px; border: 1px solid #3A444F; background: transparent; color: #E6E9EC; text-transform: uppercase; letter-spacing: 0.06em">Decline</button>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-org" style="display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; align-items: baseline; gap: 12px">
+        <h2 id="h-org" style="margin: 0; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; color: #9AA4AE; font-weight: 600">I organise</h2>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #6F7A85">3</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px">
+
+        <a href="#" style="display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; background: #161B21; border: 1px solid #2A323B; text-decoration: none; color: #E6E9EC">
+          <svg viewBox="0 0 300 120" style="width: 100%; height: 120px; display: block; background: #0E1114" aria-hidden="true">
+            <g fill="none" stroke="#1E262E"><path d="M150,60 C150,30 200,20 230,35 C260,50 255,90 220,100 C185,110 150,90 150,60 Z"></path><path d="M120,62 C115,15 210,0 250,25 C290,50 285,110 230,118 C170,126 125,105 120,62 Z"></path></g>
+            <path d="M30,95 C60,80 80,50 105,45 C140,38 170,30 200,40 C230,52 245,80 262,98" fill="none" stroke="#FFC93C" stroke-width="3"></path>
+            <circle cx="30" cy="95" r="5" fill="#E6E9EC"></circle><circle cx="105" cy="45" r="5" fill="#FFC93C"></circle><circle cx="200" cy="40" r="5" fill="#FFC93C"></circle><circle cx="262" cy="98" r="5" fill="#E6E9EC"></circle>
+          </svg>
+          <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline">
+              <span style="font-size: 20px; font-weight: 700">Dolomites loop</span>
+              <span style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #0E1114; background: #FFC93C; padding: 2px 8px; border-radius: 4px; font-weight: 700">Preparing</span>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #9AA4AE">12–16.07 · 5 DAYS · 6 PAX</div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #2A323B; padding-top: 10px">
+              <div><div style="font-size: 11px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Stops</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 17px">17</div></div>
+              <div><div style="font-size: 11px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Bought</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 17px">18/31</div></div>
+              <div><div style="font-size: 11px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Offline</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 17px; color: #7EE2A8">READY</div></div>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" style="display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; background: #161B21; border: 1px solid #2A323B; text-decoration: none; color: #E6E9EC">
+          <svg viewBox="0 0 300 120" style="width: 100%; height: 120px; display: block; background: #0E1114" aria-hidden="true">
+            <path d="M0,80 C60,70 90,95 140,90 C200,84 230,60 300,66" fill="none" stroke="#14303A" stroke-width="18"></path>
+            <circle cx="90" cy="50" r="5" fill="#9AA4AE"></circle><circle cx="150" cy="40" r="5" fill="#9AA4AE"></circle><circle cx="210" cy="55" r="5" fill="#9AA4AE"></circle><circle cx="240" cy="30" r="5" fill="#9AA4AE"></circle>
+          </svg>
+          <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline">
+              <span style="font-size: 20px; font-weight: 700">Lisbon weekend</span>
+              <span style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #E6E9EC; border: 1px solid #3A444F; padding: 1px 8px; border-radius: 4px; font-weight: 600">Planning</span>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #9AA4AE">NO DATES · 2 PAX</div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #2A323B; padding-top: 10px">
+              <div><div style="font-size: 11px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Wishlist</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 17px">12</div></div>
+              <div><div style="font-size: 11px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Days</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 17px">0</div></div>
+              <div><div style="font-size: 11px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Offline</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 17px; color: #6F7A85">—</div></div>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" style="display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; background: #161B21; border: 1px solid #2A323B; text-decoration: none; color: #9AA4AE">
+          <svg viewBox="0 0 300 120" style="width: 100%; height: 120px; display: block; background: #0E1114" aria-hidden="true">
+            <path d="M150,15 C220,15 270,45 265,70 C258,100 200,110 150,108 C90,106 35,95 35,65 C35,35 90,15 150,15 Z" fill="none" stroke="#4FD1E8" stroke-width="2.5" stroke-opacity="0.7"></path>
+          </svg>
+          <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline">
+              <span style="font-size: 20px; font-weight: 700; color: #C9D0D6">Iceland ring road</span>
+              <span style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #9AA4AE; padding: 2px 0; font-weight: 600">Finished</span>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px">06.2026 · 9 DAYS · 4 PAX</div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #2A323B; padding-top: 10px">
+              <div><div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase">Track</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 17px">1 412 km</div></div>
+              <div><div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase">Visited</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 17px">31/34</div></div>
+              <div><div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase">Spent</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 17px">€2 140</div></div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-part" style="display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; align-items: baseline; gap: 12px">
+        <h2 id="h-part" style="margin: 0; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; color: #9AA4AE; font-weight: 600">I take part</h2>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #6F7A85">1</span>
+      </div>
+      <a href="#" style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 16px 20px; border-radius: 8px; background: #161B21; border: 1px solid #FFC93C; text-decoration: none; color: #E6E9EC">
+        <span style="display: flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: #FFC93C"><span style="width: 10px; height: 10px; border-radius: 50%; background: #FFC93C"></span>On the way</span>
+        <div style="flex: 1 1 240px"><div style="font-size: 20px; font-weight: 700">Carpathians hike</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #9AA4AE">ORGANISER: IVAN · GROUP: FAST</div></div>
+        <div><div style="font-size: 11px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Day</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 22px">3 / 6</div></div>
+        <div><div style="font-size: 11px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Next stop</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 22px">4.8 km</div></div>
+        <span style="min-height: 44px; padding: 0 22px; border-radius: 6px; background: #FFC93C; color: #0E1114; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center">Open Go</span>
+      </a>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

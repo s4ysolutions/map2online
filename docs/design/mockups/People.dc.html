@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prepare — People</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#FFC93C}a:hover{color:#FFE08A}
+button{font:inherit;cursor:pointer}
+select,input{font:inherit}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; display: flex; flex-direction: column; background: #0E1114; color: #E6E9EC; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 16px">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 0 20px; min-height: 56px; border-bottom: 1px solid #2A323B">
+    <span style="display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#FFC93C" stroke-width="2" aria-hidden="true"><path d="M11 2l8 18-8-5-8 5z"></path></svg>
+      Map2Online
+    </span>
+    <span style="color: #9AA4AE">Dolomites loop</span>
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4AE">12–16.07 · 6 PAX</span>
+    <nav aria-label="Stage" style="display: flex; margin-left: auto; border: 1px solid #2A323B; border-radius: 6px; overflow: hidden">
+      <a href="#" style="padding: 8px 18px; color: #E6E9EC; text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; font-size: 14px">Plan</a>
+      <a href="#" style="padding: 8px 18px; background: #FFC93C; color: #0E1114; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 14px">Prepare</a>
+      <a href="#" style="padding: 8px 18px; color: #E6E9EC; text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; font-size: 14px">Go</a>
+    </nav>
+    <span style="display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7EE2A8"><span style="width: 8px; height: 8px; border-radius: 50%; background: #7EE2A8"></span>SYNCED</span>
+  </header>
+
+  <nav aria-label="Prepare sections" style="display: flex; padding: 0 12px; border-bottom: 1px solid #2A323B; background: #161B21">
+    <a href="#" style="padding: 14px 12px 11px; text-decoration: none; color: #E6E9EC; font-weight: 700; border-bottom: 3px solid #FFC93C">People</a>
+    <a href="#" style="padding: 14px 12px; text-decoration: none; color: #9AA4AE">Sharing</a>
+    <a href="#" style="padding: 14px 12px; text-decoration: none; color: #9AA4AE">Shopping</a>
+    <a href="#" style="padding: 14px 12px; text-decoration: none; color: #9AA4AE">Offline</a>
+  </nav>
+
+  <div style="width: 100%; max-width: 1320px; margin: 0 auto; padding: 24px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+    <aside aria-labelledby="h-inv" style="flex: 1 1 300px; max-width: 360px; padding: 18px; border-radius: 8px; background: #161B21; border: 1px solid #2A323B; display: flex; flex-direction: column; gap: 14px">
+      <h2 id="h-inv" style="margin: 0; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: #9AA4AE; font-weight: 600">Invite</h2>
+      <div style="display: flex; gap: 14px; align-items: center">
+        <svg width="112" height="112" viewBox="0 0 21 21" style="flex: none; background: #E6E9EC; border-radius: 6px; padding: 6px" role="img" aria-label="QR code placeholder">
+          <g fill="#0E1114"><rect x="0" y="0" width="7" height="7"></rect><rect x="14" y="0" width="7" height="7"></rect><rect x="0" y="14" width="7" height="7"></rect></g>
+          <g fill="#E6E9EC"><rect x="1" y="1" width="5" height="5"></rect><rect x="15" y="1" width="5" height="5"></rect><rect x="1" y="15" width="5" height="5"></rect></g>
+          <g fill="#0E1114"><rect x="2" y="2" width="3" height="3"></rect><rect x="16" y="2" width="3" height="3"></rect><rect x="2" y="16" width="3" height="3"></rect><rect x="9" y="1" width="2" height="2"></rect><rect x="8" y="5" width="3" height="1"></rect><rect x="9" y="9" width="3" height="3"></rect><rect x="14" y="9" width="2" height="2"></rect><rect x="17" y="12" width="3" height="2"></rect><rect x="9" y="15" width="2" height="4"></rect><rect x="13" y="16" width="4" height="2"></rect><rect x="18" y="18" width="2" height="2"></rect><rect x="1" y="9" width="4" height="2"></rect></g>
+        </svg>
+        <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9D0D6; word-break: break-all">map2.online/j/[INVITE-CODE]</span>
+          <button type="button" style="min-height: 40px; border-radius: 6px; border: 1px solid #3A444F; background: transparent; color: #E6E9EC">Copy link</button>
+        </div>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #9AA4AE">Role
+        <select style="min-height: 44px; padding: 0 10px; border-radius: 6px; border: 1px solid #3A444F; background: #0E1114; color: #E6E9EC; font-size: 16px"><option>Participant</option><option>Organiser</option></select></label>
+      <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #9AA4AE">Group
+        <select style="min-height: 44px; padding: 0 10px; border-radius: 6px; border: 1px solid #3A444F; background: #0E1114; color: #E6E9EC; font-size: 16px"><option>Car 2</option><option>Car 1</option><option>No group</option></select></label>
+      <div style="font-size: 14px; color: #9AA4AE">The link works until 10.07. One link per role and group.</div>
+    </aside>
+
+    <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <h1 style="margin: 0; font-size: 28px; font-weight: 700; margin-right: auto">People · 6</h1>
+        <button type="button" style="min-height: 40px; padding: 0 16px; border-radius: 6px; border: 1px dashed #3A444F; background: transparent; color: #E6E9EC">+ New group</button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px">
+
+        <section aria-labelledby="g1" style="border-radius: 8px; border: 1px solid #2A323B; background: #161B21">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #2A323B">
+            <h3 id="g1" style="margin: 0; font-size: 18px; font-weight: 700">Car 1</h3>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4AE">3 · SEE EACH OTHER</span>
+          </div>
+          <ul style="list-style: none; margin: 0; padding: 6px 8px">
+            <li style="display: flex; align-items: center; gap: 12px; padding: 8px 6px">
+              <span style="width: 38px; height: 38px; border-radius: 50%; background: #FFC93C; color: #0E1114; font-weight: 700; display: flex; align-items: center; justify-content: center">SD</span>
+              <div style="flex: 1"><div style="font-weight: 600">Sergey (you)</div><div style="font-size: 13px; color: #FFC93C">Organiser</div></div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7EE2A8">OFFLINE READY</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 8px 6px">
+              <span style="width: 38px; height: 38px; border-radius: 50%; background: #1F262E; border: 1px solid #3A444F; font-weight: 700; display: flex; align-items: center; justify-content: center">IV</span>
+              <div style="flex: 1"><div style="font-weight: 600">Ivan</div><div style="font-size: 13px; color: #9AA4AE">Participant</div></div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7EE2A8">OFFLINE READY</span>
+              <button type="button" aria-label="Ivan: more actions" style="width: 36px; height: 36px; border-radius: 6px; border: 0; background: transparent; color: #9AA4AE; font-size: 18px">⋯</button>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 8px 6px">
+              <span style="width: 38px; height: 38px; border-radius: 50%; background: #1F262E; border: 1px solid #3A444F; font-weight: 700; display: flex; align-items: center; justify-content: center">MA</span>
+              <div style="flex: 1"><div style="font-weight: 600">Maria</div><div style="font-size: 13px; color: #9AA4AE">Participant</div></div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #FF9E7A">NOT DOWNLOADED</span>
+              <button type="button" aria-label="Maria: more actions" style="width: 36px; height: 36px; border-radius: 6px; border: 0; background: transparent; color: #9AA4AE; font-size: 18px">⋯</button>
+            </li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="g2" style="border-radius: 8px; border: 1px solid #2A323B; background: #161B21">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #2A323B">
+            <h3 id="g2" style="margin: 0; font-size: 18px; font-weight: 700">Car 2</h3>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4AE">3 · SEE EACH OTHER</span>
+          </div>
+          <ul style="list-style: none; margin: 0; padding: 6px 8px">
+            <li style="display: flex; align-items: center; gap: 12px; padding: 8px 6px">
+              <span style="width: 38px; height: 38px; border-radius: 50%; background: #1F262E; border: 1px solid #4FD1E8; font-weight: 700; display: flex; align-items: center; justify-content: center">AN</span>
+              <div style="flex: 1"><div style="font-weight: 600">Anna</div><div style="font-size: 13px; color: #4FD1E8">Organiser</div></div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7EE2A8">OFFLINE READY</span>
+              <button type="button" aria-label="Anna: more actions" style="width: 36px; height: 36px; border-radius: 6px; border: 0; background: transparent; color: #9AA4AE; font-size: 18px">⋯</button>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 8px 6px">
+              <span style="width: 38px; height: 38px; border-radius: 50%; background: #1F262E; border: 1px solid #3A444F; font-weight: 700; display: flex; align-items: center; justify-content: center">PA</span>
+              <div style="flex: 1"><div style="font-weight: 600">Pavel</div><div style="font-size: 13px; color: #9AA4AE">Participant</div></div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7EE2A8">OFFLINE READY</span>
+              <button type="button" aria-label="Pavel: more actions" style="width: 36px; height: 36px; border-radius: 6px; border: 0; background: transparent; color: #9AA4AE; font-size: 18px">⋯</button>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 8px 6px">
+              <span style="width: 38px; height: 38px; border-radius: 50%; border: 1px dashed #6F7A85; color: #9AA4AE; font-weight: 700; display: flex; align-items: center; justify-content: center">LE</span>
+              <div style="flex: 1"><div style="font-weight: 600; color: #9AA4AE">Lena</div><div style="font-size: 13px; color: #6F7A85">Invited 3 days ago</div></div>
+              <button type="button" style="min-height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid #3A444F; background: transparent; color: #E6E9EC; font-size: 14px">Resend</button>
+            </li>
+          </ul>
+        </section>
+      </div>
+      <div style="font-size: 14px; color: #9AA4AE">Drag a person to another group. People see positions only inside their own group; organisers see everyone.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

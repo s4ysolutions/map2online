@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Day theme — Route</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#8A5A00}a:hover{color:#5C3D00}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; display: flex; flex-direction: column; background: #F4F5F6; color: #0E1114; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 16px">
+
+  <div style="position: relative; height: 250px; flex: none">
+    <svg viewBox="80 140 640 410" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; width: 100%; height: 100%" aria-hidden="true">
+      <rect width="1000" height="800" fill="#E9ECEE"></rect>
+      <g fill="none" stroke="#CBD2D8" stroke-width="1.2">
+        <path d="M420,335 C410,170 600,120 710,150 C830,185 850,340 800,440 C745,545 520,535 450,450 Z"></path>
+        <path d="M370,340 C350,130 600,70 740,105 C890,145 910,350 850,470 C780,600 500,590 410,490 Z"></path>
+      </g>
+      <ellipse cx="330" cy="250" rx="45" ry="22" fill="#BFD9E3"></ellipse>
+      <g fill="none" stroke="#FFFFFF" stroke-width="5">
+        <path d="M0,520 C150,500 220,420 330,400 C450,380 480,300 560,180 C600,120 700,90 1000,80"></path>
+      </g>
+      <path d="M210,330 C300,310 380,280 460,250" fill="none" stroke="#8A939C" stroke-width="3" stroke-dasharray="4 7"></path>
+      <path d="M120,515 C150,440 180,380 210,330" fill="none" stroke="#0E1114" stroke-width="9" stroke-linecap="round"></path>
+      <path d="M120,515 C150,440 180,380 210,330" fill="none" stroke="#FFC93C" stroke-width="5" stroke-linecap="round"></path>
+      <circle cx="120" cy="515" r="13" fill="#FFFFFF" stroke="#0E1114" stroke-width="3"></circle>
+      <circle cx="210" cy="330" r="14" fill="#FFC93C" stroke="#0E1114" stroke-width="3"></circle>
+      <text x="205" y="336" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600" fill="#0E1114">2</text>
+    </svg>
+    <div style="position: absolute; top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center">
+      <span style="padding: 6px 12px; border-radius: 6px; background: #FFFFFF; border: 1px solid #B9C0C7; font-weight: 600">Dolomites loop</span>
+      <span style="padding: 6px 10px; border-radius: 6px; background: #FFFFFF; border: 1px solid #B9C0C7; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #4B5560">CAR 2 · READ ONLY</span>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 12px 16px; border-top: 1px solid #D5DADF; border-bottom: 1px solid #D5DADF; background: #FFFFFF">
+    <a href="#" style="min-height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: #EEF0F2; color: #4B5560; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 13px">D1</a>
+    <a href="#" style="min-height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: #0E1114; color: #FFFFFF; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600">D2 TODAY</a>
+    <a href="#" style="min-height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: 1px dashed #B9C0C7; color: #5F6873; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 13px">D3</a>
+    <a href="#" style="min-height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: #EEF0F2; color: #4B5560; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 13px">D5</a>
+  </div>
+
+  <ol style="list-style: none; margin: 0; padding: 12px 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; overflow: hidden">
+    <li style="display: grid; grid-template-columns: 52px 1fr auto; gap: 10px; align-items: center; padding: 12px; border-radius: 8px; background: #FFFFFF; border: 1px solid #D5DADF">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #5F6873">08:00</span>
+      <div><div style="font-weight: 600; font-size: 18px; color: #4B5560">Hotel, Cortina</div><div style="font-size: 14px; color: #5F6873">Start</div></div>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1E7A46" stroke-width="2.4" aria-label="Visited" role="img"><path d="M4 10.5l4 4 8-9"></path></svg>
+    </li>
+    <li style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #5F6873; padding-left: 74px">↓ 28 KM · 35 MIN</li>
+    <li style="display: grid; grid-template-columns: 52px 1fr; gap: 10px; align-items: center; padding: 11px; border-radius: 8px; background: #FFF7DD; border: 2px solid #0E1114">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600">09:40</span>
+      <div><div style="font-weight: 600; font-size: 18px">Lago Federa</div><div style="font-size: 14px; color: #4B5560">Hike · 3 h · changed this morning</div></div>
+    </li>
+    <li style="display: grid; grid-template-columns: 52px 1fr; gap: 10px; align-items: center; padding: 12px; border-radius: 8px; border: 1px dashed #B9C0C7">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#5F6873" stroke-width="1.6" aria-hidden="true"><rect x="3" y="8" width="12" height="8" rx="1.5"></rect><path d="M6 8V6a3 3 0 016 0v2"></path></svg>
+      <div><div style="font-weight: 600; color: #4B5560">2 more stops</div><div style="font-size: 14px; color: #5F6873">Open when you visit Lago Federa</div></div>
+    </li>
+    <li style="display: grid; grid-template-columns: 52px 1fr; gap: 10px; align-items: center; padding: 12px; border-radius: 8px; border: 1px dashed #B9C0C7; margin-top: 8px">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#5F6873" stroke-width="1.6" aria-hidden="true"><circle cx="9" cy="9" r="7"></circle><path d="M9 5v4l2.5 1.5"></path></svg>
+      <div><div style="font-weight: 600; color: #4B5560">Day 3</div><div style="font-size: 14px; color: #5F6873; font-family: 'JetBrains Mono', monospace">OPENS 14.07 06:00</div></div>
+    </li>
+  </ol>
+
+  <div style="padding: 0 16px 12px">
+    <a href="#" style="min-height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: 2px solid #0E1114; background: #FFC93C; color: #0E1114; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em">Go to Lago Federa</a>
+  </div>
+
+  <nav aria-label="Trip" style="height: 64px; flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: #FFFFFF; border-top: 1px solid #D5DADF; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em">
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #0E1114; font-weight: 700; border-top: 4px solid #FFC93C">Route</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #4B5560">Shop</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #4B5560">Go</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #4B5560">Chat</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

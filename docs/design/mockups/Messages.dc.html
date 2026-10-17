@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Go — Messages</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#FFC93C}a:hover{color:#FFE08A}
+button{font:inherit;cursor:pointer}
+input{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; display: flex; flex-direction: column; background: #0E1114; color: #E6E9EC; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 16px">
+
+  <div role="status" style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: #2A1E18; border-bottom: 1px solid #FF9E7A; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FFC2A8">
+    <span style="width: 8px; height: 8px; border-radius: 50%; background: #FF9E7A"></span>
+    NO INTERNET · MESH: 2 NEAR · 1 WAITING
+  </div>
+
+  <header style="padding: 12px 16px 0; background: #161B21; border-bottom: 1px solid #2A323B">
+    <h1 style="margin: 0 0 10px; font-size: 24px; font-weight: 700">Messages</h1>
+    <nav aria-label="Channels" style="display: flex; gap: 18px">
+      <a href="#" style="padding: 8px 0 9px; text-decoration: none; color: #E6E9EC; font-weight: 700; border-bottom: 3px solid #FFC93C">Trip</a>
+      <a href="#" style="padding: 8px 0 12px; text-decoration: none; color: #9AA4AE; display: flex; gap: 6px; align-items: center">Car 2 <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #0E1114; background: #4FD1E8; border-radius: 4px; padding: 0 5px">3</span></a>
+      <a href="#" style="padding: 8px 0 12px; text-decoration: none; color: #9AA4AE">Direct</a>
+    </nav>
+  </header>
+
+  <div style="flex: 1; overflow: hidden; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+    <div style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #6F7A85">TUE 13.07</div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px; max-width: 80%">
+      <span style="font-size: 13px; color: #4FD1E8; font-weight: 600">Ivan</span>
+      <div style="padding: 10px 12px; border-radius: 8px 8px 8px 2px; background: #1B2128">Parking at Sorapis is full. We go to plan B, Lago Federa.</div>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #6F7A85">09:12 · VIA MESH</span>
+    </div>
+
+    <div role="note" style="display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 8px; border: 1px solid #FFC93C; background: #1E1A0E">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#FFC93C" stroke-width="1.8" aria-hidden="true"><path d="M4 4h6v6M10 4C10 12 16 10 16 16"></path></svg>
+      <span style="font-size: 15px"><b>Stop 2 changed</b> to plan B · Lago Federa. New arrival 09:40.</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px; max-width: 80%">
+      <span style="font-size: 13px; color: #4FD1E8; font-weight: 600">Anna</span>
+      <div style="border-radius: 8px 8px 8px 2px; background: #1B2128; overflow: hidden">
+        <svg viewBox="0 0 240 110" style="width: 100%; height: 110px; display: block; background: #0E1114" aria-hidden="true">
+          <path d="M0,80 C60,70 100,40 140,45 C180,50 210,30 240,20" fill="none" stroke="#2C3540" stroke-width="3"></path>
+          <circle cx="140" cy="45" r="14" fill="#4FD1E8" fill-opacity="0.18"></circle>
+          <circle cx="140" cy="45" r="6" fill="#4FD1E8"></circle>
+        </svg>
+        <div style="padding: 8px 12px; display: flex; justify-content: space-between; align-items: center">
+          <span>My position</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4AE">1.2 KM N</span>
+        </div>
+      </div>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #6F7A85">09:20 · VIA MESH</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px; max-width: 80%; align-self: flex-end; align-items: flex-end">
+      <div style="padding: 10px 12px; border-radius: 8px 8px 2px 8px; background: #E6E9EC; color: #0E1114">OK, we are 15 min behind you.</div>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7EE2A8">09:22 · DELIVERED 4/5</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px; max-width: 80%; align-self: flex-end; align-items: flex-end">
+      <div style="padding: 10px 12px; border-radius: 8px 8px 2px 8px; background: #E6E9EC; color: #0E1114; opacity: 0.75">Can someone buy water at the hut?</div>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #FF9E7A">09:31 · WAITING</span>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 8px; padding: 10px 16px; border-top: 1px solid #2A323B; background: #161B21">
+    <button type="button" aria-label="Send my position" style="width: 44px; height: 44px; border-radius: 6px; border: 1px solid #3A444F; background: transparent; display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#4FD1E8" stroke-width="1.8" aria-hidden="true"><path d="M10 18s-6-5.5-6-10a6 6 0 0112 0c0 4.5-6 10-6 10z"></path><circle cx="10" cy="8" r="2.2"></circle></svg>
+    </button>
+    <label style="flex: 1; display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Message</span>
+      <input type="text" placeholder="Message to trip" style="flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #3A444F; background: #0E1114; color: #E6E9EC"></label>
+    <button type="button" aria-label="Send" style="width: 44px; height: 44px; border-radius: 6px; border: 0; background: #FFC93C; display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0E1114" stroke-width="2" aria-hidden="true"><path d="M3 10l14-7-5 15-2-6z"></path></svg>
+    </button>
+  </div>
+
+  <nav aria-label="Trip" style="height: 64px; flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: #0E1114; border-top: 1px solid #2A323B; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em">
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #9AA4AE">Route</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #9AA4AE">Shop</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #9AA4AE">Go</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #FFC93C; font-weight: 700; border-top: 3px solid #FFC93C">Chat</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

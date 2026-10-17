@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Field survey — Go</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B2620}a:hover{color:#B8321C}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #EEF1EC; color: #1B2620; font-family: 'IBM Plex Sans Condensed', sans-serif; font-size: 15px">
+  <svg viewBox="330 60 420 720" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; width: 100%; height: 100%" aria-hidden="true">
+    <rect x="0" y="0" width="1000" height="800" fill="#EEF1EC"></rect>
+    <g fill="none" stroke="#B9A88C" stroke-width="1">
+      <path d="M520,330 C520,250 600,220 650,240 C710,262 730,320 700,380 C670,440 560,430 530,380 Z"></path>
+      <path d="M470,330 C465,210 600,170 680,195 C770,225 790,330 750,410 C705,495 540,480 490,410 Z"></path>
+      <path d="M420,335 C410,170 600,120 710,150 C830,185 850,340 800,440 C745,545 520,535 450,450 Z" stroke-width="1.8"></path>
+      <path d="M370,340 C350,130 600,70 740,105 C890,145 910,350 850,470 C780,600 500,590 410,490 Z"></path>
+    </g>
+    <path d="M760,600 C800,580 860,590 870,620 C880,650 820,670 780,655 C750,645 735,615 760,600 Z" fill="#C9DCDD" stroke="#7E9FA3"></path>
+    <g fill="none" stroke="#6B6457" stroke-width="2">
+      <path d="M330,400 C450,380 480,300 560,180 C600,120 700,90 1000,80"></path>
+      <path d="M330,400 C360,500 420,600 520,660 C620,720 800,700 1000,740"></path>
+    </g>
+    <path d="M330,262 C420,240 470,228 500,225" fill="none" stroke="#1B2620" stroke-width="3"></path>
+    <path d="M500,225 C540,220 580,228 610,245 C700,300 760,450 775,610" fill="none" stroke="#B8321C" stroke-width="3" stroke-dasharray="8 6"></path>
+    <rect x="596" y="231" width="28" height="28" fill="#EEF1EC" stroke="#B8321C" stroke-width="2"></rect>
+    <text x="601" y="250" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="500" fill="#B8321C">03</text>
+    <rect x="761" y="596" width="28" height="28" fill="#EEF1EC" stroke="#1B2620" stroke-width="1.5"></rect>
+    <text x="766" y="615" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="500" fill="#1B2620">04</text>
+    <circle cx="470" cy="300" r="7" fill="#EEF1EC" stroke="#1B2620" stroke-width="2"></circle>
+    <text x="482" y="304" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1B2620">AN · 2m</text>
+    <circle cx="440" cy="196" r="7" fill="#EEF1EC" stroke="#1B2620" stroke-width="2"></circle>
+    <text x="452" y="200" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1B2620">IV · 9m</text>
+    <circle cx="500" cy="225" r="16" fill="#B8321C" fill-opacity="0.15"></circle>
+    <circle cx="500" cy="225" r="7" fill="#B8321C" stroke="#EEF1EC" stroke-width="2.5"></circle>
+  </svg>
+
+  <div style="position: absolute; top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; gap: 8px">
+    <div style="border: 1px solid #1B2620; background: #F6F8F4; padding: 8px 12px">
+      <div style="font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #4A5650">Day 2 · stop 3 of 4</div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px">TRACK 34.1 KM · 4 H 05</div>
+    </div>
+    <div style="border: 1px solid #1B2620; background: #F6F8F4; padding: 8px 12px; display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 12px">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1B2620" stroke-width="1.5" aria-hidden="true"><path d="M7 13V7M3 4a5.5 5.5 0 018 0M1 2a8.5 8.5 0 0112 0"></path></svg>
+      MESH · 2
+    </div>
+  </div>
+
+  <section aria-label="Next stop" style="position: absolute; left: 0; right: 0; bottom: 64px; background: #F6F8F4; border-top: 1px solid #1B2620; padding: 16px 16px 14px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline">
+      <span style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #B8321C; font-weight: 600">Next · 03</span>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #4A5650">PLAN A</span>
+    </div>
+    <h1 style="margin: 4px 0 2px; font-size: 26px; font-weight: 700; line-height: 1.1">Tre Cime di Lavaredo</h1>
+    <div style="display: flex; gap: 0; margin-top: 10px; border: 1px solid #1B2620">
+      <div style="flex: 1; padding: 8px 10px; border-right: 1px solid #1B2620"><div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #4A5650">Distance</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">6.2 km</div></div>
+      <div style="flex: 1; padding: 8px 10px; border-right: 1px solid #1B2620"><div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #4A5650">Arrive</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">12:29</div></div>
+      <div style="flex: 1; padding: 8px 10px"><div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #4A5650">Plan</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">12:15</div></div>
+    </div>
+    <div style="display: flex; gap: 8px; margin-top: 12px">
+      <button type="button" style="flex: 2; min-height: 48px; border: 1px solid #1B2620; background: #1B2620; color: #EEF1EC; border-radius: 0; font-weight: 600">Navigate</button>
+      <button type="button" style="flex: 1; min-height: 48px; border: 1px solid #1B2620; background: transparent; color: #1B2620; border-radius: 0">Problem</button>
+      <button type="button" style="flex: 1; min-height: 48px; border: 1px solid #1B2620; background: transparent; color: #1B2620; border-radius: 0">Skip</button>
+    </div>
+  </section>
+
+  <nav aria-label="Trip" style="position: absolute; left: 0; right: 0; bottom: 0; height: 64px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid #1B2620; background: #EEF1EC; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em">
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #4A5650">Route</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; color: #4A5650">Shopping</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; text-decoration: none; background: #1B2620; color: #EEF1EC; font-weight: 600">Go</a>
+    <a href="#" style="display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: #4A5650">Chat <span style="font-family: 'IBM Plex Mono', monospace; background: #B8321C; color: #FFFFFF; padding: 1px 5px">3</span></a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

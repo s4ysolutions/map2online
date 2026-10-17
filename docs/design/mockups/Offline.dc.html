@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prepare — Offline</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#FFC93C}a:hover{color:#FFE08A}
+button{font:inherit;cursor:pointer}
+input{font:inherit}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; display: flex; flex-direction: column; background: #0E1114; color: #E6E9EC; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 16px">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 0 20px; min-height: 56px; border-bottom: 1px solid #2A323B">
+    <span style="display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#FFC93C" stroke-width="2" aria-hidden="true"><path d="M11 2l8 18-8-5-8 5z"></path></svg>
+      Map2Online
+    </span>
+    <span style="color: #9AA4AE">Dolomites loop</span>
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9AA4AE">12–16.07 · 6 PAX</span>
+    <nav aria-label="Stage" style="display: flex; margin-left: auto; border: 1px solid #2A323B; border-radius: 6px; overflow: hidden">
+      <a href="#" style="padding: 8px 18px; color: #E6E9EC; text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; font-size: 14px">Plan</a>
+      <a href="#" style="padding: 8px 18px; background: #FFC93C; color: #0E1114; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 14px">Prepare</a>
+      <a href="#" style="padding: 8px 18px; color: #E6E9EC; text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; font-size: 14px">Go</a>
+    </nav>
+    <span style="display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7EE2A8"><span style="width: 8px; height: 8px; border-radius: 50%; background: #7EE2A8"></span>SYNCED</span>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1">
+    <aside style="flex: 1 1 420px; max-width: 480px; display: flex; flex-direction: column; background: #161B21; border-right: 1px solid #2A323B">
+      <nav aria-label="Prepare sections" style="display: flex; padding: 0 12px; border-bottom: 1px solid #2A323B">
+        <a href="#" style="padding: 14px 12px; text-decoration: none; color: #9AA4AE">People</a>
+        <a href="#" style="padding: 14px 12px; text-decoration: none; color: #9AA4AE">Sharing</a>
+        <a href="#" style="padding: 14px 12px; text-decoration: none; color: #9AA4AE">Shopping</a>
+        <a href="#" style="padding: 14px 12px 11px; text-decoration: none; color: #E6E9EC; font-weight: 700; border-bottom: 3px solid #FFC93C">Offline</a>
+      </nav>
+
+      <div style="padding: 16px; display: flex; flex-direction: column; gap: 18px">
+        <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+          <legend style="font-size: 12px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 0 8px">Base map to save</legend>
+          <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; border: 1px solid #FFC93C; background: #1B2128">
+            <input type="radio" name="bm" checked style="width: 18px; height: 18px; accent-color: #FFC93C">
+            <span style="flex: 1"><span style="display: block; font-weight: 600">Soviet General Staff 1:50 000</span><span style="font-size: 14px; color: #9AA4AE">Own tile server</span></span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; border: 1px solid #2A323B; background: #1B2128">
+            <input type="radio" name="bm" style="width: 18px; height: 18px; accent-color: #FFC93C">
+            <span style="flex: 1"><span style="display: block; font-weight: 600">Topo relief</span><span style="font-size: 14px; color: #9AA4AE">Own tile server</span></span>
+          </label>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; border: 1px dashed #2A323B; color: #6F7A85">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#6F7A85" stroke-width="1.6" aria-hidden="true"><circle cx="9" cy="9" r="7.5"></circle><path d="M4 14L14 4"></path></svg>
+            <span style="font-size: 15px">Google, Yandex and OSM maps can't be saved: their terms do not allow it.</span>
+          </div>
+        </fieldset>
+
+        <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+          <legend style="font-size: 12px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 0 8px">Area</legend>
+          <div role="group" aria-label="Area" style="display: flex; border: 1px solid #2A323B; border-radius: 6px; overflow: hidden">
+            <button type="button" style="flex: 1; min-height: 40px; border: 0; background: #E6E9EC; color: #0E1114; font-weight: 700">Along the route</button>
+            <button type="button" style="flex: 1; min-height: 40px; border: 0; background: transparent; color: #E6E9EC">Whole trip area</button>
+          </div>
+          <label style="display: flex; align-items: center; gap: 12px; font-size: 15px">Width each side
+            <input type="range" min="1" max="20" value="5" style="flex: 1; accent-color: #FFC93C">
+            <span style="font-family: 'JetBrains Mono', monospace; width: 52px; text-align: right">5 km</span></label>
+          <label style="display: flex; align-items: center; gap: 12px; font-size: 15px">Most detail
+            <input type="range" min="12" max="17" value="15" style="flex: 1; accent-color: #FFC93C">
+            <span style="font-family: 'JetBrains Mono', monospace; width: 52px; text-align: right">Z15</span></label>
+        </fieldset>
+
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid #2A323B; border-radius: 8px">
+          <div style="padding: 10px 12px; border-right: 1px solid #2A323B"><div style="font-size: 12px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Size</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 22px">[~ MB]</div></div>
+          <div style="padding: 10px 12px"><div style="font-size: 12px; color: #9AA4AE; letter-spacing: 0.1em; text-transform: uppercase">Free on device</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 22px">[GB]</div></div>
+        </div>
+      </div>
+
+      <section aria-label="Download progress" style="margin-top: auto; padding: 16px; border-top: 1px solid #2A323B; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; justify-content: space-between; align-items: center"><span>Trip data</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #7EE2A8">DONE</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div style="display: flex; justify-content: space-between; align-items: center"><span>Map tiles</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #FFC93C">62%</span></div>
+          <div style="height: 6px; border-radius: 3px; background: #2A323B"><div style="width: 62%; height: 6px; border-radius: 3px; background: #FFC93C"></div></div>
+        </div>
+        <label style="display: flex; justify-content: space-between; align-items: center; gap: 12px">Place photos (small)
+          <input type="checkbox" style="width: 18px; height: 18px; accent-color: #FFC93C"></label>
+        <button type="button" style="min-height: 48px; border-radius: 6px; border: 1px solid #3A444F; background: transparent; color: #E6E9EC; text-transform: uppercase; letter-spacing: 0.08em">Pause</button>
+      </section>
+    </aside>
+
+    <main style="flex: 999 1 560px; min-width: 0; min-height: 600px; position: relative; overflow: hidden; background: #0E1114">
+      <svg viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; width: 100%; height: 100%" aria-hidden="true">
+        <rect width="1000" height="800" fill="#0E1114"></rect>
+        <g fill="none" stroke="#1E262E" stroke-width="1.2">
+          <path d="M420,335 C410,170 600,120 710,150 C830,185 850,340 800,440 C745,545 520,535 450,450 Z"></path>
+          <path d="M370,340 C350,130 600,70 740,105 C890,145 910,350 850,470 C780,600 500,590 410,490 Z"></path>
+          <path d="M100,600 C90,480 220,440 310,460 C400,482 410,640 355,705 C300,770 120,750 100,600 Z"></path>
+        </g>
+        <path d="M120,515 C200,480 260,420 300,330 C320,290 325,270 330,262 C420,240 520,210 610,245 C700,300 760,450 775,610" fill="none" stroke="#FFC93C" stroke-opacity="0.12" stroke-width="110" stroke-linecap="round" stroke-linejoin="round"></path>
+        <g stroke="#2A323B" stroke-width="1">
+          <path d="M0,100H1000M0,200H1000M0,300H1000M0,400H1000M0,500H1000M0,600H1000M0,700H1000M100,0V800M200,0V800M300,0V800M400,0V800M500,0V800M600,0V800M700,0V800M800,0V800M900,0V800"></path>
+        </g>
+        <g fill="#7EE2A8" fill-opacity="0.18">
+          <rect x="100" y="400" width="100" height="100"></rect><rect x="100" y="500" width="100" height="100"></rect><rect x="200" y="400" width="100" height="100"></rect><rect x="200" y="300" width="100" height="100"></rect><rect x="300" y="200" width="100" height="100"></rect><rect x="300" y="300" width="100" height="100"></rect><rect x="400" y="200" width="100" height="100"></rect><rect x="500" y="200" width="100" height="100"></rect>
+        </g>
+        <g fill="#FFC93C" fill-opacity="0.22">
+          <rect x="600" y="200" width="100" height="100"></rect>
+        </g>
+        <path d="M120,515 C200,480 260,420 300,330 C320,290 325,270 330,262 C420,240 520,210 610,245 C700,300 760,450 775,610" fill="none" stroke="#FFC93C" stroke-width="3"></path>
+      </svg>
+      <div style="position: absolute; top: 16px; left: 16px; display: flex; gap: 14px; padding: 10px 14px; border-radius: 8px; background: #161B21; border: 1px solid #2A323B; font-size: 14px">
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; background: #7EE2A8; opacity: 0.6"></span>Saved</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; background: #FFC93C; opacity: 0.6"></span>Saving now</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border: 1px solid #3A444F"></span>Not yet</span>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
